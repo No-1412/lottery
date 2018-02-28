@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="gexin-rp-sdk-base-4.0.0.2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/WEB-INF/lib/gexin-rp-sdk-base-4.0.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/WEB-INF/lib/gexin-rp-sdk-http-4.0.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/WEB-INF/lib/gexin-rp-sdk-template-4.0.0.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

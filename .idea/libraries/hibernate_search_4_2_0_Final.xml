@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="hibernate-search-4.2.0.Final">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/WEB-INF/lib/hibernate-search-4.2.0.Final.jar!/" />
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/WEB-INF/lib/hibernate-search-analyzers-4.2.0.Final.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

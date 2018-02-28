@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="swt-3.3.0-v3346">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/main/webapp/WEB-INF/lib/swt-3.3.0-v3346.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

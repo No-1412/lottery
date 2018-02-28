@@ -1,0 +1,23 @@
+body {
+	background:url(/static/Download/bg.png) no-repeat;
+	background-size:100% auto;
+	content:"";
+	height: 100%;
+}
+.logo{
+	padding-top:20%;
+	text-align:center;
+}
+.title{
+	padding-top:15%;
+	text-align:center;
+}
+.iphone{
+	padding-top:35%;
+	text-align:center;
+}
+.android{
+	padding-top:5%;
+	text-align:center;
+}
+
