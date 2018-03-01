@@ -54,7 +54,7 @@ public class CdFootballSingleOrder extends BaseEntity<T> implements Serializable
 	private String half;        //半全场
 	private String beat;        //胜负平
 	private String let;         //让球胜负平
-
+	private String letBalls;     //让球数 ，分割
 
 
 	public CdFootballSingleOrder() {
@@ -213,6 +213,14 @@ public class CdFootballSingleOrder extends BaseEntity<T> implements Serializable
 
 	public void setLet(String let) {
 		this.let = let;
+	}
+
+	public String getLetBalls() {
+		return letBalls;
+	}
+
+	public void setLetBalls(String letBalls) {
+		this.letBalls = letBalls;
 	}
 }
 

@@ -146,9 +146,7 @@ public class CdFootballFollowOrderController extends BaseController {
         }
         //更新到出票赔率
         String newScoreDetail = getNewScore(cdFootballFollowOrder);
-
         String newGoalDetail = getNewGoal(cdFootballFollowOrder);
-
         String newHalfDetail = getNewHalf(cdFootballFollowOrder);
         String newBeatDetail = getNewBeat(cdFootballFollowOrder);
         String newLetDetail = getNewLet(cdFootballFollowOrder);

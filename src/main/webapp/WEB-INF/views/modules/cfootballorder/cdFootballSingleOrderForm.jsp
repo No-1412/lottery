@@ -78,7 +78,12 @@
             <form:input path="createDate" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-
+    <div class="control-group">
+        <label class="control-label">相关让球数:</label>
+        <div class="controls">
+            <form:input path="letBalls" htmlEscape="false" maxlength="200" class="" readonly="true"/>
+        </div>
+    </div>
     <div class="control-group">
         <label class="control-label">比分详情: </label>
         <div class="controls">

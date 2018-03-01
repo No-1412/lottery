@@ -225,6 +225,44 @@ public class BallGameCals {
         return map;
     }
 
+
+    /**
+     * 胜分差 主负 所有结果集
+     * 用于取对应赔率
+     *
+     * @return
+     */
+    public static Map<String, Integer> getFailScoreResults() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("1-5", 0);
+        map.put("6-10", 1);
+        map.put("11-15", 2);
+        map.put("16-20", 3);
+        map.put("21-25", 4);
+        map.put("26+", 5);
+
+        return map;
+    }
+
+
+    /**
+     * 胜分差 主胜 所有结果集
+     * 用于取对应赔率
+     *
+     * @return
+     */
+    public static Map<String, Integer> getWinScoreResults() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("1-5", 6);
+        map.put("6-10", 7);
+        map.put("11-15", 8);
+        map.put("16-20", 9);
+        map.put("21-25", 10);
+        map.put("26+", 11);
+
+        return map;
+    }
+
 }
 /*
 

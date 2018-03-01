@@ -92,6 +92,9 @@ public class FootballFollowOrderInterface {
         String halfDetail = "";
         String beatDetail = "";
         String letDetail = "";
+        //让球详情
+        String letBalls="";
+
         int acount = 0;//注数
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
@@ -256,6 +259,7 @@ public class FootballFollowOrderInterface {
                         }
                     }
                     letDetail += partDetail + "+" + let + "|";
+                    letBalls+=sfm.getClose()+",";
                 }
 
                 if ("1".equals(buyWays)) {
@@ -310,6 +314,7 @@ public class FootballFollowOrderInterface {
         cffo.setGoal(goalDetail);//总进球
         cffo.setBeat(beatDetail);//胜负平
         cffo.setLet(letDetail);//让球胜负平
+        cffo.setLetBalls(letBalls);//让球数
 
         cffo.setPrice(price);//金额
         cffo.setStauts("1");//已提交

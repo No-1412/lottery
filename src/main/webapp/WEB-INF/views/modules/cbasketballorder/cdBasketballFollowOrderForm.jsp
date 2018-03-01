@@ -75,6 +75,18 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">相关大小分:</label>
+			<div class="controls">
+				<form:input path="sizeCount" htmlEscape="false" maxlength="200" class="" readonly="true"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">相关让分:</label>
+			<div class="controls">
+				<form:input path="letScore" htmlEscape="false" maxlength="200" class="" readonly="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">串关数:</label>
 			<div class="controls">
 				<form:input path="followNums" htmlEscape="false" maxlength="200" class="required" readonly="true"/>

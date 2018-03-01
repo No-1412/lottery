@@ -89,6 +89,11 @@ public class BasketballFollowOrderInterface {
         String sizeDetail = "";
         String beatDetail = "";
         String letDetail = "";
+        //大小分
+        String sizeCount="";
+        //让分数
+        String letScore="";
+
         int acount = 0;//注数
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
@@ -165,6 +170,7 @@ public class BasketballFollowOrderInterface {
                             danTimes = danTimes * letArry.length;
                         }
                     }
+                    letScore+=cbm.getClose()+",";
                     letDetail += partDetail + "+" + let + "|";
                 }
 
@@ -201,6 +207,7 @@ public class BasketballFollowOrderInterface {
 //                        //String scoreArry[] = score.split(",");
 //                        danTimes = danTimes * scoreArry.length;
                     }
+                    sizeCount+=cbm.getZclose()+",";
                     sizeDetail += partDetail + "+" + size + "|";
                 }
 
@@ -313,6 +320,9 @@ public class BasketballFollowOrderInterface {
         cbfo.setSize(sizeDetail);//大小分
         cbfo.setBeat(beatDetail);//胜负
         cbfo.setLet(letDetail);//让球胜负
+
+        cbfo.setLetScore(letScore);//让分
+        cbfo.setSizeCount(sizeCount);//大小分
 
         cbfo.setPrice(price);//金额
         cbfo.setStatus("1");//已提交

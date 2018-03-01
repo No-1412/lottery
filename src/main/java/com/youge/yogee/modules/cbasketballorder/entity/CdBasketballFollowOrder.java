@@ -57,6 +57,9 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 	private String size;          //大小分
 	private String let;           //让分胜负平
 
+	private String letScore;     //让分 ,分割
+	private String sizeCount;    //大小分
+
 	public CdBasketballFollowOrder() {
 		super();
 	}
@@ -221,6 +224,22 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 
 	public void setTimes(String times) {
 		this.times = times;
+	}
+
+	public String getLetScore() {
+		return letScore;
+	}
+
+	public void setLetScore(String letScore) {
+		this.letScore = letScore;
+	}
+
+	public String getSizeCount() {
+		return sizeCount;
+	}
+
+	public void setSizeCount(String sizeCount) {
+		this.sizeCount = sizeCount;
 	}
 }
 

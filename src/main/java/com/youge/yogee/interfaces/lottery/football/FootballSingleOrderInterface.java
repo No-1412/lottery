@@ -73,7 +73,8 @@ public class FootballSingleOrderInterface {
         String halfDetail = "";
         String beatDetail = "";
         String letDetail = "";
-
+        //让球详情
+        String letBalls="";
         int acount = 0;//注数
 
         if (detail.size() != 0) {
@@ -84,6 +85,7 @@ public class FootballSingleOrderInterface {
                 if (sfm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
+
                 //比赛详情
                 String partDetail = matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
                 //比分所有押注结果
@@ -154,6 +156,7 @@ public class FootballSingleOrderInterface {
                     }
                     //partDetail += "+" + beat;
                     letDetail += partDetail + "+" + let + "|";
+                    letBalls+=sfm.getClose()+",";
                 }
 
 
@@ -183,6 +186,8 @@ public class FootballSingleOrderInterface {
         cfso.setGoal(goalDetail);//总进球
         cfso.setBeat(beatDetail);//胜负平
         cfso.setLet(letDetail);//让球胜负平
+
+        cfso.setLetBalls(letBalls);//让球数
 
         cfso.setPrice(price);//金额
         cfso.setStauts("1");//已提交
