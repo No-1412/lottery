@@ -58,6 +58,8 @@ public class CdFootballFollowOrder extends BaseEntity<T> implements Serializable
 	private String let;         //让球胜负平
 	private String letBalls;     //让球数 ，分割
 
+	private String danMatchiIds; //胆场次
+
 	public CdFootballFollowOrder() {
 		super();
 	}
@@ -238,6 +240,14 @@ public class CdFootballFollowOrder extends BaseEntity<T> implements Serializable
 
 	public void setLetBalls(String letBalls) {
 		this.letBalls = letBalls;
+	}
+
+	public String getDanMatchiIds() {
+		return danMatchiIds;
+	}
+
+	public void setDanMatchiIds(String danMatchiIds) {
+		this.danMatchiIds = danMatchiIds;
 	}
 }
 
