@@ -93,11 +93,12 @@ public class FootballFollowOrderInterface {
         String beatDetail = "";
         String letDetail = "";
         //让球详情
-        String letBalls="";
+        String letBalls = "";
 
         int acount = 0;//注数
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
+        String danMatchIds = "";//胆场次
         if (detail.size() != 0) {
 
             for (Map<String, Object> d : detail) {
@@ -116,6 +117,11 @@ public class FootballFollowOrderInterface {
                         danCount++;
                     }
                 }
+                //记录胆 场次
+                if ("1".equals(isMust)) {
+                    danMatchIds += matchId + ",";
+                }
+
                 String partDetail = isMust + "+" + matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
                 //胜负平所有押注结果 2胜负平
                 String beat = (String) d.get("beat");
@@ -259,7 +265,7 @@ public class FootballFollowOrderInterface {
                         }
                     }
                     letDetail += partDetail + "+" + let + "|";
-                    letBalls+=sfm.getClose()+",";
+                    letBalls += sfm.getClose() + ",";
                 }
 
                 if ("1".equals(buyWays)) {
@@ -323,6 +329,7 @@ public class FootballFollowOrderInterface {
         cffo.setFollowNum(followNum);//串关数
         cffo.setTimes(times); //倍数
 
+        cffo.setDanMatchIds(danMatchIds);//胆场次
         try {
             cdFootballFollowOrderService.save(cffo);
             map.put("flag", "1");

@@ -22,6 +22,7 @@ import com.youge.yogee.modules.sys.entity.User;
 
 /**
  * 竞彩篮球订单Entity
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-26
  */
@@ -29,218 +30,228 @@ import com.youge.yogee.modules.sys.entity.User;
 @Table(name = "cd_basketball_follow_order")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	private String id; 		// 识别id
-	private String name; 	// 名称
-	
-	private String createDate; 	// 创建时间
-	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
 
-	private String orderNum;        // 订单号
-	//private String orderDetail;     //订单详情  场次+主队vs客队+押注结果/赔率/注数|
-	private String buyWays;        // 购买彩种 1混投
+    private static final long serialVersionUID = 1L;
+    private String id;        // 识别id
+    private String name;    // 名称
 
-	private String acount;        // 注数
-	private String price;        //金额
-	private String award;        // 奖金
-	private String uid;        // 用户id
-	private String status;        // 1已提交 2已付款
-	private String remarks;      //备注
+    private String createDate;    // 创建时间
+    private String delFlag;    // 删除标识 (0：未删除；1：已删除)
 
-	private String followNums;        //串数字
-	private String  times;       //倍数
+    private String orderNum;        // 订单号
+    //private String orderDetail;     //订单详情  场次+主队vs客队+押注结果/赔率/注数|
+    private String buyWays;        // 购买彩种 1混投
 
-	private String hostWin;        // 主胜分差
-	private String hostFail;      //主负分差
-	private String beat;          //胜负
-	private String size;          //大小分
-	private String let;           //让分胜负平
+    private String acount;        // 注数
+    private String price;        //金额
+    private String award;        // 奖金
+    private String uid;        // 用户id
+    private String status;        // 1已提交 2已付款
+    private String remarks;      //备注
 
-	private String letScore;     //让分 ,分割
-	private String sizeCount;    //大小分
+    private String followNums;        //串数字
+    private String times;       //倍数
 
-	public CdBasketballFollowOrder() {
-		super();
-	}
+    private String hostWin;        // 主胜分差
+    private String hostFail;      //主负分差
+    private String beat;          //胜负
+    private String size;          //大小分
+    private String let;           //让分胜负平
 
-	public CdBasketballFollowOrder(String id){
-		this();
-		this.id = id;
-	}
-	
-	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_basketball_follow_order")
-	//@SequenceGenerator(name = "seq_cd_basketball_follow_order", sequenceName = "seq_cd_basketball_follow_order")
-	public String getId() {
-		return id;
-	}
+    private String letScore;     //让分 ,分割
+    private String sizeCount;    //大小分
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String danMatchIds; //胆场次
 
-	@Length(min=1, max=200)
-	public String getName() {
-		return name;
-	}
+    public CdBasketballFollowOrder() {
+        super();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getCreateDate() {
-		return createDate;
-	}
+    public CdBasketballFollowOrder(String id) {
+        this();
+        this.id = id;
+    }
 
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_basketball_follow_order")
+    //@SequenceGenerator(name = "seq_cd_basketball_follow_order", sequenceName = "seq_cd_basketball_follow_order")
+    public String getId() {
+        return id;
+    }
 
-	public String getDelFlag() {
-		return delFlag;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setDelFlag(String delFlag) {
-		this.delFlag = delFlag;
-	}
+    @Length(min = 1, max = 200)
+    public String getName() {
+        return name;
+    }
 
-	public String getOrderNum() {
-		return orderNum;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setOrderNum(String orderNum) {
-		this.orderNum = orderNum;
-	}
+    public String getCreateDate() {
+        return createDate;
+    }
 
-	public String getBuyWays() {
-		return buyWays;
-	}
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 
-	public void setBuyWays(String buyWays) {
-		this.buyWays = buyWays;
-	}
+    public String getDelFlag() {
+        return delFlag;
+    }
 
-	public String getAcount() {
-		return acount;
-	}
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
 
-	public void setAcount(String acount) {
-		this.acount = acount;
-	}
+    public String getOrderNum() {
+        return orderNum;
+    }
 
-	public String getPrice() {
-		return price;
-	}
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
+    }
 
-	public void setPrice(String price) {
-		this.price = price;
-	}
+    public String getBuyWays() {
+        return buyWays;
+    }
 
-	public String getAward() {
-		return award;
-	}
+    public void setBuyWays(String buyWays) {
+        this.buyWays = buyWays;
+    }
 
-	public void setAward(String award) {
-		this.award = award;
-	}
+    public String getAcount() {
+        return acount;
+    }
 
-	public String getUid() {
-		return uid;
-	}
+    public void setAcount(String acount) {
+        this.acount = acount;
+    }
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
+    public String getPrice() {
+        return price;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getAward() {
+        return award;
+    }
 
-	public String getRemarks() {
-		return remarks;
-	}
+    public void setAward(String award) {
+        this.award = award;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public String getUid() {
+        return uid;
+    }
 
-	public String getHostWin() {
-		return hostWin;
-	}
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
-	public void setHostWin(String hostWin) {
-		this.hostWin = hostWin;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getHostFail() {
-		return hostFail;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setHostFail(String hostFail) {
-		this.hostFail = hostFail;
-	}
+    public String getRemarks() {
+        return remarks;
+    }
 
-	public String getBeat() {
-		return beat;
-	}
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
-	public void setBeat(String beat) {
-		this.beat = beat;
-	}
+    public String getHostWin() {
+        return hostWin;
+    }
 
-	public String getSize() {
-		return size;
-	}
+    public void setHostWin(String hostWin) {
+        this.hostWin = hostWin;
+    }
 
-	public void setSize(String size) {
-		this.size = size;
-	}
+    public String getHostFail() {
+        return hostFail;
+    }
 
-	public String getLet() {
-		return let;
-	}
+    public void setHostFail(String hostFail) {
+        this.hostFail = hostFail;
+    }
 
-	public void setLet(String let) {
-		this.let = let;
-	}
+    public String getBeat() {
+        return beat;
+    }
 
-	public String getFollowNums() {
-		return followNums;
-	}
+    public void setBeat(String beat) {
+        this.beat = beat;
+    }
 
-	public void setFollowNums(String followNums) {
-		this.followNums = followNums;
-	}
+    public String getSize() {
+        return size;
+    }
 
-	public String getTimes() {
-		return times;
-	}
+    public void setSize(String size) {
+        this.size = size;
+    }
 
-	public void setTimes(String times) {
-		this.times = times;
-	}
+    public String getLet() {
+        return let;
+    }
 
-	public String getLetScore() {
-		return letScore;
-	}
+    public void setLet(String let) {
+        this.let = let;
+    }
 
-	public void setLetScore(String letScore) {
-		this.letScore = letScore;
-	}
+    public String getFollowNums() {
+        return followNums;
+    }
 
-	public String getSizeCount() {
-		return sizeCount;
-	}
+    public void setFollowNums(String followNums) {
+        this.followNums = followNums;
+    }
 
-	public void setSizeCount(String sizeCount) {
-		this.sizeCount = sizeCount;
-	}
+    public String getTimes() {
+        return times;
+    }
+
+    public void setTimes(String times) {
+        this.times = times;
+    }
+
+    public String getLetScore() {
+        return letScore;
+    }
+
+    public void setLetScore(String letScore) {
+        this.letScore = letScore;
+    }
+
+    public String getSizeCount() {
+        return sizeCount;
+    }
+
+    public void setSizeCount(String sizeCount) {
+        this.sizeCount = sizeCount;
+    }
+
+    public String getDanMatchIds() {
+        return danMatchIds;
+    }
+
+    public void setDanMatchIds(String danMatchIds) {
+        this.danMatchIds = danMatchIds;
+    }
 }
 
 

@@ -38,7 +38,7 @@ public class BasketballFollowOrderInterface {
     private CdBasketballFollowOrderService cdBasketballFollowOrderService;
 
     /**
-     * 足球串关 提交订单
+     * 篮球串关 提交订单
      */
     @RequestMapping(value = "basketballFollowOrderCommit", method = RequestMethod.POST)
     @ResponseBody
@@ -90,13 +90,14 @@ public class BasketballFollowOrderInterface {
         String beatDetail = "";
         String letDetail = "";
         //大小分
-        String sizeCount="";
+        String sizeCount = "";
         //让分数
-        String letScore="";
+        String letScore = "";
 
         int acount = 0;//注数
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
+        String danMatchIds = "";//胆场次
         if (detail.size() != 0) {
 
             for (Map<String, Object> d : detail) {
@@ -114,6 +115,10 @@ public class BasketballFollowOrderInterface {
                     if ("1".equals(isMust)) {
                         danCount++;
                     }
+                }
+
+                if ("1".equals(isMust)) {
+                    danMatchIds += matchId + ",";
                 }
                 String partDetail = isMust + "+" + matchId + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName();
 
@@ -170,11 +175,9 @@ public class BasketballFollowOrderInterface {
                             danTimes = danTimes * letArry.length;
                         }
                     }
-                    letScore+=cbm.getClose()+",";
+                    letScore += cbm.getClose() + ",";
                     letDetail += partDetail + "+" + let + "|";
                 }
-
-
 
 
                 //比分所有押注结果  4大小分
@@ -207,7 +210,7 @@ public class BasketballFollowOrderInterface {
 //                        //String scoreArry[] = score.split(",");
 //                        danTimes = danTimes * scoreArry.length;
                     }
-                    sizeCount+=cbm.getZclose()+",";
+                    sizeCount += cbm.getZclose() + ",";
                     sizeDetail += partDetail + "+" + size + "|";
                 }
 
@@ -264,8 +267,6 @@ public class BasketballFollowOrderInterface {
                     }
                     failDetail += partDetail + "+" + hostFail + "|";
                 }
-
-
 
 
                 if ("1".equals(buyWays)) {
@@ -330,6 +331,7 @@ public class BasketballFollowOrderInterface {
         cbfo.setBuyWays(buyWays);//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
         cbfo.setFollowNums(followNum);//串关数
         cbfo.setTimes(times); //倍数
+        cbfo.setDanMatchIds(danMatchIds);//胆场次
 
         try {
             cdBasketballFollowOrderService.save(cbfo);
@@ -341,7 +343,6 @@ public class BasketballFollowOrderInterface {
         logger.info("basketballFollowOrderCommit---------End---------------------");
         return HttpResultUtil.successJson(map);
     }
-
 
 
 }
