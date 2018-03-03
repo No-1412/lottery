@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.util;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,8 +30,11 @@ import java.util.List;
 */
 public class Calculations {
     private static int sum = 0;
+    private static double doubleSum = 0;
     public static List<String> list = new ArrayList<>();
-//    private static ArrayList <Integer>tmpArr = new ArrayList<>();
+    private static ArrayList <Integer>tmpArr = new ArrayList<>();
+
+    private static ArrayList <Double>tmpDoubleArr = new ArrayList<>();
 
     /**
      * 计算C(m,k) 大乐透算法
@@ -84,13 +88,19 @@ public class Calculations {
 
 
     public static void main(String[] args) {
-        List<String> data = new ArrayList<String>();
+//        List<String> data = new ArrayList<String>();
+//
+//        String num = "1,2,3,4,5,6,7";
+//        String[] str = num.split(",");
+//        List<String> str1 = Arrays.asList(str);
+//        arrangeSelect(str1, new ArrayList<String>());
+//        System.out.println(list);
 
-        String num = "1,2,3,4,5,6,7";
-        String[] str = num.split(",");
-        List<String> str1 = Arrays.asList(str);
-        arrangeSelect(str1, new ArrayList<String>());
-        System.out.println(list);
+        double[] arr = {1,1,3,4,5,6};
+        doubleSum = 0;
+        combine(0,2,arr);
+        System.out.println(doubleSum);
+
     }
 
 
@@ -99,24 +109,65 @@ public class Calculations {
      * 没什么卵用╮(╯▽╰)╭
      *
      */
-//    public static void combine(int index,int k,int []arr) {
-//        if(k == 1){
-//            for (int i = index; i < arr.length; i++) {
-//                sum+=1;
-//                tmpArr.add(arr[i]);
-//                System.out.println(tmpArr.toString());
-//                tmpArr.remove((Object)arr[i]);
-//            }
-//        }else if(k > 1){
-//            for (int i = index; i <= arr.length - k; i++) {
-//                tmpArr.add(arr[i]);
-//                 combine(i + 1,k - 1, arr);
-//                tmpArr.remove((Object)arr[i]);
-//            }
-//        }else{
-//            return ;
-//        }
-//    }
+    public static void combine(int index,int k,double []arr) {
+        if(k == 1){
+            for (int i = index; i < arr.length; i++) {
+                tmpDoubleArr.add(arr[i]);
+
+                doubleSum += tmpDoubleArr.get(0) * tmpDoubleArr.get(1);
+                System.out.println(tmpDoubleArr.toString());
+                tmpDoubleArr.remove(arr[i]);
+            }
+        }else{
+            for (int i = index; i <= arr.length - k; i++) {
+                tmpDoubleArr.add(arr[i]);
+                 combine(i + 1,k - 1, arr);
+                tmpDoubleArr.remove(arr[i]);
+            }
+        }
+    }
+    static List<Double> doubleList = new ArrayList<>();
+
+    public static void combineCollection(int index,int k,double []arr) {
+        if(k == 1){
+            for (int i = index; i < arr.length; i++) {
+                tmpDoubleArr.add(arr[i]);
+
+                doubleList.add(tmpDoubleArr.get(0) * tmpDoubleArr.get(1));
+                tmpDoubleArr.remove(arr[i]);
+            }
+        }else{
+            for (int i = index; i <= arr.length - k; i++) {
+                tmpDoubleArr.add(arr[i]);
+                combine(i + 1,k - 1, arr);
+                tmpDoubleArr.remove(arr[i]);
+            }
+        }
+    }
+
+    public static double odds(int k,List<String> arr){
+
+        double[] doubles = new double[arr.size()];
+        for(int i=0;i<arr.size();i++){
+            doubles[i] = Double.parseDouble(arr.get(i));
+        }
+        doubleSum = 0;
+        combine(0,k,doubles);
+        return doubleSum;
+    }
+
+
+    public static List<Double> oddsCollection(int k,List<String> arr){
+
+        double[] doubles = new double[arr.size()];
+        for(int i=0;i<arr.size();i++){
+            doubles[i] = Double.parseDouble(arr.get(i));
+        }
+
+        combine(0,k,doubles);
+        return doubleList;
+    }
+
 
 }
 /*

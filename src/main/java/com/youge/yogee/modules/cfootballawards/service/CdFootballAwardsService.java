@@ -75,6 +75,18 @@ public class CdFootballAwardsService extends BaseService {
         return cdFootballAwardsDao.find(dc);
     }
 
+    public CdFootballAwards findByMatchId(String matchId) {
+        DetachedCriteria dc = cdFootballAwardsDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootballAwards.FIELD_DEL_FLAG, CdFootballAwards.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("matchId", matchId));
+        List<CdFootballAwards> list =  cdFootballAwardsDao.find(dc);
+        if (list.size()!=0){
+            return list.get(0);
+        }else {
+            return null;
+        }
+    }
+
     public List<String> getAllMatchId() {
         return cdFootballAwardsDao.getAllMatchId();
     }
