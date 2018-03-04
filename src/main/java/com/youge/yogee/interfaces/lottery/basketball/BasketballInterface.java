@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.lottery.basketball;
 
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -38,7 +39,6 @@ public class BasketballInterface {
     private CdBtFutureService cdBtFutureService;
 
     /**
-     * wangsong
      * 篮球混投
      * 180122
      *
@@ -74,11 +74,12 @@ public class BasketballInterface {
                 map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
                 map.put("hn", cd.getWinningName());//主队名称
                 map.put("gn", cd.getDefeatedName());//客队名称
+                map.put("matchId", cd.getMatchId());//期次
 
                 map.put("sf", cd.getVictoryordefeatOdds());//胜负:主负主胜赔率',
-                map.put("spo",cd.getSpreadOdds());//让分胜负:主负主胜赔率
-                map.put("dxo",cd.getSizeOdds());//大小分赔率
-                map.put("sfc",cd.getSurpassScoreGap());//胜分差主负主胜
+                map.put("spo", cd.getSpreadOdds());//让分胜负:主负主胜赔率
+                map.put("dxo", cd.getSizeOdds());//大小分赔率
+                map.put("sfc", cd.getSurpassScoreGap());//胜分差主负主胜
                 map.put("close", cd.getClose());//让分
                 map.put("value", cd.getZclose());//大小分分值
 
@@ -582,6 +583,60 @@ public class BasketballInterface {
 
         logger.info("listBtDetail  篮球详情---------Start---------");
         return HttpResultUtil.successJson(dataMap);
+    }
+
+    /**
+     * 通过matchId查询
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getBtMatchDetailById", method = RequestMethod.POST)
+    public String getBtMatchDetailById(HttpServletRequest request) {
+        logger.info("getBtMatchDetailById  获取篮球详情---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String matchId = (String) jsonData.get("matchId");
+        if (StringUtils.isEmpty(matchId)) {
+            logger.error("matchId为空");
+            return HttpResultUtil.errorJson("buyWays为空");
+        }
+
+        CdBasketballMixed cd = cdBasketballMixedService.findByMatchId(matchId);
+        if (cd == null) {
+            return HttpResultUtil.errorJson("比赛不存在");
+        }
+
+
+                Map map = new HashMap();
+                map.put("name", cd.getMatchId());//赛事场次
+                map.put("mt", cd.getMatchDate());//比赛时间
+                map.put("itemid", cd.getItemid());//比赛时间ID
+                map.put("zid", cd.getZid());//比赛详细信息传的参数
+                map.put("mname", cd.getEventName());//赛事名称
+                map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
+                map.put("hn", cd.getWinningName());//主队名称
+                map.put("gn", cd.getDefeatedName());//客队名称
+                map.put("sf", "未开售");//胜负:主负主胜赔率',
+                map.put("dxf", "未开售");//大小赔率
+                map.put("rfsf", "未开售");//让分:主负主胜赔率
+                map.put("sfc", cd.getSurpassScoreGap());////胜分差主负主胜
+                map.put("hm", cd.getWinningRank());//主队排名
+                map.put("gm", cd.getDefeatedRank());//客队排名
+                map.put("htn", cd.getRecentWinningSurpass());//主队近期战绩
+                map.put("gtn", cd.getRecentDefeatedSurpass());//客队近期战绩
+                map.put("htf", cd.getRecentWinningDefeat());//主队近期战绩败
+                map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
+                map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
+                map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
+
+
+        logger.info("getBtMatchDetailById 获取篮球详情---------End---------");
+        return HttpResultUtil.successJson(map);
     }
 
 
