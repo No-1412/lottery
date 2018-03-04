@@ -117,9 +117,11 @@ public class FootballFollowOrderInterface {
                         danCount++;
                     }
                 }
-                //记录胆 场次
+                //记录所有场次
                 if ("1".equals(isMust)) {
-                    danMatchIds += matchId + ",";
+                    danMatchIds += "胆" + "+" + matchId + ",";
+                } else {
+                    danMatchIds += "非" + "+" + matchId + ",";
                 }
 
                 String partDetail = isMust + "+" + matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();

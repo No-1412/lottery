@@ -118,7 +118,9 @@ public class BasketballFollowOrderInterface {
                 }
 
                 if ("1".equals(isMust)) {
-                    danMatchIds += matchId + ",";
+                    danMatchIds += "胆" + "+" + matchId + ",";
+                }else {
+                    danMatchIds += "非" + "+" + matchId + ",";
                 }
                 String partDetail = isMust + "+" + matchId + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName();
 

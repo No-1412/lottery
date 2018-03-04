@@ -115,6 +115,42 @@ public class NotBallAwardsInterface {
     }
 
 
+    /**
+     * 往期排列三开奖信息
+     */
+    @RequestMapping(value = "historyThreeAwards", method = RequestMethod.POST)
+    @ResponseBody
+    public String historyThreeAwards(HttpServletRequest request) {
+        logger.info("往期排列三开奖信息 historyThreeAwards--------Start-------------------");
+        List list = new ArrayList();
+        List<CdThreeAwards> threeRewardList = cdThreeAwardsService.getThreeAwards();
+        for (CdThreeAwards str : threeRewardList) {
+            Map map = new HashMap();
+            map.put("weekDay", str.getWeekday()); //期次
+            map.put("aCode", str.getAcode()); //开奖号码
+
+            list.add(map);
+        }
+        Map dataMap = new HashMap();
+//        Map theLast = new HashMap();
+        CdThreeAwards last = threeRewardList.get(threeRewardList.size() - 1);
+        int weekDayInt = Integer.parseInt(last.getWeekday()) + 1;
+        String lastWeekDay = String.valueOf(weekDayInt);
+        dataMap.put("weekDay", lastWeekDay); //期次
+        //获取当前时间
+        Date day = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String today = df.format(day);
+        dataMap.put("aCode", today + " 19:30截止"); //开奖号码
+
+
+
+        dataMap.put("list", list);
+        logger.info("往期排列三开奖信息 threeAwards---------End---------------------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
 
 
     /**
@@ -123,7 +159,7 @@ public class NotBallAwardsInterface {
     @RequestMapping(value = "historyFiveAwards", method = RequestMethod.POST)
     @ResponseBody
     public String historyFiveAwards(HttpServletRequest request) {
-        logger.info("排列五开奖信息 fiveAwards--------Start-------------------");
+        logger.info("往期排列五开奖信息 historyFiveAwards--------Start-------------------");
         List list = new ArrayList();
         List<CdFiveAwards> fiveList = cdFiveAwardsService.getFiveAwards();
         for (CdFiveAwards str : fiveList) {
@@ -132,21 +168,22 @@ public class NotBallAwardsInterface {
             map.put("aCode", str.getAcode()); //开奖号码
             list.add(map);
         }
-        Map theLast = new HashMap();
+        Map dataMap = new HashMap();
+        //Map theLast = new HashMap();
         CdFiveAwards last = fiveList.get(fiveList.size() - 1);
         int weekDayInt = Integer.parseInt(last.getWeekday()) + 1;
         String lastWeekDay = String.valueOf(weekDayInt);
-        theLast.put("weekDay", lastWeekDay); //期次
+        dataMap.put("weekDay", lastWeekDay); //期次
         //获取当前时间
         Date day = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String today = df.format(day);
-        theLast.put("aCode", today + " 19:30截止"); //开奖号码
-        list.add(theLast);
+        dataMap.put("aCode", today + " 19:30截止"); //开奖号码
+        //list.add(theLast);
 
-        Map dataMap = new HashMap();
+
         dataMap.put("list", list);
-        logger.info("排列五开奖信息 fiveAwards---------End---------------------");
+        logger.info("往期排列五开奖信息 historyFiveAwards---------End---------------------");
         return HttpResultUtil.successJson(dataMap);
     }
 }
