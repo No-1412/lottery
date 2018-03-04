@@ -18,6 +18,8 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.dao.CdFootballSingleOrderDao;
 
+import java.util.List;
+
 /**
  * 竞彩足球订单Service
  * @author ZhaoYiFeng
@@ -59,6 +61,15 @@ public class CdFootballSingleOrderService extends BaseService {
 	@Transactional(readOnly = false)
 	public void delete(String id) {
 		cdFootballSingleOrderDao.deleteById(id);
+	}
+
+
+	public List<CdFootballSingleOrder> findStatusTwo() {
+		DetachedCriteria dc = cdFootballSingleOrderDao.createDetachedCriteria();
+		dc.add(Restrictions.eq(CdFootballSingleOrder.FIELD_DEL_FLAG, CdFootballSingleOrder.DEL_FLAG_NORMAL));
+		dc.add(Restrictions.eq("stauts", "2"));
+		dc.addOrder(Order.desc("createDate"));
+		return cdFootballSingleOrderDao.find(dc);
 	}
 	
 }
