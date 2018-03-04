@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.youge.yogee.interfaces.util.BallGameCals;
+import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
@@ -169,6 +170,26 @@ public class CdFootballSingleOrderController extends BaseController {
         cdFootballSingleOrder.setBeat(newBeatDetail);
         cdFootballSingleOrder.setLet(newLetDetail);
 
+        //更新让球
+        String let = cdFootballSingleOrder.getLet();
+        if (StringUtils.isNotEmpty(let)) {
+            String letScore="";
+            String[] letArray = let.split("\\|");
+            for (String aLet : letArray) {
+                String[] aLetArray=aLet.split("\\+");
+                String matchId=aLetArray[0];
+                //查询比赛
+                CdFootballMixed cfm = cdFootballMixedService.findByMatchId(matchId);
+                if (cfm == null) {
+                    //比赛不存在 无法出票
+                    addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                }else {
+                    letScore+=cfm.getClose()+",";
+                }
+            }
+            cdFootballSingleOrder.setLetBalls(letScore);
+        }
 
         cdFootballSingleOrderService.save(cdFootballSingleOrder);
         addMessage(redirectAttributes, "保存成功");

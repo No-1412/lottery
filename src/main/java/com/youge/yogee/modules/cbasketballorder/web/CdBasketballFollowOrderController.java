@@ -176,6 +176,45 @@ public class CdBasketballFollowOrderController extends BaseController {
         cdBasketballFollowOrder.setBeat(newBeatDetail);
         cdBasketballFollowOrder.setLet(newLetDetail);
 
+        String size = cdBasketballFollowOrder.getSize();
+        if (StringUtils.isNotEmpty(size)) {
+            String sizeCount="";
+            String[] sizeArray = size.split("\\|");
+            for (String aSize : sizeArray) {
+                String[] aSizeArray=aSize.split("\\+");
+                String matchId=aSizeArray[1];
+                //查询比赛
+                CdBasketballMixed cfm = cdBasketballMixedService.findByMatchId(matchId);
+                if (cfm == null) {
+                    //比赛不存在 无法出票
+                    addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                }else {
+                    sizeCount+=cfm.getZclose()+",";
+                }
+            }
+            cdBasketballFollowOrder.setSizeCount(sizeCount);
+        }
+        String let = cdBasketballFollowOrder.getLet();
+        if (StringUtils.isNotEmpty(let)) {
+            String letScore="";
+            String[] letArray = let.split("\\|");
+            for (String aLet : letArray) {
+                String[] aLetArray=aLet.split("\\+");
+                String matchId=aLetArray[1];
+                //查询比赛
+                CdBasketballMixed cfm = cdBasketballMixedService.findByMatchId(matchId);
+                if (cfm == null) {
+                    //比赛不存在 无法出票
+                    addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                }else {
+                    letScore+=cfm.getClose()+",";
+                }
+            }
+            cdBasketballFollowOrder.setLetScore(letScore);
+        }
+
         cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
         addMessage(redirectAttributes, "保存成功");
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";

@@ -1,6 +1,8 @@
 package com.youge.yogee.interfaces.lottery.football;
 
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
+import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cfootballdouble.entity.CdFootBallDouble;
 import com.youge.yogee.modules.cfootballdouble.service.CdFootBallDoubleService;
 import com.youge.yogee.modules.cfootballgoal.entity.CdFootBallGoal;
@@ -35,6 +37,7 @@ public class FootballLotteryInterface {
     private CdFootBallGoalService cdFootBallGoalService;
     @Autowired
     private CdFootBallDoubleService cdFootBallDoubleService;
+
     /**
      * 足彩--胜负彩,任选九数据接口(非竞彩足球)
      */
@@ -42,29 +45,58 @@ public class FootballLotteryInterface {
     @ResponseBody
     public String successFail(HttpServletRequest request) {
         logger.info("successFail  足彩胜负彩,任选九(非竞彩足球)---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
         List list = new ArrayList();
         List<CdSuccessFail> dataList = cdSuccessFailService.getSuccessFail();
-        for(CdSuccessFail str:dataList){
+        List<String> dateList = new ArrayList<>();
+        String weekDay = "";
+        for (int i = 0; i < dataList.size(); i++) {
+            if (i == 0) {
+                weekDay = dataList.get(i).getWeekday();
+                dateList.add(weekDay);
+            }
+            if (i > 0) {
+                if (!weekDay.equals(dataList.get(i).getWeekday())) {
+                    weekDay = dataList.get(i).getWeekday();
+                    dateList.add(weekDay);
+                }
+            }
+        }
+
+        String weekday = (String) jsonData.get("weekday");
+        if (StringUtils.isEmpty(weekday)) {
+            weekday = dateList.get(0);
+        }
+        List<CdSuccessFail> sList = cdSuccessFailService.getSuccessFailByWeekDay(weekday);
+        for (CdSuccessFail str : sList) {
             Map map = new HashMap();
-            map.put("matchId",str.getMatchId());//场次id
-            map.put("eventName",str.getEventName());//赛事名称
-            map.put("matchDate",str.getMatchDate());//比赛时间
-            map.put("homeTeam",str.getHomeTeam());//主队
-            map.put("awayTeam",str.getAwayTeam());//客队
-            map.put("winningOdds",str.getWinningOdds());//主胜赔率
-            map.put("flatOdds",str.getFlatOdds());//平赔率
-            map.put("defeatedOdds",str.getDefeatedOdds());//负赔率
-            map.put("timeEndSale",str.getTimeEndSale());//截止时间
-            map.put("weekday",str.getWeekday());//期号
+            map.put("matchId", str.getMatchId());//场次id
+            map.put("eventName", str.getEventName());//赛事名称
+            map.put("matchDate", str.getMatchDate());//比赛时间
+            map.put("homeTeam", str.getHomeTeam());//主队
+            map.put("awayTeam", str.getAwayTeam());//客队
+            map.put("winningOdds", str.getWinningOdds());//主胜赔率
+            map.put("flatOdds", str.getFlatOdds());//平赔率
+            map.put("defeatedOdds", str.getDefeatedOdds());//负赔率
+            map.put("timeEndSale", str.getTimeEndSale());//截止时间
+            map.put("weekday", str.getWeekday());//期号
             list.add(map);
         }
-        Map dataMap =  new HashMap();
-        dataMap.put("list",list);
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
+        dataMap.put("dateList", dateList);
         logger.info("successFail  足彩胜负彩,任选九(非竞彩足球)---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
     /**
      * 进球彩赔率数据(非竞彩足球)
+     *
      * @param
      */
 
@@ -74,27 +106,29 @@ public class FootballLotteryInterface {
         logger.info("footballGoal  足彩进球彩---------Start---------");
         List list = new ArrayList();
         List<CdFootBallGoal> dataList = cdFootBallGoalService.getfootGoal();
-        for(CdFootBallGoal str: dataList){
+        for (CdFootBallGoal str : dataList) {
             Map map = new HashMap();
-            map.put("matchId",str.getMatchId());//场次id
-            map.put("eventName",str.getEventName());//赛事名称
-            map.put("matchDate",str.getMatchDate());//比赛时间
-            map.put("homeTeam",str.getHomeTeam());//主队
-            map.put("awayTeam",str.getAwayTeam());//客队
-            map.put("winningOdds",str.getWinningOdds());//主胜赔率
-            map.put("flatOdds",str.getFlatOdds());//平赔率
-            map.put("defeatedOdds",str.getDefeatedOdds());//负赔率
-            map.put("timeEndSale",str.getTimeEndSale());//截止时间
-            map.put("weekday",str.getWeekday());//期号
+            map.put("matchId", str.getMatchId());//场次id
+            map.put("eventName", str.getEventName());//赛事名称
+            map.put("matchDate", str.getMatchDate());//比赛时间
+            map.put("homeTeam", str.getHomeTeam());//主队
+            map.put("awayTeam", str.getAwayTeam());//客队
+            map.put("winningOdds", str.getWinningOdds());//主胜赔率
+            map.put("flatOdds", str.getFlatOdds());//平赔率
+            map.put("defeatedOdds", str.getDefeatedOdds());//负赔率
+            map.put("timeEndSale", str.getTimeEndSale());//截止时间
+            map.put("weekday", str.getWeekday());//期号
             list.add(map);
         }
-        Map dataMap =  new HashMap();
-        dataMap.put("list",list);
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
         logger.info("footballGoal  足彩进球彩---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
     /**
      * 半全场赔率数据
+     *
      * @param
      */
     @RequestMapping(value = "footDoubleResult", method = RequestMethod.POST)
@@ -103,22 +137,22 @@ public class FootballLotteryInterface {
         logger.info("footDoubleResult  足彩半全场---------Start---------");
         List list = new ArrayList();
         List<CdFootBallDouble> dataList = cdFootBallDoubleService.getFootDouble();
-        for(CdFootBallDouble str: dataList){
+        for (CdFootBallDouble str : dataList) {
             Map map = new HashMap();
-            map.put("matchId",str.getMatchId());//场次id
-            map.put("eventName",str.getEventName());//赛事名称
-            map.put("matchDate",str.getMatchDate());//比赛时间
-            map.put("homeTeam",str.getHomeTeam());//主队
-            map.put("awayTeam",str.getAwayTeam());//客队
-            map.put("winningOdds",str.getWinningOdds());//主胜赔率
-            map.put("flatOdds",str.getFlatOdds());//平赔率
-            map.put("defeatedOdds",str.getDefeatedOdds());//负赔率
-            map.put("timeEndSale",str.getTimeEndSale());//截止时间
-            map.put("weekday",str.getWeekday());//期号
+            map.put("matchId", str.getMatchId());//场次id
+            map.put("eventName", str.getEventName());//赛事名称
+            map.put("matchDate", str.getMatchDate());//比赛时间
+            map.put("homeTeam", str.getHomeTeam());//主队
+            map.put("awayTeam", str.getAwayTeam());//客队
+            map.put("winningOdds", str.getWinningOdds());//主胜赔率
+            map.put("flatOdds", str.getFlatOdds());//平赔率
+            map.put("defeatedOdds", str.getDefeatedOdds());//负赔率
+            map.put("timeEndSale", str.getTimeEndSale());//截止时间
+            map.put("weekday", str.getWeekday());//期号
             list.add(map);
         }
-        Map dataMap =  new HashMap();
-        dataMap.put("list",list);
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
         logger.info("footDoubleResult  足彩半全场---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }

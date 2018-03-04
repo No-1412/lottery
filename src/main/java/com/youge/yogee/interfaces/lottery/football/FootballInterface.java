@@ -5,6 +5,7 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
+import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
 import com.youge.yogee.modules.cfbfuture.service.CdFbFutureService;
 import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
@@ -51,7 +52,6 @@ public class FootballInterface {
     /**
      * 查询足球混投
      *
-     *
      * @return
      */
     @RequestMapping(value = "listFb", method = RequestMethod.POST)
@@ -81,6 +81,7 @@ public class FootballInterface {
                 map.put("et", cdFootballMixed.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
                 map.put("hn", cdFootballMixed.getWinningName());//主队名称
                 map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
+                map.put("matchId", cdFootballMixed.getMatchId());//期次
 
                 map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
                 map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率
@@ -918,4 +919,59 @@ public class FootballInterface {
         logger.info("listFtDetail  足球详情---------Start---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
+    /**
+     * 通过matchId查询
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getFtMatchDetailById", method = RequestMethod.POST)
+    public String getMatchDetailById(HttpServletRequest request) {
+        logger.info("getFtMatchDetailById  获取足球详情---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String matchId = (String) jsonData.get("matchId");
+        if (StringUtils.isEmpty(matchId)) {
+            logger.error("matchId为空");
+            return HttpResultUtil.errorJson("buyWays为空");
+        }
+
+        CdFootballMixed cdFootballMixed = cdFootballMixedService.findByMatchId(matchId);
+        if (cdFootballMixed == null) {
+            return HttpResultUtil.errorJson("比赛不存在");
+        }
+
+        Map map = new HashMap();
+        map.put("mt", cdFootballMixed.getMatchId());//赛事场次
+        map.put("itemid", cdFootballMixed.getMatchDate());//比赛时间
+        map.put("mname", cdFootballMixed.getEventName());//赛事名称
+        map.put("et", cdFootballMixed.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
+        map.put("hn", cdFootballMixed.getWinningName());//主队名称
+        map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
+        map.put("matchId", cdFootballMixed.getMatchId());//期次
+
+        map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+        map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率
+        map.put("sod", cdFootballMixed.getScoreOdds());//比分赔率
+        map.put("aod", cdFootballMixed.getAllOdds());//总进球赔率
+        map.put("hod", cdFootballMixed.getHalfOdds());//半全场赔率
+        map.put("close", cdFootballMixed.getClose());//让球
+
+        map.put("hm", cdFootballMixed.getWinningRank());//主队排名
+        map.put("gm", cdFootballMixed.getDefeatedRank());//客队排名
+        map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
+        map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
+        map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
+        map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+
+        logger.info("getFtMatchDetailById 获取足球详情---------End---------");
+        return HttpResultUtil.successJson(map);
+    }
+
+
 }
