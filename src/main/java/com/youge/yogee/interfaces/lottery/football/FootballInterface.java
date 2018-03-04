@@ -361,6 +361,8 @@ public class FootballInterface {
                 map.put("cbf", cdFootballMixed.getAllOdds());//总进球赔率
                 listbytime.add(map);
             }
+
+
             list.add(listbytime);
         }
         Map dataMap = new HashMap();
