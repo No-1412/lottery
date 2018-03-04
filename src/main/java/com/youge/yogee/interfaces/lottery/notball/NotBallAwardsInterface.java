@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by wjc on 2018-1-22 0022.
@@ -34,6 +32,7 @@ public class NotBallAwardsInterface {
     private CdThreeAwardsService cdThreeAwardsService;
     @Autowired
     private CdFiveAwardsService cdFiveAwardsService;
+
     /**
      * 大乐透开奖
      */
@@ -59,6 +58,7 @@ public class NotBallAwardsInterface {
         logger.info("大乐透开奖信息 lottoReward---------End---------------------");
         return HttpResultUtil.successJson(dataMap);
     }
+
     /**
      * 排列三开奖信息
      */
@@ -85,6 +85,7 @@ public class NotBallAwardsInterface {
         logger.info("排列三开奖信息 threeAwards---------End---------------------");
         return HttpResultUtil.successJson(dataMap);
     }
+
     /**
      * 排列五开奖信息
      */
@@ -106,6 +107,43 @@ public class NotBallAwardsInterface {
             map.put("awardName", str.getAwardName()); //奖项名称
             list.add(map);
         }
+
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
+        logger.info("排列五开奖信息 fiveAwards---------End---------------------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+
+
+    /**
+     * 往期排列五开奖信息
+     */
+    @RequestMapping(value = "historyFiveAwards", method = RequestMethod.POST)
+    @ResponseBody
+    public String historyFiveAwards(HttpServletRequest request) {
+        logger.info("排列五开奖信息 fiveAwards--------Start-------------------");
+        List list = new ArrayList();
+        List<CdFiveAwards> fiveList = cdFiveAwardsService.getFiveAwards();
+        for (CdFiveAwards str : fiveList) {
+            Map map = new HashMap();
+            map.put("weekDay", str.getWeekday()); //期次
+            map.put("aCode", str.getAcode()); //开奖号码
+            list.add(map);
+        }
+        Map theLast = new HashMap();
+        CdFiveAwards last = fiveList.get(fiveList.size() - 1);
+        int weekDayInt = Integer.parseInt(last.getWeekday()) + 1;
+        String lastWeekDay = String.valueOf(weekDayInt);
+        theLast.put("weekDay", lastWeekDay); //期次
+        //获取当前时间
+        Date day = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String today = df.format(day);
+        theLast.put("aCode", today + " 19:30截止"); //开奖号码
+        list.add(theLast);
+
         Map dataMap = new HashMap();
         dataMap.put("list", list);
         logger.info("排列五开奖信息 fiveAwards---------End---------------------");
