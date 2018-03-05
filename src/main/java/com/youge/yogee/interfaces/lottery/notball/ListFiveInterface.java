@@ -98,7 +98,7 @@ public class ListFiveInterface {
         cfo.setAward(award);//奖金
         cfo.setUid(uid);//用户
         cfo.setAllPerhaps(allPerhaps);//所有可能
-        cfo.setStauts("1");//已提交
+        cfo.setStatus("1");//已提交
         try {
             cdFiveOrderService.save(cfo);
             map.put("flag", "1");

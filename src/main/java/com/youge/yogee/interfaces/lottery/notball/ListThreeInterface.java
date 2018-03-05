@@ -98,7 +98,7 @@ public class ListThreeInterface {
         cto.setAward(award);//奖金
         cto.setUid(uid);//用户
         cto.setAllPerhaps(allPerhaps);//所有可能
-        cto.setStauts("1");//已提交
+        cto.setStatus("1");//已提交
         try {
             cdThreeOrderService.save(cto);
             map.put("flag", "1");

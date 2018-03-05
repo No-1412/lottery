@@ -59,13 +59,13 @@
            <%-- <td>${cdFiveOrder.uid}</td>--%>
             <td>${cdFiveOrder.createDate}</td>
             <td><c:choose>
-                <c:when test="${cdFiveOrder.stauts==1}">
+                <c:when test="${cdFiveOrder.status==1}">
                     未付款
                 </c:when>
-                <c:when test="${cdFiveOrder.stauts==2}">
+                <c:when test="${cdFiveOrder.status==2}">
                     已付款
                 </c:when>
-                <c:when test="${cdFiveOrder.stauts==3}">
+                <c:when test="${cdFiveOrder.status==3}">
                     已出票
                 </c:when>
 

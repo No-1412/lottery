@@ -95,13 +95,13 @@
             <%--<td>${cdThreeOrder.uid}</td>--%>
             <td>${cdThreeOrder.createDate}</td>
             <td><c:choose>
-                <c:when test="${cdThreeOrder.stauts==1}">
+                <c:when test="${cdThreeOrder.status==1}">
                     未付款
                 </c:when>
-                <c:when test="${cdThreeOrder.stauts==2}">
+                <c:when test="${cdThreeOrder.status==2}">
                     已付款
                 </c:when>
-                <c:when test="${cdThreeOrder.stauts==3}">
+                <c:when test="${cdThreeOrder.status==3}">
                     已出票
                 </c:when>
 
