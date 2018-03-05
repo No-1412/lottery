@@ -99,7 +99,7 @@
     <div class="control-group">
         <label class="control-label">状态:</label>
         <div class="controls">
-            <form:select id="stauts" path="stauts">
+            <form:select id="status" path="status">
                 <form:option value="3" label="出票"/>
             </form:select>
 

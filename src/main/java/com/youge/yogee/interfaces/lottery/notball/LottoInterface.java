@@ -134,7 +134,7 @@ public class LottoInterface {
         clo.setPrice(price);//金额
         clo.setAward(award);//奖金
         clo.setUid(uid);//用户
-        clo.setStauts("1");//已提交
+        clo.setStatus("1");//已提交
         clo.setType(type);//状态
         try {
             cdLottoOrderService.save(clo);

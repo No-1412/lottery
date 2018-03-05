@@ -73,13 +73,13 @@
 				<td>${cdLottoOrder.createDate}</td>
 				<td><%--${cdLottoOrder.stauts}--%>
 					<c:choose>
-						<c:when test="${cdLottoOrder.stauts==1}">
+						<c:when test="${cdLottoOrder.status==1}">
 							未付款
 						</c:when>
-						<c:when test="${cdLottoOrder.stauts==2}">
+						<c:when test="${cdLottoOrder.status==2}">
 							已付款
 						</c:when>
-						<c:when test="${cdLottoOrder.stauts==3}">
+						<c:when test="${cdLottoOrder.status==3}">
 							已出票
 						</c:when>
 

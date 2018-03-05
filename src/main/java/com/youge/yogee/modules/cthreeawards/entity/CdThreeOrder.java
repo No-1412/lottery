@@ -47,7 +47,7 @@ public class CdThreeOrder extends BaseEntity<T> implements Serializable {
     private String price;        //金额
     private String award;        // 奖金
     private String uid;        // 用户id
-    private String stauts;        // 1已提交 2已付款
+    private String status;        // 1已提交 2已付款
     private String remarks;      //备注
 
     public CdThreeOrder() {
@@ -168,12 +168,12 @@ public class CdThreeOrder extends BaseEntity<T> implements Serializable {
         this.uid = uid;
     }
 
-    public String getStauts() {
-        return stauts;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStauts(String stauts) {
-        this.stauts = stauts;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getRemarks() {
