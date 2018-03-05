@@ -69,6 +69,7 @@ public class QuartzListener {
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusTwo();
 
 
+
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
 
