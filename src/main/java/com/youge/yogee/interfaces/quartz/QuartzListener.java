@@ -291,7 +291,7 @@ public class QuartzListener {
         double ood = 0;
         for (String aMethod : methodArray) {
             String[] aMethodArray = aMethod.split("\\+");
-            CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(aMethodArray[1]);
+            CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(aMethodArray[0]);
             if (cdFootballAwards == null) {
                 return -1;
             }
