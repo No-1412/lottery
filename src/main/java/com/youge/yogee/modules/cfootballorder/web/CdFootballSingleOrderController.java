@@ -158,7 +158,7 @@ public class CdFootballSingleOrderController extends BaseController {
         String newLetDetail = getNewLet(cdFootballSingleOrder);
 
         if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
-            cdFootballSingleOrder.setStauts("2");
+            cdFootballSingleOrder.setStatus("2");
             cdFootballSingleOrderService.save(cdFootballSingleOrder);
             addMessage(redirectAttributes, "出票失败,比赛可能不存在");
             return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";

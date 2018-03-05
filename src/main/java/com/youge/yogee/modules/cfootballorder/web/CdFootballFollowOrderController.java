@@ -152,7 +152,7 @@ public class CdFootballFollowOrderController extends BaseController {
         String newLetDetail = getNewLet(cdFootballFollowOrder);
 
         if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
-            cdFootballFollowOrder.setStauts("2");
+            cdFootballFollowOrder.setStatus("2");
             cdFootballFollowOrderService.save(cdFootballFollowOrder);
             addMessage(redirectAttributes, "出票失败,比赛可能不存在");
             return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";

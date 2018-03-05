@@ -69,7 +69,7 @@ public class CdFootballFollowOrderService extends BaseService {
 	public List<CdFootballFollowOrder> findStatusTwo() {
 		DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
-		dc.add(Restrictions.eq("stauts", "2"));
+		dc.add(Restrictions.eq("status", "2"));
 		dc.addOrder(Order.desc("createDate"));
 		return cdFootballFollowOrderDao.find(dc);
 	}

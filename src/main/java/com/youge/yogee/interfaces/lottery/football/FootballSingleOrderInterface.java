@@ -74,7 +74,7 @@ public class FootballSingleOrderInterface {
         String beatDetail = "";
         String letDetail = "";
         //让球详情
-        String letBalls="";
+        String letBalls = "";
         int acount = 0;//注数
 
         if (detail.size() != 0) {
@@ -156,7 +156,7 @@ public class FootballSingleOrderInterface {
                     }
                     //partDetail += "+" + beat;
                     letDetail += partDetail + "+" + let + "|";
-                    letBalls+=sfm.getClose()+",";
+                    letBalls += sfm.getClose() + ",";
                 }
 
 
@@ -190,9 +190,10 @@ public class FootballSingleOrderInterface {
         cfso.setLetBalls(letBalls);//让球数
 
         cfso.setPrice(price);//金额
-        cfso.setStauts("1");//已提交
+        cfso.setStatus("1");//已提交
         cfso.setUid(uid);//用户
         cfso.setBuyWays(buyWays); //玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+        cfso.setType("0");//0普通订单 1发起的 2跟单的
         try {
             cdFootballSingleOrderService.save(cfso);
             map.put("flag", "1");

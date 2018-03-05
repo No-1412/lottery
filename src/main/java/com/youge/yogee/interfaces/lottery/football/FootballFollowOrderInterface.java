@@ -325,13 +325,14 @@ public class FootballFollowOrderInterface {
         cffo.setLetBalls(letBalls);//让球数
 
         cffo.setPrice(price);//金额
-        cffo.setStauts("1");//已提交
+        cffo.setStatus("1");//已提交
         cffo.setUid(uid);//用户
         cffo.setBuyWays(buyWays);//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
         cffo.setFollowNum(followNum);//串关数
         cffo.setTimes(times); //倍数
 
         cffo.setDanMatchIds(danMatchIds);//胆场次
+        cffo.setType("0"); //0普通订单 1发起的 2跟单的
         try {
             cdFootballFollowOrderService.save(cffo);
             map.put("flag", "1");

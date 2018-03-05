@@ -286,7 +286,7 @@
         <label class="control-label">状态:</label>
         <div class="controls">
             <div><p><font color="red" size="1">将以当前时间(${today})赔率出票 </font></p></div>
-            <form:select id="stauts" path="stauts">
+            <form:select id="status" path="status">
                 <form:option value="3" label="出票"/>
             </form:select>
 

@@ -85,15 +85,15 @@
 				<td>${cdFootballSingleOrder.price}</td>
 			<%--	<td>${cdFootballSingleOrder.uid}</td>--%>
 				<td>${cdFootballSingleOrder.createDate}</td>
-				<td><%--${cdFootballSingleOrder.stauts}--%>
+				<td><%--${cdFootballSingleOrder.status}--%>
 					<c:choose>
-						<c:when test="${cdFootballSingleOrder.stauts==1}">
+						<c:when test="${cdFootballSingleOrder.status==1}">
 							未付款
 						</c:when>
-						<c:when test="${cdFootballSingleOrder.stauts==2}">
+						<c:when test="${cdFootballSingleOrder.status==2}">
 							已付款
 						</c:when>
-						<c:when test="${cdFootballSingleOrder.stauts==3}">
+						<c:when test="${cdFootballSingleOrder.status==3}">
 							已出票
 						</c:when>
 						<c:otherwise>

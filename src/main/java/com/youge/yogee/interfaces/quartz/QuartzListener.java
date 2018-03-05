@@ -202,7 +202,7 @@ public class QuartzListener {
                                 }
                             }
                         } else {
-                            cdFootballFollowOrder.setStauts("4");
+                            cdFootballFollowOrder.setStatus("4");
                         }
                     } else {
                         //根据串关计算奖金
@@ -220,11 +220,11 @@ public class QuartzListener {
                     //所有中奖赔率
                     Double award = Integer.valueOf(cdFootballFollowOrder.getTimes()) * oodSum*2;
                     cdFootballFollowOrder.setAward(award.toString());
-                    cdFootballFollowOrder.setStauts("3");
+                    cdFootballFollowOrder.setStatus("3");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
 
                 } else {
-                    cdFootballFollowOrder.setStauts("4");
+                    cdFootballFollowOrder.setStatus("4");
                 }
             }
         }
@@ -273,10 +273,10 @@ public class QuartzListener {
                     //TODO 没有倍数？
                     Double award = 2 * oddsSum;
                     cdFootballSingleOrder.setAward(award.toString());
-                    cdFootballSingleOrder.setStauts("3");
+                    cdFootballSingleOrder.setStatus("3");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
                 } else {
-                    cdFootballSingleOrder.setStauts("4");
+                    cdFootballSingleOrder.setStatus("4");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
                 }
             }
