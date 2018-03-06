@@ -48,7 +48,7 @@
 				<th>注数</th>
 				<th>倍数</th>
 				<th>金额</th>
-				<%--<th>用户</th>--%>
+				<th>订单类型</th>
 				<th>下单时间</th>
 				<th>订单状态</th>
 				<shiro:hasPermission name="cfootballorder:cdFootballFollowOrder:edit"><th>操作</th></shiro:hasPermission>
@@ -84,7 +84,21 @@
 				<td>${cdFootballFollowOrder.acount}</td>
 				<td>${cdFootballFollowOrder.times}</td>
 				<td>${cdFootballFollowOrder.price}</td>
-				<%--<td>${cdFootballFollowOrder.uid}</td>--%>
+				<td><%--${cdFootballFollowOrder.type}--%>
+					<c:choose>
+						<c:when test="${cdFootballFollowOrder.type==0}">
+							普通订单
+						</c:when>
+						<c:when test="${cdFootballFollowOrder.type==1}">
+							已发起跟单
+						</c:when>
+						<c:when test="${cdFootballFollowOrder.type==2}">
+							跟单订单
+						</c:when>
+						<c:otherwise>
+							订单异常
+						</c:otherwise>
+					</c:choose></td>
 				<td>${cdFootballFollowOrder.createDate}</td>
 				<td><%--${cdFootballFollowOrder.status}--%>
 					<c:choose>

@@ -70,7 +70,9 @@ public class BasketballSingleOrderInterface {
         int acount = 0;//注数
         String winDetail = "";//主胜详情
         String failDetail = "";//主负详情
+        String matchIds = "";
         if (detail.size() != 0) {
+
             for (Map<String, Object> d : detail) {
 
                 int partCount = 0;
@@ -80,7 +82,7 @@ public class BasketballSingleOrderInterface {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
                 String partDetail = matchId + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName();
-
+                matchIds += matchId + ",";
                 //主胜分差
                 String hostWin = (String) d.get("hostWin");
                 if (StringUtils.isNotEmpty(hostWin)) {
@@ -138,6 +140,9 @@ public class BasketballSingleOrderInterface {
         cbso.setStatus("1");//已提交
         cbso.setUid(uid);//用户
         cbso.setBuyWays("1"); //玩法 1混投
+        cbso.setType("0"); // 0普通订单 1发起的 2跟单的
+        cbso.setMatchIds(matchIds);//所有场次
+
         try {
             cdBasketballSingleOrderService.save(cbso);
             map.put("flag", "1");

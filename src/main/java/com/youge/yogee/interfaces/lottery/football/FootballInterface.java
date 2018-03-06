@@ -96,6 +96,11 @@ public class FootballInterface {
                 map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                 map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
                 map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+                if ("991".equals(cdFootballMixed.getIsale())) {
+                    map.put("isSingle", "1");//是否单关 1是 0不是
+                } else {
+                    map.put("isSingle", "0");//是否单关 1是 0不是
+                }
                 listbytime.add(map);
             }
             list.add(listbytime);

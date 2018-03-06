@@ -63,6 +63,8 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 
     private String danMatchIds; //胆场次
 
+    private String type;     // 0普通订单 1发起的 2跟单的
+
     public CdBasketballFollowOrder() {
         super();
     }
@@ -251,6 +253,14 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 
     public void setDanMatchIds(String danMatchIds) {
         this.danMatchIds = danMatchIds;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
 

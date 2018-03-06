@@ -18,8 +18,11 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.dao.CdBasketballSingleOrderDao;
 
+import java.util.List;
+
 /**
  * 竞彩篮球订单Service
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-26
  */
@@ -27,40 +30,55 @@ import com.youge.yogee.modules.cbasketballorder.dao.CdBasketballSingleOrderDao;
 @Transactional(readOnly = true)
 public class CdBasketballSingleOrderService extends BaseService {
 
-	@Autowired
-	private CdBasketballSingleOrderDao cdBasketballSingleOrderDao;
-	
-	public CdBasketballSingleOrder get(String id) {
-		return cdBasketballSingleOrderDao.get(id);
-	}
-	
-	public Page<CdBasketballSingleOrder> find(Page<CdBasketballSingleOrder> page, CdBasketballSingleOrder cdBasketballSingleOrder) {
-		DetachedCriteria dc = cdBasketballSingleOrderDao.createDetachedCriteria();
-		if (StringUtils.isNotEmpty(cdBasketballSingleOrder.getOrderNum())){
-			dc.add(Restrictions.like("orderNum", cdBasketballSingleOrder.getOrderNum()));
-		}
-		if(StringUtils.isNotEmpty(cdBasketballSingleOrder.getBuyWays())){
-			dc.add(Restrictions.eq("buyWays", cdBasketballSingleOrder.getBuyWays()));
-		}
-		dc.add(Restrictions.eq(CdBasketballSingleOrder.FIELD_DEL_FLAG, CdBasketballSingleOrder.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("createDate"));
-		return cdBasketballSingleOrderDao.find(page, dc);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(CdBasketballSingleOrder cdBasketballSingleOrder) {
+    @Autowired
+    private CdBasketballSingleOrderDao cdBasketballSingleOrderDao;
 
-		if(StringUtils.isEmpty(cdBasketballSingleOrder.getId())){
-			cdBasketballSingleOrder.setId(IdGen.uuid());
-			cdBasketballSingleOrder.setCreateDate(DateUtils.getDateTime());
-			cdBasketballSingleOrder.setDelFlag(CdBasketballSingleOrder.DEL_FLAG_NORMAL);
-		}
-		cdBasketballSingleOrderDao.save(cdBasketballSingleOrder);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(String id) {
-		cdBasketballSingleOrderDao.deleteById(id);
-	}
-	
+    public CdBasketballSingleOrder get(String id) {
+        return cdBasketballSingleOrderDao.get(id);
+    }
+
+    public Page<CdBasketballSingleOrder> find(Page<CdBasketballSingleOrder> page, CdBasketballSingleOrder cdBasketballSingleOrder) {
+        DetachedCriteria dc = cdBasketballSingleOrderDao.createDetachedCriteria();
+        if (StringUtils.isNotEmpty(cdBasketballSingleOrder.getOrderNum())) {
+            dc.add(Restrictions.eq("orderNum", cdBasketballSingleOrder.getOrderNum()));
+        }
+        if (StringUtils.isNotEmpty(cdBasketballSingleOrder.getBuyWays())) {
+            dc.add(Restrictions.eq("buyWays", cdBasketballSingleOrder.getBuyWays()));
+        }
+        dc.add(Restrictions.eq(CdBasketballSingleOrder.FIELD_DEL_FLAG, CdBasketballSingleOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdBasketballSingleOrderDao.find(page, dc);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(CdBasketballSingleOrder cdBasketballSingleOrder) {
+
+        if (StringUtils.isEmpty(cdBasketballSingleOrder.getId())) {
+            cdBasketballSingleOrder.setId(IdGen.uuid());
+            cdBasketballSingleOrder.setCreateDate(DateUtils.getDateTime());
+            cdBasketballSingleOrder.setDelFlag(CdBasketballSingleOrder.DEL_FLAG_NORMAL);
+        }
+        cdBasketballSingleOrderDao.save(cdBasketballSingleOrder);
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(String id) {
+        cdBasketballSingleOrderDao.deleteById(id);
+    }
+
+
+    public CdBasketballSingleOrder findOrderByOrderNum(String orderNum) {
+        DetachedCriteria dc = cdBasketballSingleOrderDao.createDetachedCriteria();
+
+        dc.add(Restrictions.eq("orderNum", orderNum));
+        dc.add(Restrictions.eq(CdBasketballSingleOrder.FIELD_DEL_FLAG, CdBasketballSingleOrder.DEL_FLAG_NORMAL));
+
+        List<CdBasketballSingleOrder> list = cdBasketballSingleOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
+
 }

@@ -57,6 +57,7 @@ public class CdFootballSingleOrder extends BaseEntity<T> implements Serializable
     private String let;         //让球胜负平
     private String letBalls;     //让球数 ，分割
     private String type;     // 0普通订单 1发起的 2跟单的
+    private String matchIds; //购买的所有场次
 
     public CdFootballSingleOrder() {
         super();
@@ -230,6 +231,14 @@ public class CdFootballSingleOrder extends BaseEntity<T> implements Serializable
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getMatchIds() {
+        return matchIds;
+    }
+
+    public void setMatchIds(String matchIds) {
+        this.matchIds = matchIds;
     }
 }
 

@@ -76,7 +76,7 @@ public class FootballSingleOrderInterface {
         //让球详情
         String letBalls = "";
         int acount = 0;//注数
-
+        String matchIds = "";
         if (detail.size() != 0) {
             for (Map<String, Object> d : detail) {
                 int partCount = 0;
@@ -85,7 +85,7 @@ public class FootballSingleOrderInterface {
                 if (sfm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
-
+                matchIds += matchId + ",";
                 //比赛详情
                 String partDetail = matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
                 //比分所有押注结果
@@ -194,6 +194,7 @@ public class FootballSingleOrderInterface {
         cfso.setUid(uid);//用户
         cfso.setBuyWays(buyWays); //玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
         cfso.setType("0");//0普通订单 1发起的 2跟单的
+        cfso.setMatchIds(matchIds);//所有场次
         try {
             cdFootballSingleOrderService.save(cfso);
             map.put("flag", "1");

@@ -119,7 +119,7 @@ public class BasketballFollowOrderInterface {
 
                 if ("1".equals(isMust)) {
                     danMatchIds += "胆" + "+" + matchId + ",";
-                }else {
+                } else {
                     danMatchIds += "非" + "+" + matchId + ",";
                 }
                 String partDetail = isMust + "+" + matchId + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName();
@@ -334,7 +334,7 @@ public class BasketballFollowOrderInterface {
         cbfo.setFollowNums(followNum);//串关数
         cbfo.setTimes(times); //倍数
         cbfo.setDanMatchIds(danMatchIds);//胆场次
-
+        cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
         try {
             cdBasketballFollowOrderService.save(cbfo);
             map.put("flag", "1");

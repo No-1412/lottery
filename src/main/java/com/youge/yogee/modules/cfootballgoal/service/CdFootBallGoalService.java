@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cfootballgoal.dao.CdFootBallGoalDao;
 import com.youge.yogee.modules.cfootballgoal.entity.CdFootBallGoal;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFail;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -68,10 +69,23 @@ public class CdFootBallGoalService extends BaseService {
     }
 
     @Transactional(readOnly = false)
-    public List<CdFootBallGoal> getfootGoal(){
+    public List<CdFootBallGoal> getfootGoal() {
         DetachedCriteria dc = cdFootBallGoalDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdFootBallGoal.FIELD_DEL_FLAG, CdFootBallGoal.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.asc("weekday"));
         return cdFootBallGoalDao.find(dc);
+    }
+
+
+    @Transactional(readOnly = false)
+    public List<CdFootBallGoal> getFootBallGoalByWeekDay(String weekday) {
+        DetachedCriteria dc = cdFootBallGoalDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootBallGoal.FIELD_DEL_FLAG, CdFootBallGoal.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("weekday", weekday));
+        dc.add(Restrictions.sqlRestriction("1=1 order by CAST(match_id as SIGNED)"));
+        List<CdFootBallGoal> list = cdFootBallGoalDao.find(dc);
+        return list;
+
+
     }
 }

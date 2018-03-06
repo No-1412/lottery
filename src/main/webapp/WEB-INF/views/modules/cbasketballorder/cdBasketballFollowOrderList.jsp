@@ -48,7 +48,7 @@
         <th>投注方式</th>
         <th>注数</th>
         <th>金额</th>
-        <th>用户</th>
+        <th>订单类型</th>
         <th>下单时间</th>
         <th>订单状态</th>
         <shiro:hasPermission name="cbasketballorder:cdBasketballFollowOrder:edit">
@@ -86,7 +86,20 @@
                 </c:choose></td>
             <td>${cdBasketballFollowOrder.acount}</td>
             <td>${cdBasketballFollowOrder.price}</td>
-            <td>${cdBasketballFollowOrder.uid}</td>
+            <td><c:choose>
+                <c:when test="${cdBasketballFollowOrder.type==0}">
+                    普通订单
+                </c:when>
+                <c:when test="${cdBasketballFollowOrder.type==1}">
+                    已发起跟单
+                </c:when>
+                <c:when test="${cdBasketballFollowOrder.type==2}">
+                    跟单订单
+                </c:when>
+                <c:otherwise>
+                    订单异常
+                </c:otherwise>
+            </c:choose></td>
             <td>${cdBasketballFollowOrder.createDate}</td>
             <td><c:choose>
                 <c:when test="${cdBasketballFollowOrder.status==1}">

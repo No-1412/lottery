@@ -3,6 +3,7 @@
  */
 package com.youge.yogee.modules.cfootballorder.service;
 
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -22,6 +23,7 @@ import java.util.List;
 
 /**
  * 竞彩足球订单Service
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-24
  */
@@ -29,48 +31,63 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CdFootballFollowOrderService extends BaseService {
 
-	@Autowired
-	private CdFootballFollowOrderDao cdFootballFollowOrderDao;
-	
-	public CdFootballFollowOrder get(String id) {
-		return cdFootballFollowOrderDao.get(id);
-	}
-	
-	public Page<CdFootballFollowOrder> find(Page<CdFootballFollowOrder> page, CdFootballFollowOrder cdFootballFollowOrder) {
-		DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
-		if (StringUtils.isNotEmpty(cdFootballFollowOrder.getOrderNum())){
-			dc.add(Restrictions.eq("orderNum", cdFootballFollowOrder.getOrderNum()));
-		}
-		if(StringUtils.isNotEmpty(cdFootballFollowOrder.getBuyWays())){
-			dc.add(Restrictions.eq("buyWays", cdFootballFollowOrder.getBuyWays()));
-		}
-		dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("createDate"));
-		return cdFootballFollowOrderDao.find(page, dc);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(CdFootballFollowOrder cdFootballFollowOrder) {
+    @Autowired
+    private CdFootballFollowOrderDao cdFootballFollowOrderDao;
 
-		if(StringUtils.isEmpty(cdFootballFollowOrder.getId())){
-			cdFootballFollowOrder.setId(IdGen.uuid());
-			cdFootballFollowOrder.setCreateDate(DateUtils.getDateTime());
-			cdFootballFollowOrder.setDelFlag(CdFootballFollowOrder.DEL_FLAG_NORMAL);
-		}
-		cdFootballFollowOrderDao.save(cdFootballFollowOrder);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(String id) {
-		cdFootballFollowOrderDao.deleteById(id);
-	}
+    public CdFootballFollowOrder get(String id) {
+        return cdFootballFollowOrderDao.get(id);
+    }
+
+    public Page<CdFootballFollowOrder> find(Page<CdFootballFollowOrder> page, CdFootballFollowOrder cdFootballFollowOrder) {
+        DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
+        if (StringUtils.isNotEmpty(cdFootballFollowOrder.getOrderNum())) {
+            dc.add(Restrictions.eq("orderNum", cdFootballFollowOrder.getOrderNum()));
+        }
+        if (StringUtils.isNotEmpty(cdFootballFollowOrder.getBuyWays())) {
+            dc.add(Restrictions.eq("buyWays", cdFootballFollowOrder.getBuyWays()));
+        }
+        dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdFootballFollowOrderDao.find(page, dc);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(CdFootballFollowOrder cdFootballFollowOrder) {
+
+        if (StringUtils.isEmpty(cdFootballFollowOrder.getId())) {
+            cdFootballFollowOrder.setId(IdGen.uuid());
+            cdFootballFollowOrder.setCreateDate(DateUtils.getDateTime());
+            cdFootballFollowOrder.setDelFlag(CdFootballFollowOrder.DEL_FLAG_NORMAL);
+        }
+        cdFootballFollowOrderDao.save(cdFootballFollowOrder);
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(String id) {
+        cdFootballFollowOrderDao.deleteById(id);
+    }
 
 
-	public List<CdFootballFollowOrder> findStatusTwo() {
-		DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
-		dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
-		dc.add(Restrictions.eq("status", "2"));
-		dc.addOrder(Order.desc("createDate"));
-		return cdFootballFollowOrderDao.find(dc);
-	}
+    public List<CdFootballFollowOrder> findStatusTwo() {
+        DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "2"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdFootballFollowOrderDao.find(dc);
+    }
+
+    public CdFootballFollowOrder findOrderByOrderNum(String orderNum) {
+        DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
+
+        dc.add(Restrictions.eq("orderNum", orderNum));
+        dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
+
+        List<CdFootballFollowOrder> list = cdFootballFollowOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
+
 }
