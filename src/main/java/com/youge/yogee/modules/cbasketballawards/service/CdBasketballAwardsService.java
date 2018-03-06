@@ -74,4 +74,21 @@ public class CdBasketballAwardsService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         return cdBasketballAwardsDao.find(dc);
     }
+
+    public List<String> getAllMatchId() {
+        return cdBasketballAwardsDao.getAllMatchId();
+    }
+
+    public CdBasketballAwards findByMatchId(String matchId) {
+        DetachedCriteria dc = cdBasketballAwardsDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBasketballAwards.FIELD_DEL_FLAG, CdBasketballAwards.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("matchId", matchId));
+        List<CdBasketballAwards> list =  cdBasketballAwardsDao.find(dc);
+        if (list.size()!=0){
+            return list.get(0);
+        }else {
+            return null;
+        }
+    }
+
 }
