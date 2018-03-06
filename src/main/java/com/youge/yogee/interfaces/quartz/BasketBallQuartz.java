@@ -108,9 +108,6 @@ public class BasketBallQuartz {
                 //判断让分胜负平
                 String let = cdBasketballFollowOrder.getLet();
                 judgeBaskerballFollow(size, "size", winList, danWinList,cdBasketballFollowOrder);
-                //订单让球数
-                String[] letBalls = cdBasketballFollowOrder.getLetScore().split(",");
-                String[] methodArray1 = let.split("\\|");
 
                 //***************************************判断结束*******************************************************
 
@@ -235,7 +232,7 @@ public class BasketBallQuartz {
 
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballSingleOrder() {
-        System.out.println("足球单关开奖");
+        System.out.println("篮球单关开奖");
 
         List<CdBasketballSingleOrder> cdBasketballSingleOrderList = cdBasketballSingleOrderService.findStatusTwo();
 
@@ -246,55 +243,76 @@ public class BasketBallQuartz {
         for (CdBasketballSingleOrder cdBasketballSingleOrder : cdBasketballSingleOrderList) {
 
             //获取订单中押的全部场次
-            String danMatchIds = cdBasketballSingleOrder.get();
+            String matchIds = cdBasketballSingleOrder.getMatchIds();
             Set<String> matchIdList = new HashSet<>();
-            for (String finishMatchId : danMatchIds.split(",")) {
+            for (String finishMatchId : matchIds.split(",")) {
                 matchIdList.add(finishMatchId.substring(2, 7));
             }
+            //判断订单所有赛事是否都已经比完
+            if (awardMatchIdList.containsAll(matchIdList)) {
+                //***********************************判断押中场次************************************************
 
-            //***********************************判断押中场次************************************************
-            //判断比分
-            String score = cdFootballSingleOrder.getScore();
-            double scoreOdds = judgeFootballSingle(score, "score");
+                //判断主胜
+                String hostWin = cdBasketballSingleOrder.getHostWin();
+                double hostWinOdds = judgeBasketballSingle(hostWin, "hostWin");
 
-            //判断总进球
-            String goal = cdFootballSingleOrder.getGoal();
-            double goalOdds = judgeFootballSingle(goal, "goal");
+                //判断主负
+                String hostFail = cdBasketballSingleOrder.getHostFail();
+                double hostFailOdds =judgeBasketballSingle(hostFail, "hostFail");
 
-            //判断半全场
-            String half = cdFootballSingleOrder.getHalf();
-            double halfOdds = judgeFootballSingle(half, "half");
-
-            //判断胜负平
-            String beat = cdFootballSingleOrder.getBeat();
-            double beatOdds = judgeFootballSingle(beat, "beat");
-
-            //判断让球胜负平
-            String let = cdFootballSingleOrder.getLet();
-            double letOdds = judgeFootballSingle(let, "let");
+                //***************************************判断结束*******************************************************
 
 
-            //***************************************判断结束*******************************************************
-
-            if (scoreOdds != -1 && goalOdds != -1 && halfOdds != -1 && beatOdds != -1 && letOdds != -1) {
-                double oddsSum = scoreOdds + goalOdds + halfOdds + beatOdds + letOdds;
-                if (oddsSum > 0) {
-                    //TODO 没有倍数？
-                    Double award = 2 * oddsSum;
-                    cdFootballSingleOrder.setAward(award.toString());
-                    cdFootballSingleOrder.setStatus("3");
-                    cdFootballSingleOrderService.save(cdFootballSingleOrder);
-                } else {
-                    cdFootballSingleOrder.setStatus("4");
-                    cdFootballSingleOrderService.save(cdFootballSingleOrder);
+                if (hostWinOdds != -1 && hostFailOdds != -1) {
+                    double oddsSum = hostWinOdds + hostFailOdds;
+                    if (oddsSum > 0) {
+                        Double award = 2 * oddsSum;
+                        cdBasketballSingleOrder.setAward(award.toString());
+                        cdBasketballSingleOrder.setStatus("3");
+                        cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+                    } else {
+                        cdBasketballSingleOrder.setStatus("4");
+                        cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+                    }
                 }
             }
-
-
         }
     }
 
-
+    private double judgeBasketballSingle(String method, String key) {
+        String[] methodArray = method.split("\\|");
+        double ood = 0;
+        for (String aMethod : methodArray) {
+            String[] aMethodArray = aMethod.split("\\+");
+            CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(aMethodArray[0]);
+            String finish = "";
+            switch (key) {
+                case "hostWin":
+                    finish = cdBasketballAwards.getWinGrap();
+                    if(finish.contains("主胜")){
+                        finish = finish.substring(0,2);
+                    }else {
+                        return ood;
+                    }
+                    break;
+                case "hostFail":
+                    finish = cdBasketballAwards.getWinGrap();
+                    if(finish.contains("主负")){
+                        finish = finish.substring(0,2);
+                    }else {
+                        return ood;
+                    }
+                    break;
+            }
+            String[] odds = aMethod.split(finish + "/");
+            if (odds.length > 1) {
+                String[] a = odds[1].split(",")[0].split("/");
+                ood += Double.parseDouble(a[0]) * Double.parseDouble(a[1]);
+                ood += Double.parseDouble(odds[1].split(",")[0]);
+            }
+        }
+        return ood;
+    }
 
     private void judgeBaskerballFollow(String method, String key, List<String> winList, List<String> danWinList,CdBasketballFollowOrder cdBasketballFollowOrder) {
         String[] methodArray = method.split("\\|");

@@ -300,7 +300,6 @@ public class QuartzListener {
             if (scoreOdds != -1 && goalOdds != -1 && halfOdds != -1 && beatOdds != -1 && letOdds != -1) {
                 double oddsSum = scoreOdds + goalOdds + halfOdds + beatOdds + letOdds;
                 if (oddsSum > 0) {
-                    //TODO 没有倍数？
                     Double award = 2 * oddsSum;
                     cdFootballSingleOrder.setAward(award.toString());
                     cdFootballSingleOrder.setStatus("3");
