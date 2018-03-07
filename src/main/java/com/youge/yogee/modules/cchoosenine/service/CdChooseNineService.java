@@ -74,4 +74,17 @@ public class CdChooseNineService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         return cdChooseNineDao.find(dc);
     }
+
+    public CdChooseNine findByWeekday(String weekday){
+        DetachedCriteria dc = cdChooseNineDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdChooseNine.FIELD_DEL_FLAG, CdChooseNine.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("matchId", "第"+weekday+"期"));
+        dc.addOrder(Order.desc("createDate"));
+        List<CdChooseNine> list =  cdChooseNineDao.find(dc);
+        if(list.size() == 0){
+            return null;
+        }else {
+            return list.get(0);
+        }
+    }
 }

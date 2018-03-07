@@ -18,6 +18,8 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.cchoosenine.dao.CdChooseNineOrderDao;
 
+import java.util.List;
+
 /**
  * 任选九订单Service
  * @author ZhaoYiFeng
@@ -59,5 +61,13 @@ public class CdChooseNineOrderService extends BaseService {
 	public void delete(String id) {
 		cdChooseNineOrderDao.deleteById(id);
 	}
-	
+
+
+	public List<CdChooseNineOrder> findStatusTwo() {
+		DetachedCriteria dc = cdChooseNineOrderDao.createDetachedCriteria();
+		dc.add(Restrictions.eq(CdChooseNineOrder.FIELD_DEL_FLAG, CdChooseNineOrder.DEL_FLAG_NORMAL));
+		dc.add(Restrictions.eq("status", "2"));
+		dc.addOrder(Order.desc("createDate"));
+		return cdChooseNineOrderDao.find(dc);
+	}
 }
