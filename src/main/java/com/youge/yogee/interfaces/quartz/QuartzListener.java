@@ -69,7 +69,6 @@ public class QuartzListener {
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusTwo();
 
 
-
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
 
@@ -108,7 +107,38 @@ public class QuartzListener {
 
                 //判断让球胜负平
                 String let = cdFootballFollowOrder.getLet();
-                judgeFootballFollow(let, "let", winList, danWinList);
+                //订单让球数
+                String[] letBalls = cdFootballFollowOrder.getLetBalls().split(",");
+                String[] methodArray = let.split("\\|");
+                for (int i = 0; i < methodArray.length; i++) {
+                    String[] aMethodArray = methodArray[i].split("\\+");
+                    CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(aMethodArray[1]);
+                    String finish = "";
+
+                    int hs = Integer.valueOf(cdFootballAwards.getHs());
+                    int vs = Integer.valueOf(cdFootballAwards.getVs());
+
+                    int letBall = Integer.valueOf(letBalls[i]);
+
+                    if (hs + letBall > vs) {
+                        finish = "3";
+                    } else if (hs + letBall == vs) {
+                        finish = "1";
+                    } else {
+                        finish = "0";
+                    }
+
+                    String[] odds = methodArray[i].split(finish + "/");
+                    if (odds.length > 1) {
+                        if (odds[1].contains(",")) {
+                            winList.add(odds[1].split(",")[0]);
+                            danWinList.add(aMethodArray[1] + odds[1].split(",")[0]);
+                        } else {
+                            winList.add(odds[1]);
+                            danWinList.add(aMethodArray[1] + odds[1]);
+                        }
+                    }
+                }
 
 
                 //***************************************判断结束*******************************************************
@@ -218,7 +248,7 @@ public class QuartzListener {
                     }
 
                     //所有中奖赔率
-                    Double award = Integer.valueOf(cdFootballFollowOrder.getTimes()) * oodSum*2;
+                    Double award = Integer.valueOf(cdFootballFollowOrder.getTimes()) * oodSum * 2;
                     cdFootballFollowOrder.setAward(award.toString());
                     cdFootballFollowOrder.setStatus("3");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
@@ -270,7 +300,6 @@ public class QuartzListener {
             if (scoreOdds != -1 && goalOdds != -1 && halfOdds != -1 && beatOdds != -1 && letOdds != -1) {
                 double oddsSum = scoreOdds + goalOdds + halfOdds + beatOdds + letOdds;
                 if (oddsSum > 0) {
-                    //TODO 没有倍数？
                     Double award = 2 * oddsSum;
                     cdFootballSingleOrder.setAward(award.toString());
                     cdFootballSingleOrder.setStatus("3");
@@ -315,11 +344,9 @@ public class QuartzListener {
             }
             String[] odds = aMethod.split(finish + "/");
             if (odds.length > 1) {
-                if (odds[1].contains(",")) {
-                    ood += Double.parseDouble(odds[1].split(",")[0]);
-                } else {
-                    ood += Double.parseDouble(odds[1]);
-                }
+                String[] a = odds[1].split(",")[0].split("/");
+                ood += Double.parseDouble(a[0]) * Double.parseDouble(a[1]);
+                ood += Double.parseDouble(odds[1].split(",")[0]);
             }
         }
         return ood;

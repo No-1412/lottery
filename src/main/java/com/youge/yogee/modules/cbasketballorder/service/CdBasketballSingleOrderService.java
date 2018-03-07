@@ -81,4 +81,12 @@ public class CdBasketballSingleOrderService extends BaseService {
         }
     }
 
+    public List<CdBasketballSingleOrder> findStatusTwo() {
+        DetachedCriteria dc = cdBasketballSingleOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBasketballSingleOrder.FIELD_DEL_FLAG, CdBasketballSingleOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "2"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdBasketballSingleOrderDao.find(dc);
+    }
+
 }
