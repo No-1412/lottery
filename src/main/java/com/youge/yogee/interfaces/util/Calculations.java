@@ -169,6 +169,22 @@ public class Calculations {
     }
 
 
+     private static int jc(int n) {
+        int m = 1;
+        for (int i = 1; i <= n; i++) {
+            m = m * i;
+        }
+//        System.out.println(n + "!" + "=" + m);
+        return m;
+    }
+
+    public static int rs(int n, int m) {
+        int s;
+        s = jc(n) / (jc(m) * jc((n - m)));
+        return s;
+    }
+
+
 }
 /*
 

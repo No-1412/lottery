@@ -4,16 +4,22 @@ package com.youge.yogee.interfaces.quartz;
  * Created by liyuan on 2018/3/7.
  */
 
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineService;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
+import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 定时任务
@@ -25,6 +31,9 @@ public class ChooseNineQuartz {
     private CdChooseNineOrderService cdChooseNineOrderService;
     @Autowired
     private CdChooseNineService cdChooseNineService;
+    @Autowired
+    private CdSuccessFailOrderService cdSuccessFailOrderService;
+
     //    "0/10 * * * * ?" 每10秒触发
 //
 //    "0 0 12 * * ?" 每天中午12点触发
@@ -65,14 +74,100 @@ public class ChooseNineQuartz {
 
             String weekday = cdChooseNineOrder.getWeekday();
             CdChooseNine cdChooseNine = cdChooseNineService.findByWeekday(weekday);
+
+            if (cdChooseNine.getNumber().contains("*")) {
+                if (DateUtils.isDateBefore(DateUtils.getDateTime(), cdChooseNine.getOpeningTime())) {
+                    break;
+                } else {
+                    //TODO 判断是不是最后一期
+                }
+            }
+
             //开奖结果
             String[] numbers = cdChooseNine.getNumber().split(",");
-            //押中结果集
-            List<String> winList = new ArrayList<>();
+            //记录押中场数
+            int sum = 0;
+            //胆个数
+            int danSum = 0;
+            //获取订单中押的全部场次
             String[] detailList = orderDetail.split("\\|");
+            for (String aDetail : detailList) {
+                String[] aDetailArray = aDetail.split("\\+");
+                //判断是否选为胆
+                if (aDetailArray[3].equals("1")) {
+                    String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
+                    if (aDetailArray[2].equals(number) || number.equals("*")) {
+                        danSum += 1;
+                    } else {
+                        break;
+                    }
+                } else {
+                    String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
+                    if (aDetailArray[2].equals(number) || number.equals("*")) {
+                        sum += 1;
+                    }
+                }
+            }
+            if (sum + danSum >= 9) {
+                int count = Calculations.rs(sum - danSum, 9 - danSum);
+                Integer award = Integer.valueOf(cdChooseNineOrder.getTimes()) * count * Integer.valueOf(cdChooseNine.getPerNoteMoney());
+                cdChooseNineOrder.setAcount(award.toString());
+                cdChooseNineOrder.setStatus("4");
+                cdChooseNineOrderService.save(cdChooseNineOrder);
+            } else {
+                cdChooseNineOrder.setStatus("3");
+                cdChooseNineOrderService.save(cdChooseNineOrder);
+            }
+        }
+    }
 
 
+    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    public void successFailOrder() {
+        System.out.println("胜负彩开奖");
+        List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatusTwo();
 
+        for (CdSuccessFailOrder cdSuccessFailOrder : cdSuccessFailOrderList) {
+            String orderDetail = cdSuccessFailOrder.getOrderDetail();
+
+            String weekday = cdSuccessFailOrder.getWeekday();
+            CdChooseNine cdChooseNine = cdChooseNineService.findByWeekday(weekday);
+
+            //判断是否可以开奖
+            if (cdChooseNine.getNumber().contains("*")) {
+                if (DateUtils.isDateBefore(DateUtils.getDateTime(), cdChooseNine.getOpeningTime())) {
+                    break;
+                } else {
+                    //TODO 判断是不是最后一期
+                }
+            }
+
+            //开奖结果
+            String[] numbers = cdChooseNine.getNumber().split(",");
+
+            //记录押中场数
+            int sum = 0;
+            //获取订单中押的全部场次
+            String[] detailList = orderDetail.split("\\|");
+            for (String aDetail : detailList) {
+                String[] aDetailArray = aDetail.split("\\+");
+
+                String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
+                if (aDetailArray[2].equals(number) || number.equals("*")) {
+                    sum += 1;
+                }
+            }
+
+            if (sum == 13) {
+                //TODO 胜负彩奖池
+                Integer award ;
+//                cdSuccessFailOrder.setAcount(award.toString());
+                cdSuccessFailOrder.setStatus("4");
+                cdSuccessFailOrderService.save(cdSuccessFailOrder);
+            }else if(sum == 14){
+                cdSuccessFailOrder.setStatus("3");
+                cdSuccessFailOrderService.save(cdSuccessFailOrder);
+            }
 
         }
     }

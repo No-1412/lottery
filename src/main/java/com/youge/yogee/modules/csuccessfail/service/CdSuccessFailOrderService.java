@@ -18,6 +18,8 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.dao.CdSuccessFailOrderDao;
 
+import java.util.List;
+
 /**
  * 胜负彩订单Service
  * @author ZhaoYiFeng
@@ -59,5 +61,13 @@ public class CdSuccessFailOrderService extends BaseService {
 	public void delete(String id) {
 		cdSuccessFailOrderDao.deleteById(id);
 	}
-	
+
+
+	public List<CdSuccessFailOrder> findStatusTwo() {
+		DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
+		dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
+		dc.add(Restrictions.eq("status", "2"));
+		dc.addOrder(Order.desc("createDate"));
+		return cdSuccessFailOrderDao.find(dc);
+	}
 }
