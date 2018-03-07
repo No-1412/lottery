@@ -22,7 +22,7 @@ import java.util.Set;
  * 定时任务
  * Created by Haipeng.Ren on 2015/12/28.
  */
-@Component("taskJob")
+@Component("QuartzListener")
 public class QuartzListener {
 
     @Autowired

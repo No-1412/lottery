@@ -24,7 +24,7 @@ import java.util.Set;
  * 定时任务
  * Created by Liyuan on 2015/12/28.
  */
-@Component("taskJob")
+@Component("BasketBallQuartz")
 public class BasketBallQuartz {
 
     @Autowired
@@ -61,7 +61,7 @@ public class BasketBallQuartz {
 //    每周星期天凌晨1点实行一次：0 0 1 ? * L
 //    在26分、29分、33分执行一次：0 26,29,33 * * * ?
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
-    //定时轮询
+      //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
 
