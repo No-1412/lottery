@@ -55,26 +55,44 @@ public class ListThreeInterface {
             logger.error("玩法buyWays为空");
             return HttpResultUtil.errorJson("玩法buyWays为空");
         }
+        //期数
         String weekday = (String) jsonData.get("weekday");
         if (StringUtils.isEmpty(weekday)) {
             logger.error("期数weekday为空");
             return HttpResultUtil.errorJson("期数weekday为空");
         }
-//        String acount = (String) jsonData.get("acount");
-//        if (StringUtils.isEmpty(acount)) {
-//            logger.error("注数acount为空");
-//            return HttpResultUtil.errorJson("注数acount为空");
-//        }
-//        String award = (String) jsonData.get("award");
-//        if (StringUtils.isEmpty(award)) {
-//            logger.error("奖金award为空");
-//            return HttpResultUtil.errorJson("奖金award为空");
-//        }
+        //连续购买期数
+        String continuity = (String) jsonData.get("continuity");
+        if (StringUtils.isEmpty(continuity)) {
+            logger.error("continuity为空");
+            return HttpResultUtil.errorJson("continuity为空");
+        }
+        //倍数
+        String times = (String) jsonData.get("times");
+        if (StringUtils.isEmpty(times)) {
+            logger.error("times为空");
+            return HttpResultUtil.errorJson("times为空");
+        }
         String uid = (String) jsonData.get("uid");
         if (StringUtils.isEmpty(uid)) {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
+        //1自购 2追号
+        String type = "";
+        String weekContinue = "";
+        if ("1".equals(continuity)) {
+            type = "1";
+        } else {
+            type = "2";
+            int week = Integer.parseInt(weekday);
+            int con = Integer.parseInt(continuity);
+            for (int i = 1; i < con; i++) {
+                week++;
+                weekContinue += String.valueOf(week) + ",";
+            }
+        }
+
         //所有可能
         Map<String, String> dataMap = ListThreeWays.listThree(nums, buyWays);
         String allPerhaps = dataMap.get("allPerhaps");
@@ -85,9 +103,10 @@ public class ListThreeInterface {
         //计算金额
         double money = 2.00;
         double acountDouble = Double.parseDouble(acount);
-        String price = String.valueOf(money * acountDouble);
+        double timesDouble = Double.parseDouble(times);
+        String price = String.valueOf(money * acountDouble * timesDouble);
         //奖金
-        String award=dataMap.get("award");
+        String award = dataMap.get("award");
         CdThreeOrder cto = new CdThreeOrder();
         cto.setOrderNum(orderNum);//订单号
         cto.setNums(nums);//订单详情
@@ -99,6 +118,10 @@ public class ListThreeInterface {
         cto.setUid(uid);//用户
         cto.setAllPerhaps(allPerhaps);//所有可能
         cto.setStatus("1");//已提交
+        cto.setTimes(times);//倍数
+        cto.setContinuity(continuity);//连续期数
+        cto.setType(type);//类型
+        cto.setWeekContinue(weekContinue);//连续期数详情
         try {
             cdThreeOrderService.save(cto);
             map.put("flag", "1");

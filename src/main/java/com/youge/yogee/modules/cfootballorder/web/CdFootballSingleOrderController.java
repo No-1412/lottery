@@ -183,7 +183,7 @@ public class CdFootballSingleOrderController extends BaseController {
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
                 }else {
                     letScore+=cfm.getClose()+",";
                 }

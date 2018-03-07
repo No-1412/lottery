@@ -50,8 +50,9 @@
         <th>玩法</th>
         <th>期数</th>
         <th>注数</th>
+        <th>倍数</th>
         <th>金额</th>
-        <%--<th>用户</th>--%>
+        <th>追号</th>
         <th>下单时间</th>
         <th>订单状态</th>
         <shiro:hasPermission name="cthreeawards:cdThreeOrder:edit">
@@ -91,8 +92,9 @@
             </td>
             <td>${cdThreeOrder.weekday}</td>
             <td>${cdThreeOrder.acount}</td>
+            <td>${cdThreeOrder.times}倍</td>
             <td>${cdThreeOrder.price}</td>
-            <%--<td>${cdThreeOrder.uid}</td>--%>
+            <td>${cdThreeOrder.continuity}期</td>
             <td>${cdThreeOrder.createDate}</td>
             <td><c:choose>
                 <c:when test="${cdThreeOrder.status==1}">

@@ -49,32 +49,44 @@ public class ListFiveInterface {
             logger.error("订单详情nums为空");
             return HttpResultUtil.errorJson("订单详情nums为空");
         }
-//        //1直选 2和值 3组三单式 4组三复式 5组六单式 6组六复式
-//        String buyWays = (String) jsonData.get("buyWays");
-//        if (StringUtils.isEmpty(buyWays)) {
-//            logger.error("玩法buyWays为空");
-//            return HttpResultUtil.errorJson("玩法buyWays为空");
-//        }
+
         String weekday = (String) jsonData.get("weekday");
         if (StringUtils.isEmpty(weekday)) {
             logger.error("期数weekday为空");
             return HttpResultUtil.errorJson("期数weekday为空");
         }
-//        String acount = (String) jsonData.get("acount");
-//        if (StringUtils.isEmpty(acount)) {
-//            logger.error("注数acount为空");
-//            return HttpResultUtil.errorJson("注数acount为空");
-//        }
-//        String award = (String) jsonData.get("award");
-//        if (StringUtils.isEmpty(award)) {
-//            logger.error("奖金award为空");
-//            return HttpResultUtil.errorJson("奖金award为空");
-//        }
+        //连续购买期数
+        String continuity = (String) jsonData.get("continuity");
+        if (StringUtils.isEmpty(continuity)) {
+            logger.error("continuity为空");
+            return HttpResultUtil.errorJson("continuity为空");
+        }
+        //倍数
+        String times = (String) jsonData.get("times");
+        if (StringUtils.isEmpty(times)) {
+            logger.error("times为空");
+            return HttpResultUtil.errorJson("times为空");
+        }
         String uid = (String) jsonData.get("uid");
         if (StringUtils.isEmpty(uid)) {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
+        //1自购 2追号
+        String type = "";
+        String weekContinue = "";
+        if ("1".equals(continuity)) {
+            type = "1";
+        } else {
+            type = "2";
+            int week = Integer.parseInt(weekday);
+            int con = Integer.parseInt(continuity);
+            for (int i = 1; i < con; i++) {
+                week++;
+                weekContinue += String.valueOf(week) + ",";
+            }
+        }
+
         //所有可能
         Map<String, String> dataMap = ListThreeWays.listThree(nums, "7");
         String allPerhaps = dataMap.get("allPerhaps");
@@ -85,7 +97,8 @@ public class ListFiveInterface {
         //计算金额
         double money = 2.00;
         double acountDouble = Double.parseDouble(acount);
-        String price = String.valueOf(money * acountDouble);
+        double timesDouble = Double.parseDouble(times);
+        String price = String.valueOf(money * acountDouble * timesDouble);
         //奖金
         String award = dataMap.get("award");
         CdFiveOrder cfo = new CdFiveOrder();
@@ -99,6 +112,10 @@ public class ListFiveInterface {
         cfo.setUid(uid);//用户
         cfo.setAllPerhaps(allPerhaps);//所有可能
         cfo.setStatus("1");//已提交
+        cfo.setTimes(times);//倍数
+        cfo.setContinuity(continuity);//连续期数
+        cfo.setType(type);//类型
+        cfo.setWeekContinue(weekContinue);//连续期数详情
         try {
             cdFiveOrderService.save(cfo);
             map.put("flag", "1");

@@ -22,6 +22,7 @@ import com.youge.yogee.modules.sys.entity.User;
 
 /**
  * 任选九订单Entity
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-22
  */
@@ -29,140 +30,158 @@ import com.youge.yogee.modules.sys.entity.User;
 @Table(name = "cd_choose_nine_order")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CdChooseNineOrder extends BaseEntity<T> implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	private String id; 		// 识别id
-	private String name; 	// 名称
-	
-	private String createDate; 	// 创建时间
-	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
-	private String remarks; //
-	private String orderNumber;  //订单号
-	private String weekday;    //期数
-	private String orderDetail; //订单详情
-	private String acount;    //注数
-	private String price;    //价格
-	private String status;  //1已提交 2已付款
-	private String award;   //奖金
-	private String uid;  //用户id
 
-	public CdChooseNineOrder() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
+    private String id;        // 识别id
+    private String name;    // 名称
 
-	public CdChooseNineOrder(String id){
-		this();
-		this.id = id;
-	}
-	
-	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_choose_nine_order")
-	//@SequenceGenerator(name = "seq_cd_choose_nine_order", sequenceName = "seq_cd_choose_nine_order")
-	public String getId() {
-		return id;
-	}
+    private String createDate;    // 创建时间
+    private String delFlag;    // 删除标识 (0：未删除；1：已删除)
+    private String remarks; //
+    private String orderNumber;  //订单号
+    private String weekday;    //期数
+    private String orderDetail; //订单详情
+    private String acount;    //注数
+    private String price;    //价格
+    private String status;  //1已提交 2已付款
+    private String award;   //奖金
+    private String uid;  //用户id
+    private String times;  //倍数
+    private String matchIds;  //所有期次
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public CdChooseNineOrder() {
+        super();
+    }
 
-	@Length(min=1, max=200)
-	public String getName() {
-		return name;
-	}
+    public CdChooseNineOrder(String id) {
+        this();
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getCreateDate() {
-		return createDate;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_choose_nine_order")
+    //@SequenceGenerator(name = "seq_cd_choose_nine_order", sequenceName = "seq_cd_choose_nine_order")
+    public String getId() {
+        return id;
+    }
 
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getDelFlag() {
-		return delFlag;
-	}
+    @Length(min = 1, max = 200)
+    public String getName() {
+        return name;
+    }
 
-	public void setDelFlag(String delFlag) {
-		this.delFlag = delFlag;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getRemarks() {
-		return remarks;
-	}
+    public String getCreateDate() {
+        return createDate;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 
-	public String getOrderNumber() {
-		return orderNumber;
-	}
+    public String getDelFlag() {
+        return delFlag;
+    }
 
-	public void setOrderNumber(String orderNumber) {
-		this.orderNumber = orderNumber;
-	}
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
 
-	public String getWeekday() {
-		return weekday;
-	}
+    public String getRemarks() {
+        return remarks;
+    }
 
-	public void setWeekday(String weekday) {
-		this.weekday = weekday;
-	}
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
-	public String getOrderDetail() {
-		return orderDetail;
-	}
+    public String getOrderNumber() {
+        return orderNumber;
+    }
 
-	public void setOrderDetail(String orderDetail) {
-		this.orderDetail = orderDetail;
-	}
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
 
-	public String getAcount() {
-		return acount;
-	}
+    public String getWeekday() {
+        return weekday;
+    }
 
-	public void setAcount(String acount) {
-		this.acount = acount;
-	}
+    public void setWeekday(String weekday) {
+        this.weekday = weekday;
+    }
 
-	public String getPrice() {
-		return price;
-	}
+    public String getOrderDetail() {
+        return orderDetail;
+    }
 
-	public void setPrice(String price) {
-		this.price = price;
-	}
+    public void setOrderDetail(String orderDetail) {
+        this.orderDetail = orderDetail;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getAcount() {
+        return acount;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setAcount(String acount) {
+        this.acount = acount;
+    }
 
-	public String getAward() {
-		return award;
-	}
+    public String getPrice() {
+        return price;
+    }
 
-	public void setAward(String award) {
-		this.award = award;
-	}
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-	public String getUid() {
-		return uid;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getAward() {
+        return award;
+    }
+
+    public void setAward(String award) {
+        this.award = award;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getTimes() {
+        return times;
+    }
+
+    public void setTimes(String times) {
+        this.times = times;
+    }
+
+    public String getMatchIds() {
+        return matchIds;
+    }
+
+    public void setMatchIds(String matchIds) {
+        this.matchIds = matchIds;
+    }
 }
 
 

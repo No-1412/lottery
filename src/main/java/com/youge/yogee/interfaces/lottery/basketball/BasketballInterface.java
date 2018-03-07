@@ -91,6 +91,11 @@ public class BasketballInterface {
                 map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
                 map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
                 map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
+                if ("79".equals(cd.getIsale())) {
+                    map.put("isSingle", "0");//是否单关 1是 0不是
+                } else {
+                    map.put("isSingle", "1");//是否单关 1是 0不是
+                }
                 listbytime.add(map);
             }
             list.add(listbytime);
@@ -612,27 +617,27 @@ public class BasketballInterface {
         }
 
 
-                Map map = new HashMap();
-                map.put("name", cd.getMatchId());//赛事场次
-                map.put("mt", cd.getMatchDate());//比赛时间
-                map.put("itemid", cd.getItemid());//比赛时间ID
-                map.put("zid", cd.getZid());//比赛详细信息传的参数
-                map.put("mname", cd.getEventName());//赛事名称
-                map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
-                map.put("hn", cd.getWinningName());//主队名称
-                map.put("gn", cd.getDefeatedName());//客队名称
-                map.put("sf", "未开售");//胜负:主负主胜赔率',
-                map.put("dxf", "未开售");//大小赔率
-                map.put("rfsf", "未开售");//让分:主负主胜赔率
-                map.put("sfc", cd.getSurpassScoreGap());////胜分差主负主胜
-                map.put("hm", cd.getWinningRank());//主队排名
-                map.put("gm", cd.getDefeatedRank());//客队排名
-                map.put("htn", cd.getRecentWinningSurpass());//主队近期战绩
-                map.put("gtn", cd.getRecentDefeatedSurpass());//客队近期战绩
-                map.put("htf", cd.getRecentWinningDefeat());//主队近期战绩败
-                map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
-                map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
-                map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
+        Map map = new HashMap();
+        map.put("name", cd.getMatchId());//赛事场次
+        map.put("mt", cd.getMatchDate());//比赛时间
+        map.put("itemid", cd.getItemid());//比赛时间ID
+        map.put("zid", cd.getZid());//比赛详细信息传的参数
+        map.put("mname", cd.getEventName());//赛事名称
+        map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
+        map.put("hn", cd.getWinningName());//主队名称
+        map.put("gn", cd.getDefeatedName());//客队名称
+        map.put("sf", "未开售");//胜负:主负主胜赔率',
+        map.put("dxf", "未开售");//大小赔率
+        map.put("rfsf", "未开售");//让分:主负主胜赔率
+        map.put("sfc", cd.getSurpassScoreGap());////胜分差主负主胜
+        map.put("hm", cd.getWinningRank());//主队排名
+        map.put("gm", cd.getDefeatedRank());//客队排名
+        map.put("htn", cd.getRecentWinningSurpass());//主队近期战绩
+        map.put("gtn", cd.getRecentDefeatedSurpass());//客队近期战绩
+        map.put("htf", cd.getRecentWinningDefeat());//主队近期战绩败
+        map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
+        map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
+        map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
 
 
         logger.info("getBtMatchDetailById 获取篮球详情---------End---------");

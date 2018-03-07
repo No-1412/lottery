@@ -36,6 +36,7 @@
 				<th>订单号</th>
 				<th>期数</th>
 				<th>注数</th>
+				<th>倍数</th>
 				<th>金额</th>
 				<th>用户</th>
 				<th>下单时间</th>
@@ -49,6 +50,7 @@
 				<td><a href="${ctx}/cchoosenine/cdChooseNineOrder/form?id=${cdChooseNineOrder.id}">${cdChooseNineOrder.orderNumber}</a></td>
 				<td>${cdChooseNineOrder.weekday}</td>
 				<td>${cdChooseNineOrder.acount}</td>
+				<td>${cdChooseNineOrder.times}倍</td>
 				<td>${cdChooseNineOrder.price}</td>
 				<td>${cdChooseNineOrder.uid}</td>
 				<td>${cdChooseNineOrder.createDate}</td>

@@ -49,6 +49,10 @@ public class CdThreeOrder extends BaseEntity<T> implements Serializable {
     private String uid;        // 用户id
     private String status;        // 1已提交 2已付款
     private String remarks;      //备注
+    private String type;   //1自购 2追号
+    private String times;  //倍数
+    private String continuity; //连续期数
+    private String weekContinue;//继续买的期数
 
     public CdThreeOrder() {
         super();
@@ -182,6 +186,38 @@ public class CdThreeOrder extends BaseEntity<T> implements Serializable {
 
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTimes() {
+        return times;
+    }
+
+    public void setTimes(String times) {
+        this.times = times;
+    }
+
+    public String getContinuity() {
+        return continuity;
+    }
+
+    public void setContinuity(String continuity) {
+        this.continuity = continuity;
+    }
+
+    public String getWeekContinue() {
+        return weekContinue;
+    }
+
+    public void setWeekContinue(String weekContinue) {
+        this.weekContinue = weekContinue;
     }
 }
 

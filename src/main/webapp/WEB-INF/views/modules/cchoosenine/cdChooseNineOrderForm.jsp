@@ -60,6 +60,13 @@
         </div>
     </div>
     <div class="control-group">
+        <label class="control-label">倍数:</label>
+        <div class="controls">
+            <form:input path="times" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+        </div>
+    </div>
+
+    <div class="control-group">
         <label class="control-label">金额:</label>
         <div class="controls">
             <form:input path="price" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
@@ -68,7 +75,7 @@
     <div class="control-group">
         <label class="control-label">用户:</label>
         <div class="controls">
-            <%--<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>--%>
+                <%--<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>--%>
             <input type="text" readonly="readonly" value="${uName}">
         </div>
     </div>
@@ -82,31 +89,31 @@
     <div class="control-group">
         <label class="control-label">订单详情: </label>
         <div class="controls">
-            <%--<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>--%>
-           <p> <font size="3"> <b> 场次+主客队+胜(3)/平(1)/负(0)+胆1(是)/0(否) </b> </font> </p>
-               <%-- <c:forEach items="${list}" var="list" >
-                  <p> <b> ${list}; </b> </p>
-                </c:forEach>--%>
-                <font size="3">
-                    <c:forEach items="${list}" var="list">
-                        <p>
-                            <c:forTokens items=" ${list}" delims="/" var="alist" varStatus="j">
+                <%--<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>--%>
+            <p><font size="3"> <b> 场次+主客队+胜(3)/平(1)/负(0)+胆1(是)/0(否) </b> </font></p>
+                <%-- <c:forEach items="${list}" var="list" >
+                   <p> <b> ${list}; </b> </p>
+                 </c:forEach>--%>
+            <font size="3">
+                <c:forEach items="${list}" var="list">
+                    <p>
+                        <c:forTokens items=" ${list}" delims="+" var="alist" varStatus="j">
 
-                                    <c:if test="${j.count==3}">
-                                        <font color="red"> <b> ${alist}</b></font>+
-                                    </c:if>
-                                    <c:if test="${j.count!=3 && j.count!=5}">
-                                        ${alist}+
-                                    </c:if>
-                                    <c:if test="${j.count==5}">
-                                        <font color="red"> <b> ${alist}</b></font>
-                                    </c:if>
+                            <c:if test="${j.count==3}">
+                                <font color="red"> <b> ${alist}</b></font>+
+                            </c:if>
+                            <c:if test="${j.count!=3 && j.count!=4}">
+                                ${alist}+
+                            </c:if>
+                            <c:if test="${j.count==4}">
+                                <font color="red"> <b> ${alist}</b></font>
+                            </c:if>
 
-                            </c:forTokens>
-                            <br>
-                        </p>
-                    </c:forEach>
-                </font>
+                        </c:forTokens>
+                        <br>
+                    </p>
+                </c:forEach>
+            </font>
         </div>
     </div>
 

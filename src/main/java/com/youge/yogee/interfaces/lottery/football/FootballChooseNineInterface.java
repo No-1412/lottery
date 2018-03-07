@@ -56,16 +56,20 @@ public class FootballChooseNineInterface {
             logger.error("期数weekday为空");
             return HttpResultUtil.errorJson("期数weekday为空");
         }
-
+        //倍数
+        String times = (String) jsonData.get("times");
+        if (StringUtils.isEmpty(times)) {
+            logger.error("times为空");
+            return HttpResultUtil.errorJson("times为空");
+        }
         //订单详情
         Object jsonString = jsonData.get("detail");
         JSONArray jsonArray = JSONArray.fromObject(jsonString);
-
-
         List<Map<String, Object>> detail = (List<Map<String, Object>>) jsonArray.toCollection(jsonArray, Map.class);
         List<String> resultList = new ArrayList<>();
         String orderDetail = "";
         int mustCount = 1;
+        String matchIds = "";
         if (detail.size() != 0) {
             for (Map<String, Object> d : detail) {
                 String matchId = (String) d.get("matchId");
@@ -84,25 +88,31 @@ public class FootballChooseNineInterface {
                 if (csf == null) {
                     return HttpResultUtil.errorJson("数据迷路，请稍后再试");
                 }
-                //赔率
-                String odds = "";
-                String[] resultStr = wantResult.split(",");
-                for (String s : resultStr) {
-                    if ("3".equals(s)) {
-                        odds += csf.getWinningOdds() + ",";
-                    }
-                    if ("1".equals(s)) {
-                        odds += csf.getFlatOdds() + ",";
-                    }
-                    if ("0".equals(s)) {
-                        odds += csf.getFlatOdds() + ",";
-                    }
-                }
+//                //赔率
+//                String odds = "";
+//                String[] resultStr = wantResult.split(",");
+//                for (String s : resultStr) {
+//                    if ("3".equals(s)) {
+//                        odds += csf.getWinningOdds() + ",";
+//                    }
+//                    if ("1".equals(s)) {
+//                        odds += csf.getFlatOdds() + ",";
+//                    }
+//                    if ("0".equals(s)) {
+//                        odds += csf.getFlatOdds() + ",";
+//                    }
+//                }
                 //主客队
                 String beat = csf.getHomeTeam() + "vs" + csf.getAwayTeam();
                 //单场详情
-                String partOfResult = matchId + "/" + beat + "/" + wantResult + "/" + odds + "/" + isMust;
+                String partOfResult = matchId + "+" + beat + "+" + wantResult + "+" + isMust;
                 orderDetail += partOfResult + "|";
+                if ("1".equals(isMust)) {
+                    matchIds += "胆" + "+" + matchId + ",";
+                } else {
+                    matchIds += "非" + "+" + matchId + ",";
+                }
+
             }
         }
 
@@ -121,7 +131,8 @@ public class FootballChooseNineInterface {
         //计算金额
         double money = 2.00;
         double acountDouble = Double.parseDouble(acountStr);
-        String price = String.valueOf(money * acountDouble);
+        double timesDouble = Double.parseDouble(times);
+        String price = String.valueOf(money * acountDouble * timesDouble);
 
         CdChooseNineOrder ccno = new CdChooseNineOrder();
         ccno.setOrderNumber(orderNum); //订单号
@@ -132,6 +143,8 @@ public class FootballChooseNineInterface {
         ccno.setWeekday(weekday);//期数
         ccno.setStatus("1");//已提交
         ccno.setUid(uid);//用户
+        ccno.setTimes(times);//倍数
+        ccno.setMatchIds(matchIds);//购买具体期数
         try {
             cdChooseNineOrderService.save(ccno);
             map.put("flag", "1");

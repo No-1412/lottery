@@ -305,7 +305,7 @@ public class ListThreeWays {
 //        String allPerhaps = "";
         Map<String, String> map = new HashMap<>();
         int i = Integer.parseInt(ways);
-        //1直选 2和值 3组三单式 4组三复式 5组六单式 6组六复式
+        //1直选 2和值 3组三单式 4组三复式 5组六单式 6组六复式 7排列五
         switch (i) {
             case 1: {
                 String allPerhaps = "";

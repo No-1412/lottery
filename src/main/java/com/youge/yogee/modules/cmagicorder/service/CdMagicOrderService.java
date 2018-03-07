@@ -3,6 +3,7 @@
  */
 package com.youge.yogee.modules.cmagicorder.service;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -17,6 +18,8 @@ import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import com.youge.yogee.modules.cmagicorder.dao.CdMagicOrderDao;
+
+import java.util.List;
 
 /**
  * 神单订单Service
@@ -59,6 +62,18 @@ public class CdMagicOrderService extends BaseService {
     @Transactional(readOnly = false)
     public void delete(String id) {
         cdMagicOrderDao.deleteById(id);
+    }
+
+
+    public List<CdMagicOrder> getMagicOrder(String total, String count) {
+        DetachedCriteria dc = cdMagicOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdMagicOrder.FIELD_DEL_FLAG, CdMagicOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.sqlRestriction("1=1 order by CAST(price as SIGNED) desc"));
+        // 限制条数|分页
+        Criteria cri = dc.getExecutableCriteria(cdMagicOrderDao.getSession());
+        cri.setMaxResults(Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
+        return cdMagicOrderDao.find(dc);
     }
 
 }

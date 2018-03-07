@@ -45,12 +45,6 @@ public class FootballLotteryInterface {
     public String successFail(HttpServletRequest request) {
         logger.info("successFail  足彩胜负彩,任选九(非竞彩足球)---------Start---------");
 
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        if (jsonData == null) {
-            return HttpResultUtil.errorJson("json格式错误");
-        }
-
-
         List<CdSuccessFail> dataList = cdSuccessFailService.getSuccessFail();
         List<String> dateList = new ArrayList<>();
         String weekDay = "";

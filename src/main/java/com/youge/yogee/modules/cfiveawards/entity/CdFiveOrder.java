@@ -22,6 +22,7 @@ import com.youge.yogee.modules.sys.entity.User;
 
 /**
  * 排列五订单Entity
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-07
  */
@@ -29,160 +30,196 @@ import com.youge.yogee.modules.sys.entity.User;
 @Table(name = "cd_five_order")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CdFiveOrder extends BaseEntity<T> implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
 
-	private String id;        // 识别id
-	private String name;    // 名称
+    private static final long serialVersionUID = 1L;
 
-	private String createDate;    // 创建时间
-	private String delFlag;    // 删除标识 (0：未删除；1：已删除)
+    private String id;        // 识别id
+    private String name;    // 名称
 
-	private String orderNum;        // 订单号
-	private String nums;        // 买的数字
-	private String allPerhaps;        // 所有可能 |分割
-	private String buyWays;        // 购买彩种 1直选 2和值 3组三单式 4组三复式 5组六单式 6组六复式
-	private String weekday;        // 期数
-	private String acount;        // 注数
-	private String price;        //金额
-	private String award;        // 奖金
-	private String uid;        // 用户id
-	private String status;        // 1已提交 2已付款
-	private String remarks;      //备注
+    private String createDate;    // 创建时间
+    private String delFlag;    // 删除标识 (0：未删除；1：已删除)
 
-	public CdFiveOrder() {
-		super();
-	}
+    private String orderNum;        // 订单号
+    private String nums;        // 买的数字
+    private String allPerhaps;        // 所有可能 |分割
+    private String buyWays;        // 购买彩种 1直选 2和值 3组三单式 4组三复式 5组六单式 6组六复式
+    private String weekday;        // 期数
+    private String acount;        // 注数
+    private String price;        //金额
+    private String award;        // 奖金
+    private String uid;        // 用户id
+    private String status;        // 1已提交 2已付款
+    private String remarks;      //备注
+    private String type;   //1自购 2追号
+    private String times;  //倍数
+    private String continuity; //连续期数
+    private String weekContinue;//继续买的期数
 
-	public CdFiveOrder(String id) {
-		this();
-		this.id = id;
-	}
+    public CdFiveOrder() {
+        super();
+    }
 
-	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_three_order")
-	//@SequenceGenerator(name = "seq_cd_three_order", sequenceName = "seq_cd_three_order")
-	public String getId() {
-		return id;
-	}
+    public CdFiveOrder(String id) {
+        this();
+        this.id = id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_three_order")
+    //@SequenceGenerator(name = "seq_cd_three_order", sequenceName = "seq_cd_three_order")
+    public String getId() {
+        return id;
+    }
 
-	@Length(min = 1, max = 200)
-	public String getName() {
-		return name;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Length(min = 1, max = 200)
+    public String getName() {
+        return name;
+    }
 
-	public String getCreateDate() {
-		return createDate;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
-	}
+    public String getCreateDate() {
+        return createDate;
+    }
 
-	public String getDelFlag() {
-		return delFlag;
-	}
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 
-	public void setDelFlag(String delFlag) {
-		this.delFlag = delFlag;
-	}
+    public String getDelFlag() {
+        return delFlag;
+    }
 
-	public String getOrderNum() {
-		return orderNum;
-	}
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
 
-	public void setOrderNum(String orderNum) {
-		this.orderNum = orderNum;
-	}
+    public String getOrderNum() {
+        return orderNum;
+    }
 
-	public String getNums() {
-		return nums;
-	}
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
+    }
 
-	public void setNums(String nums) {
-		this.nums = nums;
-	}
+    public String getNums() {
+        return nums;
+    }
 
-	public String getAllPerhaps() {
-		return allPerhaps;
-	}
+    public void setNums(String nums) {
+        this.nums = nums;
+    }
 
-	public void setAllPerhaps(String allPerhaps) {
-		this.allPerhaps = allPerhaps;
-	}
+    public String getAllPerhaps() {
+        return allPerhaps;
+    }
 
-	public String getBuyWays() {
-		return buyWays;
-	}
+    public void setAllPerhaps(String allPerhaps) {
+        this.allPerhaps = allPerhaps;
+    }
 
-	public void setBuyWays(String buyWays) {
-		this.buyWays = buyWays;
-	}
+    public String getBuyWays() {
+        return buyWays;
+    }
 
-	public String getWeekday() {
-		return weekday;
-	}
+    public void setBuyWays(String buyWays) {
+        this.buyWays = buyWays;
+    }
 
-	public void setWeekday(String weekday) {
-		this.weekday = weekday;
-	}
+    public String getWeekday() {
+        return weekday;
+    }
 
-	public String getAcount() {
-		return acount;
-	}
+    public void setWeekday(String weekday) {
+        this.weekday = weekday;
+    }
 
-	public void setAcount(String acount) {
-		this.acount = acount;
-	}
+    public String getAcount() {
+        return acount;
+    }
 
-	public String getPrice() {
-		return price;
-	}
+    public void setAcount(String acount) {
+        this.acount = acount;
+    }
 
-	public void setPrice(String price) {
-		this.price = price;
-	}
+    public String getPrice() {
+        return price;
+    }
 
-	public String getAward() {
-		return award;
-	}
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-	public void setAward(String award) {
-		this.award = award;
-	}
+    public String getAward() {
+        return award;
+    }
 
-	public String getUid() {
-		return uid;
-	}
+    public void setAward(String award) {
+        this.award = award;
+    }
 
-	public void setUid(String uid) {
-		this.uid = uid;
-	}
+    public String getUid() {
+        return uid;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getRemarks() {
-		return remarks;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTimes() {
+        return times;
+    }
+
+    public void setTimes(String times) {
+        this.times = times;
+    }
+
+    public String getContinuity() {
+        return continuity;
+    }
+
+    public void setContinuity(String continuity) {
+        this.continuity = continuity;
+    }
+
+    public String getWeekContinue() {
+        return weekContinue;
+    }
+
+    public void setWeekContinue(String weekContinue) {
+        this.weekContinue = weekContinue;
+    }
 }
 
 

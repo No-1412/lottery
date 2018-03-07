@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.lottery.order;
 
+import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
@@ -20,6 +21,7 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
+import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,8 @@ public class MagicOrderInterface {
     private CdFootballMixedService cdFootballMixedService;
     @Autowired
     private CdBasketballMixedService cdBasketballMixedService;
+    @Autowired
+    private CdOrderFollowTimesService cdOrderFollowTimesService;
 
     /**
      * 神单提交订单
@@ -85,28 +89,26 @@ public class MagicOrderInterface {
             logger.error("charges为空");
             return HttpResultUtil.errorJson("charges为空");
         }
-        //uid
-        String uid = (String) jsonData.get("uid");
-        if (StringUtils.isEmpty(uid)) {
-            logger.error("uid为空");
-            return HttpResultUtil.errorJson("uid为空");
-        }
 
-        CdLotteryUser clu = cdLotteryUserService.get(uid);
-        if (clu == null) {
-            return HttpResultUtil.errorJson("用户不存在");
-        }
-        String uName = clu.getName();//用户名
-        String uImg = clu.getImg();//头像
+        String uName = "";//用户名
+        String uImg = "";//头像
         String price = "";//金额
         String type = "";//1足球单关 2足球串关 3篮球单关 4篮球串关
         String shutDownTime = "";//截止时间
+        String uId = "";
         //篮球串关
         if (orderNum.startsWith("LCG")) {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
             if (cbf == null) {
                 return HttpResultUtil.errorJson("订单不存在");
             } else {
+                CdLotteryUser clu = cdLotteryUserService.get(cbf.getUid());
+                if (clu == null) {
+                    return HttpResultUtil.errorJson("用户不存在");
+                }
+                uId = cbf.getUid();
+                uName = clu.getName();//用户名
+                uImg = clu.getImg();//头像
                 cbf.setType("1");//发起跟单
                 cdBasketballFollowOrderService.save(cbf);
                 price = cbf.getPrice();
@@ -123,6 +125,9 @@ public class MagicOrderInterface {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (int i = 0; i < list.size(); i++) {
                     CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(list.get(i));
+                    if (cbm == null) {
+                        return HttpResultUtil.errorJson("比赛已结束");
+                    }
                     if (i == 0) {
                         endSale = cbm.getTimeEndsale();
                     } else {
@@ -141,6 +146,13 @@ public class MagicOrderInterface {
             if (cbs == null) {
                 return HttpResultUtil.errorJson("订单不存在");
             } else {
+                CdLotteryUser clu = cdLotteryUserService.get(cbs.getUid());
+                if (clu == null) {
+                    return HttpResultUtil.errorJson("用户不存在");
+                }
+                uId = cbs.getUid();
+                uName = clu.getName();//用户名
+                uImg = clu.getImg();//头像
                 cbs.setType("1");//发起跟单
                 cdBasketballSingleOrderService.save(cbs);
                 price = cbs.getPrice();
@@ -151,6 +163,9 @@ public class MagicOrderInterface {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (int i = 0; i < matchIdsArray.length; i++) {
                     CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(matchIdsArray[i]);
+                    if (cbm == null) {
+                        return HttpResultUtil.errorJson("比赛已结束");
+                    }
                     if (i == 0) {
                         endSale = cbm.getTimeEndsale();
                     } else {
@@ -168,6 +183,13 @@ public class MagicOrderInterface {
             if (cff == null) {
                 return HttpResultUtil.errorJson("订单不存在");
             } else {
+                CdLotteryUser clu = cdLotteryUserService.get(cff.getUid());
+                if (clu == null) {
+                    return HttpResultUtil.errorJson("用户不存在");
+                }
+                uId = cff.getUid();
+                uName = clu.getName();//用户名
+                uImg = clu.getImg();//头像
                 cff.setType("1");//发起跟单
                 cdFootballFollowOrderService.save(cff);
                 price = cff.getPrice();
@@ -184,6 +206,9 @@ public class MagicOrderInterface {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (int i = 0; i < list.size(); i++) {
                     CdFootballMixed cfm = cdFootballMixedService.findByMatchId(list.get(i));
+                    if (cfm == null) {
+                        return HttpResultUtil.errorJson("比赛已结束");
+                    }
                     if (i == 0) {
                         endSale = cfm.getTimeEndsale();
                     } else {
@@ -201,6 +226,13 @@ public class MagicOrderInterface {
             if (cfs == null) {
                 return HttpResultUtil.errorJson("订单不存在");
             } else {
+                CdLotteryUser clu = cdLotteryUserService.get(cfs.getUid());
+                if (clu == null) {
+                    return HttpResultUtil.errorJson("用户不存在");
+                }
+                uId = cfs.getUid();
+                uName = clu.getName();//用户名
+                uImg = clu.getImg();//头像
                 cfs.setType("1");//发起跟单
                 cdFootballSingleOrderService.save(cfs);
                 price = cfs.getPrice();
@@ -211,6 +243,9 @@ public class MagicOrderInterface {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 for (int i = 0; i < matchIdsArray.length; i++) {
                     CdFootballMixed cfm = cdFootballMixedService.findByMatchId(matchIdsArray[i]);
+                    if (cfm == null) {
+                        return HttpResultUtil.errorJson("比赛已结束");
+                    }
                     if (i == 0) {
                         endSale = cfm.getTimeEndsale();
                     } else {
@@ -223,17 +258,19 @@ public class MagicOrderInterface {
                 shutDownTime = endSale;
             }
         }
-
+        //拿到倍率
+        String times = cdOrderFollowTimesService.get("1").getTimes();
         CdMagicOrder cmo = new CdMagicOrder();
         cmo.setOrderNum(orderNum);//订单号
         cmo.setCharges(charges);//佣金百分比
         cmo.setFollowCounts("0");//跟买人数
         cmo.setPrice(price);//金额
         cmo.setType(type);//类型
-        cmo.setUid(uid);//uid
+        cmo.setUid(uId);//uid
         cmo.setuImg(uImg);//头像
         cmo.setuName(uName);//姓名
         cmo.setShutDownTime(shutDownTime);//截止时间
+        cmo.setTimes(times);//倍数
         try {
             cdMagicOrderService.save(cmo);
             map.put("flag", "1");
@@ -243,6 +280,86 @@ public class MagicOrderInterface {
 
 
         logger.info("神单提交 magicOrderCommit---------End---------------------");
+        return HttpResultUtil.successJson(map);
+    }
+
+
+    /**
+     * 获得神单订单列表
+     */
+    @RequestMapping(value = "getMagicOrderList", method = RequestMethod.POST)
+    @ResponseBody
+    public String getMagicOrderList(HttpServletRequest request) throws ParseException {
+        logger.info("获取神单 getMagicOrderList--------Start-------------------");
+        logger.debug("interface 请求--getMagicOrderList-------- Start--------");
+        Map map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+
+        List<CdMagicOrder> list = cdMagicOrderService.getMagicOrder(total, count);
+        List cList = new ArrayList();
+        for (CdMagicOrder c : list) {
+            Map cMap = new HashMap();
+            cMap.put("id", c.getId());
+            cMap.put("uName", c.getuName()); //用户名
+            cMap.put("img", Global.getConfig("domain.url") + c.getuImg());//头像
+            cMap.put("price", c.getPrice()); //购买金额
+            cMap.put("followCounts", c.getFollowCounts()); //跟买人数
+            cMap.put("shutDownTime", c.getShutDownTime()); //截止时间
+            cMap.put("charges", c.getCharges() + "%"); //佣金
+            cMap.put("times", c.getTimes()); //保字
+            cList.add(cMap);
+        }
+        map.put("list", cList);
+        logger.info("获取神单 getMagicOrderList---------End---------------------");
+        return HttpResultUtil.successJson(map);
+    }
+
+    /**
+     * 获得神单详情
+     */
+    @RequestMapping(value = "getMagicOrderDetail", method = RequestMethod.POST)
+    @ResponseBody
+    public String getMagicOrderDetail(HttpServletRequest request) throws ParseException {
+        logger.info("获取神单详情 getMagicOrderDetail--------Start-------------------");
+        logger.debug("interface 请求--getMagicOrderDetail-------- Start--------");
+        Map map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String id = (String) jsonData.get("id");
+        if (StringUtils.isEmpty(id)) {
+            logger.error("id为空");
+            return HttpResultUtil.errorJson("id为空");
+        }
+
+        CdMagicOrder cmo = cdMagicOrderService.get(id);
+
+        Map cMap = new HashMap();
+        cMap.put("id", cmo.getId());
+        cMap.put("uName", cmo.getuName()); //用户名
+        cMap.put("img", Global.getConfig("domain.url") + cmo.getuImg());//头像
+        cMap.put("price", cmo.getPrice()); //购买金额
+        cMap.put("followCounts", cmo.getFollowCounts()); //跟买人数
+        cMap.put("shutDownTime", cmo.getShutDownTime()); //截止时间
+        cMap.put("charges", cmo.getCharges() + "%"); //佣金
+        cMap.put("times", cmo.getTimes()); //保字
+        cMap.put("limit", cmo.getPrice()); //限购
+        map.put("cmo", cMap);
+        logger.info("获取神单详情 getMagicOrderDetail---------End---------------------");
         return HttpResultUtil.successJson(map);
     }
 

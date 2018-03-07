@@ -167,7 +167,7 @@ public class CdBasketballFollowOrderController extends BaseController {
             cdBasketballFollowOrder.setStatus("2");
             cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
             addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+            return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
         }
         //更新赔率
         cdBasketballFollowOrder.setHostWin(newWinDetail);
@@ -188,7 +188,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                    return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
                 }else {
                     sizeCount+=cfm.getZclose()+",";
                 }
@@ -207,7 +207,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-                    return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                    return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
                 }else {
                     letScore+=cfm.getClose()+",";
                 }

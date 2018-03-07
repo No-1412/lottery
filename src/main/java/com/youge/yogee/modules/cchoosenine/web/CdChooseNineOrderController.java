@@ -31,6 +31,7 @@ import java.util.List;
 
 /**
  * 任选九订单Controller
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-22
  */
@@ -38,87 +39,88 @@ import java.util.List;
 @RequestMapping(value = "${adminPath}/cchoosenine/cdChooseNineOrder")
 public class CdChooseNineOrderController extends BaseController {
 
-	@Autowired
-	private CdChooseNineOrderService cdChooseNineOrderService;
-	@Autowired
-	private CdLotteryUserService cdLotteryUserService;
-	
-	@ModelAttribute
-	public CdChooseNineOrder get(@RequestParam(required=false) String id) {
-		if (StringUtils.isNotBlank(id)){
-			return cdChooseNineOrderService.get(id);
-		}else{
-			return new CdChooseNineOrder();
-		}
-	}
-	
-	@RequiresPermissions("cchoosenine:cdChooseNineOrder:view")
-	@RequestMapping(value = {"list", ""})
-	public String list(CdChooseNineOrder cdChooseNineOrder, HttpServletRequest request, HttpServletResponse response, Model model) {
-		User user = UserUtils.getUser();
-		
-        Page<CdChooseNineOrder> page = cdChooseNineOrderService.find(new Page<CdChooseNineOrder>(request, response), cdChooseNineOrder); 
-        List<CdChooseNineOrder> list=page.getList();
-		List<CdChooseNineOrder> newList=new ArrayList<>();
-		for(CdChooseNineOrder c:list){
-			CdChooseNineOrder ccn=new CdChooseNineOrder();
-			ccn.setId(c.getId());
-			ccn.setOrderNumber(c.getOrderNumber());
-			ccn.setWeekday(c.getWeekday());
-			ccn.setAcount(c.getAcount());
-			ccn.setPrice(c.getPrice());
-			CdLotteryUser clu=cdLotteryUserService.get(c.getUid());
-			ccn.setUid(clu.getReality());
-			ccn.setCreateDate(c.getCreateDate());
-			ccn.setStatus(c.getStatus());
-			newList.add(ccn);
-		}
-		page.setList(newList);
+    @Autowired
+    private CdChooseNineOrderService cdChooseNineOrderService;
+    @Autowired
+    private CdLotteryUserService cdLotteryUserService;
+
+    @ModelAttribute
+    public CdChooseNineOrder get(@RequestParam(required = false) String id) {
+        if (StringUtils.isNotBlank(id)) {
+            return cdChooseNineOrderService.get(id);
+        } else {
+            return new CdChooseNineOrder();
+        }
+    }
+
+    @RequiresPermissions("cchoosenine:cdChooseNineOrder:view")
+    @RequestMapping(value = {"list", ""})
+    public String list(CdChooseNineOrder cdChooseNineOrder, HttpServletRequest request, HttpServletResponse response, Model model) {
+        User user = UserUtils.getUser();
+
+        Page<CdChooseNineOrder> page = cdChooseNineOrderService.find(new Page<CdChooseNineOrder>(request, response), cdChooseNineOrder);
+        List<CdChooseNineOrder> list = page.getList();
+        List<CdChooseNineOrder> newList = new ArrayList<>();
+        for (CdChooseNineOrder c : list) {
+            CdChooseNineOrder ccn = new CdChooseNineOrder();
+            ccn.setId(c.getId());
+            ccn.setOrderNumber(c.getOrderNumber());
+            ccn.setWeekday(c.getWeekday());
+            ccn.setAcount(c.getAcount());
+            ccn.setPrice(c.getPrice());
+            CdLotteryUser clu = cdLotteryUserService.get(c.getUid());
+            ccn.setUid(clu.getReality());
+            ccn.setCreateDate(c.getCreateDate());
+            ccn.setStatus(c.getStatus());
+            ccn.setTimes(c.getTimes());
+            newList.add(ccn);
+        }
+        page.setList(newList);
         model.addAttribute("page", page);
-		return "modules/cchoosenine/cdChooseNineOrderList";
-	}
+        return "modules/cchoosenine/cdChooseNineOrderList";
+    }
 
-	@RequiresPermissions("cchoosenine:cdChooseNineOrder:view")
-	@RequestMapping(value = "form")
-	public String form(CdChooseNineOrder cdChooseNineOrder, Model model) {
-		List<String> list=new ArrayList<>();
-		String uName="";
-		if(cdChooseNineOrder!=null){
-			String detail=cdChooseNineOrder.getOrderDetail();
-			if(StringUtils.isNotEmpty(detail)){
-				String detailStr[] = detail.split("\\|");
-				for(String s:detailStr){
-					list.add(s);
-				}
-			}
-			CdLotteryUser clu=cdLotteryUserService.get(cdChooseNineOrder.getUid());
-			uName=clu.getReality();
-		}
+    @RequiresPermissions("cchoosenine:cdChooseNineOrder:view")
+    @RequestMapping(value = "form")
+    public String form(CdChooseNineOrder cdChooseNineOrder, Model model) {
+        List<String> list = new ArrayList<>();
+        String uName = "";
+        if (cdChooseNineOrder != null) {
+            String detail = cdChooseNineOrder.getOrderDetail();
+            if (StringUtils.isNotEmpty(detail)) {
+                String detailStr[] = detail.split("\\|");
+                for (String s : detailStr) {
+                    list.add(s);
+                }
+            }
+            CdLotteryUser clu = cdLotteryUserService.get(cdChooseNineOrder.getUid());
+            uName = clu.getReality();
+        }
 
 
-		model.addAttribute("uName", uName);
-		model.addAttribute("cdChooseNineOrder", cdChooseNineOrder);
-		model.addAttribute("list", list);
-		return "modules/cchoosenine/cdChooseNineOrderForm";
-	}
+        model.addAttribute("uName", uName);
+        model.addAttribute("cdChooseNineOrder", cdChooseNineOrder);
+        model.addAttribute("list", list);
+        return "modules/cchoosenine/cdChooseNineOrderForm";
+    }
 
-	@RequiresPermissions("cchoosenine:cdChooseNineOrder:edit")
-	@RequestMapping(value = "save")
-	public String save(CdChooseNineOrder cdChooseNineOrder, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, cdChooseNineOrder)){
-			return form(cdChooseNineOrder, model);
-		}
-		cdChooseNineOrderService.save(cdChooseNineOrder);
-		addMessage(redirectAttributes, "保存任选九订单'" + cdChooseNineOrder.getName() + "'成功");
-		return "redirect:"+Global.getAdminPath()+"/cchoosenine/cdChooseNineOrder/?repage";
-	}
-	
-	@RequiresPermissions("cchoosenine:cdChooseNineOrder:edit")
-	@RequestMapping(value = "delete")
-	public String delete(String id, RedirectAttributes redirectAttributes) {
-		cdChooseNineOrderService.delete(id);
-		addMessage(redirectAttributes, "删除任选九订单成功");
-		return "redirect:"+Global.getAdminPath()+"/cchoosenine/cdChooseNineOrder/?repage";
-	}
+    @RequiresPermissions("cchoosenine:cdChooseNineOrder:edit")
+    @RequestMapping(value = "save")
+    public String save(CdChooseNineOrder cdChooseNineOrder, Model model, RedirectAttributes redirectAttributes) {
+        if (!beanValidator(model, cdChooseNineOrder)) {
+            return form(cdChooseNineOrder, model);
+        }
+        cdChooseNineOrderService.save(cdChooseNineOrder);
+        addMessage(redirectAttributes, "保存任选九订单'" + cdChooseNineOrder.getName() + "'成功");
+        return "redirect:" + Global.getAdminPath() + "/cchoosenine/cdChooseNineOrder/?repage";
+    }
+
+    @RequiresPermissions("cchoosenine:cdChooseNineOrder:edit")
+    @RequestMapping(value = "delete")
+    public String delete(String id, RedirectAttributes redirectAttributes) {
+        cdChooseNineOrderService.delete(id);
+        addMessage(redirectAttributes, "删除任选九订单成功");
+        return "redirect:" + Global.getAdminPath() + "/cchoosenine/cdChooseNineOrder/?repage";
+    }
 
 }

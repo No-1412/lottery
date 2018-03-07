@@ -36,6 +36,7 @@
 				<th>订单号</th>
 				<th>期数</th>
 				<th>注数</th>
+				<th>倍数</th>
 				<th>金额</th>
 				<th>用户</th>
 				<th>下单时间</th>
@@ -49,6 +50,7 @@
 				<td><a href="${ctx}/csuccessfail/cdSuccessFailOrder/form?id=${cdSuccessFailOrder.id}">${cdSuccessFailOrder.orderNumber}</a></td>
 				<td>${cdSuccessFailOrder.weekday}</td>
 				<td>${cdSuccessFailOrder.acount}</td>
+				<td>${cdSuccessFailOrder.times}倍</td>
 				<td>${cdSuccessFailOrder.price}</td>
 				<td>${cdSuccessFailOrder.uid}</td>
 				<td>${cdSuccessFailOrder.createDate}</td>

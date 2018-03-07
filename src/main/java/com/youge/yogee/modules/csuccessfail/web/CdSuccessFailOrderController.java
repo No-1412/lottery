@@ -74,6 +74,7 @@ public class CdSuccessFailOrderController extends BaseController {
             ccn.setUid(clu.getReality());
             ccn.setCreateDate(c.getCreateDate());
             ccn.setStatus(c.getStatus());
+            ccn.setTimes(c.getTimes());
             newList.add(ccn);
         }
         page.setList(newList);

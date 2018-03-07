@@ -56,6 +56,18 @@ public class LottoInterface {
             return HttpResultUtil.errorJson("blueNums为空");
         }
 
+        //连续购买期数
+        String continuity = (String) jsonData.get("continuity");
+        if (StringUtils.isEmpty(continuity)) {
+            logger.error("continuity为空");
+            return HttpResultUtil.errorJson("continuity为空");
+        }
+        //倍数
+        String times = (String) jsonData.get("times");
+        if (StringUtils.isEmpty(times)) {
+            logger.error("times为空");
+            return HttpResultUtil.errorJson("times为空");
+        }
 
         String type = (String) jsonData.get("type");
         if (StringUtils.isEmpty(type)) {
@@ -73,6 +85,22 @@ public class LottoInterface {
         if (StringUtils.isEmpty(uid)) {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
+        }
+
+
+        //1自购 2追号
+        String conType = "";
+        String weekContinue = "";
+        if ("1".equals(continuity)) {
+            conType = "1";
+        } else {
+            conType = "2";
+            int week = Integer.parseInt(weekday);
+            int con = Integer.parseInt(continuity);
+            for (int i = 1; i < con; i++) {
+                week++;
+                weekContinue += String.valueOf(week) + ",";
+            }
         }
 
 
@@ -120,7 +148,8 @@ public class LottoInterface {
         //计算金额
         double money = 2.00;
         double acountDouble = Double.parseDouble(acount);
-        String price = String.valueOf(money * acountDouble);
+        double timesDouble = Double.parseDouble(times);
+        String price = String.valueOf(money * acountDouble * timesDouble);
         //奖金 未中奖为0
         String award = "0";
 
@@ -135,7 +164,11 @@ public class LottoInterface {
         clo.setAward(award);//奖金
         clo.setUid(uid);//用户
         clo.setStatus("1");//已提交
-        clo.setType(type);//状态
+        clo.setType(type);//玩法
+        clo.setTimes(times);//倍数
+        clo.setContinuity(continuity);//连续期数
+        clo.setConType(conType);//类型
+        clo.setWeekContinue(weekContinue);//连续期数详情
         try {
             cdLottoOrderService.save(clo);
             map.put("flag", "1");

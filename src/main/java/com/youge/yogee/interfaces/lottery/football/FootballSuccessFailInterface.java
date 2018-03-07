@@ -5,7 +5,6 @@ import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
-import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFail;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
@@ -58,6 +57,13 @@ public class FootballSuccessFailInterface {
             return HttpResultUtil.errorJson("期数weekday为空");
         }
 
+        //期数
+        String times = (String) jsonData.get("times");
+        if (StringUtils.isEmpty(times)) {
+            logger.error("times为空");
+            return HttpResultUtil.errorJson("times为空");
+        }
+
         //订单详情
         Object jsonString = jsonData.get("detail");
         JSONArray jsonArray = JSONArray.fromObject(jsonString);
@@ -74,24 +80,27 @@ public class FootballSuccessFailInterface {
                 //结果集
                 resultList.add(wantResult);
                 CdSuccessFail csf = cdSuccessFailService.getSuccessFailDetail(matchId, weekday);
-                //赔率
-                String odds = "";
-                String[] resultStr = wantResult.split(",");
-                for (String s : resultStr) {
-                    if ("3".equals(s)) {
-                        odds += csf.getWinningOdds() + ",";
-                    }
-                    if ("1".equals(s)) {
-                        odds += csf.getFlatOdds() + ",";
-                    }
-                    if ("0".equals(s)) {
-                        odds += csf.getFlatOdds() + ",";
-                    }
+                if (csf == null) {
+                    return HttpResultUtil.errorJson("数据迷路,请稍后再试");
                 }
+//                //赔率
+//                String odds = "";
+//                String[] resultStr = wantResult.split(",");
+//                for (String s : resultStr) {
+//                    if ("3".equals(s)) {
+//                        odds += csf.getWinningOdds() + ",";
+//                    }
+//                    if ("1".equals(s)) {
+//                        odds += csf.getFlatOdds() + ",";
+//                    }
+//                    if ("0".equals(s)) {
+//                        odds += csf.getFlatOdds() + ",";
+//                    }
+//                }
                 //主客队
                 String beat = csf.getHomeTeam() + "vs" + csf.getAwayTeam();
                 //单场详情
-                String partOfResult = matchId + "/" + beat + "/" + wantResult + "/" + odds ;
+                String partOfResult = matchId + "+" + beat + "+" + wantResult;
                 orderDetail += partOfResult + "|";
             }
         }
@@ -103,14 +112,15 @@ public class FootballSuccessFailInterface {
             return HttpResultUtil.errorJson("uid为空");
         }
         //注数
-        int acount = BallGameCals.countOfFootBall(resultList, 14,2);
+        int acount = BallGameCals.countOfFootBall(resultList, 14, 2);
         String acountStr = String.valueOf(acount);
         //生成订单号
         String orderNum = util.genOrderNo("SFC", util.getFourRandom());
         //计算金额
         double money = 2.00;
         double acountDouble = Double.parseDouble(acountStr);
-        String price = String.valueOf(money * acountDouble);
+        double timesDouble = Double.parseDouble(times);
+        String price = String.valueOf(money * acountDouble * timesDouble);
 
         CdSuccessFailOrder csfo = new CdSuccessFailOrder();
         csfo.setOrderNumber(orderNum); //订单号
@@ -121,6 +131,7 @@ public class FootballSuccessFailInterface {
         csfo.setWeekday(weekday);//期数
         csfo.setStatus("1");//已提交
         csfo.setUid(uid);//用户
+        csfo.setTimes(times);//倍数
         try {
             cdSuccessFailOrderService.save(csfo);
             map.put("flag", "1");
