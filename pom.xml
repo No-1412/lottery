@@ -210,6 +210,14 @@
 		    <artifactId>swt</artifactId>
 		    <version>3.3.0-v3346</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.github.fernandospr/javapns-jdk16 -->
+		<dependency>
+			<groupId>com.github.fernandospr</groupId>
+			<artifactId>javapns-jdk16</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.eclipse</groupId>
 			<artifactId>draw2d</artifactId>

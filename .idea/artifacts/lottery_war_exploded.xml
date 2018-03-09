@@ -10,6 +10,7 @@
           <element id="library" level="project" name="Maven: Pingplusplus:pingpp-java:2.2.4" />
           <element id="library" level="project" name="Maven: com.google.code.gson:gson:2.6.2" />
           <element id="library" level="project" name="Maven: org.eclipse:swt:3.3.0-v3346" />
+          <element id="library" level="project" name="Maven: com.github.fernandospr:javapns-jdk16:2.4.0" />
           <element id="library" level="project" name="Maven: org.eclipse:draw2d:3.2.100-v20070529" />
           <element id="library" level="project" name="Maven: org.eclipse:jface:3.3.0-I20070606-0010" />
           <element id="library" level="project" name="Maven: org.eclipse.core:commands:3.3.0-I20070605-0010" />
