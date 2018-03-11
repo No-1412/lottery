@@ -45,7 +45,7 @@ public class Generate {
 		/**
 		 * 单个生成
 		 * **/
-		createOne("cbasketballorder","cdBasketballFollowOrder","cd_basketball_follow_order","竞彩篮球订单");
+		createOne("bm","bmPush","bm_push","推送表");
 
 		/**
 		 * 批量生成

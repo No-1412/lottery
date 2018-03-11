@@ -10,6 +10,8 @@ import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineService;
+import com.youge.yogee.modules.ccolorreward.entity.CdColorReward;
+import com.youge.yogee.modules.ccolorreward.service.CdColorRewardService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class ChooseNineQuartz {
     private CdChooseNineService cdChooseNineService;
     @Autowired
     private CdSuccessFailOrderService cdSuccessFailOrderService;
+    @Autowired
+    private CdColorRewardService cdColorRewardService;
 
     //    "0/10 * * * * ?" 每10秒触发
 //
@@ -75,12 +79,9 @@ public class ChooseNineQuartz {
             String weekday = cdChooseNineOrder.getWeekday();
             CdChooseNine cdChooseNine = cdChooseNineService.findByWeekday(weekday);
 
-            if (cdChooseNine.getNumber().contains("*")) {
-                if (DateUtils.isDateBefore(DateUtils.getDateTime(), cdChooseNine.getOpeningTime())) {
-                    break;
-                } else {
-                    //TODO 判断是不是最后一期
-                }
+            //判断是否可以开奖
+            if (cdChooseNine.getNotesNum().equals("")) {
+                break;
             }
 
             //开奖结果
@@ -131,19 +132,15 @@ public class ChooseNineQuartz {
             String orderDetail = cdSuccessFailOrder.getOrderDetail();
 
             String weekday = cdSuccessFailOrder.getWeekday();
-            CdChooseNine cdChooseNine = cdChooseNineService.findByWeekday(weekday);
+            CdColorReward cdColorReward = cdColorRewardService.findByWeekday(weekday);
 
             //判断是否可以开奖
-            if (cdChooseNine.getNumber().contains("*")) {
-                if (DateUtils.isDateBefore(DateUtils.getDateTime(), cdChooseNine.getOpeningTime())) {
-                    break;
-                } else {
-                    //TODO 判断是不是最后一期
-                }
+            if (cdColorReward.getNotesNum().equals("")) {
+                break;
             }
 
             //开奖结果
-            String[] numbers = cdChooseNine.getNumber().split(",");
+            String[] numbers = cdColorReward.getNumber().split(",");
 
             //记录押中场数
             int sum = 0;
@@ -157,14 +154,18 @@ public class ChooseNineQuartz {
                     sum += 1;
                 }
             }
-
+            String[] awards = cdColorReward.getPerNoteMoney().split(",");
             if (sum == 13) {
-                //TODO 胜负彩奖池
-                Integer award ;
-//                cdSuccessFailOrder.setAcount(award.toString());
+                Integer award =Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
+                cdSuccessFailOrder.setAcount(award.toString());
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
-            }else if(sum == 14){
+            } else if (sum == 14) {
+                Integer award =Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
+                cdSuccessFailOrder.setAcount(award.toString());
+                cdSuccessFailOrder.setStatus("4");
+                cdSuccessFailOrderService.save(cdSuccessFailOrder);
+            }else {
                 cdSuccessFailOrder.setStatus("3");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
             }

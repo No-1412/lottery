@@ -64,6 +64,6 @@ public class CdFtLogoService extends BaseService {
 
 	@Transactional(readOnly = false)
 	public List<CdFtLogo> findLogo(String teamName) {
-		return cdFtLogoDao.findBySql("select * from cd_ft_logo where team_name= '" + teamName + "'");
+		return cdFtLogoDao.findBySql("select * from cd_ft_logo where team_name= '" + teamName + "'",null,CdFtLogo.class);
 	}
 }

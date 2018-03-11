@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * @author liyuan
+ * @
  * Created by wjc on 2018-1-23 0023.
  */
 @Controller
@@ -57,7 +59,7 @@ public class FootballMatchInterface {
         List list = new ArrayList();
         List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed();
         for (CdFbFinshed str : dataList) {
-            Map map = new HashMap();
+            Map<String,Object> map = new HashMap<>();
             map.put("qc", str.getQc());
             map.put("sort", str.getSort());//赛事名称
             map.put("type", str.getType());//比赛时间

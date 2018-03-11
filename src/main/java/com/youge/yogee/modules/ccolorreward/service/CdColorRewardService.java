@@ -73,4 +73,17 @@ public class CdColorRewardService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         return cdColorRewardDao.find(dc);
     }
+
+    public CdColorReward findByWeekday(String weekday){
+        DetachedCriteria dc = cdColorRewardDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdColorReward.FIELD_DEL_FLAG, CdColorReward.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("matchId", "第"+weekday+"期"));
+        dc.addOrder(Order.desc("createDate"));
+        List<CdColorReward> list =  cdColorRewardDao.find(dc);
+        if(list.size() == 0){
+            return null;
+        }else {
+            return list.get(0);
+        }
+    }
 }

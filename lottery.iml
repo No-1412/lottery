@@ -45,6 +45,7 @@
     <orderEntry type="library" name="Maven: Pingplusplus:pingpp-java:2.2.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.google.code.gson:gson:2.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse:swt:3.3.0-v3346" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fernandospr:javapns-jdk16:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse:draw2d:3.2.100-v20070529" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse:jface:3.3.0-I20070606-0010" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.core:commands:3.3.0-I20070605-0010" level="project" />
