@@ -42,6 +42,7 @@ public class NotBallAwardsInterface {
         logger.info("大乐透开奖信息 lottoReward--------Start-------------------");
         List list = new ArrayList();
         List<CdLottoReward> lottoRewardList = cdLottoRewardService.getLottoReward();
+
         for (CdLottoReward str : lottoRewardList) {
             Map map = new HashMap();
             map.put("matchId", str.getMatchId()); //期次
@@ -144,13 +145,10 @@ public class NotBallAwardsInterface {
         dataMap.put("aCode", today + " 19:30截止"); //开奖号码
 
 
-
         dataMap.put("list", list);
         logger.info("往期排列三开奖信息 threeAwards---------End---------------------");
         return HttpResultUtil.successJson(dataMap);
     }
-
-
 
 
     /**
@@ -186,4 +184,58 @@ public class NotBallAwardsInterface {
         logger.info("往期排列五开奖信息 historyFiveAwards---------End---------------------");
         return HttpResultUtil.successJson(dataMap);
     }
+
+    /**
+     * 大乐透往期开奖
+     */
+    @RequestMapping(value = "historyLottoReward", method = RequestMethod.POST)
+    @ResponseBody
+    public String historyLottoReward(HttpServletRequest request) {
+        logger.info("大乐透往期开奖信息 historyLottoReward--------Start-------------------");
+        List list = new ArrayList();
+        List<CdLottoReward> lottoRewardList = cdLottoRewardService.getLottoReward();
+        List<String> dateList = new ArrayList<>();
+        for (CdLottoReward str : lottoRewardList) {
+            Map map = new HashMap();
+            map.put("matchId", str.getMatchId()); //期次
+            map.put("number", str.getNumber()); //中奖号码
+            dateList.add(str.getMatchId());
+            list.add(map);
+        }
+        String lastMatch = dateList.get(0);
+        String lastMatchId = lastMatch.substring(1, 8);
+        int newMatchId = Integer.parseInt(lastMatchId) + 1;
+        String newMatchIdStr = String.valueOf(newMatchId);
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
+        dataMap.put("weekDay", newMatchIdStr);
+        //获取当前时间
+        Date day = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String today = df.format(day);
+        String[] days = today.split("-");
+        int y = Integer.parseInt(days[0]);
+        int m = Integer.parseInt(days[1]);
+        int d = Integer.parseInt(days[2]);
+        if (m == 1 || m == 2) {
+            m += 12;
+            y--;
+        }
+        int iWeek = (d + 2 * m + 3 * (m + 1) / 5 + y + y / 4 - y / 100 + y / 400) % 7;
+        Calendar c = Calendar.getInstance();
+        if (iWeek == 1 || iWeek == 4 || iWeek == 6) {
+            c.add(Calendar.DAY_OF_MONTH, 1);// 今天+1天
+            day = c.getTime();
+            today = df.format(day);
+        } else if (iWeek == 3) {
+            c.add(Calendar.DAY_OF_MONTH, 1);// 今天+1天
+            c.add(Calendar.DAY_OF_MONTH, 1);// 今天+1天
+            day = c.getTime();
+            today = df.format(day);
+        }
+        dataMap.put("aCode", today + " 19:30截止"); //开奖号码
+        logger.info("大乐透往期开奖信息 historyLottoReward---------End---------------------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
 }

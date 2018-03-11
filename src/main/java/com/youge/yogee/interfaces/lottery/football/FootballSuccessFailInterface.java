@@ -57,7 +57,7 @@ public class FootballSuccessFailInterface {
             return HttpResultUtil.errorJson("期数weekday为空");
         }
 
-        //期数
+        //倍数
         String times = (String) jsonData.get("times");
         if (StringUtils.isEmpty(times)) {
             logger.error("times为空");

@@ -71,7 +71,7 @@ public class CdLottoRewardService extends BaseService {
     public List<CdLottoReward> getLottoReward() {
         DetachedCriteria dc = cdLottoRewardDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdLottoReward.FIELD_DEL_FLAG, CdLottoReward.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.desc("matchId"));
         return cdLottoRewardDao.find(dc);
     }
 }
