@@ -47,7 +47,7 @@ public class BasketballMatchInterface {
     public String bbStrengthPk(HttpServletRequest request) {
         logger.info("bbStrengthPk  篮球实力PK---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String itemId = (String)jsonData.get("itemId");
+        String itemId = (String)jsonData.get("itemid");
         List list = new ArrayList();
         List<CdBbStrengthpk> dataList = cdBbStrengthpkService.getStrengthPk(itemId);
         for (CdBbStrengthpk str : dataList) {

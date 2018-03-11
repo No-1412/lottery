@@ -5,6 +5,7 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
+import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
@@ -19,7 +20,9 @@ import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderServi
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
+import com.youge.yogee.modules.cmagicorder.service.CdMagicFollowOrderService;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import org.slf4j.Logger;
@@ -33,10 +36,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zhaoyifeng on 2018-03-05.
@@ -63,6 +63,8 @@ public class MagicOrderInterface {
     private CdBasketballMixedService cdBasketballMixedService;
     @Autowired
     private CdOrderFollowTimesService cdOrderFollowTimesService;
+    @Autowired
+    private CdMagicFollowOrderService cdMagicFollowOrderService;
 
     /**
      * 神单提交订单
@@ -96,6 +98,7 @@ public class MagicOrderInterface {
         String type = "";//1足球单关 2足球串关 3篮球单关 4篮球串关
         String shutDownTime = "";//截止时间
         String uId = "";
+        String startPrice = "";
         //篮球串关
         if (orderNum.startsWith("LCG")) {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
@@ -106,6 +109,8 @@ public class MagicOrderInterface {
                 if (clu == null) {
                     return HttpResultUtil.errorJson("用户不存在");
                 }
+                double start = Double.parseDouble(cbf.getAcount()) * 2;
+                startPrice = String.valueOf(start);
                 uId = cbf.getUid();
                 uName = clu.getName();//用户名
                 uImg = clu.getImg();//头像
@@ -150,6 +155,8 @@ public class MagicOrderInterface {
                 if (clu == null) {
                     return HttpResultUtil.errorJson("用户不存在");
                 }
+                double start = Double.parseDouble(cbs.getAcount()) * 2;
+                startPrice = String.valueOf(start);
                 uId = cbs.getUid();
                 uName = clu.getName();//用户名
                 uImg = clu.getImg();//头像
@@ -187,6 +194,8 @@ public class MagicOrderInterface {
                 if (clu == null) {
                     return HttpResultUtil.errorJson("用户不存在");
                 }
+                double start = Double.parseDouble(cff.getAcount()) * 2;
+                startPrice = String.valueOf(start);
                 uId = cff.getUid();
                 uName = clu.getName();//用户名
                 uImg = clu.getImg();//头像
@@ -230,6 +239,8 @@ public class MagicOrderInterface {
                 if (clu == null) {
                     return HttpResultUtil.errorJson("用户不存在");
                 }
+                double start = Double.parseDouble(cfs.getAcount()) * 2;
+                startPrice = String.valueOf(start);
                 uId = cfs.getUid();
                 uName = clu.getName();//用户名
                 uImg = clu.getImg();//头像
@@ -271,6 +282,7 @@ public class MagicOrderInterface {
         cmo.setuName(uName);//姓名
         cmo.setShutDownTime(shutDownTime);//截止时间
         cmo.setTimes(times);//倍数
+        cmo.setStartPrice(startPrice);//起投
         try {
             cdMagicOrderService.save(cmo);
             map.put("flag", "1");
@@ -320,6 +332,7 @@ public class MagicOrderInterface {
             cMap.put("shutDownTime", c.getShutDownTime()); //截止时间
             cMap.put("charges", c.getCharges() + "%"); //佣金
             cMap.put("times", c.getTimes()); //保字
+            cMap.put("startPrice", c.getStartPrice());//起投
             cList.add(cMap);
         }
         map.put("list", cList);
@@ -358,8 +371,232 @@ public class MagicOrderInterface {
         cMap.put("charges", cmo.getCharges() + "%"); //佣金
         cMap.put("times", cmo.getTimes()); //保字
         cMap.put("limit", cmo.getPrice()); //限购
+        cMap.put("startPrice", cmo.getStartPrice());//起投
         map.put("cmo", cMap);
+
+        List<CdMagicFollowOrder> list = cdMagicFollowOrderService.findByMid(id);
+        List<Map<String, Object>> cList = new ArrayList();
+        for (CdMagicFollowOrder cmfo : list) {
+            Map<String, Object> aMap = new HashMap<>();
+            aMap.put("uName", cmfo.getuName());
+            aMap.put("uImg", cmfo.getuImg());
+            aMap.put("price", cmfo.getPrice());
+            aMap.put("createDate", cmfo.getCreateDate());
+            cList.add(aMap);
+        }
+        Date day = new Date();
+        String shutDownTime = cmo.getShutDownTime();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date shutTime = df.parse(shutDownTime);
+        String orderNum = cmo.getOrderNum();
+        //1足球单关 2足球串关 3篮球单关 4篮球串关
+        String type = cmo.getType();
+        //订单详情
+        Map<String, Object> orderMap = new HashMap<>();
+        if (day.getTime() > shutTime.getTime()) {
+            if ("1".equals(type)) {
+                CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
+
+            } else if ("2".equals(type)) {
+                CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
+
+            } else if ("3".equals(type)) {
+                CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
+
+            } else {
+                CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
+
+            }
+        }
+        map.put("cList", cList);
         logger.info("获取神单详情 getMagicOrderDetail---------End---------------------");
+        return HttpResultUtil.successJson(map);
+    }
+
+
+    /**
+     * 跟买神单
+     */
+    @RequestMapping(value = "followMagicOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public String followMagicOrder(HttpServletRequest request) throws ParseException {
+        logger.info("跟买神单 followMagicOrder--------Start-------------------");
+        logger.debug("interface 请求--followMagicOrder-------- Start--------");
+        Map map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String mid = (String) jsonData.get("mid");
+        if (StringUtils.isEmpty(mid)) {
+            logger.error("mid为空");
+            return HttpResultUtil.errorJson("mid为空");
+        }
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            logger.error("uid为空");
+            return HttpResultUtil.errorJson("uid为空");
+        }
+
+        String times = (String) jsonData.get("times");
+        if (StringUtils.isEmpty(mid)) {
+            logger.error("times为空");
+            return HttpResultUtil.errorJson("times为空");
+        }
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在");
+        }
+        CdMagicOrder cmo = cdMagicOrderService.get(mid);
+        if (cmo == null) {
+            return HttpResultUtil.errorJson("神单不存在");
+        }
+        //神单彩种 1足球单关 2足球串关 3篮球单关 4篮球串关
+        String type = cmo.getType();
+        String orderNum = "";
+        String price = "";
+        //神单订单号
+        String magicOrderNum = cmo.getOrderNum();
+        if ("1".equals(type)) {
+            CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(magicOrderNum);
+            if (cfs == null) {
+                return HttpResultUtil.errorJson("比赛不存在");
+            }
+            CdFootballSingleOrder c = new CdFootballSingleOrder();
+            orderNum = util.genOrderNo("ZDG", util.getFourRandom());
+            c.setOrderNum(orderNum);//订单号
+            //押注详情
+            c.setScore(cfs.getScore());
+            c.setBeat(cfs.getBeat());
+            c.setLet(cfs.getLet());
+            c.setGoal(cfs.getGoal());
+            c.setHalf(cfs.getHalf());
+            //购买方式
+            c.setBuyWays(cfs.getBuyWays());
+            //价格
+            double timesDouble = Double.parseDouble(times);
+            double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
+            price = String.valueOf(timesDouble * startPriceDouble);
+            c.setPrice(price);
+            //让球 场次
+            c.setLetBalls(cfs.getLetBalls());
+            c.setMatchIds(cfs.getMatchIds());
+            //注数
+            double acountDouble = Double.parseDouble(cfs.getAcount());
+            String acount = String.valueOf((int) acountDouble * (int) timesDouble);
+            c.setAcount(acount);
+            c.setUid(uid); //用户id
+            c.setType("2");//跟买
+            c.setStatus("1");//已提交
+            c.setAward("0");//奖金
+            cdFootballSingleOrderService.save(c);
+
+        } else if ("2".equals(type)) {
+            CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(magicOrderNum);
+            if (cff == null) {
+                return HttpResultUtil.errorJson("比赛不存在");
+            }
+            CdFootballFollowOrder c = new CdFootballFollowOrder();
+            orderNum = util.genOrderNo("ZCG", util.getFourRandom());
+            c.setOrderNum(orderNum); //订单号
+            c.setAcount(cff.getAcount());//注数
+            c.setAward("0"); //奖金
+            //cffo.setOrderDetail(orderDetail); //订单详情
+            c.setScore(cff.getScore());//比分详情
+            c.setHalf(cff.getHalf());//半全场
+            c.setGoal(cff.getGoal());//总进球
+            c.setBeat(cff.getBeat());//胜负平
+            c.setLet(cff.getLet());//让球胜负平
+            c.setLetBalls(cff.getLetBalls());//让球数
+            //价格
+            double timesDouble = Double.parseDouble(times);
+            double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
+            price = String.valueOf(timesDouble * startPriceDouble);
+            c.setPrice(price);//金额
+            c.setStatus("1");//已提交
+            c.setUid(uid);//用户
+            c.setBuyWays(cff.getBuyWays());//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+            c.setFollowNum(cff.getFollowNum());//串关数
+            c.setTimes(times); //倍数
+
+            c.setDanMatchIds(cff.getDanMatchIds());//胆场次
+            c.setType("2"); //0普通订单 1发起的 2跟单的
+            cdFootballFollowOrderService.save(c);
+        } else if ("3".equals(type)) {
+            CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(magicOrderNum);
+            if (cbs == null) {
+                return HttpResultUtil.errorJson("比赛不存在");
+            }
+            CdBasketballSingleOrder c = new CdBasketballSingleOrder();
+            orderNum = util.genOrderNo("LDG", util.getFourRandom());
+            c.setOrderNum(orderNum); //订单号
+            c.setAcount(cbs.getAcount());//注数
+            c.setAward("0"); //奖金
+            //cbso.setOrderDetail(orderDetail); //订单详情
+            c.setHostWin(cbs.getHostWin());
+            c.setHostFail(cbs.getHostFail());
+            //价格
+            double timesDouble = Double.parseDouble(times);
+            double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
+            price = String.valueOf(timesDouble * startPriceDouble);
+            c.setPrice(price);//金额
+            c.setStatus("1");//已提交
+            c.setUid(uid);//用户
+            c.setBuyWays("1"); //玩法 1混投
+            c.setType("2"); // 0普通订单 1发起的 2跟单的
+            c.setMatchIds(cbs.getMatchIds());//所有场次
+            cdBasketballSingleOrderService.save(c);
+        } else {
+            CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(magicOrderNum);
+            if (cbf == null) {
+                return HttpResultUtil.errorJson("比赛不存在");
+            }
+            CdBasketballFollowOrder c = new CdBasketballFollowOrder();
+            orderNum = util.genOrderNo("LCG", util.getFourRandom());
+            c.setOrderNum(orderNum); //订单号
+
+            c.setAcount(cbf.getAcount());//注数
+            c.setAward("0"); //奖金
+            //cffo.setOrderDetail(orderDetail); //订单详情
+            c.setHostFail(cbf.getHostFail());//主负
+            c.setHostWin(cbf.getHostWin());//主胜
+            c.setSize(cbf.getSize());//大小分
+            c.setBeat(cbf.getBeat());//胜负
+            c.setLet(cbf.getLet());//让球胜负
+
+            c.setLetScore(cbf.getLetScore());//让分
+            c.setSizeCount(cbf.getSizeCount());//大小分
+            //价格
+            double timesDouble = Double.parseDouble(times);
+            double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
+            price = String.valueOf(timesDouble * startPriceDouble);
+            c.setPrice(price);//金额
+            c.setStatus("1");//已提交
+            c.setUid(uid);//用户
+            c.setBuyWays(cbf.getBuyWays());//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+            c.setFollowNums(cbf.getFollowNums());//串关数
+            c.setTimes(times); //倍数
+            c.setDanMatchIds(cbf.getDanMatchIds());//胆场次
+            c.setType("2"); // 0普通订单 1发起的 2跟单的
+            cdBasketballFollowOrderService.save(c);
+        }
+        //添加跟单记录
+        CdMagicFollowOrder cmfo = new CdMagicFollowOrder();
+        cmfo.setMagicOrderId(mid);//神单id
+        cmfo.setOrderNum(orderNum);//订单号
+        cmfo.setuImg(clu.getImg());//头像
+        cmfo.setuName(clu.getName());//用户名
+        cmfo.setPrice(price);//金额
+        cmfo.setUid(uid);//用户
+        cdMagicFollowOrderService.save(cmfo);
+        //修改神单跟单人数
+        String followNums = cmo.getFollowCounts();
+        int newCount = Integer.parseInt(followNums) + 1;
+        cmo.setFollowCounts(String.valueOf(newCount));
+        cdMagicOrderService.save(cmo);
+
+        logger.info("跟买神单 followMagicOrder---------End---------------------");
         return HttpResultUtil.successJson(map);
     }
 

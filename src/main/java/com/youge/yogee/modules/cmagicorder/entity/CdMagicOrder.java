@@ -49,6 +49,7 @@ public class CdMagicOrder extends BaseEntity<T> implements Serializable {
     private String uName; //用户名
     private String shutDownTime; //截止日期
     private String times;
+    private String startPrice; //起投
 
 
     public CdMagicOrder() {
@@ -183,6 +184,14 @@ public class CdMagicOrder extends BaseEntity<T> implements Serializable {
 
     public void setTimes(String times) {
         this.times = times;
+    }
+
+    public String getStartPrice() {
+        return startPrice;
+    }
+
+    public void setStartPrice(String startPrice) {
+        this.startPrice = startPrice;
     }
 }
 
