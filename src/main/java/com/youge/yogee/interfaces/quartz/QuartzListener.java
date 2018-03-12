@@ -348,7 +348,7 @@ public class QuartzListener {
             if (odds.length > 1) {
                 String[] a = odds[1].split(",")[0].split("/");
                 ood += Double.parseDouble(a[0]) * Double.parseDouble(a[1]);
-                ood += Double.parseDouble(odds[1].split(",")[0]);
+//                ood += Double.parseDouble(odds[1].split(",")[0]);
             }
         }
         return ood;
