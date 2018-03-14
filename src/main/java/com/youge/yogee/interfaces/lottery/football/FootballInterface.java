@@ -721,28 +721,34 @@ public class FootballInterface {
             for (CdFbOutcome cd : hnList) {
                 map = new HashMap();
                 map.put("mname", cd.getEventName());//赛事名称
-                map.put("hn", cd.getHn());//主队
-                map.put("gn", cd.getGn());//客队
-                map.put("hsc", cd.getHsc());//主队比分
-                map.put("gsc", cd.getGsc());//客队比分
                 map.put("mt", cd.getMt());//时间
+                map.put("hn", cd.getHn());//主队名称
+                map.put("gn", cd.getGn());//客队名称
+                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
+
                 //主队胜
                 if (hn.equals(cd.getHn())) {
                     //主队胜
                     if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
                         hs++;
+                        map.put("result","胜");//胜负
                     } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
                         hp++;
+                        map.put("result","平");//胜负
                     } else {
                         hf++;
+                        map.put("result","负");//胜负
                     }
                 } else {
                     if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
                         gs++;
+                        map.put("result","负");//胜负
                     } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
                         gp++;
+                        map.put("result","平");//胜负
                     } else {
                         gf++;
+                        map.put("result","胜");//胜负
                     }
                 }
                 hlist.add(map);

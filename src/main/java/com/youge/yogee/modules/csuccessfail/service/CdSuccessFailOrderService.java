@@ -63,10 +63,10 @@ public class CdSuccessFailOrderService extends BaseService {
 	}
 
 
-	public List<CdSuccessFailOrder> findStatusTwo() {
+	public List<CdSuccessFailOrder> findStatus() {
 		DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
-		dc.add(Restrictions.eq("status", "2"));
+		dc.add(Restrictions.eq("status", "3"));
 		dc.addOrder(Order.desc("createDate"));
 		return cdSuccessFailOrderDao.find(dc);
 	}

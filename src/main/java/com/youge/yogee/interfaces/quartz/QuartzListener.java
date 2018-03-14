@@ -68,7 +68,7 @@ public class QuartzListener {
     public void footballFollowOrder() {
         System.out.println("足球串关开奖");
 
-        List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusTwo();
+        List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatus();
 
 
         //全部可以比赛完的场次
@@ -252,7 +252,7 @@ public class QuartzListener {
                     //所有中奖赔率
                     Double award = Integer.valueOf(cdFootballFollowOrder.getTimes()) * oodSum * 2;
                     cdFootballFollowOrder.setAward(award.toString());
-                    cdFootballFollowOrder.setStatus("3");
+                    cdFootballFollowOrder.setStatus("4");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
                     //保存中奖纪录
                     CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -264,7 +264,7 @@ public class QuartzListener {
                     cdOrderWinners.setType("2");
                     cdOrderWinnersService.save(cdOrderWinners);
                 } else {
-                    cdFootballFollowOrder.setStatus("4");
+                    cdFootballFollowOrder.setStatus("5");
                 }
             }
         }
@@ -275,7 +275,7 @@ public class QuartzListener {
     public void footballSingleOrder() {
         System.out.println("足球单关开奖");
 
-        List<CdFootballSingleOrder> cdFootballSingleOrderList = cdFootballSingleOrderService.findStatusTwo();
+        List<CdFootballSingleOrder> cdFootballSingleOrderList = cdFootballSingleOrderService.findStatus();
 
 
         //全部可以比赛完的场次
@@ -312,7 +312,7 @@ public class QuartzListener {
                 if (oddsSum > 0) {
                     Double award = 2 * oddsSum;
                     cdFootballSingleOrder.setAward(award.toString());
-                    cdFootballSingleOrder.setStatus("3");
+                    cdFootballSingleOrder.setStatus("4");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
                     //保存中奖纪录
                     CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -325,7 +325,7 @@ public class QuartzListener {
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {
-                    cdFootballSingleOrder.setStatus("4");
+                    cdFootballSingleOrder.setStatus("5");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
                 }
             }

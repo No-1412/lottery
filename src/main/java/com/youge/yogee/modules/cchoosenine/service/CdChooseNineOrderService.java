@@ -63,10 +63,10 @@ public class CdChooseNineOrderService extends BaseService {
 	}
 
 
-	public List<CdChooseNineOrder> findStatusTwo() {
+	public List<CdChooseNineOrder> findStatus() {
 		DetachedCriteria dc = cdChooseNineOrderDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdChooseNineOrder.FIELD_DEL_FLAG, CdChooseNineOrder.DEL_FLAG_NORMAL));
-		dc.add(Restrictions.eq("status", "2"));
+		dc.add(Restrictions.eq("status", "3"));
 		dc.addOrder(Order.desc("createDate"));
 		return cdChooseNineOrderDao.find(dc);
 	}

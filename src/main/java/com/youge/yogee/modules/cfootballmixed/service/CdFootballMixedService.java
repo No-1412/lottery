@@ -97,12 +97,16 @@ public class CdFootballMixedService extends BaseService {
     }
 
 
-    @Transactional(readOnly = false)
-    public List getByItem(String matchDate) {
+    public CdFootballMixed getByItem(String matchDate) {
         DetachedCriteria dc = cdFootballMixedDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdFootballMixed.FIELD_DEL_FLAG, CdFootballMixed.DEL_FLAG_NORMAL));
         dc.add(Restrictions.eq("matchDate", matchDate));
-        return cdFootballMixedDao.find(dc);
+        List<CdFootballMixed> list =  cdFootballMixedDao.find(dc);
+        if(list.size()==0){
+            return null;
+        }else {
+            return list.get(0);
+        }
 
     }
 

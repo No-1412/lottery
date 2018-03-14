@@ -71,7 +71,7 @@ public class ChooseNineQuartz {
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void chooseNineOrder() {
         System.out.println("任选九开奖");
-        List<CdChooseNineOrder> cdBasketballFollowOrderList = cdChooseNineOrderService.findStatusTwo();
+        List<CdChooseNineOrder> cdBasketballFollowOrderList = cdChooseNineOrderService.findStatus();
 
         for (CdChooseNineOrder cdChooseNineOrder : cdBasketballFollowOrderList) {
             String orderDetail = cdChooseNineOrder.getOrderDetail();
@@ -113,7 +113,7 @@ public class ChooseNineQuartz {
                 int count = Calculations.rs(sum - danSum, 9 - danSum);
                 Integer award = Integer.valueOf(cdChooseNineOrder.getTimes()) * count * Integer.valueOf(cdChooseNine.getPerNoteMoney());
                 cdChooseNineOrder.setAcount(award.toString());
-                cdChooseNineOrder.setStatus("3");
+                cdChooseNineOrder.setStatus("4");
                 cdChooseNineOrderService.save(cdChooseNineOrder);
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -125,7 +125,7 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setType("5");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
-                cdChooseNineOrder.setStatus("4");
+                cdChooseNineOrder.setStatus("5");
                 cdChooseNineOrderService.save(cdChooseNineOrder);
 
             }
@@ -136,7 +136,7 @@ public class ChooseNineQuartz {
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void successFailOrder() {
         System.out.println("胜负彩开奖");
-        List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatusTwo();
+        List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatus();
 
         for (CdSuccessFailOrder cdSuccessFailOrder : cdSuccessFailOrderList) {
             String orderDetail = cdSuccessFailOrder.getOrderDetail();
@@ -168,7 +168,7 @@ public class ChooseNineQuartz {
             if (sum == 13) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
                 cdSuccessFailOrder.setAcount(award.toString());
-                cdSuccessFailOrder.setStatus("3");
+                cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -182,7 +182,7 @@ public class ChooseNineQuartz {
             } else if (sum == 14) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
                 cdSuccessFailOrder.setAcount(award.toString());
-                cdSuccessFailOrder.setStatus("3");
+                cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -194,7 +194,7 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setType("6");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
-                cdSuccessFailOrder.setStatus("4");
+                cdSuccessFailOrder.setStatus("5");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
             }
 

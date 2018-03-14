@@ -69,7 +69,7 @@ public class BasketBallQuartz {
 
 
         System.out.println("篮球串关开奖");
-        List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusTwo();
+        List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatus();
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
@@ -219,7 +219,7 @@ public class BasketBallQuartz {
                     //所有中奖赔率
                     Double award = Integer.valueOf(cdBasketballFollowOrder.getTimes()) * oodSum * 2;
                     cdBasketballFollowOrder.setAward(award.toString());
-                    cdBasketballFollowOrder.setStatus("3");
+                    cdBasketballFollowOrder.setStatus("4");
                     cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
                     //保存中奖纪录
                     CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -232,7 +232,7 @@ public class BasketBallQuartz {
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {
-                    cdBasketballFollowOrder.setStatus("4");
+                    cdBasketballFollowOrder.setStatus("5");
                 }
             }
         }
@@ -244,7 +244,7 @@ public class BasketBallQuartz {
     public void footballSingleOrder() {
         System.out.println("篮球单关开奖");
 
-        List<CdBasketballSingleOrder> cdBasketballSingleOrderList = cdBasketballSingleOrderService.findStatusTwo();
+        List<CdBasketballSingleOrder> cdBasketballSingleOrderList = cdBasketballSingleOrderService.findStatus();
 
 
         //全部可以比赛完的场次
@@ -278,7 +278,7 @@ public class BasketBallQuartz {
                     if (oddsSum > 0) {
                         Double award = 2 * oddsSum;
                         cdBasketballSingleOrder.setAward(award.toString());
-                        cdBasketballSingleOrder.setStatus("3");
+                        cdBasketballSingleOrder.setStatus("4");
                         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
                         //保存中奖纪录
                         CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -290,7 +290,7 @@ public class BasketBallQuartz {
                         cdOrderWinners.setType("3");
                         cdOrderWinnersService.save(cdOrderWinners);
                     } else {
-                        cdBasketballSingleOrder.setStatus("4");
+                        cdBasketballSingleOrder.setStatus("5");
                         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
                     }
                 }
