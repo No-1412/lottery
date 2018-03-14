@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.lottery.basketball;
 
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
@@ -7,6 +8,10 @@ import com.youge.yogee.modules.cbbalreadyfinsh.service.CdBbAlreadyFinshService;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
 import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinshService;
 import com.youge.yogee.modules.cbbstrengthpk.entity.CdBbStrengthpk;
+import com.youge.yogee.modules.cbbstrengthpk.entity.CdBbStrengthpkAverage;
+import com.youge.yogee.modules.cbbstrengthpk.entity.CdBbStrengthpkInjury;
+import com.youge.yogee.modules.cbbstrengthpk.service.CdBbStrengthpkAverageService;
+import com.youge.yogee.modules.cbbstrengthpk.service.CdBbStrengthpkInjuryService;
 import com.youge.yogee.modules.cbbstrengthpk.service.CdBbStrengthpkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by wjc on 2018-1-23 0023.
+ * Created by Liyuan on 2018-1-23 0023.
  */
 @Controller
 @RequestMapping("${frontPath}")
@@ -35,60 +40,88 @@ public class BasketballMatchInterface {
     private CdBbAlreadyFinshService cdBbAlreadyFinshService;
     @Autowired
     private CdBbNotFinshService cdBbNotFinshService;
+    @Autowired
+    private CdBbStrengthpkAverageService cdBbStrengthpkAverageService;
+    @Autowired
+    private CdBbStrengthpkInjuryService cdBbStrengthpkInjuryService;
+
 
     /**
      * 篮球实力PK数据接口
-     *
-     * @param request
-     * @return
      */
     @RequestMapping(value = "bbStrengthPk", method = RequestMethod.POST)
     @ResponseBody
     public String bbStrengthPk(HttpServletRequest request) {
-        logger.info("bbStrengthPk  篮球实力PK---------Start---------");
+        logger.info("bbStrengthPk  篮球实力PK数据---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String itemId = (String)jsonData.get("itemid");
-        List list = new ArrayList();
-        List<CdBbStrengthpk> dataList = cdBbStrengthpkService.getStrengthPk(itemId);
-        for (CdBbStrengthpk str : dataList) {
-            Map map = new HashMap();
-            map.put("averagingStatistics", str.getAveragingStatistics());//场均统计
-            map.put("nameHa", str.getNameHa());//球员名字主队
-            map.put("locationHa", str.getLocationHa());//位置主队
-            map.put("stageHa", str.getStageHa());//出场主队
-            map.put("timeHa", str.getTimeHa());//时间主队
-            map.put("scoreHa", str.getScoreHa());//得分主队
-            map.put("backboardHa", str.getBackboardHa());//篮板主队
-            map.put("assitha", str.getAssistHa());//助攻主队
-            map.put("stealHa", str.getStealHa());//抢断主队
-            map.put("shootHa", str.getShootHa());//投篮主队
-            map.put("trisectionHa", str.getTrisectionHa());//三分主队
-            map.put("penaltyHa", str.getPenaltyHa());//罚球主队
-            map.put("closeHa", str.getCloseHa());//封盖主队
-            map.put("nameHb", str.getNameHb());//球员名字主队
-            map.put("locationHb", str.getLocationHb());//位置客队
-            map.put("stageHb", str.getStageHb());//出场客队
-            map.put("timeHb", str.getTimeHb());//时间客队
-            map.put("scoreHb", str.getScoreHb());//得分客队
-            map.put("backboardHb", str.getBackboardHb());//篮板客队
-            map.put("assitha", str.getAssistHb());//助攻客队
-            map.put("stealHb", str.getStealHb());//抢断客队
-            map.put("shootHb", str.getShootHb());//投篮客队
-            map.put("trisectionHb", str.getTrisectionHb());//三分客队
-            map.put("penaltyHb", str.getPenaltyHb());//罚球客队
-            map.put("closeHb", str.getCloseHb());//封盖客队
-            map.put("hn", str.getHn());//主队名
-            map.put("vn", str.getVn());//客队名
-            map.put("itemId", str.getItemId());//itemId
-            map.put("zid", str.getZid());//队Id
-            map.put("jstj", str.getJstj());//技术统计
-            list.add(map);
+        if(jsonData == null){
+            return HttpResultUtil.errorJson("json格式错误");
         }
-        Map dataMap = new HashMap();
-        dataMap.put("list", list);
+        String itemId = (String) jsonData.get("itemid");
+        if (StringUtils.isEmpty(itemId)) {
+            logger.error("iteamid为空");
+            return HttpResultUtil.errorJson("iteamid为空");
+        }
+
+        //球队实力
+        CdBbStrengthpk cdBbStrengthpk = cdBbStrengthpkService.getStrengthPk(itemId);
+        Map<String, Object> pkMap = new HashMap<>();
+        pkMap.put("hn", cdBbStrengthpk.getHn());
+        pkMap.put("vn", cdBbStrengthpk.getVn());
+        pkMap.put("averaging", cdBbStrengthpk.getAveragingStatistics());
+
+        //球员场均数据
+        List<Map<String, Object>> averageHnList = new ArrayList<>();
+        List<Map<String, Object>> averageVnList = new ArrayList<>();
+        List<CdBbStrengthpkAverage> cdBbStrengthpkAverageList = cdBbStrengthpkAverageService.getStrengthPk(itemId);
+        for (CdBbStrengthpkAverage cdBbStrengthpkAverage : cdBbStrengthpkAverageList) {
+            Map<String, Object> averageMap = new HashMap<>();
+            averageMap.put("name", cdBbStrengthpkAverage.getName());//球员名字
+            averageMap.put("location", cdBbStrengthpkAverage.getLocation());//位置
+            averageMap.put("stage", cdBbStrengthpkAverage.getStage());//出场
+            averageMap.put("time", cdBbStrengthpkAverage.getTime());//时间
+            averageMap.put("score", cdBbStrengthpkAverage.getScore());//得分
+            averageMap.put("backboard", cdBbStrengthpkAverage.getBackboard());//篮板
+            averageMap.put("assist", cdBbStrengthpkAverage.getAssist());//助攻
+            averageMap.put("steal", cdBbStrengthpkAverage.getSteal());//抢断
+            averageMap.put("shoot", cdBbStrengthpkAverage.getShoot());//投篮
+            averageMap.put("trisection", cdBbStrengthpkAverage.getTrisection());//三分
+            averageMap.put("penalty", cdBbStrengthpkAverage.getPenalty());//罚球
+            averageMap.put("close", cdBbStrengthpkAverage.getClose());//封盖
+
+            if(cdBbStrengthpkAverage.getTeam().equals("1")){
+                averageHnList.add(averageMap);
+            }else {
+                averageVnList.add(averageMap);
+            }
+        }
+
+        //伤停
+        List<Map<String, Object>> injuryList = new ArrayList<>();
+        List<CdBbStrengthpkInjury> cdBbStrengthpkInjuryList = cdBbStrengthpkInjuryService.getStrengthPk(itemId);
+        for (CdBbStrengthpkInjury cdBbStrengthpkInjury : cdBbStrengthpkInjuryList) {
+            Map<String, Object> injuryMap = new HashMap<>();
+            injuryMap.put("team", cdBbStrengthpkInjury.getTeam());//球队
+            injuryMap.put("player", cdBbStrengthpkInjury.getPlayer());//球员
+            injuryMap.put("position", cdBbStrengthpkInjury.getPosition());//位置
+            injuryMap.put("reason", cdBbStrengthpkInjury.getReason());//原因
+            injuryMap.put("date", cdBbStrengthpkInjury.getDate());//日期
+            injuryMap.put("remark", cdBbStrengthpkInjury.getRemarks());//备注
+
+            injuryList.add(injuryMap);
+        }
+
+
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("pkMap", pkMap);
+        dataMap.put("averageHnList", averageHnList);
+        dataMap.put("averageVnList", averageVnList);
+        dataMap.put("injuryList", injuryList);
+
         logger.info("bbStrengthPk  篮球实力PK---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
     /**
      * 篮球已完赛接口
      */
@@ -114,10 +147,11 @@ public class BasketballMatchInterface {
             list.add(map);
         }
         Map dataMap = new HashMap();
-        dataMap.put("list",list);
+        dataMap.put("list", list);
         logger.info("bbAlreadyFinsh  篮球已完赛---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
     /**
      * 篮球未完赛接口
      */
@@ -141,7 +175,7 @@ public class BasketballMatchInterface {
             list.add(map);
         }
         Map dataMap = new HashMap();
-        dataMap.put("list",list);
+        dataMap.put("list", list);
         logger.info("bbNotFinsh  篮球未完赛---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }

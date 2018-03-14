@@ -66,12 +66,16 @@ public class CdBbStrengthpkService extends BaseService {
 		cdBbStrengthpkDao.update("delete from CdBbStrengthpk");
 	}
 
-	@Transactional(readOnly = false)
-	public List<CdBbStrengthpk> getStrengthPk(String itemId){
+	public CdBbStrengthpk getStrengthPk(String itemId){
 		DetachedCriteria dc = cdBbStrengthpkDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdBbStrengthpk.FIELD_DEL_FLAG, CdBbStrengthpk.DEL_FLAG_NORMAL));
 		dc.add(Restrictions.eq("itemId", itemId));
 		dc.addOrder(Order.desc("createDate"));
-		return cdBbStrengthpkDao.find(dc);
+		List<CdBbStrengthpk> list =  cdBbStrengthpkDao.find(dc);
+		if(list.size()==0){
+			return null;
+		}else {
+			return list.get(0);
+		}
 	}
 }
