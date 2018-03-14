@@ -2,12 +2,11 @@ package com.youge.yogee.interfaces.util;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
- *    C（m，k）  A（n,k）
- *    大乐透算法
+ * C（m，k）  A（n,k）
+ * 大乐透算法
  */
 /*
       ✲✲✲✲✲
@@ -32,9 +31,9 @@ public class Calculations {
     private static int sum = 0;
     private static double doubleSum = 0;
     public static List<String> list = new ArrayList<>();
-    private static ArrayList <Integer>tmpArr = new ArrayList<>();
+    private static ArrayList<Integer> tmpArr = new ArrayList<>();
 
-    private static ArrayList <Double>tmpDoubleArr = new ArrayList<>();
+    private static ArrayList<Double> tmpDoubleArr = new ArrayList<>();
 
     /**
      * 计算C(m,k) 大乐透算法
@@ -96,21 +95,21 @@ public class Calculations {
 //        arrangeSelect(str1, new ArrayList<String>());
 //        System.out.println(list);
 
-        double[] arr = {1,1,3,4,5,6};
-        doubleSum = 0;
-        combine(0,2,arr);
-        System.out.println(doubleSum);
+//        double[] arr = {1, 1, 3, 4, 5, 6};
+//        doubleSum = 0;
+//        combine(0, 2, arr);
 
+        String a = getRepayPercent(64.8, 14.0);
+        System.out.println(a);
     }
 
 
     /**
      * 计算一个数组排列组合结果 衍生C(m,k)
      * 没什么卵用╮(╯▽╰)╭
-     *
      */
-    public static void combine(int index,int k,double []arr) {
-        if(k == 1){
+    public static void combine(int index, int k, double[] arr) {
+        if (k == 1) {
             for (int i = index; i < arr.length; i++) {
                 tmpDoubleArr.add(arr[i]);
 
@@ -118,58 +117,59 @@ public class Calculations {
                 System.out.println(tmpDoubleArr.toString());
                 tmpDoubleArr.remove(arr[i]);
             }
-        }else{
+        } else {
             for (int i = index; i <= arr.length - k; i++) {
                 tmpDoubleArr.add(arr[i]);
-                 combine(i + 1,k - 1, arr);
+                combine(i + 1, k - 1, arr);
                 tmpDoubleArr.remove(arr[i]);
             }
         }
     }
+
     static List<Double> doubleList = new ArrayList<>();
 
-    public static void combineCollection(int index,int k,double []arr) {
-        if(k == 1){
+    public static void combineCollection(int index, int k, double[] arr) {
+        if (k == 1) {
             for (int i = index; i < arr.length; i++) {
                 tmpDoubleArr.add(arr[i]);
 
                 doubleList.add(tmpDoubleArr.get(0) * tmpDoubleArr.get(1));
                 tmpDoubleArr.remove(arr[i]);
             }
-        }else{
+        } else {
             for (int i = index; i <= arr.length - k; i++) {
                 tmpDoubleArr.add(arr[i]);
-                combine(i + 1,k - 1, arr);
+                combine(i + 1, k - 1, arr);
                 tmpDoubleArr.remove(arr[i]);
             }
         }
     }
 
-    public static double odds(int k,List<String> arr){
+    public static double odds(int k, List<String> arr) {
 
         double[] doubles = new double[arr.size()];
-        for(int i=0;i<arr.size();i++){
+        for (int i = 0; i < arr.size(); i++) {
             doubles[i] = Double.parseDouble(arr.get(i));
         }
         doubleSum = 0;
-        combine(0,k,doubles);
+        combine(0, k, doubles);
         return doubleSum;
     }
 
 
-    public static List<Double> oddsCollection(int k,List<String> arr){
+    public static List<Double> oddsCollection(int k, List<String> arr) {
 
         double[] doubles = new double[arr.size()];
-        for(int i=0;i<arr.size();i++){
+        for (int i = 0; i < arr.size(); i++) {
             doubles[i] = Double.parseDouble(arr.get(i));
         }
 
-        combine(0,k,doubles);
+        combine(0, k, doubles);
         return doubleList;
     }
 
 
-     private static int jc(int n) {
+    private static int jc(int n) {
         int m = 1;
         for (int i = 1; i <= n; i++) {
             m = m * i;
@@ -182,6 +182,16 @@ public class Calculations {
         int s;
         s = jc(n) / (jc(m) * jc((n - m)));
         return s;
+    }
+
+    /**
+     * 获取回报率 奖金除以本金 返回String 带%号
+     */
+    public static String getRepayPercent(double award, double price) {
+        double percent = award / price;
+        String result = String.valueOf(((int) (percent * 100)));
+        return result + "%";
+
     }
 
 
