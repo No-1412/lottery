@@ -263,6 +263,32 @@ public class BallGameCals {
         return map;
     }
 
+
+
+    public static Map<String, String> getHalfWholeNames() {
+        Map<String, String> map = new HashMap<>();
+        map.put("33", "胜胜");
+        map.put("31", "胜平");
+        map.put("30", "胜负");
+        map.put("13", "平胜");
+        map.put("11", "平平");
+        map.put("10", "平负");
+        map.put("03", "负胜");
+        map.put("01", "负平");
+        map.put("00", "负负");
+
+        return map;
+    }
+
+    public static Map<String, String> getSizeNames() {
+        Map<String, String> map = new HashMap<>();
+        map.put("1", ">");
+        map.put("0", "<");
+
+
+        return map;
+    }
+
 }
 /*
 

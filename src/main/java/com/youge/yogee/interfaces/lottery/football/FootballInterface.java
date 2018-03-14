@@ -5,7 +5,6 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
-import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
 import com.youge.yogee.modules.cfbfuture.service.CdFbFutureService;
 import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
@@ -425,6 +424,8 @@ public class FootballInterface {
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
                         map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+                        map.put("close", cdFootballMixed.getClose());//让球
+                        map.put("matchId", cdFootballMixed.getMatchId());//期次
                         listbytime.add(map);
                     }
                 }

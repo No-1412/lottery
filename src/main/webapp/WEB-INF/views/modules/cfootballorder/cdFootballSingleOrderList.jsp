@@ -33,11 +33,12 @@
     <form:select id="buyWays" path="buyWays">
         <form:option value="" label="全部"/>
         <form:option value="1" label="混投"/>
-        <form:option value="2" label="胜负平"/>
-        <form:option value="3" label="猜比分"/>
-        <form:option value="4" label="总进球"/>
-        <form:option value="5" label="半全场"/>
-        <form:option value="6" label="让球胜负平"/>
+        <form:option value="2" label="胜平负"/>
+        <form:option value="4" label="猜比分"/>
+        <form:option value="5" label="总进球"/>
+        <form:option value="6" label="半全场"/>
+        <form:option value="3" label="让球胜负平"/>
+
     </form:select>
     &nbsp;<input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 </form:form>
@@ -69,18 +70,18 @@
                         混投
                     </c:when>
                     <c:when test="${cdFootballSingleOrder.buyWays==2}">
-                        胜负平
-                    </c:when>
-                    <c:when test="${cdFootballSingleOrder.buyWays==3}">
-                        猜比分
+                        胜平负
                     </c:when>
                     <c:when test="${cdFootballSingleOrder.buyWays==4}">
-                        总进球
+                        猜比分
                     </c:when>
                     <c:when test="${cdFootballSingleOrder.buyWays==5}">
-                        半全场
+                        总进球
                     </c:when>
                     <c:when test="${cdFootballSingleOrder.buyWays==6}">
+                        半全场
+                    </c:when>
+                    <c:when test="${cdFootballSingleOrder.buyWays==3}">
                         让球胜负平
                     </c:when>
                     <c:otherwise>

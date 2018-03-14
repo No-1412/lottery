@@ -53,7 +53,8 @@ public class FootballFollowOrderInterface {
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
-        //玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+        //玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球 旧 不要了
+        //1混投 2胜平负 3让球胜平负 4比分 5总进球 6半全场 2018年3月13日16:10:07
         String buyWays = (String) jsonData.get("buyWays");
         if (StringUtils.isEmpty(buyWays)) {
             logger.error("buyWays为空");
@@ -327,7 +328,7 @@ public class FootballFollowOrderInterface {
         cffo.setPrice(price);//金额
         cffo.setStatus("1");//已提交
         cffo.setUid(uid);//用户
-        cffo.setBuyWays(buyWays);//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+        cffo.setBuyWays(buyWays);//玩法 1混投 2胜平负 3让球胜平负 4比分 5总进球 6半全场
         cffo.setFollowNum(followNum);//串关数
         cffo.setTimes(times); //倍数
 

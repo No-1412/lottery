@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 /**
  * 彩票订单表Entity
+ *
  * @author WeiJinChao
  * @version 2017-12-08
  */
@@ -23,149 +24,158 @@ import java.io.Serializable;
 @Table(name = "cd_order")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CdOrder extends BaseEntity<T> implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	private String id; 		// 识别id
-	private String name; 	// 名称
-	
-	private String createDate; 	// 创建时间
-	private String remarks; 	// 备注
-	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
-	private String userId; //用户id
-	private String userName; //用户名字
-	private String issue; //期号
-	private String number; //彩票号码
-	private String type; //彩票种类
-	private String count; // 购买数量
-	private String unitPrice; //单价
-	private String totalPrice; //总价
-	private String win; //中奖(0待开奖,1中奖2未中奖)
-	public CdOrder() {
-		super();
-	}
 
-	public CdOrder(String id){
-		this();
-		this.id = id;
-	}
-	
-	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_order")
-	//@SequenceGenerator(name = "seq_cd_order", sequenceName = "seq_cd_order")
-	public String getId() {
-		return id;
-	}
+    private static final long serialVersionUID = 1L;
+    private String id;        // 识别id
+    private String name;    // 名称
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String createDate;    // 创建时间
+    private String remarks;    // 备注
+    private String delFlag;    // 删除标识 (0：未删除；1：已删除)
+    private String userId; //用户id
+    private String userName; //用户名字
+    private String issue; //期号
+    private String number; //彩票号码
+    private String type; //彩票种类
+    private String count; // 购买数量
+    private String unitPrice; //单价
+    private String totalPrice; //总价
+    private String win; //中奖(0待开奖,1中奖2未中奖)
+    private String saleId; //销售id
 
-	@Length(min=1, max=200)
-	public String getName() {
-		return name;
-	}
+    public CdOrder() {
+        super();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getCreateDate() {
-		return createDate;
-	}
+    public CdOrder(String id) {
+        this();
+        this.id = id;
+    }
 
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_order")
+    //@SequenceGenerator(name = "seq_cd_order", sequenceName = "seq_cd_order")
+    public String getId() {
+        return id;
+    }
 
-	public String getDelFlag() {
-		return delFlag;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setDelFlag(String delFlag) {
-		this.delFlag = delFlag;
-	}
+    @Length(min = 1, max = 200)
+    public String getName() {
+        return name;
+    }
 
-	public String getUserId() {
-		return userId;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+    public String getCreateDate() {
+        return createDate;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public String getDelFlag() {
+        return delFlag;
+    }
 
-	public String getIssue() {
-		return issue;
-	}
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
 
-	public void setIssue(String issue) {
-		this.issue = issue;
-	}
+    public String getUserId() {
+        return userId;
+    }
 
-	public String getNumber() {
-		return number;
-	}
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
+    public String getUserName() {
+        return userName;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getIssue() {
+        return issue;
+    }
 
-	public String getCount() {
-		return count;
-	}
+    public void setIssue(String issue) {
+        this.issue = issue;
+    }
 
-	public void setCount(String count) {
-		this.count = count;
-	}
+    public String getNumber() {
+        return number;
+    }
 
-	public String getUnitPrice() {
-		return unitPrice;
-	}
+    public void setNumber(String number) {
+        this.number = number;
+    }
 
-	public void setUnitPrice(String unitPrice) {
-		this.unitPrice = unitPrice;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getTotalPrice() {
-		return totalPrice;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setTotalPrice(String totalPrice) {
-		this.totalPrice = totalPrice;
-	}
+    public String getCount() {
+        return count;
+    }
 
-	public String getRemarks() {
-		return remarks;
-	}
+    public void setCount(String count) {
+        this.count = count;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public String getUnitPrice() {
+        return unitPrice;
+    }
 
-	public String getWin() {
-		return win;
-	}
+    public void setUnitPrice(String unitPrice) {
+        this.unitPrice = unitPrice;
+    }
 
-	public void setWin(String win) {
-		this.win = win;
-	}
+    public String getTotalPrice() {
+        return totalPrice;
+    }
 
+    public void setTotalPrice(String totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getWin() {
+        return win;
+    }
+
+    public void setWin(String win) {
+        this.win = win;
+    }
+
+    public String getSaleId() {
+        return saleId;
+    }
+
+    public void setSaleId(String saleId) {
+        this.saleId = saleId;
+    }
 }
 
 

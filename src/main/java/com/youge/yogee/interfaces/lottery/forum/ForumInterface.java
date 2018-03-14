@@ -2,7 +2,6 @@ package com.youge.yogee.interfaces.lottery.forum;
 
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.interfaces.lottery.UserLoginInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cforum.entity.CdForum;
@@ -32,7 +31,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("${frontPath}")
 public class ForumInterface {
-    private static final Logger logger = LoggerFactory.getLogger(UserLoginInterface.class);
+    private static final Logger logger = LoggerFactory.getLogger(ForumInterface.class);
 
     @Autowired
     private CdForumService cdForumService;

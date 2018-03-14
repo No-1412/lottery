@@ -28,8 +28,7 @@ import java.util.Map;
 
 /**
  * @author liyuan
- * @
- * Created by wjc on 2018-1-23 0023.
+ * @ Created by wjc on 2018-1-23 0023.
  */
 @Controller
 @RequestMapping("${frontPath}")
@@ -59,7 +58,7 @@ public class FootballMatchInterface {
         List list = new ArrayList();
         List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed();
         for (CdFbFinshed str : dataList) {
-            Map<String,Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             map.put("qc", str.getQc());
             map.put("sort", str.getSort());//赛事名称
             map.put("type", str.getType());//比赛时间
@@ -153,35 +152,59 @@ public class FootballMatchInterface {
         String itemId = (String) jsonData.get("itemId");
         List list = new ArrayList();
         List<CdFtSkill> dataList = cdFtSkillService.getFtSkill(itemId);
-        for (CdFtSkill str : dataList) {
-            Map map = new HashMap();
-            map.put("itemId", str.getItemId());
-            map.put("shootnuma", str.getShootnuma()); //射门a
-            map.put("shotsongoala", str.getShotsongoala()); //射正a
-            map.put("foulnuma", str.getFoulnuma()); //犯规A
-            map.put("hn", str.getHn());//主队
-            map.put("gn", str.getGn());//客队
-            map.put("isFinshed", str.getIsFinshed());//是否完赛
-            map.put("cornerkicknuma", str.getCornerkicknuma());//角球A
-            map.put("offsidenuma", str.getOffsidenuma());//越位A
-            map.put("yellowcardnuma", str.getYellowcardnuma());//黄牌A
-            map.put("savesa", str.getSavesa());//救球
-            map.put("time", str.getPlayera());//主队名单
-            map.put("playera", str.getTbplayera());//替补A
-            map.put("shootnumb", str.getShootnumb()); //射门b
-            map.put("shotsongoalb", str.getShotsongoalb()); //射正b
-            map.put("foulnumb", str.getFoulnumb()); //犯规b
-            map.put("cornerkicknumb", str.getCornerkicknumb());//角球b
-            map.put("offsidenumb", str.getOffsidenumb());//越位b
-            map.put("yellowcardnumb", str.getYellowcardnumb());//黄牌b
-            map.put("savesb", str.getSavesb());//救球b
-            map.put("playerb", str.getPlayerb());//客队名单b
-            map.put("tbplayerb", str.getTbplayerb());//替补b
-            list.add(map);
+        CdFtSkill str = new CdFtSkill();
+        if (dataList.size() > 0) {
+            str = dataList.get(0);
         }
+        //for (CdFtSkill str : dataList) {
+        Map map = new HashMap();
+        map.put("itemId", str.getItemId());
+        map.put("shootnuma", str.getShootnuma()); //射门a
+        map.put("shotsongoala", str.getShotsongoala()); //射正a
+        map.put("foulnuma", str.getFoulnuma()); //犯规A
+        map.put("hn", str.getHn());//主队
+        map.put("gn", str.getGn());//客队
+        map.put("isFinshed", str.getIsFinshed());//是否完赛
+        map.put("cornerkicknuma", str.getCornerkicknuma());//角球A
+        map.put("offsidenuma", str.getOffsidenuma());//越位A
+        map.put("yellowcardnuma", str.getYellowcardnuma());//黄牌A
+        map.put("savesa", str.getSavesa());//救球
+        map.put("shootnumb", str.getShootnumb()); //射门b
+        map.put("shotsongoalb", str.getShotsongoalb()); //射正b
+        map.put("foulnumb", str.getFoulnumb()); //犯规b
+        map.put("cornerkicknumb", str.getCornerkicknumb());//角球b
+        map.put("offsidenumb", str.getOffsidenumb());//越位b
+        map.put("yellowcardnumb", str.getYellowcardnumb());//黄牌b
+        map.put("savesb", str.getSavesb());//救球b
+
+//        map.put("time", str.getPlayera());//主队名单
+//        map.put("playera", str.getTbplayera());//替补A
+//        map.put("playerb", str.getPlayerb());//客队名单b
+//        map.put("tbplayerb", str.getTbplayerb());//替补b
+
+
+        List<String> paList = getList(str.getPlayera());
+        List<String> pbList = getList(str.getPlayerb());
+        List<String> tpaList = getList(str.getTbplayera());
+        List<String> tpbList = getList(str.getTbplayerb());
+
         Map dataMap = new HashMap();
-        dataMap.put("list", list);
+        dataMap.put("list", map);
+        dataMap.put("paList", paList);
+        dataMap.put("pbList", pbList);
+        dataMap.put("tpaList", tpaList);
+        dataMap.put("tpbList", tpbList);
         logger.info("ftBallSkill  足球实况(技术统计 首发名单和替补名单)---------End---------");
         return HttpResultUtil.successJson(dataMap);
+    }
+
+    public static List<String> getList(String str) {
+
+        String[] strArray = str.split(",");
+        List<String> list = new ArrayList<>();
+        for (String s : strArray) {
+            list.add(s.split("-")[1]);
+        }
+        return list;
     }
 }

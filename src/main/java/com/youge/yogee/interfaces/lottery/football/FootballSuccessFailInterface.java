@@ -65,10 +65,9 @@ public class FootballSuccessFailInterface {
         }
 
         //订单详情
+//        List<Map<String, Object>> detail = (List<Map<String, Object>>) jsonData.get("detail");
         Object jsonString = jsonData.get("detail");
         JSONArray jsonArray = JSONArray.fromObject(jsonString);
-
-
         List<Map<String, Object>> detail = (List<Map<String, Object>>) jsonArray.toCollection(jsonArray, Map.class);
         List<String> resultList = new ArrayList<>();
         String orderDetail = "";
