@@ -7,10 +7,8 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
-import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
-import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
-import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,7 +31,8 @@ public class BasketBallQuartz {
     private CdBasketballAwardsService cdBasketballAwardsService;
     @Autowired
     private CdBasketballSingleOrderService cdBasketballSingleOrderService;
-
+    @Autowired
+    private CdOrderWinnersService cdOrderWinnersService;
     //    "0/10 * * * * ?" 每10秒触发
 //
 //    "0 0 12 * * ?" 每天中午12点触发
@@ -61,12 +60,14 @@ public class BasketBallQuartz {
 //    每周星期天凌晨1点实行一次：0 0 1 ? * L
 //    在26分、29分、33分执行一次：0 26,29,33 * * * ?
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
-      //定时轮询
+    //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
 
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void basketBallFollowOrder() {
+
+
         System.out.println("篮球串关开奖");
         List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusTwo();
 
@@ -91,23 +92,23 @@ public class BasketBallQuartz {
                 //***********************************判断押中场次************************************************
                 //判断主胜
                 String hostWin = cdBasketballFollowOrder.getHostWin();
-                judgeBaskerballFollow(hostWin, "hostWin", winList, danWinList,cdBasketballFollowOrder);
+                judgeBaskerballFollow(hostWin, "hostWin", winList, danWinList, cdBasketballFollowOrder);
 
                 //判断主负
                 String hostFail = cdBasketballFollowOrder.getHostFail();
-                judgeBaskerballFollow(hostFail, "hostFail", winList, danWinList,cdBasketballFollowOrder);
+                judgeBaskerballFollow(hostFail, "hostFail", winList, danWinList, cdBasketballFollowOrder);
 
                 //判断胜负
                 String beat = cdBasketballFollowOrder.getBeat();
-                judgeBaskerballFollow(beat, "beat", winList, danWinList,cdBasketballFollowOrder);
+                judgeBaskerballFollow(beat, "beat", winList, danWinList, cdBasketballFollowOrder);
 
                 //判断大小分
                 String size = cdBasketballFollowOrder.getSize();
-                judgeBaskerballFollow(size, "size", winList, danWinList,cdBasketballFollowOrder);
+                judgeBaskerballFollow(size, "size", winList, danWinList, cdBasketballFollowOrder);
 
                 //判断让分胜负平
                 String let = cdBasketballFollowOrder.getLet();
-                judgeBaskerballFollow(size, "size", winList, danWinList,cdBasketballFollowOrder);
+                judgeBaskerballFollow(size, "size", winList, danWinList, cdBasketballFollowOrder);
 
                 //***************************************判断结束*******************************************************
 
@@ -220,6 +221,14 @@ public class BasketBallQuartz {
                     cdBasketballFollowOrder.setAward(award.toString());
                     cdBasketballFollowOrder.setStatus("3");
                     cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                    //保存中奖纪录
+                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                    cdOrderWinners.setWinOrderNum(cdBasketballFollowOrder.getOrderNum());//中间单号
+                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                    cdOrderWinners.setUid(cdBasketballFollowOrder.getUid());//中间用户
+                    String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdBasketballFollowOrder.getPrice()));
+                    cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {
                     cdBasketballFollowOrder.setStatus("4");
@@ -258,7 +267,7 @@ public class BasketBallQuartz {
 
                 //判断主负
                 String hostFail = cdBasketballSingleOrder.getHostFail();
-                double hostFailOdds =judgeBasketballSingle(hostFail, "hostFail");
+                double hostFailOdds = judgeBasketballSingle(hostFail, "hostFail");
 
                 //***************************************判断结束*******************************************************
 
@@ -270,6 +279,14 @@ public class BasketBallQuartz {
                         cdBasketballSingleOrder.setAward(award.toString());
                         cdBasketballSingleOrder.setStatus("3");
                         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+                        //保存中奖纪录
+                        CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                        cdOrderWinners.setWinOrderNum(cdBasketballSingleOrder.getOrderNum());//中间单号
+                        cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                        cdOrderWinners.setUid(cdBasketballSingleOrder.getUid());//中间用户
+                        String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdBasketballSingleOrder.getPrice()));
+                        cdOrderWinners.setRepayPercent(repayPercent);
+                        cdOrderWinnersService.save(cdOrderWinners);
                     } else {
                         cdBasketballSingleOrder.setStatus("4");
                         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
@@ -289,17 +306,17 @@ public class BasketBallQuartz {
             switch (key) {
                 case "hostWin":
                     finish = cdBasketballAwards.getWinGrap();
-                    if(finish.contains("主胜")){
-                        finish = finish.substring(0,2);
-                    }else {
+                    if (finish.contains("主胜")) {
+                        finish = finish.substring(0, 2);
+                    } else {
                         return ood;
                     }
                     break;
                 case "hostFail":
                     finish = cdBasketballAwards.getWinGrap();
-                    if(finish.contains("主负")){
-                        finish = finish.substring(0,2);
-                    }else {
+                    if (finish.contains("主负")) {
+                        finish = finish.substring(0, 2);
+                    } else {
                         return ood;
                     }
                     break;
@@ -314,7 +331,7 @@ public class BasketBallQuartz {
         return ood;
     }
 
-    private void judgeBaskerballFollow(String method, String key, List<String> winList, List<String> danWinList,CdBasketballFollowOrder cdBasketballFollowOrder) {
+    private void judgeBaskerballFollow(String method, String key, List<String> winList, List<String> danWinList, CdBasketballFollowOrder cdBasketballFollowOrder) {
         String[] methodArray = method.split("\\|");
         for (int i = 0; i < methodArray.length; i++) {
             String[] aMethodArray = methodArray[i].split("\\+");
@@ -323,17 +340,17 @@ public class BasketBallQuartz {
             switch (key) {
                 case "hostWin":
                     finish = cdBasketballAwards.getWinGrap();
-                    if(finish.contains("主胜")){
-                        finish = finish.substring(0,2);
-                    }else {
+                    if (finish.contains("主胜")) {
+                        finish = finish.substring(0, 2);
+                    } else {
                         return;
                     }
                     break;
                 case "hostFail":
                     finish = cdBasketballAwards.getWinGrap();
-                    if(finish.contains("主负")){
-                        finish = finish.substring(0,2);
-                    }else {
+                    if (finish.contains("主负")) {
+                        finish = finish.substring(0, 2);
+                    } else {
                         return;
                     }
                     break;
@@ -344,9 +361,9 @@ public class BasketBallQuartz {
                     //订单数分
                     String[] sizeCount = cdBasketballFollowOrder.getSizeCount().split(",");
                     int count = Integer.valueOf(cdBasketballAwards.getHs()) + Integer.valueOf(cdBasketballAwards.getVs());
-                    if(count>Double.parseDouble(sizeCount[i])){
+                    if (count > Double.parseDouble(sizeCount[i])) {
                         finish = "1";
-                    }else {
+                    } else {
                         finish = "0";
                     }
                     break;
@@ -381,8 +398,6 @@ public class BasketBallQuartz {
     }
 
 
-
-
     private void recursion(int index, List<List<Double>> doubleList, int end, double sum, List<Double> count) {
 
         if (index <= end) {
@@ -399,4 +414,6 @@ public class BasketBallQuartz {
             }
         }
     }
+
+
 }

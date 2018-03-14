@@ -1,8 +1,5 @@
 package com.youge.yogee.interfaces.quartz;
 
-import com.youge.yogee.common.cloopen.sdk.utils.DateUtil;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
 import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
@@ -10,11 +7,12 @@ import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +31,8 @@ public class QuartzListener {
     private CdFootballAwardsService cdFootballAwardsService;
     @Autowired
     private CdFootballSingleOrderService cdFootballSingleOrderService;
+    @Autowired
+    private CdOrderWinnersService cdOrderWinnersService;
 
     //    "0/10 * * * * ?" 每10秒触发
 //
@@ -254,7 +254,14 @@ public class QuartzListener {
                     cdFootballFollowOrder.setAward(award.toString());
                     cdFootballFollowOrder.setStatus("3");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
-
+                    //保存中奖纪录
+                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                    cdOrderWinners.setWinOrderNum(cdFootballFollowOrder.getOrderNum());//中间单号
+                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                    cdOrderWinners.setUid(cdFootballFollowOrder.getUid());//中间用户
+                    String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballFollowOrder.getPrice()));
+                    cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinnersService.save(cdOrderWinners);
                 } else {
                     cdFootballFollowOrder.setStatus("4");
                 }
@@ -306,6 +313,15 @@ public class QuartzListener {
                     cdFootballSingleOrder.setAward(award.toString());
                     cdFootballSingleOrder.setStatus("3");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
+                    //保存中奖纪录
+                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                    cdOrderWinners.setWinOrderNum(cdFootballSingleOrder.getOrderNum());//中间单号
+                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                    cdOrderWinners.setUid(cdFootballSingleOrder.getUid());//中间用户
+                    String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballSingleOrder.getPrice()));
+                    cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinnersService.save(cdOrderWinners);
+
                 } else {
                     cdFootballSingleOrder.setStatus("4");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
@@ -408,5 +424,6 @@ public class QuartzListener {
             }
         }
     }
+
 
 }

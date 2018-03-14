@@ -4,7 +4,6 @@ package com.youge.yogee.interfaces.quartz;
  * Created by liyuan on 2018/3/7.
  */
 
-import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
@@ -12,16 +11,15 @@ import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineService;
 import com.youge.yogee.modules.ccolorreward.entity.CdColorReward;
 import com.youge.yogee.modules.ccolorreward.service.CdColorRewardService;
+import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * 定时任务
@@ -37,6 +35,8 @@ public class ChooseNineQuartz {
     private CdSuccessFailOrderService cdSuccessFailOrderService;
     @Autowired
     private CdColorRewardService cdColorRewardService;
+    @Autowired
+    private CdOrderWinnersService cdOrderWinnersService;
 
     //    "0/10 * * * * ?" 每10秒触发
 //
@@ -113,11 +113,20 @@ public class ChooseNineQuartz {
                 int count = Calculations.rs(sum - danSum, 9 - danSum);
                 Integer award = Integer.valueOf(cdChooseNineOrder.getTimes()) * count * Integer.valueOf(cdChooseNine.getPerNoteMoney());
                 cdChooseNineOrder.setAcount(award.toString());
-                cdChooseNineOrder.setStatus("4");
-                cdChooseNineOrderService.save(cdChooseNineOrder);
-            } else {
                 cdChooseNineOrder.setStatus("3");
                 cdChooseNineOrderService.save(cdChooseNineOrder);
+                //保存中奖纪录
+                CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                cdOrderWinners.setWinOrderNum(cdChooseNineOrder.getOrderNumber());//中间单号
+                cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                cdOrderWinners.setUid(cdChooseNineOrder.getUid());//中间用户
+                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdChooseNineOrder.getPrice()));
+                cdOrderWinners.setRepayPercent(repayPercent);
+                cdOrderWinnersService.save(cdOrderWinners);
+            } else {
+                cdChooseNineOrder.setStatus("4");
+                cdChooseNineOrderService.save(cdChooseNineOrder);
+
             }
         }
     }
@@ -156,17 +165,33 @@ public class ChooseNineQuartz {
             }
             String[] awards = cdColorReward.getPerNoteMoney().split(",");
             if (sum == 13) {
-                Integer award =Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
+                Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
                 cdSuccessFailOrder.setAcount(award.toString());
-                cdSuccessFailOrder.setStatus("4");
-                cdSuccessFailOrderService.save(cdSuccessFailOrder);
-            } else if (sum == 14) {
-                Integer award =Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
-                cdSuccessFailOrder.setAcount(award.toString());
-                cdSuccessFailOrder.setStatus("4");
-                cdSuccessFailOrderService.save(cdSuccessFailOrder);
-            }else {
                 cdSuccessFailOrder.setStatus("3");
+                cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                //保存中奖纪录
+                CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                cdOrderWinners.setWinOrderNum(cdSuccessFailOrder.getOrderNumber());//中间单号
+                cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                cdOrderWinners.setUid(cdSuccessFailOrder.getUid());//中间用户
+                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
+                cdOrderWinners.setRepayPercent(repayPercent);
+                cdOrderWinnersService.save(cdOrderWinners);
+            } else if (sum == 14) {
+                Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
+                cdSuccessFailOrder.setAcount(award.toString());
+                cdSuccessFailOrder.setStatus("3");
+                cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                //保存中奖纪录
+                CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                cdOrderWinners.setWinOrderNum(cdSuccessFailOrder.getOrderNumber());//中间单号
+                cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                cdOrderWinners.setUid(cdSuccessFailOrder.getUid());//中间用户
+                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
+                cdOrderWinners.setRepayPercent(repayPercent);
+                cdOrderWinnersService.save(cdOrderWinners);
+            } else {
+                cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
             }
 
