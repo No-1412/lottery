@@ -5,6 +5,7 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
+import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
 import com.youge.yogee.modules.cfbfuture.service.CdFbFutureService;
 import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
@@ -424,8 +425,6 @@ public class FootballInterface {
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
                         map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
-                        map.put("close", cdFootballMixed.getClose());//让球
-                        map.put("matchId", cdFootballMixed.getMatchId());//期次
                         listbytime.add(map);
                     }
                 }
@@ -711,12 +710,12 @@ public class FootballInterface {
         int gf = 0;//客队主场负
         logger.info("listFtDetail  足球近期战绩详情---------Start---------");
         //region Description
-        List<CdFootballMixed> cdft = cdFootballMixedService.getByItem(itemid);
-        if (cdft.size() == 0) {
+        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemid);
+        if (cdFootballMixed == null) {
             return HttpResultUtil.errorJson("数据未更新");
         }
-        String hn = cdft.get(0).getWinningName();//主队名称
-        String gn = cdft.get(0).getDefeatedName();//客队名称
+        String hn = cdFootballMixed.getWinningName();//主队名称
+        String gn = cdFootballMixed.getDefeatedName();//客队名称
         List<CdFbOutcome> hnList = cdFbOutcomeService.findById(itemid, hn, "0");//主队近期战绩
         if (hnList.size() > 0) {
             for (CdFbOutcome cd : hnList) {
@@ -884,9 +883,9 @@ public class FootballInterface {
 
         logger.info("listFtDetail  足球未来赛事详情---------Start---------");
         //region Description
-        List<CdFootballMixed> cdFootballMixed = cdFootballMixedService.getByItem(itemid);
+//        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemid);
         //查询队id
-        List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(cdFootballMixed.get(0).getWinningName());
+        List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(cdFootballMixed.getWinningName());
         String teamId = cdFutureName.get(0).getTeamHid();
         List<CdFbFuture> cdFutureList = cdFbFutureService.findById(itemid);
         for (CdFbFuture cd : cdFutureList) {
