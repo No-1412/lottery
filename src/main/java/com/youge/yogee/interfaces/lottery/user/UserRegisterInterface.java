@@ -1,9 +1,11 @@
 package com.youge.yogee.interfaces.lottery.user;
 
 import com.google.common.collect.Maps;
+import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.CacheUtils;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.emay.emay.Example;
+import com.youge.yogee.interfaces.util.FileUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -222,9 +225,9 @@ public class UserRegisterInterface {
         }
 
         Map dataMap = new HashMap();
-
         dataMap.put("uid", user.getId());
-
+        dataMap.put("img", user.getImg());
+        dataMap.put("level", user.getMemberLevel());
         logger.info("pc：用户登录userLogin---------- End----------");
         return HttpResultUtil.successJson(dataMap);
 
@@ -369,9 +372,8 @@ public class UserRegisterInterface {
         }
         //新昵称
         String name = (String) jsonData.get("name");
-        if (StringUtils.isEmpty(name)) {
-            logger.error("name为空！");
-            return HttpResultUtil.errorJson("name为空!");
+        if (StringUtils.isNotEmpty(name)) {
+            cdLotteryUser.setName(name);
         }
         //头像
         String img = (String) jsonData.get("img");
@@ -388,5 +390,34 @@ public class UserRegisterInterface {
 
         return HttpResultUtil.successJson(dataMap);
     }
+
+
+    /**
+     * 更改用户头像
+     *
+     * @param request 头像请求
+     * @return 头像url地址
+     */
+    @RequestMapping(value = "updateUserImg", method = RequestMethod.POST)
+    @ResponseBody
+    public String updateUserImg(HttpServletRequest request) {
+
+        logger.debug("app updateUserImg---------- Start--------");
+
+        String fileNames = "";
+        boolean flag = FileUtil.isMultipatr(request);
+        if (flag) {
+            MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+            fileNames = FileUtil.fileUploadUnused(multiRequest, "/userfiles/1/images/usm/user/");
+        } else {
+            return HttpResultUtil.errorJson("图片上传异常");
+        }
+
+        Map<String, Object> mapData = new HashMap<>();
+
+        mapData.put("img", Global.getConfig("domain.name") + fileNames.replace("|", ""));
+        return HttpResultUtil.successJson(mapData);
+    }
+
 
 }

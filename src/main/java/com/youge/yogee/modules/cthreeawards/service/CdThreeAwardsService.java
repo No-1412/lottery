@@ -74,4 +74,15 @@ public class CdThreeAwardsService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         return cdThreeAwardsDao.find(dc);
     }
+
+    public CdThreeAwards findFirst() {
+        DetachedCriteria dc = cdThreeAwardsDao.createDetachedCriteria();
+        dc.addOrder(Order.desc("weekday"));
+        List<CdThreeAwards> list = cdThreeAwardsDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

@@ -261,6 +261,7 @@ public class QuartzListener {
                     cdOrderWinners.setUid(cdFootballFollowOrder.getUid());//中间用户
                     String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballFollowOrder.getPrice()));
                     cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinners.setType("2");
                     cdOrderWinnersService.save(cdOrderWinners);
                 } else {
                     cdFootballFollowOrder.setStatus("4");
@@ -320,6 +321,7 @@ public class QuartzListener {
                     cdOrderWinners.setUid(cdFootballSingleOrder.getUid());//中间用户
                     String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballSingleOrder.getPrice()));
                     cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinners.setType("1");
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {

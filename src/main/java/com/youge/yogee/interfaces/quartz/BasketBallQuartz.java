@@ -228,6 +228,7 @@ public class BasketBallQuartz {
                     cdOrderWinners.setUid(cdBasketballFollowOrder.getUid());//中间用户
                     String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdBasketballFollowOrder.getPrice()));
                     cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinners.setType("4");
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {
@@ -286,6 +287,7 @@ public class BasketBallQuartz {
                         cdOrderWinners.setUid(cdBasketballSingleOrder.getUid());//中间用户
                         String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdBasketballSingleOrder.getPrice()));
                         cdOrderWinners.setRepayPercent(repayPercent);
+                        cdOrderWinners.setType("3");
                         cdOrderWinnersService.save(cdOrderWinners);
                     } else {
                         cdBasketballSingleOrder.setStatus("4");

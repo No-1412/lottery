@@ -99,7 +99,7 @@ public class Calculations {
 //        doubleSum = 0;
 //        combine(0, 2, arr);
 
-        String a = getRepayPercent(64.8, 14.0);
+        String a = getRepayPercent(9000, 2000);
         System.out.println(a);
     }
 
@@ -190,7 +190,7 @@ public class Calculations {
     public static String getRepayPercent(double award, double price) {
         double percent = award / price;
         String result = String.valueOf(((int) (percent * 100)));
-        return result + "%";
+        return result;
 
     }
 

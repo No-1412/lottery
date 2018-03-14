@@ -122,6 +122,7 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setUid(cdChooseNineOrder.getUid());//中间用户
                 String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdChooseNineOrder.getPrice()));
                 cdOrderWinners.setRepayPercent(repayPercent);
+                cdOrderWinners.setType("5");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
                 cdChooseNineOrder.setStatus("4");
@@ -176,6 +177,7 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setUid(cdSuccessFailOrder.getUid());//中间用户
                 String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
                 cdOrderWinners.setRepayPercent(repayPercent);
+                cdOrderWinners.setType("6");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else if (sum == 14) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
@@ -189,6 +191,7 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setUid(cdSuccessFailOrder.getUid());//中间用户
                 String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
                 cdOrderWinners.setRepayPercent(repayPercent);
+                cdOrderWinners.setType("6");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
                 cdSuccessFailOrder.setStatus("4");
