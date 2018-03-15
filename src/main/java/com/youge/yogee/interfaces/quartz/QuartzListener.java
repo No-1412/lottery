@@ -62,9 +62,9 @@ public class QuartzListener {
 //    在26分、29分、33分执行一次：0 26,29,33 * * * ?
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
     //定时轮询
-//    @Scheduled(cron = "0/20 1 * * * ?")
+    @Scheduled(cron = "*/5 * * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballFollowOrder() {
         System.out.println("足球串关开奖");
 
@@ -158,6 +158,7 @@ public class QuartzListener {
                             }
                         }
 
+                        //各个胆场开奖序列的list
                         List<List<Double>> dList = new ArrayList<>();
 
                         for (String danMatchId : danList) {
@@ -203,11 +204,11 @@ public class QuartzListener {
                         if (isWin) {
                             //计算各个胆场之间赔率相乘
                             List<Double> count = new ArrayList<>();
-                            recursion(0, dList, dList.size() - 1, 0.0, count);
+                            recursion(0, dList, dList.size() - 1, 1.0, count);
 
                             //计算非胆场之间赔率相乘
                             List<String> danOddWinList = new ArrayList<>();
-                            for (String oddWin : danOddWinList) {
+                            for (String oddWin : danWinList) {
                                 danOddWinList.add(oddWin.substring(5));
                             }
 
@@ -234,7 +235,7 @@ public class QuartzListener {
                                 }
                             }
                         } else {
-                            cdFootballFollowOrder.setStatus("4");
+                            cdFootballFollowOrder.setStatus("5");
                         }
                     } else {
                         //根据串关计算奖金

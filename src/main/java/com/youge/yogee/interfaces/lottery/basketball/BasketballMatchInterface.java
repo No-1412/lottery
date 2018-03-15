@@ -68,7 +68,15 @@ public class BasketballMatchInterface {
         Map<String, Object> pkMap = new HashMap<>();
         pkMap.put("hn", cdBbStrengthpk.getHn());
         pkMap.put("vn", cdBbStrengthpk.getVn());
-        pkMap.put("averaging", cdBbStrengthpk.getAveragingStatistics());
+
+        List<String> leftList = new ArrayList<>();
+        List<String> rightList = new ArrayList<>();
+        String[] statisticsArray = cdBbStrengthpk.getAveragingStatistics().split(",");
+        for (String aStatisticsArray : statisticsArray) {
+            String[] split = aStatisticsArray.split("/");
+            leftList.add(split[0]);
+            rightList.add(split[1]);
+        }
 
         //球员场均数据
         List<Map<String, Object>> averageHnList = new ArrayList<>();
@@ -114,6 +122,8 @@ public class BasketballMatchInterface {
 
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("pkMap", pkMap);
+        dataMap.put("leftList", leftList);
+        dataMap.put("rightList", rightList);
         dataMap.put("averageHnList", averageHnList);
         dataMap.put("averageVnList", averageVnList);
         dataMap.put("injuryList", injuryList);

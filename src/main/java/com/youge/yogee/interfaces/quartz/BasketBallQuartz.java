@@ -170,7 +170,7 @@ public class BasketBallQuartz {
                         if (isWin) {
                             //计算各个胆场之间赔率相乘
                             List<Double> count = new ArrayList<>();
-                            recursion(0, dList, dList.size() - 1, 0.0, count);
+                            recursion(0, dList, dList.size() - 1, 1.0, count);
 
                             //计算非胆场之间赔率相乘
                             List<String> danOddWinList = new ArrayList<>();

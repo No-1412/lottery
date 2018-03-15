@@ -159,12 +159,13 @@ public class Calculations {
 
     public static List<Double> oddsCollection(int k, List<String> arr) {
 
+        doubleList = new ArrayList<>();
         double[] doubles = new double[arr.size()];
         for (int i = 0; i < arr.size(); i++) {
             doubles[i] = Double.parseDouble(arr.get(i));
         }
 
-        combine(0, k, doubles);
+        combineCollection(0, k, doubles);
         return doubleList;
     }
 
