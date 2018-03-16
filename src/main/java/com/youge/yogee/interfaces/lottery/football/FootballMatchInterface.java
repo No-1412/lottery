@@ -6,7 +6,6 @@ import com.youge.yogee.modules.cfbalreadyfinsh.entity.CdFbAlreadyFinsh;
 import com.youge.yogee.modules.cfbalreadyfinsh.service.CdFbAlreadyFinshService;
 import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinshed;
 import com.youge.yogee.modules.cfbfinshed.service.CdFbFinshedService;
-import com.youge.yogee.modules.cftlogo.entity.CdFtLogo;
 import com.youge.yogee.modules.cftlogo.service.CdFtLogoService;
 import com.youge.yogee.modules.cftskill.entity.CdFtSkill;
 import com.youge.yogee.modules.cftskill.service.CdFtSkillService;
@@ -65,10 +64,8 @@ public class FootballMatchInterface {
             map.put("ln", str.getLn());//赛事类型
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
-            List<CdFtLogo> hnList = cdFtLogoService.findLogo(str.getHn());
-            List<CdFtLogo> hnList1 = cdFtLogoService.findLogo(str.getGn());
-            map.put("hnLogo", hnList.size() > 0 ? hnList.get(0).getTeamLogo() : ""); //主队图标
-            map.put("gnLogo", hnList1.size() > 0 ? hnList.get(0).getTeamLogo() : ""); //客队图标
+            map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
+            map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
             map.put("jn", str.getJn());//平赔率
             map.put("time", str.getTime());//比赛时间
             list.add(map);
@@ -98,10 +95,8 @@ public class FootballMatchInterface {
             map.put("ln", str.getLn());//赛事类型
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
-            List<CdFtLogo> hnList = cdFtLogoService.findLogo(str.getHn());
-            List<CdFtLogo> hnList1 = cdFtLogoService.findLogo(str.getGn());
-            map.put("hnLogo", hnList.size() > 0 ? hnList.get(0).getTeamLogo() : ""); //主队图标
-            map.put("gnLogo", hnList1.size() > 0 ? hnList.get(0).getTeamLogo() : ""); //客队图标
+            map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
+            map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
             map.put("jn", str.getJn());//平赔率
             map.put("time", str.getTime());//比赛时间
             list.add(map);

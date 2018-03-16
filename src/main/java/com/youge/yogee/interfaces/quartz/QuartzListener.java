@@ -271,6 +271,7 @@ public class QuartzListener {
                     String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballFollowOrder.getPrice()));
                     cdOrderWinners.setRepayPercent(repayPercent);
                     cdOrderWinners.setType("2");
+                    cdOrderWinners.setWallType("1");
                     cdOrderWinnersService.save(cdOrderWinners);
                 } else {
                     cdFootballFollowOrder.setStatus("5");
@@ -332,6 +333,7 @@ public class QuartzListener {
                     String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballSingleOrder.getPrice()));
                     cdOrderWinners.setRepayPercent(repayPercent);
                     cdOrderWinners.setType("1");
+                    cdOrderWinners.setWallType("1");
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {

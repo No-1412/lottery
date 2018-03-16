@@ -74,4 +74,16 @@ public class CdLottoRewardService extends BaseService {
         dc.addOrder(Order.desc("matchId"));
         return cdLottoRewardDao.find(dc);
     }
+
+
+    public CdLottoReward findFirst() {
+        DetachedCriteria dc = cdLottoRewardDao.createDetachedCriteria();
+        dc.addOrder(Order.desc("matchId"));
+        List<CdLottoReward> list = cdLottoRewardDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

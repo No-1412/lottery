@@ -5,7 +5,6 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.ListThreeWays;
 import com.youge.yogee.interfaces.util.util;
-import com.youge.yogee.modules.clottoreward.entity.CdLottoReward;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import org.slf4j.Logger;
@@ -17,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by zhaoyifeng on 2018-02-07.
@@ -122,6 +122,7 @@ public class ListThreeInterface {
         cto.setContinuity(continuity);//连续期数
         cto.setType(type);//类型
         cto.setWeekContinue(weekContinue);//连续期数详情
+        cto.setFollowType("1");//原始订单
         try {
             cdThreeOrderService.save(cto);
             map.put("flag", "1");

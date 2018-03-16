@@ -123,6 +123,7 @@ public class ChooseNineQuartz {
                 String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdChooseNineOrder.getPrice()));
                 cdOrderWinners.setRepayPercent(repayPercent);
                 cdOrderWinners.setType("5");
+                cdOrderWinners.setWallType("1");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
                 cdChooseNineOrder.setStatus("5");
@@ -178,6 +179,7 @@ public class ChooseNineQuartz {
                 String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
                 cdOrderWinners.setRepayPercent(repayPercent);
                 cdOrderWinners.setType("6");
+                cdOrderWinners.setWallType("1");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else if (sum == 14) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
@@ -192,6 +194,7 @@ public class ChooseNineQuartz {
                 String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
                 cdOrderWinners.setRepayPercent(repayPercent);
                 cdOrderWinners.setType("6");
+                cdOrderWinners.setWallType("1");
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
                 cdSuccessFailOrder.setStatus("5");

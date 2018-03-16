@@ -74,4 +74,14 @@ public class CdThreeOrderService extends BaseService {
         return cdThreeOrderDao.find(dc);
     }
 
+    public List<CdThreeOrder> findAllFollowOrders() {
+        DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq("type", "2"));
+        dc.add(Restrictions.or(Restrictions.eq("followType", "1"), Restrictions.eq("followType", "3")));
+        dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdThreeOrderDao.find(dc);
+    }
+
 }

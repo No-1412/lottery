@@ -12,6 +12,7 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmessage.service.CdMessageService;
 import com.youge.yogee.modules.sys.service.SystemService;
+import com.youge.yogee.publicutils.ImgUploudUtlis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -228,6 +230,8 @@ public class UserRegisterInterface {
         dataMap.put("uid", user.getId());
         dataMap.put("img", user.getImg());
         dataMap.put("level", user.getMemberLevel());
+        dataMap.put("name", user.getName());
+        dataMap.put("phone", user.getMobile());
         logger.info("pc：用户登录userLogin---------- End----------");
         return HttpResultUtil.successJson(dataMap);
 
@@ -403,19 +407,19 @@ public class UserRegisterInterface {
     public String updateUserImg(HttpServletRequest request) {
 
         logger.debug("app updateUserImg---------- Start--------");
-
+        Map<String, Object> mapData = new HashMap<>();
         String fileNames = "";
         boolean flag = FileUtil.isMultipatr(request);
         if (flag) {
             MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
-            fileNames = FileUtil.fileUploadUnused(multiRequest, "/userfiles/1/images/usm/user/");
+            fileNames = FileUtil.fileUploadUnused(multiRequest, "/userfiles/1/images/header/");
         } else {
             return HttpResultUtil.errorJson("图片上传异常");
         }
 
-        Map<String, Object> mapData = new HashMap<>();
 
         mapData.put("img", Global.getConfig("domain.name") + fileNames.replace("|", ""));
+
         return HttpResultUtil.successJson(mapData);
     }
 
