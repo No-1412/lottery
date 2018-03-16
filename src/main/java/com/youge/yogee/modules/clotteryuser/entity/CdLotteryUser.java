@@ -370,6 +370,7 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
     public void setSaleId(String saleId) {
         this.saleId = saleId;
     }
+
 }
 
 

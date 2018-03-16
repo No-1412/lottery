@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 中奖订单Service
  *
@@ -58,6 +60,14 @@ public class CdOrderWinnersService extends BaseService {
     @Transactional(readOnly = false)
     public void delete(String id) {
         cdOrderWinnersDao.deleteById(id);
+    }
+
+    public List<CdOrderWinners> findByWallType(String wallType) {
+        DetachedCriteria dc = cdOrderWinnersDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("wallType", wallType));
+        dc.add(Restrictions.eq(CdOrderWinners.FIELD_DEL_FLAG, CdOrderWinners.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.sqlRestriction("1=1 order by CAST(win_price as SIGNED) desc"));
+        return cdOrderWinnersDao.find(dc);
     }
 
 }

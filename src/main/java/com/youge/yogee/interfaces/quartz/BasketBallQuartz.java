@@ -235,6 +235,7 @@ public class BasketBallQuartz {
                     String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdBasketballFollowOrder.getPrice()));
                     cdOrderWinners.setRepayPercent(repayPercent);
                     cdOrderWinners.setType("4");
+                    cdOrderWinners.setWallType("1");
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {
@@ -295,6 +296,7 @@ public class BasketBallQuartz {
                         String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdBasketballSingleOrder.getPrice()));
                         cdOrderWinners.setRepayPercent(repayPercent);
                         cdOrderWinners.setType("3");
+                        cdOrderWinners.setWallType("1");
                         cdOrderWinnersService.save(cdOrderWinners);
                     } else {
                         cdBasketballSingleOrder.setStatus("5");

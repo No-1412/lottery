@@ -81,6 +81,12 @@ public class LottoInterface {
             return HttpResultUtil.errorJson("期数weekday为空");
         }
 
+        String isPlus = (String) jsonData.get("isPlus");
+        if (StringUtils.isEmpty(isPlus)) {
+            logger.error("isPlus为空");
+            return HttpResultUtil.errorJson("isPlus为空");
+        }
+
         String uid = (String) jsonData.get("uid");
         if (StringUtils.isEmpty(uid)) {
             logger.error("uid为空");
@@ -146,7 +152,13 @@ public class LottoInterface {
         //生成订单号
         String orderNum = util.genOrderNo("DLT", util.getFourRandom());
         //计算金额
-        double money = 2.00;
+        double money = 0;
+        if ("1".equals(isPlus)) {
+            money = 3.00;
+        } else {
+            money = 2.00;
+        }
+
         double acountDouble = Double.parseDouble(acount);
         double timesDouble = Double.parseDouble(times);
         String price = String.valueOf(money * acountDouble * timesDouble);
@@ -169,6 +181,7 @@ public class LottoInterface {
         clo.setContinuity(continuity);//连续期数
         clo.setConType(conType);//类型
         clo.setWeekContinue(weekContinue);//连续期数详情
+        clo.setIsPlus(isPlus);//追加投注
         try {
             cdLottoOrderService.save(clo);
             map.put("flag", "1");

@@ -3,22 +3,16 @@
  */
 package com.youge.yogee.modules.cfiveawards.entity;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.youge.yogee.common.persistence.BaseEntity;
+import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.validator.constraints.Length;
 
-import com.youge.yogee.modules.sys.entity.User;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * 排列五订单Entity
@@ -54,6 +48,7 @@ public class CdFiveOrder extends BaseEntity<T> implements Serializable {
     private String times;  //倍数
     private String continuity; //连续期数
     private String weekContinue;//继续买的期数
+    private String followType; //追号状态 1原始单 2原始单已追 3追号中的单 4追号单不再追号
 
     public CdFiveOrder() {
         super();
@@ -219,6 +214,14 @@ public class CdFiveOrder extends BaseEntity<T> implements Serializable {
 
     public void setWeekContinue(String weekContinue) {
         this.weekContinue = weekContinue;
+    }
+
+    public String getFollowType() {
+        return followType;
+    }
+
+    public void setFollowType(String followType) {
+        this.followType = followType;
     }
 }
 

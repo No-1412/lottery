@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cfiveawards.dao.CdFiveOrderDao;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
+import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -70,5 +71,16 @@ public class CdFiveOrderService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         return cdFiveOrderDao.find(dc);
     }
+
+    public List<CdFiveOrder> findAllFollowOrders() {
+        DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq("type", "2"));
+        dc.add(Restrictions.or(Restrictions.eq("followType", "1"), Restrictions.eq("followType", "3")));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdFiveOrderDao.find(dc);
+    }
+
 
 }

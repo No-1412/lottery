@@ -21,6 +21,7 @@ import java.util.List;
 
 /**
  * 足球logo码表Service
+ *
  * @author RenHaipeng
  * @version 2018-02-01
  */
@@ -28,42 +29,51 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CdFtLogoService extends BaseService {
 
-	@Autowired
-	private CdFtLogoDao cdFtLogoDao;
-	
-	public CdFtLogo get(String id) {
-		return cdFtLogoDao.get(id);
-	}
-	
-	public Page<CdFtLogo> find(Page<CdFtLogo> page, CdFtLogo cdFtLogo) {
-		DetachedCriteria dc = cdFtLogoDao.createDetachedCriteria();
-		if (StringUtils.isNotEmpty(cdFtLogo.getName())){
-			dc.add(Restrictions.like("name", "%" + cdFtLogo.getName() + "%"));
-		}
-		dc.add(Restrictions.eq(CdFtLogo.FIELD_DEL_FLAG, CdFtLogo.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("id"));
-		return cdFtLogoDao.find(page, dc);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(CdFtLogo cdFtLogo) {
+    @Autowired
+    private CdFtLogoDao cdFtLogoDao;
 
-		if(StringUtils.isEmpty(cdFtLogo.getId())){
-			cdFtLogo.setId(IdGen.uuid());
-			cdFtLogo.setCreateDate(DateUtils.getDateTime());
-			cdFtLogo.setDelFlag(CdFtLogo.DEL_FLAG_NORMAL);
-		}
-		cdFtLogoDao.save(cdFtLogo);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(String id) {
-		cdFtLogoDao.deleteById(id);
-	}
+    public CdFtLogo get(String id) {
+        return cdFtLogoDao.get(id);
+    }
+
+    public Page<CdFtLogo> find(Page<CdFtLogo> page, CdFtLogo cdFtLogo) {
+        DetachedCriteria dc = cdFtLogoDao.createDetachedCriteria();
+        if (StringUtils.isNotEmpty(cdFtLogo.getName())) {
+            dc.add(Restrictions.like("name", "%" + cdFtLogo.getName() + "%"));
+        }
+        dc.add(Restrictions.eq(CdFtLogo.FIELD_DEL_FLAG, CdFtLogo.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("id"));
+        return cdFtLogoDao.find(page, dc);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(CdFtLogo cdFtLogo) {
+
+        if (StringUtils.isEmpty(cdFtLogo.getId())) {
+            cdFtLogo.setId(IdGen.uuid());
+            cdFtLogo.setCreateDate(DateUtils.getDateTime());
+            cdFtLogo.setDelFlag(CdFtLogo.DEL_FLAG_NORMAL);
+        }
+        cdFtLogoDao.save(cdFtLogo);
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(String id) {
+        cdFtLogoDao.deleteById(id);
+    }
 
 
-	@Transactional(readOnly = false)
-	public List<CdFtLogo> findLogo(String teamName) {
-		return cdFtLogoDao.findBySql("select * from cd_ft_logo where team_name= '" + teamName + "'",null,CdFtLogo.class);
-	}
+    @Transactional(readOnly = false)
+    public String findLogo(String teamName) {
+        //List list =  cdFtLogoDao.findBySql("select team_logo from cd_ft_logo where team_name= '" + teamName + "'");
+        DetachedCriteria dc = cdFtLogoDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("teamName", teamName));
+        dc.add(Restrictions.eq(CdFtLogo.FIELD_DEL_FLAG, CdFtLogo.DEL_FLAG_NORMAL));
+        List<CdFtLogo> list = cdFtLogoDao.find(dc);
+        if (list.size() == 0) {
+            return "";
+        } else {
+            return list.get(0).getTeamLogo();
+        }
+    }
 }
