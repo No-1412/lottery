@@ -65,7 +65,7 @@ public class FootballInterface {
             return HttpResultUtil.errorJson("数据未更新");
         }
         for (int i = 0; i < ListSize.size(); i++) {
-            Map maps = new HashMap();
+            Map<String, Object> maps = new HashMap<>();
             List cdFootballMixedList = cdFootballMixedService.findByALL(ListSize.get(i).toString());//按时间进行查询数据
             CdFootballMixed cdFootball = (CdFootballMixed) cdFootballMixedList.get(0);//获取比赛日期
             maps.put("addesc", cdFootball.getMatchsDate());//时间日期
@@ -74,7 +74,7 @@ public class FootballInterface {
             List listbytime = new ArrayList();
             for (int y = 0; y < cdFootballMixedList.size(); y++) {//当天比赛场次List
                 CdFootballMixed cdFootballMixed = (CdFootballMixed) cdFootballMixedList.get(y);
-                Map map = new HashMap();
+                Map<String, Object> map = new HashMap<>();
                 map.put("mt", cdFootballMixed.getMatchId());//赛事场次
                 map.put("itemid", cdFootballMixed.getMatchDate());//比赛时间
                 map.put("mname", cdFootballMixed.getEventName());//赛事名称
@@ -692,8 +692,8 @@ public class FootballInterface {
     public String listFtDetail(HttpServletRequest request) {
         logger.info("listFtDetail  足球详情---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String itemid = (String) jsonData.get("itemid");//比赛id
-        Map dataMap = new HashMap();
+        String itemID = (String) jsonData.get("itemid");//比赛id
+        Map<String, Object> dataMap = new HashMap<>();
         List hlist = new ArrayList();
         List glist = new ArrayList();
         List dataList = new ArrayList();
@@ -701,201 +701,186 @@ public class FootballInterface {
         List scoerList = new ArrayList();
         List hFutureList = new ArrayList();
         List gFutureList = new ArrayList();
-        Map map = new HashMap();
-        int hs = 0;//主队主场胜
-        int hp = 0;//主队主场平
-        int hf = 0;//主队主场负
-        int gs = 0;//客队主场胜
-        int gp = 0;//客队主场平
-        int gf = 0;//客队主场负
+//        Map<String,Object> map = new HashMap<>();
+//        int hs = 0;//主队主场胜
+//        int hp = 0;//主队主场平
+//        int hf = 0;//主队主场负
+//        int gs = 0;//客队主场胜
+//        int gp = 0;//客队主场平
+//        int gf = 0;//客队主场负
         logger.info("listFtDetail  足球近期战绩详情---------Start---------");
         //region Description
-        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemid);
+        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemID);
         if (cdFootballMixed == null) {
             return HttpResultUtil.errorJson("数据未更新");
         }
-        String hn = cdFootballMixed.getWinningName();//主队名称
-        String gn = cdFootballMixed.getDefeatedName();//客队名称
+        String hostName = cdFootballMixed.getWinningName();//主队名称
+        String guestName = cdFootballMixed.getDefeatedName();//客队名称
 
         //主队近期战绩
-        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(itemid, hn, "0");
+        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(itemID, hostName, "0");
         if (hnList.size() > 0) {
-            for (CdFbOutcome cd : hnList) {
-                map = new HashMap();
-                map.put("mname", cd.getEventName());//赛事名称
-                map.put("mt", cd.getMt());//时间
-                map.put("hn", cd.getHn());//主队名称
-                map.put("gn", cd.getGn());//客队名称
-                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
+            int win = 0;//胜
+            int dogfall = 0;//平
+            int lost = 0;//负
 
-                //主队胜
-                if (hn.equals(cd.getHn())) {
-                    //主队胜
-                    if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
-                        hs++;
-                        map.put("result","胜");//胜负
-                    } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
-                        hp++;
-                        map.put("result","平");//胜负
+            List<Map> competitionList = new ArrayList<>();
+            for (CdFbOutcome cdFbOutcome : hnList) {
+                Map<String, Object> hnMap = new HashMap<>();
+                hnMap.put("mname", cdFbOutcome.getEventName());//赛事名称
+                hnMap.put("mt", cdFbOutcome.getMt());//时间
+                hnMap.put("hn", cdFbOutcome.getHn());//主队名称
+                hnMap.put("gn", cdFbOutcome.getGn());//客队名称
+                hnMap.put("score", cdFbOutcome.getHsc() + ":" + cdFbOutcome.getGsc());//比分
+
+                //判断主场
+                if (hostName.equals(cdFbOutcome.getHn())) {//作为主队
+                    if (Integer.parseInt(cdFbOutcome.getHsc()) > Integer.parseInt(cdFbOutcome.getGsc())) {
+                        win++;
+                        hnMap.put("result", "胜");
+                    } else if (Integer.parseInt(cdFbOutcome.getHsc()) == Integer.parseInt(cdFbOutcome.getGsc())) {//平
+                        dogfall++;
+                        hnMap.put("result", "平");
                     } else {
-                        hf++;
-                        map.put("result","负");//胜负
+                        lost++;
+                        hnMap.put("result", "负");
                     }
-                } else {
-                    if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
-                        gs++;
-                        map.put("result","胜");//胜负
-                    } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
-                        gp++;
-                        map.put("result","平");//胜负
+                } else {//作为客队
+                    if (Integer.parseInt(cdFbOutcome.getGsc()) > Integer.parseInt(cdFbOutcome.getHsc())) {
+                        win++;
+                        hnMap.put("result", "胜");
+                    } else if (Integer.parseInt(cdFbOutcome.getGsc()) == Integer.parseInt(cdFbOutcome.getHsc())) {//平
+                        dogfall++;
+                        hnMap.put("result", "平");
                     } else {
-                        gf++;
-                        map.put("result","负");//胜负
+                        lost++;
+                        hnMap.put("result", "负");
                     }
                 }
-                hlist.add(map);
+                competitionList.add(hnMap);
             }
-            int zs = hs + gs;//球队胜
-            int zp = hp + gp;//球队平
-            int zf = hf + gf;//球队负
-            map = new HashMap();
-            map.put("hs", hs);
-            map.put("hp", hp);
-            map.put("hf", hf);
-            map.put("zs", zs);
-            map.put("zp", zp);
-            map.put("zf", zf);
-            dataList.add(map);
+
+            int[] scoreArray = {win, dogfall, lost};
+
+            dataMap.put("hnCompetitionList", competitionList);
+            dataMap.put("hnScoreArray", scoreArray);
         }
 
         //客场近期战绩
-        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(itemid, gn, "0");
-        if (gnList.size()>0) {
-            hs = 0;//记录主队主场胜
-            hp = 0;//记录主队主场平
-            hf = 0;//记录主队主场负
-            gs = 0;//客队主场胜
-            gp = 0;//客队主场平
-            gf = 0;//客队主场负
-            for (CdFbOutcome cd : gnList) {
-                map = new HashMap();
-                map.put("mname", cd.getEventName());//赛事名称
-                map.put("mt", cd.getMt());//时间
-                map.put("hn", cd.getHn());//主队名称
-                map.put("gn", cd.getGn());//客队名称
-                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
+        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(itemID, hostName, "0");
+        if (gnList.size() > 0) {
+            int win = 0;//胜
+            int dogfall = 0;//平
+            int lost = 0;//负
 
-                if (gn.equals(cd.getGn())) {//判断主场
+            List<Map> competitionList = new ArrayList<>();
+            for (CdFbOutcome cdFbOutcome : gnList) {
+                Map<String, Object> gnMap = new HashMap<>();
+                gnMap.put("mname", cdFbOutcome.getEventName());//赛事名称
+                gnMap.put("mt", cdFbOutcome.getMt());//时间
+                gnMap.put("hn", cdFbOutcome.getHn());//主队名称
+                gnMap.put("gn", cdFbOutcome.getGn());//客队名称
+                gnMap.put("score", cdFbOutcome.getHsc() + ":" + cdFbOutcome.getGsc());//比分
+
+                //判断主场
+                if (guestName.equals(cdFbOutcome.getGn())) {
                     //客队胜
-                    if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
-                        gs++;
-                        map.put("result","胜");//胜负
-                    } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
-                        gp++;
-                        map.put("result","平");//胜负
+                    if (Integer.parseInt(cdFbOutcome.getGsc()) > Integer.parseInt(cdFbOutcome.getHsc())) {
+                        win++;
+                        gnMap.put("result", "胜");
+                    } else if (Integer.parseInt(cdFbOutcome.getGsc()) == Integer.parseInt(cdFbOutcome.getHsc())) {//平
+                        dogfall++;
+                        gnMap.put("result", "平");
                     } else {
-                        gf++;
-                        map.put("result","负");//胜负
+                        lost++;
+                        gnMap.put("result", "负");
                     }
                 } else {
                     //主队胜
-                    if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
-                        hs++;
-                        map.put("result","胜");//胜负
-                    } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
-                        hp++;
-                        map.put("result","平");//胜负
+                    if (Integer.parseInt(cdFbOutcome.getHsc()) > Integer.parseInt(cdFbOutcome.getGsc())) {
+                        win++;
+                        gnMap.put("result", "胜");//胜负
+                    } else if (Integer.parseInt(cdFbOutcome.getHsc()) == Integer.parseInt(cdFbOutcome.getGsc())) {//平
+                        dogfall++;
+                        gnMap.put("result", "平");//胜负
                     } else {
-                        hf++;
-                        map.put("result","负");//胜负
+                        lost++;
+                        gnMap.put("result", "负");//胜负
                     }
                 }
-                glist.add(map);
+                competitionList.add(gnMap);
             }
-            int ks = hs + gs;//球队胜
-            int kp = hp + gp;//球队平
-            int kf = hf + gf;//球队负
-            map = new HashMap();
-            map.put("gs", gs);
-            map.put("gp", gp);
-            map.put("gf", gf);
-            map.put("ks", ks);
-            map.put("kp", kp);
-            map.put("kf", kf);
-            dataList.add(map);
+
+            int[] scoreArray = {win, dogfall, lost};
+
+            dataMap.put("gnCompetitionList", competitionList);
+            dataMap.put("gnScoreArray", scoreArray);
         }
         logger.info("listFtDetail  足球近期战绩详情---------End---------");
 
 
         logger.info("listFtDetail  足球历史战绩详情---------Start---------");
         //历史交锋
-        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(itemid);
+        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(itemID);
         if (cdHList != null) {
-            hs = 0;//记录主队主场胜
-            hp = 0;//记录主队主场平
-            hf = 0;//记录主队主场负
-            gs = 0;//客队主场胜
-            gp = 0;//客队主场平
-            gf = 0;//客队主场负
-            for (CdFbOutcome cd : cdHList) {
-                map = new HashMap();
-                map.put("mname", cd.getEventName());//赛事名称
-                map.put("mt", cd.getMt());//时间
-                map.put("hn", cd.getHn());//主队名称
-                map.put("gn", cd.getGn());//客队名称
-                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
-                //主队胜
-                if (hn.equals(cd.getHn())) {
-                    //主队胜
-                    if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
-                        hs++;
-                        map.put("result","胜");//胜负
-                    } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
-                        hp++;
-                        map.put("result","平");//胜负
+            int win = 0;//胜
+            int dogfall = 0;//平
+            int lost = 0;//负
+
+            List<Map> competitionList = new ArrayList<>();
+            for (CdFbOutcome cdFbOutcome : cdHList) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("mname", cdFbOutcome.getEventName());//赛事名称
+                map.put("mt", cdFbOutcome.getMt());//时间
+                map.put("hn", cdFbOutcome.getHn());//主队名称
+                map.put("gn", cdFbOutcome.getGn());//客队名称
+                map.put("score", cdFbOutcome.getHsc() + ":" + cdFbOutcome.getGsc());//比分
+
+                //判断主场
+                if (hostName.equals(cdFbOutcome.getHn())) {//作为主队
+                    if (Integer.parseInt(cdFbOutcome.getHsc()) > Integer.parseInt(cdFbOutcome.getGsc())) {
+                        win++;
+                        map.put("result", "胜");
+                    } else if (Integer.parseInt(cdFbOutcome.getHsc()) == Integer.parseInt(cdFbOutcome.getGsc())) {//平
+                        dogfall++;
+                        map.put("result", "平");
                     } else {
-                        hf++;
-                        map.put("result","负");//胜负
+                        lost++;
+                        map.put("result", "负");
                     }
-                } else {
-                    if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
-                        gs++;
-                        map.put("result","胜");//胜负
-                    } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
-                        gp++;
-                        map.put("result","平");//胜负
+                } else {//作为客队
+                    if (Integer.parseInt(cdFbOutcome.getGsc()) > Integer.parseInt(cdFbOutcome.getHsc())) {
+                        win++;
+                        map.put("result", "胜");
+                    } else if (Integer.parseInt(cdFbOutcome.getGsc()) == Integer.parseInt(cdFbOutcome.getHsc())) {//平
+                        dogfall++;
+                        map.put("result", "平");
                     } else {
-                        gf++;
-                        map.put("result","负");//胜负
+                        lost++;
+                        map.put("result", "负");
                     }
+                    competitionList.add(map);
                 }
-                historyList.add(map);
-                int lzs = hs + gs;//球队胜
-                int lzp = hp + gp;//球队平
-                int lzf = hf + gf;//球队负
-                map = new HashMap();
-                map.put("hs", hs);
-                map.put("hp", hp);
-                map.put("hf", hf);
-                map.put("lzs", lzs);
-                map.put("lzp", lzp);
-                map.put("lzf", lzf);
-                dataList.add(map);
+
+                int[] scoreArray = {win, dogfall, lost};
+
+                dataMap.put("historyCompetitionList", competitionList);
+                dataMap.put("historyScoreArray", scoreArray);
             }
         }
         logger.info("listFtDetail  足球历史战绩详情---------End---------");
 
         logger.info("listFtDetail  足球积分详情---------Start---------");
         //region Description
-        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(itemid);//历史战绩
-        for (CdFbScoer cd : cdScoerList) {
-            map = new HashMap();
-            map.put("rank", cd.getRank());//球队排名
-            map.put("teamname", cd.getTeamname());//球队名称
-            map.put("points", cd.getPoints());//球队积分
-            map.put("scoerAll", cd.getScoerAll());//球队总成绩
-            map.put("host", cd.getHost());//球队主场成绩
-            map.put("guest", cd.getGuest());//球队客场成绩
+        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(itemID);
+        for (CdFbScoer cdFbScoer : cdScoerList) {
+            Map<String, Object> map = new HashMap();
+            map.put("rank", cdFbScoer.getRank());//球队排名
+            map.put("teamname", cdFbScoer.getTeamname());//球队名称
+            map.put("points", cdFbScoer.getPoints());//球队积分
+            map.put("scoerAll", cdFbScoer.getScoerAll());//球队总成绩
+            map.put("host", cdFbScoer.getHost());//球队主场成绩
+            map.put("guest", cdFbScoer.getGuest());//球队客场成绩
             scoerList.add(map);
         }
         //endregion
@@ -907,9 +892,9 @@ public class FootballInterface {
         //查询队id
         List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(cdFootballMixed.getWinningName());
         String teamId = cdFutureName.get(0).getTeamHid();
-        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(itemid);
+        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(itemID);
         for (CdFbFuture cd : cdFutureList) {
-            map = new HashMap();
+            Map<String, Object> map = new HashMap();
             if (teamId.equals(cd.getTeamHid()) || teamId.equals(cd.getTeamAid())) {
                 if (hFutureList.size() == 3) {//查询3条未来赛事
                     continue;
