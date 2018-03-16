@@ -126,17 +126,21 @@ public class BasketBallQuartz {
                         }
 
                         List<List<Double>> dList = new ArrayList<>();
+                        List<String> danWinListCopy = new ArrayList<>();
 
                         for (String danMatchId : danList) {
                             List<Double> oobList = new ArrayList<>();
                             for (String danWin : danWinList) {
                                 if (danWin.contains(danMatchId)) {
                                     oobList.add(Double.parseDouble(danWin.split(danMatchId)[1]));
-                                    danWinList.remove(danWin);
+//                                    danWinList.remove(danWin);
+                                }else {
+                                    danWinListCopy.add(danWin);
                                 }
                             }
                             dList.add(oobList);
                         }
+                        danWinList = danWinListCopy;
 
                         //*******************************判断是否可以开奖****************************
                         Boolean isWin = true;
@@ -201,7 +205,9 @@ public class BasketBallQuartz {
                                 }
                             }
                         } else {
-                            cdBasketballFollowOrder.setStatus("4");
+                            cdBasketballFollowOrder.setStatus("5");
+                            cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                            continue;
                         }
                     } else {
                         //根据串关计算奖金
@@ -233,6 +239,7 @@ public class BasketBallQuartz {
 
                 } else {
                     cdBasketballFollowOrder.setStatus("5");
+                    cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
                 }
             }
         }

@@ -62,9 +62,9 @@ public class QuartzListener {
 //    在26分、29分、33分执行一次：0 26,29,33 * * * ?
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
     //定时轮询
-    @Scheduled(cron = "*/5 * * * * ?")
+//    @Scheduled(cron = "*/5 * * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballFollowOrder() {
         System.out.println("足球串关开奖");
 
@@ -73,6 +73,7 @@ public class QuartzListener {
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
+
 
         for (CdFootballFollowOrder cdFootballFollowOrder : cdFootballFollowOrderList) {
 
@@ -160,17 +161,22 @@ public class QuartzListener {
 
                         //各个胆场开奖序列的list
                         List<List<Double>> dList = new ArrayList<>();
+                        List<String> danWinListCopy = new ArrayList<>();
 
                         for (String danMatchId : danList) {
                             List<Double> oobList = new ArrayList<>();
                             for (String danWin : danWinList) {
                                 if (danWin.contains(danMatchId)) {
                                     oobList.add(Double.parseDouble(danWin.split(danMatchId)[1]));
-                                    danWinList.remove(danWin);
+//                                    danWinList.remove(danWin);
+                                }else {
+                                    danWinListCopy.add(danWin);
                                 }
                             }
+
                             dList.add(oobList);
                         }
+                        danWinList = danWinListCopy;
 
                         //*******************************判断是否可以开奖****************************
                         Boolean isWin = true;
@@ -236,6 +242,8 @@ public class QuartzListener {
                             }
                         } else {
                             cdFootballFollowOrder.setStatus("5");
+                            cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                            continue;
                         }
                     } else {
                         //根据串关计算奖金
@@ -266,6 +274,7 @@ public class QuartzListener {
                     cdOrderWinnersService.save(cdOrderWinners);
                 } else {
                     cdFootballFollowOrder.setStatus("5");
+                    cdFootballFollowOrderService.save(cdFootballFollowOrder);
                 }
             }
         }
