@@ -101,6 +101,12 @@ public class FootballInterface {
                 } else {
                     map.put("isSingle", "0");//是否单关 1是 0不是
                 }
+                int dgs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                if (dgs > 0) {
+                    map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                } else {
+                    map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                }
                 listbytime.add(map);
             }
             list.add(listbytime);
@@ -409,6 +415,7 @@ public class FootballInterface {
                 CdFootballMixed cdFootballMixed = (CdFootballMixed) cdFootballMixedList.get(y);
                 if (StringUtils.isNotEmpty(cdFootballMixed.getIsale())) {
                     int dgs = FundModel.FT_DG_SPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                    int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
                     if (dgs > 0) {//单关判断
                         Map map = new HashMap();
                         maps.put("addesc", cdFootball.getMatchsDate());//时间日期
@@ -419,12 +426,19 @@ public class FootballInterface {
                         map.put("hn", cdFootballMixed.getWinningName());//主队名称
                         map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
                         map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                        map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率
+                        map.put("close", cdFootballMixed.getClose());//让球
                         map.put("hm", cdFootballMixed.getWinningRank());//主队排名
                         map.put("gm", cdFootballMixed.getDefeatedRank());//客队排名
                         map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
                         map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+                        if(rqs>1){
+                            map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                        }else {
+                            map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                        }
                         listbytime.add(map);
                     }
                 }
