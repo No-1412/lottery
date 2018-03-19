@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cbbnotfinsh.dao.CdBbNotFinshDao;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -68,10 +69,15 @@ public class CdBbNotFinshService extends BaseService {
     }
 
     @Transactional(readOnly = false)
-    public List<CdBbNotFinsh> getBbFinshed(){
+    public List<CdBbNotFinsh> getBbFinshed(String total, String count) {
         DetachedCriteria dc = cdBbNotFinshDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdBbNotFinsh.FIELD_DEL_FLAG, CdBbNotFinsh.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.asc("day"));
+        dc.addOrder(Order.asc("matchId"));
+        // 限制条数|分页
+        Criteria cri = dc.getExecutableCriteria(cdBbNotFinshDao.getSession());
+        cri.setMaxResults(Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
         return cdBbNotFinshDao.find(dc);
     }
 }

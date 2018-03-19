@@ -70,6 +70,10 @@ public class NotBallOrderFollowQuartz {
                             c.setFollowType("2");
                             cdThreeOrderService.save(c);
                         }
+                        if("3".equals(c.getFollowType())){
+                            c.setFollowType("5");
+                            cdThreeOrderService.save(c);
+                        }
 
                         //生成订单号
                         String orderNum = util.genOrderNo("PLS", util.getFourRandom());
@@ -126,6 +130,10 @@ public class NotBallOrderFollowQuartz {
                             c.setFollowType("2");
                             cdFiveOrderService.save(c);
                         }
+                        if ("3".equals(c.getFollowType())) {
+                            c.setFollowType("5");
+                            cdFiveOrderService.save(c);
+                        }
 
                         //生成订单号
                         String orderNum = util.genOrderNo("PLW", util.getFourRandom());
@@ -180,6 +188,10 @@ public class NotBallOrderFollowQuartz {
                         }
                         if ("1".equals(c.getFollowType())) {
                             c.setFollowType("2");
+                            cdLottoOrderService.save(c);
+                        }
+                        if ("3".equals(c.getFollowType())) {
+                            c.setFollowType("5");
                             cdLottoOrderService.save(c);
                         }
 

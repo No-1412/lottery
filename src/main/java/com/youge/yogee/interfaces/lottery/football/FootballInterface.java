@@ -5,7 +5,6 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
-import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
 import com.youge.yogee.modules.cfbfuture.service.CdFbFutureService;
 import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
@@ -100,6 +99,12 @@ public class FootballInterface {
                     map.put("isSingle", "1");//是否单关 1是 0不是
                 } else {
                     map.put("isSingle", "0");//是否单关 1是 0不是
+                }
+                int dgs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                if (dgs > 0) {
+                    map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                } else {
+                    map.put("isSingleLet", "0");//是否单关让球 1是 0不是
                 }
                 listbytime.add(map);
             }
@@ -409,6 +414,7 @@ public class FootballInterface {
                 CdFootballMixed cdFootballMixed = (CdFootballMixed) cdFootballMixedList.get(y);
                 if (StringUtils.isNotEmpty(cdFootballMixed.getIsale())) {
                     int dgs = FundModel.FT_DG_SPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                    int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
                     if (dgs > 0) {//单关判断
                         Map map = new HashMap();
                         maps.put("addesc", cdFootball.getMatchsDate());//时间日期
@@ -418,13 +424,25 @@ public class FootballInterface {
                         map.put("et", cdFootballMixed.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
                         map.put("hn", cdFootballMixed.getWinningName());//主队名称
                         map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
+
                         map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                        map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率
+                        map.put("sod", cdFootballMixed.getScoreOdds());//比分赔率
+                        map.put("aod", cdFootballMixed.getAllOdds());//总进球赔率
+                        map.put("hod", cdFootballMixed.getHalfOdds());//半全场赔率
+                        map.put("close", cdFootballMixed.getClose());//让球
+
                         map.put("hm", cdFootballMixed.getWinningRank());//主队排名
                         map.put("gm", cdFootballMixed.getDefeatedRank());//客队排名
                         map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
                         map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+                        if(rqs>1){
+                            map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                        }else {
+                            map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                        }
                         listbytime.add(map);
                     }
                 }
@@ -726,31 +744,31 @@ public class FootballInterface {
                 map.put("mt", cd.getMt());//时间
                 map.put("hn", cd.getHn());//主队名称
                 map.put("gn", cd.getGn());//客队名称
-                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
+                map.put("score", cd.getHsc() + ":" + cd.getGsc());//比分
 
                 //主队胜
                 if (hn.equals(cd.getHn())) {
                     //主队胜
                     if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
                         hs++;
-                        map.put("result","胜");//胜负
+                        map.put("result", "胜");//胜负
                     } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
                         hp++;
-                        map.put("result","平");//胜负
+                        map.put("result", "平");//胜负
                     } else {
                         hf++;
-                        map.put("result","负");//胜负
+                        map.put("result", "负");//胜负
                     }
                 } else {
                     if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
                         gs++;
-                        map.put("result","胜");//胜负
+                        map.put("result", "胜");//胜负
                     } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
                         gp++;
-                        map.put("result","平");//胜负
+                        map.put("result", "平");//胜负
                     } else {
                         gf++;
-                        map.put("result","负");//胜负
+                        map.put("result", "负");//胜负
                     }
                 }
                 hlist.add(map);
@@ -770,7 +788,7 @@ public class FootballInterface {
 
         //客场近期战绩
         List<CdFbOutcome> gnList = cdFbOutcomeService.findById(itemid, gn, "0");
-        if (gnList.size()>0) {
+        if (gnList.size() > 0) {
             hs = 0;//记录主队主场胜
             hp = 0;//记录主队主场平
             hf = 0;//记录主队主场负
@@ -783,31 +801,31 @@ public class FootballInterface {
                 map.put("mt", cd.getMt());//时间
                 map.put("hn", cd.getHn());//主队名称
                 map.put("gn", cd.getGn());//客队名称
-                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
+                map.put("score", cd.getHsc() + ":" + cd.getGsc());//比分
 
                 if (gn.equals(cd.getGn())) {//判断主场
                     //客队胜
                     if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
                         gs++;
-                        map.put("result","胜");//胜负
+                        map.put("result", "胜");//胜负
                     } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
                         gp++;
-                        map.put("result","平");//胜负
+                        map.put("result", "平");//胜负
                     } else {
                         gf++;
-                        map.put("result","负");//胜负
+                        map.put("result", "负");//胜负
                     }
                 } else {
                     //主队胜
                     if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
                         hs++;
-                        map.put("result","胜");//胜负
+                        map.put("result", "胜");//胜负
                     } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
                         hp++;
-                        map.put("result","平");//胜负
+                        map.put("result", "平");//胜负
                     } else {
                         hf++;
-                        map.put("result","负");//胜负
+                        map.put("result", "负");//胜负
                     }
                 }
                 glist.add(map);
@@ -843,30 +861,30 @@ public class FootballInterface {
                 map.put("mt", cd.getMt());//时间
                 map.put("hn", cd.getHn());//主队名称
                 map.put("gn", cd.getGn());//客队名称
-                map.put("score", cd.getHsc()+":"+cd.getGsc());//比分
+                map.put("score", cd.getHsc() + ":" + cd.getGsc());//比分
                 //主队胜
                 if (hn.equals(cd.getHn())) {
                     //主队胜
                     if (Integer.parseInt(cd.getHsc()) > Integer.parseInt(cd.getGsc())) {
                         hs++;
-                        map.put("result","胜");//胜负
+                        map.put("result", "胜");//胜负
                     } else if (Integer.parseInt(cd.getHsc()) == Integer.parseInt(cd.getGsc())) {//平
                         hp++;
-                        map.put("result","平");//胜负
+                        map.put("result", "平");//胜负
                     } else {
                         hf++;
-                        map.put("result","负");//胜负
+                        map.put("result", "负");//胜负
                     }
                 } else {
                     if (Integer.parseInt(cd.getGsc()) > Integer.parseInt(cd.getHsc())) {
                         gs++;
-                        map.put("result","胜");//胜负
+                        map.put("result", "胜");//胜负
                     } else if (Integer.parseInt(cd.getGsc()) == Integer.parseInt(cd.getHsc())) {//平
                         gp++;
-                        map.put("result","平");//胜负
+                        map.put("result", "平");//胜负
                     } else {
                         gf++;
-                        map.put("result","负");//胜负
+                        map.put("result", "负");//胜负
                     }
                 }
                 historyList.add(map);

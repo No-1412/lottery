@@ -1,10 +1,13 @@
 package com.youge.yogee.interfaces.lottery.football;
 
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cfbalreadyfinsh.entity.CdFbAlreadyFinsh;
 import com.youge.yogee.modules.cfbalreadyfinsh.service.CdFbAlreadyFinshService;
+import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinishedCollection;
 import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinshed;
+import com.youge.yogee.modules.cfbfinshed.service.CdFbFinishedCollectionService;
 import com.youge.yogee.modules.cfbfinshed.service.CdFbFinshedService;
 import com.youge.yogee.modules.cftlogo.service.CdFtLogoService;
 import com.youge.yogee.modules.cftskill.entity.CdFtSkill;
@@ -44,6 +47,9 @@ public class FootballMatchInterface {
     private CdFtSkillService cdFtSkillService;
     @Autowired
     private CdFtLogoService cdFtLogoService;
+    @Autowired
+    private CdFbFinishedCollectionService cdFbFinishedCollectionService;
+
 
     /**
      * 未完赛数据接口
@@ -54,10 +60,39 @@ public class FootballMatchInterface {
     @ResponseBody
     public String notFinshedData(HttpServletRequest request) {
         logger.info("notFinshedData  未完赛数据---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            uid = "";
+        }
+
         List list = new ArrayList();
-        List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed();
+        List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed(total, count);
         for (CdFbFinshed str : dataList) {
             Map<String, Object> map = new HashMap<>();
+            CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(str.getSort(), uid);
+            if (cffc != null) {
+                map.put("col", "1");
+            } else {
+                map.put("col", "0");
+            }
             map.put("qc", str.getQc());
             map.put("sort", str.getSort());//赛事名称
             map.put("type", str.getType());//比赛时间
@@ -85,8 +120,26 @@ public class FootballMatchInterface {
     @ResponseBody
     public String finshedData(HttpServletRequest request) {
         logger.info("finshedData  已完赛数据---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+
         List list = new ArrayList();
-        List<CdFbAlreadyFinsh> dataList = cdFbAlreadyFinshService.getAlreadyFinsh();
+        List<CdFbAlreadyFinsh> dataList = cdFbAlreadyFinshService.getAlreadyFinsh(total, count);
         for (CdFbAlreadyFinsh str : dataList) {
             Map map = new HashMap();
             map.put("qc", str.getQc());
@@ -193,8 +246,113 @@ public class FootballMatchInterface {
         return HttpResultUtil.successJson(dataMap);
     }
 
-    public static List<String> getList(String str) {
 
+    /**
+     * 未完赛比赛收藏
+     *
+     * @param
+     */
+    @RequestMapping(value = "footNotFinishedCollection", method = RequestMethod.POST)
+    @ResponseBody
+    public String footNotFinishedCollection(HttpServletRequest request) {
+        logger.info("footNotFinishedCollection---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            logger.error("uid为空");
+            return HttpResultUtil.errorJson("uid为空");
+        }
+        String sort = (String) jsonData.get("sort");
+        if (StringUtils.isEmpty(sort)) {
+            logger.error("sort为空");
+            return HttpResultUtil.errorJson("sort为空");
+        }
+
+        CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(sort, uid);
+        if (cffc == null) {
+            CdFbFinishedCollection cdFbFinishedCollection = new CdFbFinishedCollection();
+            cdFbFinishedCollection.setSort(sort);
+            cdFbFinishedCollection.setUid(uid);
+
+            cdFbFinishedCollectionService.save(cdFbFinishedCollection);
+        } else {
+            cdFbFinishedCollectionService.delete(cffc.getId());
+        }
+        Map dataMap = new HashMap();
+        logger.info("footNotFinishedCollection---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    /**
+     * 用户已关注未完赛列表
+     *
+     * @param
+     */
+    @RequestMapping(value = "notFinishedHasCol", method = RequestMethod.POST)
+    @ResponseBody
+    public String notFinishedHasCol(HttpServletRequest request) {
+        logger.info("notFinishedHasCol  未完赛数据---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            logger.error("uid为空");
+            return HttpResultUtil.errorJson("uid为空");
+        }
+
+        List list = new ArrayList();
+        List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed(total, count);
+        for (CdFbFinshed str : dataList) {
+            Map<String, Object> map = new HashMap<>();
+            CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(str.getSort(), uid);
+            if (cffc != null) {
+                map.put("qc", str.getQc());
+                map.put("sort", str.getSort());//赛事名称
+                map.put("type", str.getType());//比赛时间
+                map.put("ln", str.getLn());//赛事类型
+                map.put("hn", str.getHn());//主队
+                map.put("gn", str.getGn());//客队
+                map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
+                map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
+                map.put("jn", str.getJn());//平赔率
+                map.put("time", str.getTime());//比赛时间
+                list.add(map);
+            }
+        }
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
+        logger.info("notFinishedHasCol  未完赛数据---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    public static List<String> getList(String str) {
+        if (StringUtils.isEmpty(str)) {
+            return null;
+        }
         String[] strArray = str.split(",");
         List<String> list = new ArrayList<>();
         for (String s : strArray) {

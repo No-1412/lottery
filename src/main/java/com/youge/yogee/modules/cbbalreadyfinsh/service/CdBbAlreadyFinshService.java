@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cbbalreadyfinsh.dao.CdBbAlreadyFinshDao;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -66,10 +67,15 @@ public class CdBbAlreadyFinshService extends BaseService {
 		return cdBbAlreadyFinshDao.findBySql("select * from cd_bb_alreadyfinsh where day= '" + day + "' and match_id= '" + matchId + "'");
 	}
 	@Transactional(readOnly = false)
-	public List<CdBbAlreadyFinsh> getBbFinshed(){
+	public List<CdBbAlreadyFinsh> getBbFinshed(String total,String count){
 		DetachedCriteria dc = cdBbAlreadyFinshDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdBbAlreadyFinsh.FIELD_DEL_FLAG, CdBbAlreadyFinsh.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("createDate"));
+		dc.addOrder(Order.asc("day"));
+		dc.addOrder(Order.asc("matchId"));
+		// 限制条数|分页
+		Criteria cri = dc.getExecutableCriteria(cdBbAlreadyFinshDao.getSession());
+		cri.setMaxResults(Integer.parseInt(count));
+		cri.setFirstResult(Integer.parseInt(total));
 		return cdBbAlreadyFinshDao.find(dc);
 	}
 }
