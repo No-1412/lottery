@@ -41,6 +41,7 @@ public class CdSuccessFailOrder extends BaseEntity<T> implements Serializable {
     private String award;   //奖金
     private String uid;  //用户id
     private String times;//倍数
+    private String result;//比赛结果
 
     public CdSuccessFailOrder() {
         super();
@@ -166,6 +167,14 @@ public class CdSuccessFailOrder extends BaseEntity<T> implements Serializable {
 
     public void setTimes(String times) {
         this.times = times;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
 

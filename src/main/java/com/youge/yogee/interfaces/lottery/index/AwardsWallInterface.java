@@ -98,13 +98,17 @@ public class AwardsWallInterface {
         if (cow == null) {
             return HttpResultUtil.errorJson("信息错误！");
         }
+        dataMap.put("name",cow.getName());
+        dataMap.put("winPrice",cow.getWinPrice());
         String orderNum = cow.getWinOrderNum();
-        if(orderNum.startsWith("")){
+        if(orderNum.startsWith("ZDG")){
 
         }
         logger.info("大奖墙列表接口--------------End--------");
         return HttpResultUtil.successJson(dataMap);
     }
+
+
 
 
     public String getWinType(String type) {

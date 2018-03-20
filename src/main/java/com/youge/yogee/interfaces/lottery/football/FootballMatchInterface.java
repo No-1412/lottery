@@ -329,6 +329,7 @@ public class FootballMatchInterface {
             Map<String, Object> map = new HashMap<>();
             CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(str.getSort(), uid);
             if (cffc != null) {
+                map.put("col", "1");
                 map.put("qc", str.getQc());
                 map.put("sort", str.getSort());//赛事名称
                 map.put("type", str.getType());//比赛时间

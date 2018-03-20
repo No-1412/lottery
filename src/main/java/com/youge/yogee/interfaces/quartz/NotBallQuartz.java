@@ -73,10 +73,13 @@ public class NotBallQuartz {
                         }
                     } else if (orderPerhaps.indexOf(aCode) != -1) {
                         c = threeWinner(c);
+                        c.setResult(cta.getAcode());
                     } else {
+                        c.setResult(cta.getAcode());
                         c.setStatus("5"); //未中奖
                         c.setAward("0");//奖金为0
                     }
+
                     cdThreeOrderService.save(c);
                 }
             }
@@ -102,6 +105,7 @@ public class NotBallQuartz {
                     String orderPerhaps = c.getAllPerhaps();
                     if (orderPerhaps.indexOf(aCode) != -1) {
                         c.setStatus("4");//中奖
+                        c.setResult(cfa.getAcode());
                         //保存中奖纪录
                         CdOrderWinners cdOrderWinners = new CdOrderWinners();
                         cdOrderWinners.setWinOrderNum(c.getOrderNum());//中间单号
@@ -112,11 +116,14 @@ public class NotBallQuartz {
                         cdOrderWinners.setRepayPercent(repayPercent);
                         cdOrderWinners.setType("8");
                         cdOrderWinners.setWallType("1");
+                        cdOrderWinners.setResult(c.getResult());
                         cdOrderWinnersService.save(cdOrderWinners);
                     } else {
+                        c.setResult(cfa.getAcode());
                         c.setStatus("5"); //未中奖
                         c.setAward("0");//奖金为0
                     }
+
                     cdFiveOrderService.save(c);
                 }
             }
@@ -247,12 +254,15 @@ public class NotBallQuartz {
                         BigDecimal award = winCount.multiply(firstAward); //奖金
                         c.setStatus("4");//中奖
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
+                        c.setResult(clr.getNumber());
                         //保存中奖纪录
                         saveWinnerRecord(c);
                     } else {
+                        c.setResult(clr.getNumber());
                         c.setStatus("5");//未中奖
                         c.setAward("0");//奖金0
                     }
+
                     cdLottoOrderService.save(c);
                 }
             }
@@ -270,6 +280,7 @@ public class NotBallQuartz {
         cdOrderWinners.setRepayPercent(repayPercent);
         cdOrderWinners.setType("9");
         cdOrderWinners.setWallType("1");
+        cdOrderWinners.setResult(c.getResult());
         cdOrderWinnersService.save(cdOrderWinners);
     }
 
@@ -290,6 +301,7 @@ public class NotBallQuartz {
         cdOrderWinners.setRepayPercent(repayPercent);
         cdOrderWinners.setType("7");
         cdOrderWinners.setWallType("1");
+        cdOrderWinners.setResult(c.getResult());
         cdOrderWinnersService.save(cdOrderWinners);
         return c;
     }

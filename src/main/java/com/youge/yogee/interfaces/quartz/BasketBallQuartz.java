@@ -84,6 +84,12 @@ public class BasketBallQuartz {
 
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
+
+                //  **************************后加的-------------获取押注比赛结果并保存****************
+                String result = getResultStr(matchIdList);
+                cdBasketballFollowOrder.setResult(result);
+                cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                //**********************************************************************************
                 //押对的彩票
                 List<String> winList = new ArrayList<>();
                 //押对的彩票(用于带胆的彩票)
@@ -134,7 +140,7 @@ public class BasketBallQuartz {
                                 if (danWin.contains(danMatchId)) {
                                     oobList.add(Double.parseDouble(danWin.split(danMatchId)[1]));
 //                                    danWinList.remove(danWin);
-                                }else {
+                                } else {
                                     danWinListCopy.add(danWin);
                                 }
                             }
@@ -268,8 +274,14 @@ public class BasketBallQuartz {
             }
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
-                //***********************************判断押中场次************************************************
 
+                //  **********************后加的-------------获取押注比赛结果并保存****************************
+                String result = getResultStr(matchIdList);
+                cdBasketballSingleOrder.setResult(result);
+                cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+                //******************************************************************************************
+
+                //***********************************判断押中场次************************************************
                 //判断主胜
                 String hostWin = cdBasketballSingleOrder.getHostWin();
                 double hostWinOdds = judgeBasketballSingle(hostWin, "hostWin");
@@ -426,5 +438,18 @@ public class BasketBallQuartz {
         }
     }
 
+    public String getResultStr(Set<String> matchIdList) {
+        String result = "";
+        if (matchIdList.size() > 0) {
+            for (String str : matchIdList) {
+                CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(str);
+                if (cdBasketballAwards != null) {
+                    String scoreResult = cdBasketballAwards.getHs() + ":" + cdBasketballAwards.getVs();
+                    result += scoreResult + ",";
+                }
+            }
+        }
+        return result;
+    }
 
 }

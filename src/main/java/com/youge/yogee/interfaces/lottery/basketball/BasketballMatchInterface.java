@@ -309,6 +309,7 @@ public class BasketballMatchInterface {
             Map map = new HashMap();
             CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(str.getZid(), uid);
             if (cbnfc != null) {
+                map.put("col", "1");
                 map.put("hn", str.getHn());//主队名
                 map.put("zid", str.getZid());//队Id
                 map.put("type", str.getType());//赛事类型

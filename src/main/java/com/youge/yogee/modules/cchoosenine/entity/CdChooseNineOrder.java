@@ -48,6 +48,7 @@ public class CdChooseNineOrder extends BaseEntity<T> implements Serializable {
     private String uid;  //用户id
     private String times;  //倍数
     private String matchIds;  //所有期次
+    private String result;//比赛结果
 
     public CdChooseNineOrder() {
         super();
@@ -181,6 +182,14 @@ public class CdChooseNineOrder extends BaseEntity<T> implements Serializable {
 
     public void setMatchIds(String matchIds) {
         this.matchIds = matchIds;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
 

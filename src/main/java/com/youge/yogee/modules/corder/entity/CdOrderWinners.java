@@ -38,6 +38,7 @@ public class CdOrderWinners extends BaseEntity<T> implements Serializable {
     private String uid; //用户id
     private String type;//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
     private String wallType;//1下一次大奖墙 2过期大奖墙
+    private String result;//彩果
 
     public CdOrderWinners() {
         super();
@@ -139,6 +140,14 @@ public class CdOrderWinners extends BaseEntity<T> implements Serializable {
 
     public void setWallType(String wallType) {
         this.wallType = wallType;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
 

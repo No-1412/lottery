@@ -86,6 +86,13 @@ public class QuartzListener {
 
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
+
+                //  **************************后加的-------------获取押注比赛结果并保存****************
+                String result = getResultStr(matchIdList);
+                cdFootballFollowOrder.setResult(result);
+                cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                //**********************************************************************************
+
                 //押对的彩票
                 List<String> winList = new ArrayList<>();
                 //押对的彩票(用于带胆的彩票)
@@ -169,7 +176,7 @@ public class QuartzListener {
                                 if (danWin.contains(danMatchId)) {
                                     oobList.add(Double.parseDouble(danWin.split(danMatchId)[1]));
 //                                    danWinList.remove(danWin);
-                                }else {
+                                } else {
                                     danWinListCopy.add(danWin);
                                 }
                             }
@@ -272,6 +279,7 @@ public class QuartzListener {
                     cdOrderWinners.setRepayPercent(repayPercent);
                     cdOrderWinners.setType("2");
                     cdOrderWinners.setWallType("1");
+                    cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
                 } else {
                     cdFootballFollowOrder.setStatus("5");
@@ -292,7 +300,21 @@ public class QuartzListener {
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
 
+
         for (CdFootballSingleOrder cdFootballSingleOrder : cdFootballSingleOrderList) {
+
+            //获取订单中押的全部场次
+            String matchIds = cdFootballSingleOrder.getMatchIds();
+            Set<String> matchIdList = new HashSet<>();
+            for (String finishMatchId : matchIds.split(",")) {
+                matchIdList.add(finishMatchId);
+            }
+            //  **********************后加的-------------获取押注比赛结果并保存****************************
+            String result = getResultStr(matchIdList);
+            cdFootballSingleOrder.setResult(result);
+            cdFootballSingleOrderService.save(cdFootballSingleOrder);
+            //******************************************************************************************
+
 
             //***********************************判断押中场次************************************************
             //判断比分
@@ -439,5 +461,18 @@ public class QuartzListener {
         }
     }
 
+    public String getResultStr(Set<String> matchIdList) {
+        String result = "";
+        if (matchIdList.size() > 0) {
+            for (String str : matchIdList) {
+                CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(str);
+                if (cdFootballAwards != null) {
+                    String scoreResult = cdFootballAwards.getHs() + ":" + cdFootballAwards.getVs();
+                    result += scoreResult + ",";
+                }
+            }
+        }
+        return result;
+    }
 
 }
