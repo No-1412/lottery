@@ -46,9 +46,10 @@ public class CdBasketballSingleOrder extends BaseEntity<T> implements Serializab
 
     private String hostWin;        // 主胜
     private String hostFail;      //主负
-
+    private String result;       //开奖结果
     private String type;     // 0普通订单 1发起的 2跟单的
     private String matchIds; //购买的所有场次
+
 
     public CdBasketballSingleOrder() {
         super();
@@ -198,6 +199,14 @@ public class CdBasketballSingleOrder extends BaseEntity<T> implements Serializab
 
     public void setMatchIds(String matchIds) {
         this.matchIds = matchIds;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
 

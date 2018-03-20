@@ -5,7 +5,9 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
 import com.youge.yogee.modules.cbbalreadyfinsh.service.CdBbAlreadyFinshService;
+import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinishCollection;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
+import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinishCollectionService;
 import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinshService;
 import com.youge.yogee.modules.cbbstrengthpk.entity.CdBbStrengthpk;
 import com.youge.yogee.modules.cbbstrengthpk.entity.CdBbStrengthpkAverage;
@@ -44,7 +46,8 @@ public class BasketballMatchInterface {
     private CdBbStrengthpkAverageService cdBbStrengthpkAverageService;
     @Autowired
     private CdBbStrengthpkInjuryService cdBbStrengthpkInjuryService;
-
+    @Autowired
+    private CdBbNotFinishCollectionService cdBbNotFinishCollectionService;
 
     /**
      * 篮球实力PK数据接口
@@ -54,7 +57,7 @@ public class BasketballMatchInterface {
     public String bbStrengthPk(HttpServletRequest request) {
         logger.info("bbStrengthPk  篮球实力PK数据---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        if(jsonData == null){
+        if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
         String itemId = (String) jsonData.get("itemid");
@@ -100,9 +103,9 @@ public class BasketballMatchInterface {
             averageMap.put("penalty", cdBbStrengthpkAverage.getPenalty());//罚球
             averageMap.put("close", cdBbStrengthpkAverage.getClose());//封盖
 
-            if(cdBbStrengthpkAverage.getTeam().equals("1")){
+            if (cdBbStrengthpkAverage.getTeam().equals("1")) {
                 averageHnList.add(averageMap);
-            }else {
+            } else {
                 averageVnList.add(averageMap);
             }
         }
@@ -142,7 +145,21 @@ public class BasketballMatchInterface {
     @ResponseBody
     public String bbAlreadyFinsh(HttpServletRequest request) {
         logger.info("bbAlreadyFinsh  篮球已完赛---------start---------");
-        List<CdBbAlreadyFinsh> dataList = cdBbAlreadyFinshService.getBbFinshed();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+        List<CdBbAlreadyFinsh> dataList = cdBbAlreadyFinshService.getBbFinshed(total, count);
         List list = new ArrayList();
         for (CdBbAlreadyFinsh str : dataList) {
             Map map = new HashMap();
@@ -172,10 +189,36 @@ public class BasketballMatchInterface {
     @ResponseBody
     public String bbNotFinsh(HttpServletRequest request) {
         logger.info("bbNotFinsh  篮球未完赛---------start---------");
-        List<CdBbNotFinsh> dataList = cdBbNotFinshService.getBbFinshed();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            uid = "";
+        }
+
+        List<CdBbNotFinsh> dataList = cdBbNotFinshService.getBbFinshed(total, count);
         List list = new ArrayList();
         for (CdBbNotFinsh str : dataList) {
             Map map = new HashMap();
+            CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(str.getZid(), uid);
+            if (cbnfc != null) {
+                map.put("col", "1");
+            } else {
+                map.put("col", "0");
+            }
+
             map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
             map.put("type", str.getType());//赛事类型
@@ -192,4 +235,100 @@ public class BasketballMatchInterface {
         logger.info("bbNotFinsh  篮球未完赛---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
+
+    /**
+     * 未完赛比赛收藏
+     *
+     * @param
+     */
+    @RequestMapping(value = "basketNotFinishedCollection", method = RequestMethod.POST)
+    @ResponseBody
+    public String basketNotFinishedCollection(HttpServletRequest request) {
+        logger.info("basketNotFinishedCollection---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+        String zid = (String) jsonData.get("zid");
+        if (StringUtils.isEmpty(zid)) {
+            logger.error("zid为空");
+            return HttpResultUtil.errorJson("zid为空");
+        }
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            logger.error("uid为空");
+            return HttpResultUtil.errorJson("uid为空");
+        }
+
+
+        CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(zid, uid);
+        if (cbnfc == null) {
+            CdBbNotFinishCollection cdBbNotFinishCollection = new CdBbNotFinishCollection();
+            cdBbNotFinishCollection.setZid(zid);
+            cdBbNotFinishCollection.setUid(uid);
+            cdBbNotFinishCollectionService.save(cdBbNotFinishCollection);
+        } else {
+            cdBbNotFinishCollectionService.delete(cbnfc.getId());
+        }
+        Map dataMap = new HashMap();
+        logger.info("basketNotFinishedCollection---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    /**
+     * 篮球已关注列表
+     */
+    @RequestMapping(value = "bbNotFinshHasCol", method = RequestMethod.POST)
+    @ResponseBody
+    public String bbNotFinshHasCol(HttpServletRequest request) {
+        logger.info("bbNotFinshHasCol ---------start---------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            uid = "";
+        }
+
+        List<CdBbNotFinsh> dataList = cdBbNotFinshService.getBbFinshed(total, count);
+        List list = new ArrayList();
+        for (CdBbNotFinsh str : dataList) {
+            Map map = new HashMap();
+            CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(str.getZid(), uid);
+            if (cbnfc != null) {
+                map.put("col", "1");
+                map.put("hn", str.getHn());//主队名
+                map.put("zid", str.getZid());//队Id
+                map.put("type", str.getType());//赛事类型
+                map.put("hn", str.getHn());//主队
+                map.put("gn", str.getGn());//客队
+                map.put("day", str.getDay());//日期
+                map.put("matchId", str.getMatchId());//场次id
+                map.put("hnImg", str.getHnImg());//主队LOGO
+                map.put("gnImg", str.getGnImg());//客队LOGO
+                list.add(map);
+            }
+        }
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
+        logger.info("bbNotFinshHasCol---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
 }

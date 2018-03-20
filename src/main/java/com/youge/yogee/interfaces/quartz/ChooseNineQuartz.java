@@ -114,6 +114,7 @@ public class ChooseNineQuartz {
                 Integer award = Integer.valueOf(cdChooseNineOrder.getTimes()) * count * Integer.valueOf(cdChooseNine.getPerNoteMoney());
                 cdChooseNineOrder.setAcount(award.toString());
                 cdChooseNineOrder.setStatus("4");
+                cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrderService.save(cdChooseNineOrder);
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -124,8 +125,10 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setRepayPercent(repayPercent);
                 cdOrderWinners.setType("5");
                 cdOrderWinners.setWallType("1");
+                cdOrderWinners.setResult(cdChooseNineOrder.getResult());
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
+                cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrder.setStatus("5");
                 cdChooseNineOrderService.save(cdChooseNineOrder);
 
@@ -185,6 +188,7 @@ public class ChooseNineQuartz {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
                 cdSuccessFailOrder.setAcount(award.toString());
                 cdSuccessFailOrder.setStatus("4");
+                cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -195,8 +199,10 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setRepayPercent(repayPercent);
                 cdOrderWinners.setType("6");
                 cdOrderWinners.setWallType("1");
+                cdOrderWinners.setResult(cdSuccessFailOrder.getResult());
                 cdOrderWinnersService.save(cdOrderWinners);
             } else {
+                cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrder.setStatus("5");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
             }
