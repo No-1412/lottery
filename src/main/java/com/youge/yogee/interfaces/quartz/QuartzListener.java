@@ -84,6 +84,8 @@ public class QuartzListener {
                 matchIdList.add(finishMatchId.substring(2, 7));
             }
 
+
+
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
                 //押对的彩票

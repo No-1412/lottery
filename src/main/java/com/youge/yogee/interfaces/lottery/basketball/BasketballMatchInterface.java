@@ -65,6 +65,9 @@ public class BasketballMatchInterface {
 
         //球队实力
         CdBbStrengthpk cdBbStrengthpk = cdBbStrengthpkService.getStrengthPk(itemId);
+        if(cdBbStrengthpk == null){
+            return HttpResultUtil.errorJson("数据未更新");
+        }
         Map<String, Object> pkMap = new HashMap<>();
         pkMap.put("hn", cdBbStrengthpk.getHn());
         pkMap.put("vn", cdBbStrengthpk.getVn());

@@ -6,6 +6,8 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
+import com.youge.yogee.modules.cbblive.entity.CdBbLive;
+import com.youge.yogee.modules.cbblive.service.CdBbLiveService;
 import com.youge.yogee.modules.cbtfuture.entity.CdBtFuture;
 import com.youge.yogee.modules.cbtfuture.service.CdBtFutureService;
 import com.youge.yogee.modules.cbtoutcome.entity.CdBtOutcome;
@@ -37,6 +39,8 @@ public class BasketballInterface {
     private CdBtOutcomeService cdBtOutcomeService;
     @Autowired
     private CdBtFutureService cdBtFutureService;
+    @Autowired
+    private CdBbLiveService cdBbLiveService;
 
     /**
      * 篮球混投
@@ -416,16 +420,15 @@ public class BasketballInterface {
         Map dataMap = new HashMap();
         List hlist = new ArrayList();
         List glist = new ArrayList();
-        List dataList = new ArrayList();
         List historyList = new ArrayList();
         List hFutureList = new ArrayList();
         List gFutureList = new ArrayList();
         Map map = new HashMap();
         int hs = 0;//主队主场胜
-        int hp = 0;//主队主场平
+//        int hp = 0;//主队主场平
         int hf = 0;//主队主场负
         int gs = 0;//客队主场胜
-        int gp = 0;//客队主场平
+//        int gp = 0;//客队主场平
         int gf = 0;//客队主场负
         int hhs = 0;//历史主队胜
         int hhp = 0;//历史主队平
@@ -459,20 +462,14 @@ public class BasketballInterface {
                         hs++;
                     } else if ("负".equals(cd.getResult())) {
                         hf++;
-                    } else {
-                        hp++;
                     }
 
                     hlist.add(map);
                 }
 
+                int[] scoreArray = {hs, hf};
+                dataMap.put("hnScoreArray", scoreArray);
 
-                map = new HashMap();
-                map.put("hs", hs);
-                map.put("hp", hp);
-                map.put("hf", hf);
-
-                dataList.add(map);
             }
             List<CdBtOutcome> gnList = cdBtOutcomeService.findById(itemid, gn, "0");//客队近期战绩
             if (gnList != null) {
@@ -492,17 +489,12 @@ public class BasketballInterface {
                         gs++;
                     } else if ("负".equals(cd.getResult())) {
                         gf++;
-                    } else {
-                        gp++;
                     }
                     glist.add(map);
                 }
 
-                map = new HashMap();
-                map.put("gs", gs);
-                map.put("gp", gp);
-                map.put("gf", gf);
-                dataList.add(map);
+                int[] scoreArray = {gs, gf};
+                dataMap.put("gnScoreArray", scoreArray);
             }
             //endregion
             logger.info("listBtDetail  篮球近期战绩详情---------End---------");
@@ -532,11 +524,9 @@ public class BasketballInterface {
                         hhp++;
                     }
                     historyList.add(map);
-                    map = new HashMap();
-                    map.put("hhs", hhs);
-                    map.put("hhp", hhp);
-                    map.put("hhf", hhf);
-                    dataList.add(map);
+
+                    int[] scoreArray = {hhs, hhp, hhf};
+                    dataMap.put("historyScoreArray", scoreArray);
 
                 }
 
@@ -582,7 +572,6 @@ public class BasketballInterface {
         dataMap.put("glist", glist);//客队近期
         dataMap.put("hlist", hlist);//主队近期
         dataMap.put("historyList", historyList);//历史战绩
-        dataMap.put("dataList", dataList);//比赛成绩
         dataMap.put("hFutureList", hFutureList);//主队未来赛事
         dataMap.put("gFutureList", gFutureList);//客队未来赛事
 
@@ -644,5 +633,47 @@ public class BasketballInterface {
         return HttpResultUtil.successJson(map);
     }
 
+
+    /**
+     * 通过itemid查询篮球实况
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getBtLiveById", method = RequestMethod.POST)
+    public String getBtLiveById(HttpServletRequest request) {
+        logger.info("getBtLiveById  获取篮球实况---------Start---------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String itemid = (String) jsonData.get("itemid");
+        if (StringUtils.isEmpty(itemid)) {
+            logger.error("itemid为空");
+            return HttpResultUtil.errorJson("itemid为空");
+        }
+
+        CdBbLive cdBbLive = cdBbLiveService.findByMatchId(itemid);
+        if (cdBbLive == null) {
+            return HttpResultUtil.errorJson("比赛不存在");
+        }
+
+
+
+
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("hnScore",cdBbLive.getHnScore().split(","));
+        dataMap.put("gnScore",cdBbLive.getGnScore().split(","));
+        dataMap.put("hnSkill",StringUtils.split(cdBbLive.getHnSkill(),","));
+        dataMap.put("gnSkill",StringUtils.split(cdBbLive.getGnSkill(),","));
+        dataMap.put("hnPlayer",StringUtils.split(cdBbLive.getHnPlayer(),"|"));
+        dataMap.put("gnPlayer",StringUtils.split(cdBbLive.getGnPlayer(),"|"));
+
+
+        logger.info("getBtMatchDetailById 获取篮球详情---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
 
 }

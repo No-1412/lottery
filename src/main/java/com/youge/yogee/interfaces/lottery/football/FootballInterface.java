@@ -694,20 +694,10 @@ public class FootballInterface {
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String itemID = (String) jsonData.get("itemid");//比赛id
         Map<String, Object> dataMap = new HashMap<>();
-        List hlist = new ArrayList();
-        List glist = new ArrayList();
-        List dataList = new ArrayList();
-        List historyList = new ArrayList();
         List scoerList = new ArrayList();
         List hFutureList = new ArrayList();
         List gFutureList = new ArrayList();
-//        Map<String,Object> map = new HashMap<>();
-//        int hs = 0;//主队主场胜
-//        int hp = 0;//主队主场平
-//        int hf = 0;//主队主场负
-//        int gs = 0;//客队主场胜
-//        int gp = 0;//客队主场平
-//        int gf = 0;//客队主场负
+
         logger.info("listFtDetail  足球近期战绩详情---------Start---------");
         //region Description
         CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemID);
@@ -921,10 +911,10 @@ public class FootballInterface {
         //endregion
         logger.info("listFtDetail  足球未来赛事详情---------End---------");
 
-        dataMap.put("glist", glist);//客队近期
-        dataMap.put("hlist", hlist);//主队近期
-        dataMap.put("historyList", historyList);//历史战绩
-        dataMap.put("dataList", dataList);//比赛成绩
+//        dataMap.put("glist", glist);//客队近期
+//        dataMap.put("hlist", hlist);//主队近期
+//        dataMap.put("historyList", historyList);//历史战绩
+//        dataMap.put("dataList", dataList);//比赛成绩
         dataMap.put("scoerList", scoerList);//战绩分数
         dataMap.put("hFutureList", hFutureList);//主队未来赛事
         dataMap.put("gFutureList", gFutureList);//客队未来赛事

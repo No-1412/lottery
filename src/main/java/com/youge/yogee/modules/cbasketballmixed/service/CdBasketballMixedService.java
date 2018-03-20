@@ -137,8 +137,7 @@ public class CdBasketballMixedService extends BaseService {
 	 * @param itemid
 	 * @return
 	 */
-	@Transactional(readOnly = false)
-	public List getByItem(String itemid){
+	public List<CdBasketballMixed> getByItem(String itemid){
 		DetachedCriteria dc = cdBasketballMixedDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdBasketballMixed.FIELD_DEL_FLAG, CdBasketballMixed.DEL_FLAG_NORMAL));
 		dc.add(Restrictions.eq("itemid", itemid));
