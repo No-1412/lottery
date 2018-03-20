@@ -22,6 +22,7 @@ import java.util.List;
 
 /**
  * 胜负彩订单Service
+ *
  * @author ZhaoYiFeng
  * @version 2018-02-23
  */
@@ -29,45 +30,59 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CdSuccessFailOrderService extends BaseService {
 
-	@Autowired
-	private CdSuccessFailOrderDao cdSuccessFailOrderDao;
-	
-	public CdSuccessFailOrder get(String id) {
-		return cdSuccessFailOrderDao.get(id);
-	}
-	
-	public Page<CdSuccessFailOrder> find(Page<CdSuccessFailOrder> page, CdSuccessFailOrder cdSuccessFailOrder) {
-		DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
-		if (StringUtils.isNotEmpty(cdSuccessFailOrder.getOrderNumber())){
-			dc.add(Restrictions.like("orderNumber", cdSuccessFailOrder.getOrderNumber()));
-		}
-		dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("createDate"));
-		return cdSuccessFailOrderDao.find(page, dc);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(CdSuccessFailOrder cdSuccessFailOrder) {
+    @Autowired
+    private CdSuccessFailOrderDao cdSuccessFailOrderDao;
 
-		if(StringUtils.isEmpty(cdSuccessFailOrder.getId())){
-			cdSuccessFailOrder.setId(IdGen.uuid());
-			cdSuccessFailOrder.setCreateDate(DateUtils.getDateTime());
-			cdSuccessFailOrder.setDelFlag(CdSuccessFailOrder.DEL_FLAG_NORMAL);
-		}
-		cdSuccessFailOrderDao.save(cdSuccessFailOrder);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(String id) {
-		cdSuccessFailOrderDao.deleteById(id);
-	}
+    public CdSuccessFailOrder get(String id) {
+        return cdSuccessFailOrderDao.get(id);
+    }
+
+    public Page<CdSuccessFailOrder> find(Page<CdSuccessFailOrder> page, CdSuccessFailOrder cdSuccessFailOrder) {
+        DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
+        if (StringUtils.isNotEmpty(cdSuccessFailOrder.getOrderNumber())) {
+            dc.add(Restrictions.like("orderNumber", cdSuccessFailOrder.getOrderNumber()));
+        }
+        dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdSuccessFailOrderDao.find(page, dc);
+    }
+
+    @Transactional(readOnly = false)
+    public void save(CdSuccessFailOrder cdSuccessFailOrder) {
+
+        if (StringUtils.isEmpty(cdSuccessFailOrder.getId())) {
+            cdSuccessFailOrder.setId(IdGen.uuid());
+            cdSuccessFailOrder.setCreateDate(DateUtils.getDateTime());
+            cdSuccessFailOrder.setDelFlag(CdSuccessFailOrder.DEL_FLAG_NORMAL);
+        }
+        cdSuccessFailOrderDao.save(cdSuccessFailOrder);
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(String id) {
+        cdSuccessFailOrderDao.deleteById(id);
+    }
 
 
-	public List<CdSuccessFailOrder> findStatus() {
-		DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
-		dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
-		dc.add(Restrictions.eq("status", "3"));
-		dc.addOrder(Order.desc("createDate"));
-		return cdSuccessFailOrderDao.find(dc);
-	}
+    public List<CdSuccessFailOrder> findStatus() {
+        DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "3"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdSuccessFailOrderDao.find(dc);
+    }
+
+    public CdSuccessFailOrder findOrderByOrderNum(String orderNumber) {
+        DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("orderNumber", orderNumber));
+        dc.addOrder(Order.desc("createDate"));
+        List<CdSuccessFailOrder> list = cdSuccessFailOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
+    }
 }

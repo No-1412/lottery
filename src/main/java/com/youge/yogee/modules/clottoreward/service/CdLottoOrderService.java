@@ -81,4 +81,16 @@ public class CdLottoOrderService extends BaseService {
         return cdLottoOrderDao.find(dc);
     }
 
+    public CdLottoOrder findOrderByOrderNum(String orderNum) {
+        DetachedCriteria dc = cdLottoOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("orderNum", orderNum));
+        dc.add(Restrictions.eq(CdLottoOrder.FIELD_DEL_FLAG, CdLottoOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        List<CdLottoOrder> list = cdLottoOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

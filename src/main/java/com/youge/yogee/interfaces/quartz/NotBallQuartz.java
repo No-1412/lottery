@@ -68,19 +68,23 @@ public class NotBallQuartz {
                         String[] wantSumArray = wantSum.split("\\|");
                         for (String want : wantSumArray) {
                             if (sum == Integer.parseInt(want)) {
+                                c.setResult(cta.getAcode());
                                 c = threeWinner(c);
+
                             }
                         }
                     } else if (orderPerhaps.indexOf(aCode) != -1) {
-                        c = threeWinner(c);
                         c.setResult(cta.getAcode());
+                        c = threeWinner(c);
+
                     } else {
                         c.setResult(cta.getAcode());
                         c.setStatus("5"); //未中奖
                         c.setAward("0");//奖金为0
-                    }
 
+                    }
                     cdThreeOrderService.save(c);
+
                 }
             }
         }
@@ -91,21 +95,22 @@ public class NotBallQuartz {
     public void listFiveOrder() {
         System.out.println("排列五开奖");
         CdFiveAwards cfa = cdFiveAwardsService.findFirst();
+        String weekday = cfa.getWeekday();
+        //获取当期所有付款订单
+        List<CdFiveOrder> cList = cdFiveOrderService.findByStatus("3", weekday);
         if (cfa != null) {
             String awardDate = cfa.getAtime().split(" ")[0]; //开奖时间截取日期
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
             Date today = new Date();
             String todayStr = sdf.format(today);//当天时间
             if (awardDate.equals(todayStr)) {
-                String weekday = cfa.getWeekday();
                 String aCode = cfa.getAcode();//开奖号码
-                //获取当期所有付款订单
-                List<CdFiveOrder> cList = cdFiveOrderService.findByStatus("3", weekday);
                 for (CdFiveOrder c : cList) {
+
                     String orderPerhaps = c.getAllPerhaps();
                     if (orderPerhaps.indexOf(aCode) != -1) {
+                        c.setResult(aCode);
                         c.setStatus("4");//中奖
-                        c.setResult(cfa.getAcode());
                         //保存中奖纪录
                         CdOrderWinners cdOrderWinners = new CdOrderWinners();
                         cdOrderWinners.setWinOrderNum(c.getOrderNum());//中间单号
@@ -119,12 +124,13 @@ public class NotBallQuartz {
                         cdOrderWinners.setResult(c.getResult());
                         cdOrderWinnersService.save(cdOrderWinners);
                     } else {
-                        c.setResult(cfa.getAcode());
+                        c.setResult(aCode);
                         c.setStatus("5"); //未中奖
                         c.setAward("0");//奖金为0
-                    }
 
+                    }
                     cdFiveOrderService.save(c);
+
                 }
             }
         }
@@ -252,9 +258,9 @@ public class NotBallQuartz {
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[5]);
                         BigDecimal winCount = new BigDecimal(c.getAcount());
                         BigDecimal award = winCount.multiply(firstAward); //奖金
+                        c.setResult(clr.getNumber());
                         c.setStatus("4");//中奖
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
-                        c.setResult(clr.getNumber());
                         //保存中奖纪录
                         saveWinnerRecord(c);
                     } else {
