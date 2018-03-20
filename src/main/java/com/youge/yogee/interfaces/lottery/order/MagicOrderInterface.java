@@ -417,9 +417,28 @@ public class MagicOrderInterface {
                 String matchIds = cfs.getMatchIds();
                 String[] matchIdsArray = matchIds.split(",");
                 String vs = "";
+                String matchResult = cfs.getResult();//比赛结果
+                int i = 0;
                 for (String s : matchIdsArray) {
+                    List<String> resultList = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(matchResult)) {
+                        String[] mathchResultArray = matchResult.split(",");
+                        for (String rs : mathchResultArray) {
+                            resultList.add(rs);
+                        }
+                    }
+
                     Map<String, Object> orderMap = new HashMap<>();
                     orderMap.put("matchId", s); //期次
+                    //比赛结果
+                    if (resultList.size() > 0) {
+                        orderMap.put("result", resultList.get(i));
+                        i++;
+                    } else {
+                        orderMap.put("result", "");
+                    }
+
+
                     //比分
                     Map<String, String> scoreMap = getSingleMap(s, scoreArray);
                     if (scoreMap.size() > 0) {
@@ -461,9 +480,12 @@ public class MagicOrderInterface {
                     }
                     orderMap.put("let", letMap.get("result")); //让球
                     orderMap.put("vs", vs);
+
                     map.put("buyWays", cfs.getBuyWays());
                     map.put("followNums", "0");
+
                     orderDetail.add(orderMap);
+
                 }
 
             } else if ("2".equals(type)) {
@@ -487,10 +509,29 @@ public class MagicOrderInterface {
                 String matchIds = cff.getDanMatchIds();
                 String[] matchIdsArray = matchIds.split(",");
                 String vs = "";
+                String matchResult = cff.getResult();//比赛结果
+                int i = 0;
                 for (String s : matchIdsArray) {
+
+                    List<String> resultList = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(matchResult)) {
+                        String[] mathchResultArray = matchResult.split(",");
+                        for (String rs : mathchResultArray) {
+                            resultList.add(rs);
+                        }
+                    }
+
                     String match = s.split("\\+")[1];
                     Map<String, Object> orderMap = new HashMap<>();
                     orderMap.put("matchId", match);
+                    //比赛结果
+                    if (resultList.size() > 0) {
+                        orderMap.put("result", resultList.get(i));
+                        i++;
+                    } else {
+                        orderMap.put("result", "");
+                    }
+
                     //比分
                     Map<String, String> scoreMap = getFollowMap(match, scoreArray);
                     if (scoreMap.size() > 0) {
@@ -536,9 +577,11 @@ public class MagicOrderInterface {
                     orderMap.put("vs", vs);
                     map.put("buyWays", cff.getBuyWays());
                     map.put("followNums", cff.getFollowNum());
+                    map.put("result", cff.getResult());//彩果
                     orderDetail.add(orderMap);
                 }
             } else if ("3".equals(type)) {
+
                 CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
                 //主胜
                 String hostWin = cbs.getHostWin();
@@ -551,14 +594,33 @@ public class MagicOrderInterface {
                 String matchIds = cbs.getMatchIds();
                 String[] matchIdsArray = matchIds.split(",");
                 String vs = "";
+                String matchResult = cbs.getResult();//比赛结果
+                int i = 0;
                 for (String s : matchIdsArray) {
+
+                    List<String> resultList = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(matchResult)) {
+                        String[] mathchResultArray = matchResult.split(",");
+                        for (String rs : mathchResultArray) {
+                            resultList.add(rs);
+                        }
+                    }
+
                     Map<String, Object> orderMap = new HashMap<>();
                     orderMap.put("matchId", s); //期次
+                    //比赛结果
+                    if (resultList.size() > 0) {
+                        orderMap.put("result", resultList.get(i));
+                        i++;
+                    } else {
+                        orderMap.put("result", "");
+                    }
                     //主胜
                     Map<String, String> winMap = getSingleMap(s, winArray);
                     if (winMap.size() > 0) {
                         vs = winMap.get("vs"); //队伍
                     }
+
                     orderMap.put("win", winMap.get("result")); //比分
                     //主负
                     Map<String, String> failMap = getSingleMap(s, failArray);
@@ -572,6 +634,7 @@ public class MagicOrderInterface {
                     orderMap.put("vs", vs);
                     map.put("followNums", "0");
                     map.put("buyWays", cbs.getBuyWays());
+                    map.put("result", cbs.getResult());//彩果
                     orderDetail.add(orderMap);
                 }
 
@@ -596,10 +659,28 @@ public class MagicOrderInterface {
                 String matchIds = cbf.getDanMatchIds();
                 String[] matchIdsArray = matchIds.split(",");
                 String vs = "";
+                String matchResult = cbf.getResult();//比赛结果
+                int j = 0;
                 for (String s : matchIdsArray) {
+
+                    List<String> resultList = new ArrayList<>();
+                    if (StringUtils.isNotEmpty(matchResult)) {
+                        String[] mathchResultArray = matchResult.split(",");
+                        for (String rs : mathchResultArray) {
+                            resultList.add(rs);
+                        }
+                    }
+
                     String match = s.split("\\+")[1];
                     Map<String, Object> orderMap = new HashMap<>();
                     orderMap.put("matchId", match);
+                    //比赛结果
+                    if (resultList.size() > 0) {
+                        orderMap.put("result", resultList.get(j));
+                        j++;
+                    } else {
+                        orderMap.put("result", "");
+                    }
                     //主胜
                     Map<String, String> winMap = getFollowMap(match, winArray);
                     if (winMap.size() > 0) {
@@ -648,6 +729,7 @@ public class MagicOrderInterface {
                     }
                     map.put("buyWays", cbf.getBuyWays());
                     map.put("followNums", cbf.getFollowNums());
+                    map.put("result", cbf.getResult());//彩果
                     orderDetail.add(orderMap);
                 }
             }

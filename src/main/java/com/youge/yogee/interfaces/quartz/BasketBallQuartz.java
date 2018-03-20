@@ -242,6 +242,7 @@ public class BasketBallQuartz {
                     cdOrderWinners.setRepayPercent(repayPercent);
                     cdOrderWinners.setType("4");
                     cdOrderWinners.setWallType("1");
+                    cdOrderWinners.setResult(cdBasketballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {
@@ -309,6 +310,7 @@ public class BasketBallQuartz {
                         cdOrderWinners.setRepayPercent(repayPercent);
                         cdOrderWinners.setType("3");
                         cdOrderWinners.setWallType("1");
+                        cdOrderWinners.setResult(cdBasketballSingleOrder.getResult());
                         cdOrderWinnersService.save(cdOrderWinners);
                     } else {
                         cdBasketballSingleOrder.setStatus("5");

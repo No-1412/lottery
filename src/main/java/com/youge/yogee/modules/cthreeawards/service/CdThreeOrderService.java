@@ -84,4 +84,17 @@ public class CdThreeOrderService extends BaseService {
         return cdThreeOrderDao.find(dc);
     }
 
+    public CdThreeOrder findOrderByOrderNum(String orderNum) {
+        DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("orderNum", orderNum));
+        dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        List<CdThreeOrder> list = cdThreeOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
+
 }

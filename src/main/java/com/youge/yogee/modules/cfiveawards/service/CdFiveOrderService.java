@@ -82,5 +82,16 @@ public class CdFiveOrderService extends BaseService {
         return cdFiveOrderDao.find(dc);
     }
 
-
+    public CdFiveOrder findOrderByOrderNum(String orderNum) {
+        DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("orderNum", orderNum));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        List<CdFiveOrder> list = cdFiveOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

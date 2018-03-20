@@ -424,6 +424,7 @@ public class FootballInterface {
                         map.put("et", cdFootballMixed.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
                         map.put("hn", cdFootballMixed.getWinningName());//主队名称
                         map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
+                        map.put("matchId", cdFootballMixed.getMatchId());//期次
 
                         map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
                         map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率

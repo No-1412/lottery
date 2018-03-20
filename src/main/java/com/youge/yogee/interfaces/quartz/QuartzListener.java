@@ -358,6 +358,7 @@ public class QuartzListener {
                     cdOrderWinners.setRepayPercent(repayPercent);
                     cdOrderWinners.setType("1");
                     cdOrderWinners.setWallType("1");
+                    cdOrderWinners.setResult(cdFootballSingleOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
 
                 } else {

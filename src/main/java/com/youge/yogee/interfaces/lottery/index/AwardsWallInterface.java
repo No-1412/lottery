@@ -3,10 +3,28 @@ package com.youge.yogee.interfaces.lottery.index;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
+import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
+import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
+import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
+import com.youge.yogee.modules.cfiveawards.service.CdFiveOrderService;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
+import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
+import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
+import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
+import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +49,25 @@ public class AwardsWallInterface {
     private CdOrderWinnersService cdOrderWinnersService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdBasketballSingleOrderService cdBasketballSingleOrderService;  //篮球单关
+    @Autowired
+    private CdBasketballFollowOrderService cdBasketballFollowOrderService;//篮球串关
+    @Autowired
+    private CdFootballFollowOrderService cdFootballFollowOrderService;//足球串关
+    @Autowired
+    private CdFootballSingleOrderService cdFootballSingleOrderService;//足球单关
+    @Autowired
+    private CdThreeOrderService cdThreeOrderService;
+    @Autowired
+    private CdFiveOrderService cdFiveOrderService;
+    @Autowired
+    private CdLottoOrderService cdLottoOrderService;
+    @Autowired
+    private CdChooseNineOrderService cdChooseNineOrderService;
+    @Autowired
+    private CdSuccessFailOrderService cdSuccessFailOrderService;
+
 
     /**
      * 大奖墙列表接口
@@ -87,7 +124,7 @@ public class AwardsWallInterface {
     public String awardsWallDetail(HttpServletRequest request) {
         logger.info("大奖墙列表接口--------------Start-----");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        Map dataMap = new HashMap();
+        Map map = new HashMap();
         //id
         String wid = (String) jsonData.get("wid");
         if (StringUtils.isEmpty(wid)) {
@@ -98,17 +135,43 @@ public class AwardsWallInterface {
         if (cow == null) {
             return HttpResultUtil.errorJson("信息错误！");
         }
-        dataMap.put("name",cow.getName());
-        dataMap.put("winPrice",cow.getWinPrice());
-        String orderNum = cow.getWinOrderNum();
-        if(orderNum.startsWith("ZDG")){
+        CdLotteryUser clu = cdLotteryUserService.get(cow.getUid());
+        map.put("name", clu.getName());
+        map.put("img", clu.getImg());
+        map.put("winPrice", cow.getWinPrice());
+        map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
 
+        String orderNum = cow.getWinOrderNum();
+        if (orderNum.startsWith("ZDG")) {
+            CdFootballSingleOrder cdso = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
+        } else if (orderNum.startsWith("ZCG")) {
+            CdFootballFollowOrder cffo = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
+        } else if (orderNum.startsWith("LDG")) {
+            CdBasketballSingleOrder cbso = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
+        } else if (orderNum.startsWith("LCG")) {
+            CdBasketballFollowOrder cbfo = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
+        } else if (orderNum.startsWith("RXJ")) {
+            CdChooseNineOrder ccno = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
+        } else if (orderNum.startsWith("SFC")) {
+            CdSuccessFailOrder csfo = cdSuccessFailOrderService.findOrderByOrderNum(orderNum);
+        } else if (orderNum.startsWith("PLS")) {
+            CdThreeOrder dto = cdThreeOrderService.findOrderByOrderNum(orderNum);
+            map.put("buyWays", dto.getBuyWays());//排列三玩法
+            map.put("codes", dto.getNums()); //押注详情
+            map.put("mResult", dto.getResult());//中奖结果
+            map.put("price", dto.getPrice());//投注金额
+        } else if (orderNum.startsWith("PLW")) {
+            CdFiveOrder cfo = cdFiveOrderService.findOrderByOrderNum(orderNum);
+            map.put("buyWays", cfo.getBuyWays());//排列五玩法
+            map.put("codes", cfo.getNums()); //押注详情
+            map.put("mResult", cfo.getResult());//中奖结果
+            map.put("price", cfo.getPrice());//投注金额
+        } else if (orderNum.startsWith("DLT")) {
+            CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(orderNum);
         }
         logger.info("大奖墙列表接口--------------End--------");
-        return HttpResultUtil.successJson(dataMap);
+        return HttpResultUtil.successJson(map);
     }
-
-
 
 
     public String getWinType(String type) {
