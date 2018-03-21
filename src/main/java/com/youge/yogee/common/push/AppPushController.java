@@ -10,7 +10,6 @@ import com.youge.yogee.modules.bm.entity.BmPush;
 import com.youge.yogee.modules.bm.service.BmPushService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
-import org.apache.poi.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

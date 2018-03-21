@@ -45,7 +45,7 @@ public class Generate {
 		/**
 		 * 单个生成
 		 * **/
-		createOne("bm","bmPush","bm_push","推送表");
+		createOne("cbbnotfinsh","CdBbNotFinishCollection","cd_bb_notfinish_collection","篮球比赛收藏");
 
 		/**
 		 * 批量生成
