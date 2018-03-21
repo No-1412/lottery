@@ -144,6 +144,7 @@ public class AwardsWallInterface {
         String orderNum = cow.getWinOrderNum();
         if (orderNum.startsWith("ZDG")) {
             CdFootballSingleOrder cdso = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
+
         } else if (orderNum.startsWith("ZCG")) {
             CdFootballFollowOrder cffo = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
         } else if (orderNum.startsWith("LDG")) {
@@ -152,8 +153,40 @@ public class AwardsWallInterface {
             CdBasketballFollowOrder cbfo = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
         } else if (orderNum.startsWith("RXJ")) {
             CdChooseNineOrder ccno = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
+            map.put("price", ccno.getPrice());//投注金额
+            String orderDetail = ccno.getOrderDetail(); //投注内容
+            String[] orderDetailArray = orderDetail.split("\\|");
+            String result = ccno.getResult();  //比赛结果
+            List<String> rList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(result)) {
+                for (String s : result.split(",")) {
+                    rList.add(s);
+                }
+            }
+            List detailList = new ArrayList();
+            for (String aOrderDetail : orderDetailArray) {
+                Map detailMap = getDetailMap(aOrderDetail, rList);
+                detailList.add(detailMap);
+            }
+            map.put("detail", detailList);
         } else if (orderNum.startsWith("SFC")) {
             CdSuccessFailOrder csfo = cdSuccessFailOrderService.findOrderByOrderNum(orderNum);
+            map.put("price", csfo.getPrice());//投注金额
+            String orderDetail = csfo.getOrderDetail(); //投注内容
+            String[] orderDetailArray = orderDetail.split("\\|");
+            String result = csfo.getResult();  //比赛结果
+            List<String> rList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(result)) {
+                for (String s : result.split(",")) {
+                    rList.add(s);
+                }
+            }
+            List detailList = new ArrayList();
+            for (String aOrderDetail : orderDetailArray) {
+                Map detailMap = getDetailMap(aOrderDetail, rList);
+                detailList.add(detailMap);
+            }
+            map.put("detail", detailList);
         } else if (orderNum.startsWith("PLS")) {
             CdThreeOrder dto = cdThreeOrderService.findOrderByOrderNum(orderNum);
             map.put("buyWays", dto.getBuyWays());//排列三玩法
@@ -168,6 +201,11 @@ public class AwardsWallInterface {
             map.put("price", cfo.getPrice());//投注金额
         } else if (orderNum.startsWith("DLT")) {
             CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(orderNum);
+            String nums = clo.getRedNums() + "|" + clo.getBlueNums();
+            map.put("buyWays", clo.getType());//大乐透方式胆拖/普通
+            map.put("codes", nums); //押注详情
+            map.put("mResult", clo.getResult());//中奖结果
+            map.put("price", clo.getPrice());//投注金额
         }
         logger.info("大奖墙列表接口--------------End--------");
         return HttpResultUtil.successJson(map);
@@ -207,6 +245,37 @@ public class AwardsWallInterface {
                 break;
         }
         return result;
+    }
+
+    public Map getDetailMap(String aOrderDetail, List<String> rList) {
+        int i = 0;
+        String[] aOrderDetailArray = aOrderDetail.split("\\+");
+        Map detailMap = new HashMap();
+        detailMap.put("no", aOrderDetailArray[0]);//序号
+        detailMap.put("vs", aOrderDetailArray[1]);//比赛队伍
+        //detailMap.put("codes", aOrderDetailArray[2]);//投注详情
+        String aDetail = aOrderDetailArray[2];
+        String newAdetail = aDetail.replace("3", "胜");
+        newAdetail = newAdetail.replace("1", "平");
+        newAdetail = newAdetail.replace("0", "负");
+        detailMap.put("codes", newAdetail);//投注详情
+        String mResult = "";
+        if (rList.size() > 0) {
+            mResult = rList.get(i);
+            if ("3".equals(mResult)) {
+                mResult = "胜";
+            } else if ("1".equals(mResult)) {
+                mResult = "平";
+            } else if ("0".equals(mResult)) {
+                mResult = "负";
+            } else {
+                mResult = "*";
+            }
+            i++;
+        }
+        detailMap.put("mResult", mResult);//投注详情
+
+        return detailMap;
     }
 
 }

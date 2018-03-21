@@ -147,7 +147,7 @@ public class FootballSingleOrderInterface {
                 //让球胜负平所有押注结果
                 String let = (String) d.get("let");
                 if (StringUtils.isNotEmpty(let)) {
-                    String letArry[] = beat.split(",");
+                    String letArry[] = let.split(",");
                     for (String s : letArry) {
                         String aLet[] = s.split("/");
                         String count = aLet[2];

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,17 +117,21 @@ public class FootballSuccessFailInterface {
         //生成订单号
         String orderNum = util.genOrderNo("SFC", util.getFourRandom());
         //计算金额
-        double money = 2.00;
-        double acountDouble = Double.parseDouble(acountStr);
-        double timesDouble = Double.parseDouble(times);
-        String price = String.valueOf(money * acountDouble * timesDouble);
+        BigDecimal money = new BigDecimal(2);
+        BigDecimal acountBig = new BigDecimal(acountStr);
+        BigDecimal timesDouble = new BigDecimal(times);
+        //double money = 2.00;
+        //double acountDouble = Double.parseDouble(acountStr);
+        //double timesDouble = Double.parseDouble(times);
+        //String price = String.valueOf(money * acountDouble * timesDouble);
+        BigDecimal price = money.multiply(acountBig).multiply(timesDouble).setScale(2, BigDecimal.ROUND_DOWN);
 
         CdSuccessFailOrder csfo = new CdSuccessFailOrder();
         csfo.setOrderNumber(orderNum); //订单号
         csfo.setAcount(acountStr);//注数
         csfo.setAward("0"); //奖金
         csfo.setOrderDetail(orderDetail); //订单详情
-        csfo.setPrice(price);//金额
+        csfo.setPrice(String.valueOf(price));//金额
         csfo.setWeekday(weekday);//期数
         csfo.setStatus("1");//已提交
         csfo.setUid(uid);//用户

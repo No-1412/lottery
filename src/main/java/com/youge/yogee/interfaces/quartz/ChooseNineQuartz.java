@@ -68,7 +68,8 @@ public class ChooseNineQuartz {
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void chooseNineOrder() {
         System.out.println("任选九开奖");
         List<CdChooseNineOrder> cdBasketballFollowOrderList = cdChooseNineOrderService.findStatus();
@@ -78,7 +79,9 @@ public class ChooseNineQuartz {
 
             String weekday = cdChooseNineOrder.getWeekday();
             CdChooseNine cdChooseNine = cdChooseNineService.findByWeekday(weekday);
-
+            if(cdChooseNine==null){
+                break;
+            }
             //判断是否可以开奖
             if (cdChooseNine.getNotesNum().equals("")) {
                 break;
@@ -97,14 +100,14 @@ public class ChooseNineQuartz {
                 //判断是否选为胆
                 if (aDetailArray[3].equals("1")) {
                     String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
-                    if (aDetailArray[2].equals(number) || number.equals("*")) {
+                    if (aDetailArray[2].contains(number) || number.equals("*")) {
                         danSum += 1;
                     } else {
                         break;
                     }
                 } else {
                     String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
-                    if (aDetailArray[2].equals(number) || number.equals("*")) {
+                    if (aDetailArray[2].contains(number) || number.equals("*")) {
                         sum += 1;
                     }
                 }
@@ -112,7 +115,7 @@ public class ChooseNineQuartz {
             if (sum + danSum >= 9) {
                 int count = Calculations.rs(sum - danSum, 9 - danSum);
                 Integer award = Integer.valueOf(cdChooseNineOrder.getTimes()) * count * Integer.valueOf(cdChooseNine.getPerNoteMoney());
-                cdChooseNineOrder.setAcount(award.toString());
+                cdChooseNineOrder.setAward(award.toString());
                 cdChooseNineOrder.setStatus("4");
                 cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrderService.save(cdChooseNineOrder);
@@ -137,7 +140,8 @@ public class ChooseNineQuartz {
     }
 
 
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    //    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void successFailOrder() {
         System.out.println("胜负彩开奖");
         List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatus();
@@ -164,14 +168,15 @@ public class ChooseNineQuartz {
                 String[] aDetailArray = aDetail.split("\\+");
 
                 String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
-                if (aDetailArray[2].equals(number) || number.equals("*")) {
+                if (aDetailArray[2].contains(number) || number.equals("*")) {
                     sum += 1;
                 }
             }
             String[] awards = cdColorReward.getPerNoteMoney().split(",");
             if (sum == 13) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
-                cdSuccessFailOrder.setAcount(award.toString());
+                cdSuccessFailOrder.setAward(award.toString());
+                cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
                 //保存中奖纪录
@@ -186,7 +191,7 @@ public class ChooseNineQuartz {
                 cdOrderWinnersService.save(cdOrderWinners);
             } else if (sum == 14) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
-                cdSuccessFailOrder.setAcount(award.toString());
+                cdSuccessFailOrder.setAward(award.toString());
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
