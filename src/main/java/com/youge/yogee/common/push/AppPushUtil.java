@@ -28,11 +28,8 @@ public class AppPushUtil {
     static String masterSecret = "jzIVS4tjtf8bEqvLfXZNi6";
 
     static String url = "http://sdk.open.api.igexin.com/apiex.htm"; //单
-    static String host = "http://sdk.open.api.igexin.com/apiex.htm"; //单
     static String hostToApp = "http://sdk.open.api.igexin.com/serviceex"; //多
 
-
-    static String devicetoken = "78110b2db35ff75a346cf53ef4b58e738d476dbfcf4728977b7113095ebeeb5f";
 
     public static void main(String[] args) throws Exception {
         pubshtoSingle("302999baff2044229f7ee892a22a155c","内容","内容");
@@ -92,30 +89,6 @@ public class AppPushUtil {
         template.setUrl("http://www.baidu.com");
         return template;
     }
-    public static void apppushs() throws Exception {
-        IGtPush push = new IGtPush(url, appkey, masterSecret);
-        APNTemplate t = new APNTemplate();
-        APNPayload apnpayload = new APNPayload();
-        apnpayload.setSound("");
-        //apn高级推送
-        APNPayload.DictionaryAlertMsg alertMsg = new APNPayload.DictionaryAlertMsg();
-        ////通知文本消息标题
-        alertMsg.setTitle("aaaaaa");
-        //通知文本消息字符串
-        alertMsg.setBody("bbbb");
-        //对于标题指定执行按钮所使用的Localizable.strings,仅支持IOS8.2以上版本
-        alertMsg.setTitleLocKey("ccccc");
-        //指定执行按钮所使用的Localizable.strings
-        alertMsg.setActionLocKey("ddddd");
-        apnpayload.setAlertMsg(alertMsg);
-
-        t.setAPNInfo(apnpayload);
-        SingleMessage sm = new SingleMessage();
-        sm.setData(t);
-        IPushResult ret0 = push.pushAPNMessageToSingle(appId, devicetoken, sm);
-        System.out.println(ret0.getResponse());
-
-    }
     public static TransmissionTemplate getTemplate() {
         TransmissionTemplate template = new TransmissionTemplate();
         template.setAppId(appId);
@@ -134,37 +107,26 @@ public class AppPushUtil {
 //        template.setAPNInfo(payload);
         return template;
     }
-    protected static APNPayload.DictionaryAlertMsg getDictionaryAlertMsgs(){
-        APNPayload.DictionaryAlertMsg alertMsg = new APNPayload.DictionaryAlertMsg();
-        alertMsg.setBody("hello");                          //setBody 	通知文本消息字符串
-        alertMsg.setActionLocKey("ActionLockey");	       //setActionLocKey 	(用于多语言支持）指定执行按钮所使用的Localizable.strings
-        alertMsg.setLocKey("LocKey");	                   //setLocKey 	(用于多语言支持）指定Localizable.strings文件中相应的key
-        alertMsg.addLocArg("loc-args");	                   //addLocArg 	如果loc-key中使用的占位符，则在loc-args中指定各参数
-        alertMsg.setLaunchImage("launch-image");	       //setLaunchImage 	指定启动界面图片名
-        alertMsg.setTitle("您有新的消息");	                       // IOS8.2以上版本支持	setTitle 	通知标题
-        alertMsg.setTitleLocKey("TitleLocKey");	           //setTitleLocKey 	(用于多语言支持）对于标题指定执行按钮所使用的Localizable.strings,仅支持IOS8.2以上版本
-        alertMsg.addTitleLocArg("TitleLocArg");	           //addTitleLocArg 	对于标题, 如果loc-key中使用的占位符，则在loc-args中指定各参数,仅支持IOS8.2以上版本
-        return alertMsg;
-    }
+
     //多人
-    public static void pushtoAPP( String text,String text1) {
+    public static void pushtoAPP( String title,String content) {
 
 
         IGtPush push = new IGtPush(hostToApp, appkey, masterSecret);
-        //  LinkTemplate template = linkTemplateDemo(title, text, logo, logoUrl, url);
-        TransmissionTemplate template = getTemplate(text, text1);
-
+        TransmissionTemplate template = getTemplate(title,content);
         AppMessage message = new AppMessage();
         message.setData(template);
         message.setOffline(true);
         message.setOfflineExpireTime(24 * 1000 * 3600);
-        List<String> appIdList = new ArrayList<String>();
+        List<String> appIdList = new ArrayList<>();
         appIdList.add(appId);
         message.setAppIdList(appIdList);
 
-        IPushResult ret = push.pushMessageToApp(message, "toapp");
+        IPushResult ret = push.pushMessageToApp(message, "HotToApp");
         System.out.println(ret.getResponse().toString());
     }
+
+
 
     public static TransmissionTemplate getTemplate(String text, String text1) {
         TransmissionTemplate template = new TransmissionTemplate();
@@ -187,19 +149,6 @@ public class AppPushUtil {
         return template;
     }
 
-    private static APNPayload.DictionaryAlertMsg getDictionaryAlertMsg(){
-        APNPayload.DictionaryAlertMsg alertMsg = new APNPayload.DictionaryAlertMsg();
-        alertMsg.setBody("body");
-        alertMsg.setActionLocKey("ActionLockey");
-        alertMsg.setLocKey("LocKey");
-        alertMsg.addLocArg("loc-args");
-        alertMsg.setLaunchImage("launch-image");
-        // IOS8.2以上版本支持
-        alertMsg.setTitle("Title1111");
-        alertMsg.setTitleLocKey("TitleLocKey");
-        alertMsg.addTitleLocArg("TitleLocArg");
-        return alertMsg;
-    }
 
 
 
@@ -217,30 +166,4 @@ public class AppPushUtil {
     }
 
 
-
-
-    public static void apnpush() throws Exception {
-        IGtPush push = new IGtPush(hostToApp, appkey, masterSecret);
-
-        APNTemplate t = new APNTemplate();
-        APNPayload apnpayload = new APNPayload();
-        apnpayload.setSound("");
-        APNPayload.DictionaryAlertMsg alertMsg = new APNPayload.DictionaryAlertMsg();
-        alertMsg.setTitle("aaaaaa&0&0");
-        alertMsg.setBody("bbbb&0&0");
-        alertMsg.setTitleLocKey("ccccc&0&0");
-        alertMsg.setActionLocKey("ddddd&0&0");
-        apnpayload.setAlertMsg(alertMsg);
-        t.setAPNInfo(apnpayload);
-
-        ListMessage message = new ListMessage();
-        message.setData(t);
-        String contentId = push.getAPNContentId(appId, message);
-        System.out.println(contentId);
-        List<String> dtl = new ArrayList<String>();
-        dtl.add(devicetoken);
-        System.setProperty("gexin.rp.sdk.pushlist.needDetails", "true");
-        IPushResult ret = push.pushAPNMessageToList(appId, contentId, dtl);
-        System.out.println(ret.getResponse());
-    }
 }
