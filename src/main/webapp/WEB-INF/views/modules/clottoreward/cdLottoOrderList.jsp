@@ -82,7 +82,12 @@
 						<c:when test="${cdLottoOrder.status==3}">
 							已出票
 						</c:when>
-
+						<c:when test="${cdLottoOrder.status==4}">
+							中奖
+						</c:when>
+						<c:when test="${cdLottoOrder.status==5}">
+							未中奖
+						</c:when>
 						<c:otherwise>
 							订单异常
 						</c:otherwise>

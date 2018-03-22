@@ -20,7 +20,9 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
@@ -68,6 +70,8 @@ public class AwardsWallInterface {
     private CdChooseNineOrderService cdChooseNineOrderService;
     @Autowired
     private CdSuccessFailOrderService cdSuccessFailOrderService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
 
     /**
@@ -84,9 +88,8 @@ public class AwardsWallInterface {
         List<CdOrderWinners> list = cdOrderWinnersService.findByWallType("1");
         List<Map<String, String>> textStr = new ArrayList<>();
         if (list.size() > 0) {
-            for (int i = 0; i < 10; i++) {
+            for (CdOrderWinners awards : list) {
                 Map<String, String> map = new HashMap<>();
-                CdOrderWinners awards = list.get(i);
                 CdLotteryUser clu = cdLotteryUserService.get(awards.getUid());
                 String name = clu.getName();
                 String result = getWinType(awards.getType());
@@ -132,41 +135,65 @@ public class AwardsWallInterface {
             logger.error("wid为空！");
             return HttpResultUtil.errorJson("wid为空!");
         }
-        CdOrderWinners cow = cdOrderWinnersService.get(wid);
-        if (cow == null) {
-            return HttpResultUtil.errorJson("信息错误！");
+        //1大奖墙详情  2我的订单详情
+        String type = (String) jsonData.get("type");
+        if (StringUtils.isEmpty(type)) {
+            logger.error("type为空！");
+            return HttpResultUtil.errorJson("type为空!");
         }
-        CdLotteryUser clu = cdLotteryUserService.get(cow.getUid());
-        map.put("name", clu.getName());
-        map.put("img", clu.getImg());
-        map.put("winPrice", cow.getWinPrice());
-        map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
+        String orderNum = "";
+        if ("1".equals(type)) {
+            CdOrderWinners cow = cdOrderWinnersService.get(wid);
+            if (cow == null) {
+                return HttpResultUtil.errorJson("信息错误！");
+            }
+            CdLotteryUser clu = cdLotteryUserService.get(cow.getUid());
+            map.put("name", clu.getName());
+            map.put("img", clu.getImg());
+            map.put("winPrice", cow.getWinPrice());
+            map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
+            orderNum = cow.getWinOrderNum();
+        } else {
+            CdOrder co = cdOrderService.get(wid);
+            if (co == null) {
+                return HttpResultUtil.errorJson("信息错误！");
+            }
+            CdLotteryUser clu = cdLotteryUserService.get(co.getUserId());
+            map.put("name", clu.getName());
+            map.put("img", clu.getImg());
+            map.put("winPrice", co.getWinPrice());
+            map.put("type", co.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
+            orderNum = co.getNumber();
+        }
 
-        String orderNum = cow.getWinOrderNum();
         if (orderNum.startsWith("ZDG")) {
             CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
             List detailList = getFbSingleList(cfs);
             map.put("buyWays", cfs.getBuyWays());
             map.put("followNums", "0");
             map.put("detail", detailList);
+            map.put("buyWays", cfs.getBuyWays());
         } else if (orderNum.startsWith("ZCG")) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
             List detailList = getFbFollowList(cff);
             map.put("buyWays", cff.getBuyWays());
             map.put("followNums", cff.getFollowNum());
             map.put("detail", detailList);
+            map.put("buyWays", cff.getBuyWays());
         } else if (orderNum.startsWith("LDG")) {
             CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
             List detailList = getBbSingleList(cbs);
             map.put("followNums", "0");
             map.put("buyWays", cbs.getBuyWays());
             map.put("detail", detailList);
+            map.put("buyWays", cbs.getBuyWays());
         } else if (orderNum.startsWith("LCG")) {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
             List detailList = getBbFollowList(cbf);
             map.put("buyWays", cbf.getBuyWays());
             map.put("followNums", cbf.getFollowNums());
             map.put("detail", detailList);
+            map.put("buyWays", cbf.getBuyWays());
         } else if (orderNum.startsWith("RXJ")) {
             CdChooseNineOrder ccno = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
             map.put("price", ccno.getPrice());//投注金额

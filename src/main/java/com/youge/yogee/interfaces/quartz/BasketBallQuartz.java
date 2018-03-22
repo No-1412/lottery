@@ -8,7 +8,9 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,6 +36,8 @@ public class BasketBallQuartz {
     private CdBasketballSingleOrderService cdBasketballSingleOrderService;
     @Autowired
     private CdOrderWinnersService cdOrderWinnersService;
+    @Autowired
+    private CdOrderService cdOrderService;
     //    "0/10 * * * * ?" 每10秒触发
 //
 //    "0 0 12 * * ?" 每天中午12点触发
@@ -214,7 +218,15 @@ public class BasketBallQuartz {
                         } else {
                             cdBasketballFollowOrder.setStatus("5");
                             cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                            //改变订单总表状态
+                            CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                            if (co != null) {
+                                co.setWinPrice("0");//奖金
+                                co.setStatus("2");//中奖
+                                cdOrderService.save(co);
+                            }
                             continue;
+
                         }
                     } else {
                         //根据串关计算奖金
@@ -245,10 +257,23 @@ public class BasketBallQuartz {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdBasketballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
-
-                    AppPush.push(cdBasketballFollowOrder.getUid(),"凯旋彩票","您购买的竞猜篮球获得中奖金额"+award+"元");
+//改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice(award.toString());//奖金
+                        co.setStatus("3");//中奖
+                        cdOrderService.save(co);
+                    }
+                    AppPush.push(cdBasketballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜篮球获得中奖金额" + award + "元");
 
                 } else {
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//已开奖
+                        cdOrderService.save(co);
+                    }
                     cdBasketballFollowOrder.setStatus("5");
                     cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
                 }
@@ -315,11 +340,24 @@ public class BasketBallQuartz {
                         cdOrderWinners.setWallType("1");
                         cdOrderWinners.setResult(cdBasketballSingleOrder.getResult());
                         cdOrderWinnersService.save(cdOrderWinners);
-
-                        AppPush.push(cdBasketballSingleOrder.getUid(),"凯旋彩票","您购买的竞猜篮球获得中奖金额"+award+"元");
+                        //改变订单总表状态
+                        CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballSingleOrder.getOrderNum());
+                        if (co != null) {
+                            co.setWinPrice(award.toString());//奖金
+                            co.setStatus("3");//中奖
+                            cdOrderService.save(co);
+                        }
+                        AppPush.push(cdBasketballSingleOrder.getUid(), "凯旋彩票", "您购买的竞猜篮球获得中奖金额" + award + "元");
                     } else {
                         cdBasketballSingleOrder.setStatus("5");
                         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+                        //改变订单总表状态
+                        CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballSingleOrder.getOrderNum());
+                        if (co != null) {
+                            co.setWinPrice("0");//奖金
+                            co.setStatus("2");//开奖
+                            cdOrderService.save(co);
+                        }
                     }
                 }
             }

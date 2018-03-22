@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.corder.dao.CdOrderWinnersDao;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -67,6 +68,10 @@ public class CdOrderWinnersService extends BaseService {
         dc.add(Restrictions.eq("wallType", wallType));
         dc.add(Restrictions.eq(CdOrderWinners.FIELD_DEL_FLAG, CdOrderWinners.DEL_FLAG_NORMAL));
         dc.add(Restrictions.sqlRestriction("1=1 order by CAST(win_price as SIGNED) desc"));
+        // 限制条数|分页
+        Criteria cri = dc.getExecutableCriteria(cdOrderWinnersDao.getSession());
+        cri.setMaxResults(10);
+        cri.setFirstResult(0);
         return cdOrderWinnersDao.find(dc);
     }
 

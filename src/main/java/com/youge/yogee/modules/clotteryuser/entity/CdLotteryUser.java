@@ -66,7 +66,9 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
     private String isPay;//是否犹豫期（0初始1确认交费2犹豫期3作废）
     private String saleId;//销售id
     private Integer realityCount;// 实名认证次数
-
+    private String totalRecharge;//充值总金额
+    private String totalPay;//购彩总金额
+    private String rebate;//返利金额
 
     public CdLotteryUser() {
         super();
@@ -371,6 +373,29 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
         this.saleId = saleId;
     }
 
+    public String getTotalRecharge() {
+        return totalRecharge;
+    }
+
+    public void setTotalRecharge(String totalRecharge) {
+        this.totalRecharge = totalRecharge;
+    }
+
+    public String getTotalPay() {
+        return totalPay;
+    }
+
+    public void setTotalPay(String totalPay) {
+        this.totalPay = totalPay;
+    }
+
+    public String getRebate() {
+        return rebate;
+    }
+
+    public void setRebate(String rebate) {
+        this.rebate = rebate;
+    }
 }
 
 
