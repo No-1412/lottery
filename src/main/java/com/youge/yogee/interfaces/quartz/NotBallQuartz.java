@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.quartz;
 
+import com.youge.yogee.common.push.AppPush;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveAwards;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
@@ -123,6 +124,8 @@ public class NotBallQuartz {
                         cdOrderWinners.setWallType("1");
                         cdOrderWinners.setResult(c.getResult());
                         cdOrderWinnersService.save(cdOrderWinners);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的排列五获得中奖金额"+c.getAward()+"元");
                     } else {
                         c.setResult(aCode);
                         c.setStatus("5"); //未中奖
@@ -197,6 +200,8 @@ public class NotBallQuartz {
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的大乐透获得中奖金额"+award+"元");
                     } else if (result == 51) {
                         System.out.println(c.getOrderNum() + "二等奖");
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[1]);
@@ -211,6 +216,8 @@ public class NotBallQuartz {
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的大乐透获得中奖金额"+award+"元");
                     } else if (result == 50 || result == 42) {
                         System.out.println(c.getOrderNum() + "三等奖");
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[2]);
@@ -225,6 +232,8 @@ public class NotBallQuartz {
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的大乐透获得中奖金额"+award+"元");
                     } else if (result == 41 || result == 32) {
                         System.out.println(c.getOrderNum() + "四等奖");
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[3]);
@@ -239,6 +248,8 @@ public class NotBallQuartz {
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的大乐透获得中奖金额"+award+"元");
                     } else if (result == 40 || result == 31 || result == 22) {
                         System.out.println(c.getOrderNum() + "五等奖");
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[4]);
@@ -253,6 +264,8 @@ public class NotBallQuartz {
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的大乐透获得中奖金额"+award+"元");
                     } else if (result == 30 || result == 21 || result == 12 || result == 2) {
                         System.out.println(c.getOrderNum() + "六等奖");
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[5]);
@@ -263,6 +276,8 @@ public class NotBallQuartz {
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
+
+                        AppPush.push(c.getUid(),"凯旋彩票","您购买的大乐透获得中奖金额"+award+"元");
                     } else {
                         c.setResult(clr.getNumber());
                         c.setStatus("5");//未中奖
@@ -297,6 +312,9 @@ public class NotBallQuartz {
         double timeDouble = Double.parseDouble(c.getTimes());
         String realAward = String.valueOf(awardDouble * timeDouble);
         c.setAward(realAward);
+
+        AppPush.push(c.getUid(),"凯旋彩票","您购买的排列三获得中奖金额"+award+"元");
+
         //保存中奖纪录
         CdOrderWinners cdOrderWinners = new CdOrderWinners();
         cdOrderWinners.setWinOrderNum(c.getOrderNum());//中间单号

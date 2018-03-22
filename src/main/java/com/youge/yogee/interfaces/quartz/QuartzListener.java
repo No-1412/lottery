@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.quartz;
 
+import com.youge.yogee.common.push.AppPush;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
 import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
@@ -283,6 +284,9 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
+
+                    AppPush.push(cdFootballFollowOrder.getUid(),"凯旋彩票","您购买的竞猜足球获得中奖金额"+award+"元");
+
                 } else {
                     cdFootballFollowOrder.setStatus("5");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
@@ -360,6 +364,8 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballSingleOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
+
+                    AppPush.push(cdFootballSingleOrder.getUid(),"凯旋彩票","您购买的竞猜足球获得中奖金额"+award+"元");
 
                 } else {
                     cdFootballSingleOrder.setStatus("5");

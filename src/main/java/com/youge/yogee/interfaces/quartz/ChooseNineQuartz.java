@@ -4,6 +4,7 @@ package com.youge.yogee.interfaces.quartz;
  * Created by liyuan on 2018/3/7.
  */
 
+import com.youge.yogee.common.push.AppPush;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
@@ -127,6 +128,8 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setWallType("1");
                 cdOrderWinners.setResult(cdChooseNineOrder.getResult());
                 cdOrderWinnersService.save(cdOrderWinners);
+
+                AppPush.push(cdChooseNineOrder.getUid(),"凯旋彩票","您购买的任选九获得中奖金额"+award+"元");
             } else {
                 cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrder.setStatus("5");
@@ -141,7 +144,6 @@ public class ChooseNineQuartz {
     public void successFailOrder() {
         System.out.println("胜负彩开奖");
         List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatus();
-
         for (CdSuccessFailOrder cdSuccessFailOrder : cdSuccessFailOrderList) {
             String orderDetail = cdSuccessFailOrder.getOrderDetail();
 
@@ -201,6 +203,8 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setWallType("1");
                 cdOrderWinners.setResult(cdSuccessFailOrder.getResult());
                 cdOrderWinnersService.save(cdOrderWinners);
+
+                AppPush.push(cdSuccessFailOrder.getUid(),"凯旋彩票","您购买的胜负彩获得中奖金额"+award+"元");
             } else {
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrder.setStatus("5");
