@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -129,17 +130,17 @@ public class FootballChooseNineInterface {
         //生成订单号
         String orderNum = util.genOrderNo("RXJ", util.getFourRandom());
         //计算金额
-        double money = 2.00;
-        double acountDouble = Double.parseDouble(acountStr);
-        double timesDouble = Double.parseDouble(times);
-        String price = String.valueOf(money * acountDouble * timesDouble);
+        BigDecimal money = new BigDecimal(2);
+        BigDecimal acountBig = new BigDecimal(acountStr);
+        BigDecimal timesDouble = new BigDecimal(times);
+        BigDecimal price = money.multiply(acountBig).multiply(timesDouble).setScale(2, BigDecimal.ROUND_DOWN);
 
         CdChooseNineOrder ccno = new CdChooseNineOrder();
         ccno.setOrderNumber(orderNum); //订单号
         ccno.setAcount(acountStr);//注数
         ccno.setAward("0"); //奖金
         ccno.setOrderDetail(orderDetail); //订单详情
-        ccno.setPrice(price);//金额
+        ccno.setPrice(String.valueOf(price));//金额
         ccno.setWeekday(weekday);//期数
         ccno.setStatus("1");//已提交
         ccno.setUid(uid);//用户

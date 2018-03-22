@@ -271,7 +271,7 @@ public class NotBallQuartz {
                         BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[5]);
                         BigDecimal winCount = new BigDecimal(c.getAcount());
                         BigDecimal award = winCount.multiply(firstAward); //奖金
-                        c.setResult(clr.getNumber());
+
                         c.setStatus("4");//中奖
                         c.setAward(String.valueOf(award.setScale(2)));//奖金
                         //保存中奖纪录
@@ -283,7 +283,7 @@ public class NotBallQuartz {
                         c.setStatus("5");//未中奖
                         c.setAward("0");//奖金0
                     }
-
+                    c.setResult(clr.getNumber());
                     cdLottoOrderService.save(c);
                 }
             }
