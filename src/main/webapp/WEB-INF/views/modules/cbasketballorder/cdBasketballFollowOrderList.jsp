@@ -111,6 +111,12 @@
                 <c:when test="${cdBasketballFollowOrder.status==3}">
                     已出票
                 </c:when>
+                <c:when test="${cdBasketballFollowOrder.status==4}">
+                    中奖
+                </c:when>
+                <c:when test="${cdBasketballFollowOrder.status==3}">
+                    未中奖
+                </c:when>
 
                 <c:otherwise>
                     订单异常

@@ -40,7 +40,9 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     private String count; // 购买数量
     private String unitPrice; //单价
     private String totalPrice; //总价
-    private String win; //中奖(0待开奖,1中奖2未中奖)
+    private String win; //发起跟单id，本表id
+    private String winPrice;//中奖金额
+    private String status; //1待开奖 2已开奖 3中奖
     private String saleId; //销售id
 
     public CdOrder() {
@@ -175,6 +177,22 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
 
     public void setSaleId(String saleId) {
         this.saleId = saleId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getWinPrice() {
+        return winPrice;
+    }
+
+    public void setWinPrice(String winPrice) {
+        this.winPrice = winPrice;
     }
 }
 

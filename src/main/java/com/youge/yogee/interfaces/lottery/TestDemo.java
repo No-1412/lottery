@@ -1,4 +1,8 @@
-//package com.youge.yogee.interfaces.lottery;
+package com.youge.yogee.interfaces.lottery;
+
+import java.util.ArrayList;
+import java.util.List;
+
 //
 //import com.youge.yogee.interfaces.util.Calculations;
 //import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
@@ -19,7 +23,22 @@
 // * Created by liyuan on 2018/3/2.
 // */
 //@Controller
-//public class TestDemo {
+public class TestDemo {
+
+    public static void main(String[] args) {
+        List<String> list=new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        for (String s : list) {
+            System.out.println("加强的循环" + s);
+        }
+
+        for(int j=0;j<1;j++){
+            String ss=list.get(j);
+            System.out.println("简单循环" + ss);
+        }
+    }
+
 //
 //    private static final Logger logger = LoggerFactory.getLogger(UserLoginInterface.class);
 //
@@ -254,5 +273,5 @@
 //            }
 //        }
 //    }
-//}
+}
 

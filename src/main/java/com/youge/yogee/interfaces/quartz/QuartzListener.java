@@ -8,7 +8,9 @@ import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,6 +36,8 @@ public class QuartzListener {
     private CdFootballSingleOrderService cdFootballSingleOrderService;
     @Autowired
     private CdOrderWinnersService cdOrderWinnersService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     //    "0/10 * * * * ?" 每10秒触发
 //
@@ -84,7 +88,6 @@ public class QuartzListener {
             for (String finishMatchId : danMatchIds.split(",")) {
                 matchIdList.add(finishMatchId.substring(2, 7));
             }
-
 
 
             //判断订单所有赛事是否都已经比完
@@ -253,6 +256,13 @@ public class QuartzListener {
                         } else {
                             cdFootballFollowOrder.setStatus("5");
                             cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                            //改变订单总表状态
+                            CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                            if (co != null) {
+                                co.setWinPrice("0");//奖金
+                                co.setStatus("2");//中奖
+                                cdOrderService.save(co);
+                            }
                             continue;
                         }
                     } else {
@@ -284,12 +294,25 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
-
-                    AppPush.push(cdFootballFollowOrder.getUid(),"凯旋彩票","您购买的竞猜足球获得中奖金额"+award+"元");
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice(award.toString());//奖金
+                        co.setStatus("3");//中奖
+                        cdOrderService.save(co);
+                    }
+                    AppPush.push(cdFootballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
 
                 } else {
                     cdFootballFollowOrder.setStatus("5");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//中奖
+                        cdOrderService.save(co);
+                    }
                 }
             }
         }
@@ -364,12 +387,26 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballSingleOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
-
-                    AppPush.push(cdFootballSingleOrder.getUid(),"凯旋彩票","您购买的竞猜足球获得中奖金额"+award+"元");
+//改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice(award.toString());//奖金
+                        co.setStatus("3");//中奖
+                        cdOrderService.save(co);
+                    }
+                    AppPush.push(cdFootballSingleOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
 
                 } else {
+
                     cdFootballSingleOrder.setStatus("5");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//中奖
+                        cdOrderService.save(co);
+                    }
                 }
             }
 

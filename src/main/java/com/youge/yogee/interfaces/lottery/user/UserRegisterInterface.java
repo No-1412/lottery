@@ -12,7 +12,6 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmessage.service.CdMessageService;
 import com.youge.yogee.modules.sys.service.SystemService;
-import com.youge.yogee.publicutils.ImgUploudUtlis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,7 +100,7 @@ public class UserRegisterInterface {
 
 
     /**
-     * anbo，2017-09-28 ，用户注册
+     * 用户注册
      *
      * @param request
      * @return
@@ -176,6 +174,9 @@ public class UserRegisterInterface {
         cdLotteryUser.setIsPay("0");
         cdLotteryUser.setRealityCount(0);
         cdLotteryUser.setSaleId(saleId);
+        cdLotteryUser.setTotalRecharge("0.00");
+        cdLotteryUser.setTotalPay("0.00");
+        cdLotteryUser.setRebate("0.00");
         cdLotteryUserService.save(cdLotteryUser);
 
         dataMap.put("uid", cdLotteryUser.getId());
@@ -187,7 +188,7 @@ public class UserRegisterInterface {
 
 
     /**
-     * anbo，2017-09-28，用户登录
+     * 用户登录
      */
     @RequestMapping(value = "userLogin", method = RequestMethod.POST)
     @ResponseBody
@@ -195,14 +196,12 @@ public class UserRegisterInterface {
         logger.info("pc：用户登录userLogin---------- Start-----------");
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-
+        Map dataMap = new HashMap();
         String phone = (String) jsonData.get("phone");
-        String passwd = (String) jsonData.get("passWord");
-
         if (StringUtils.isEmpty(phone)) {
             return HttpResultUtil.errorJson("请填写手机号!");
         }
-
+        String passwd = (String) jsonData.get("passWord");
         if (StringUtils.isEmpty(passwd)) {
             return HttpResultUtil.errorJson("请填写密码!");
         }
@@ -226,7 +225,7 @@ public class UserRegisterInterface {
 //            }
         }
 
-        Map dataMap = new HashMap();
+
         dataMap.put("uid", user.getId());
         dataMap.put("img", user.getImg());
         dataMap.put("level", user.getMemberLevel());
