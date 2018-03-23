@@ -1,7 +1,6 @@
-package com.youge.yogee.interfaces.lottery.details;
+package com.youge.yogee.interfaces.lottery.nouse;
 
 import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
@@ -27,7 +26,7 @@ import java.util.*;
 @Controller
 @RequestMapping("${frontPath}")
 public class DetailsInterface {
-    private static final Logger logger = LoggerFactory.getLogger(HelpCenterInterface.class);
+    private static final Logger logger = LoggerFactory.getLogger(DetailsInterface.class);
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
 
@@ -36,10 +35,12 @@ public class DetailsInterface {
 
     @Autowired
     private CdWithdrawalService cdWithdrawalService;
+
     /**
      * wangsong
      * 20171221
      * 充值明细
+     *
      * @param request
      * @return
      */
@@ -49,11 +50,11 @@ public class DetailsInterface {
     public String listRechargeCzDetails(HttpServletRequest request) {
         logger.info("listRechargeCzDetails 充值明细----------------Start-------------------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String uId= (String) jsonData.get("uId");
-        String total= (String) jsonData.get("total");
-        String count= (String) jsonData.get("count");
+        String uId = (String) jsonData.get("uId");
+        String total = (String) jsonData.get("total");
+        String count = (String) jsonData.get("count");
         CdLotteryUser user = cdLotteryUserService.get(uId);
-        if(user == null){
+        if (user == null) {
             logger.error("当前用户不存在或重新登录!");
             return HttpResultUtil.errorJson("当前用户不存在或重新登录!");
         }
@@ -68,7 +69,7 @@ public class DetailsInterface {
         List cdRechargeList = new ArrayList();
         List<CdRecharge> listCdRecharge = cdRechargeService.listUidOrder(user.getId(), count, total);
         Iterator iter = listCdRecharge.iterator();
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             CdRecharge cdRecharge = (CdRecharge) iter.next();
             Map map = new HashMap();
             map.put("money", cdRecharge.getRechargeMoney());//充值金额
@@ -87,6 +88,7 @@ public class DetailsInterface {
      * wangsong
      * 20171221
      * 提现明细
+     *
      * @param request
      * @return
      */
@@ -95,11 +97,11 @@ public class DetailsInterface {
     public String listCdWithdrawalDetails(HttpServletRequest request) {
         logger.info("listCdWithdrawalDetails 提现明细----------------Start-------------------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String uId= (String) jsonData.get("uId");
-        String total= (String) jsonData.get("total");
-        String count= (String) jsonData.get("count");
+        String uId = (String) jsonData.get("uId");
+        String total = (String) jsonData.get("total");
+        String count = (String) jsonData.get("count");
         CdLotteryUser user = cdLotteryUserService.get(uId);
-        if(user==null){
+        if (user == null) {
             logger.error("当前用户不存在或重新登录!");
             return HttpResultUtil.errorJson("当前用户不存在或重新登录!");
         }
@@ -115,7 +117,7 @@ public class DetailsInterface {
         List cdWithdrawalList = new ArrayList();
         List<CdWithdrawal> listCdWithdrawal = cdWithdrawalService.listUidOrder(user.getId(), count, total);
         Iterator iter = listCdWithdrawal.iterator();
-        while (iter.hasNext()){
+        while (iter.hasNext()) {
             CdWithdrawal cdWithdrawal = (CdWithdrawal) iter.next();
             Map map = new HashMap();
             map.put("money", cdWithdrawal.getTxMoney());//提现金额

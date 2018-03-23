@@ -1,7 +1,6 @@
-package com.youge.yogee.interfaces.lottery.aboutus;
+package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.common.config.Global;
-import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.SubImage;
 import com.youge.yogee.modules.caboutus.entity.CdAboutUs;

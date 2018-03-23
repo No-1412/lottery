@@ -1,7 +1,6 @@
-package com.youge.yogee.interfaces.lottery.basketball;
+package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.interfaces.lottery.football.FootballSingleOrderInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;

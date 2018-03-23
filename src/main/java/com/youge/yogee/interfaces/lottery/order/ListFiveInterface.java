@@ -1,12 +1,12 @@
-package com.youge.yogee.interfaces.lottery.notball;
+package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.ListThreeWays;
 import com.youge.yogee.interfaces.util.util;
-import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
-import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
+import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
+import com.youge.yogee.modules.cfiveawards.service.CdFiveOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +24,20 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("${frontPath}")
-public class ListThreeInterface {
-    private static final Logger logger = LoggerFactory.getLogger(ListThreeInterface.class);
+public class ListFiveInterface {
+    private static final Logger logger = LoggerFactory.getLogger(ListFiveInterface.class);
 
     @Autowired
-    private CdThreeOrderService cdThreeOrderService;
+    private CdFiveOrderService cdFiveOrderService;
 
     /**
-     * 排列三 提交订单
+     * 排列五 提交订单
      */
-    @RequestMapping(value = "listThreeOrderCommit", method = RequestMethod.POST)
+    @RequestMapping(value = "listFiveOrderCommit", method = RequestMethod.POST)
     @ResponseBody
-    public String listThreeOrderCommit(HttpServletRequest request) {
-        logger.info("排列三订单提交 listThreeOrderCommit--------Start-------------------");
-        logger.debug("interface 请求--replacementDelOrder-------- Start--------");
+    public String listFiveOrderCommit(HttpServletRequest request) {
+        logger.info("排列五订单提交 listFiveOrderCommit--------Start-------------------");
+        logger.debug("interface 请求--listFiveOrderCommit-------- Start--------");
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -49,13 +49,7 @@ public class ListThreeInterface {
             logger.error("订单详情nums为空");
             return HttpResultUtil.errorJson("订单详情nums为空");
         }
-        //1直选 2和值 3组三单式 4组三复式 5组六单式 6组六复式
-        String buyWays = (String) jsonData.get("buyWays");
-        if (StringUtils.isEmpty(buyWays)) {
-            logger.error("玩法buyWays为空");
-            return HttpResultUtil.errorJson("玩法buyWays为空");
-        }
-        //期数
+
         String weekday = (String) jsonData.get("weekday");
         if (StringUtils.isEmpty(weekday)) {
             logger.error("期数weekday为空");
@@ -94,12 +88,12 @@ public class ListThreeInterface {
         }
 
         //所有可能
-        Map<String, String> dataMap = ListThreeWays.listThree(nums, buyWays);
+        Map<String, String> dataMap = ListThreeWays.listThree(nums, "7");
         String allPerhaps = dataMap.get("allPerhaps");
         //注数
         String acount = dataMap.get("count");
         //生成订单号
-        String orderNum = util.genOrderNo("PLS", util.getFourRandom());
+        String orderNum = util.genOrderNo("PLW", util.getFourRandom());
         //计算金额
         double money = 2.00;
         double acountDouble = Double.parseDouble(acount);
@@ -107,30 +101,30 @@ public class ListThreeInterface {
         String price = String.valueOf(money * acountDouble * timesDouble);
         //奖金
         String award = dataMap.get("award");
-        CdThreeOrder cto = new CdThreeOrder();
-        cto.setOrderNum(orderNum);//订单号
-        cto.setNums(nums);//订单详情
-        cto.setBuyWays(buyWays);//玩法
-        cto.setWeekday(weekday);//期数
-        cto.setAcount(acount);//注数
-        cto.setPrice(price);//金额
-        cto.setAward(award);//奖金
-        cto.setUid(uid);//用户
-        cto.setAllPerhaps(allPerhaps);//所有可能
-        cto.setStatus("1");//已提交
-        cto.setTimes(times);//倍数
-        cto.setContinuity(continuity);//连续期数
-        cto.setType(type);//类型
-        cto.setWeekContinue(weekContinue);//连续期数详情
-        cto.setFollowType("1");//原始订单
+        CdFiveOrder cfo = new CdFiveOrder();
+        cfo.setOrderNum(orderNum);//订单号
+        cfo.setNums(nums);//订单详情
+        cfo.setBuyWays("1");//玩法
+        cfo.setWeekday(weekday);//期数
+        cfo.setAcount(acount);//注数
+        cfo.setPrice(price);//金额
+        cfo.setAward(award);//奖金
+        cfo.setUid(uid);//用户
+        cfo.setAllPerhaps(allPerhaps);//所有可能
+        cfo.setStatus("1");//已提交
+        cfo.setTimes(times);//倍数
+        cfo.setContinuity(continuity);//连续期数
+        cfo.setType(type);//类型
+        cfo.setWeekContinue(weekContinue);//连续期数详情
         try {
-            cdThreeOrderService.save(cto);
+            cdFiveOrderService.save(cfo);
             map.put("flag", "1");
         } catch (Exception e) {
             return HttpResultUtil.errorJson("提交失败");
         }
 
-        logger.info("排列三订单提交 listThreeOrderCommit---------End---------------------");
+        logger.info("排列五订单提交 listFiveOrderCommit---------End---------------------");
         return HttpResultUtil.successJson(map);
     }
+
 }

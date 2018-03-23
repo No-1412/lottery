@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,12 +53,15 @@ public class UserInformationInterface {
         if (clu == null) {
             return HttpResultUtil.errorJson("用户不存在");
         }
+        String recharge = clu.getTotalRecharge();//充值总金额
+        String percent = getLevelPercent(recharge);
         dataMap.put("uid", clu.getId());
         dataMap.put("img", clu.getImg());//头像
         dataMap.put("level", clu.getMemberLevel());//等级
         dataMap.put("name", clu.getName());//昵称
-        dataMap.put("balance", clu.getBalance());//余额
+        dataMap.put("balance", clu.getBalance().setScale(2).toString());//余额
         dataMap.put("rebate", clu.getRebate());//返利金额
+        dataMap.put("percent", percent);//等级百分比
         return HttpResultUtil.successJson(dataMap);
     }
 
@@ -105,5 +109,34 @@ public class UserInformationInterface {
         dataMap.put("cList", cList);
         return HttpResultUtil.successJson(dataMap);
     }
+
+    public String getLevelPercent(String totalRecharge) {
+        List<Double> level = new ArrayList<>();
+        level.add(2.00);
+        level.add(100.00);
+        level.add(500.00);
+        level.add(1000.00);
+        level.add(5000.00);
+        level.add(10000.00);
+        level.add(100000.00);
+        level.add(200000.00);
+        level.add(500000.00);
+        level.add(1000000.00);
+        double recharge = Double.parseDouble(totalRecharge);
+        String percent = "0";
+        for (int i = 1; i < level.size(); i++) {
+            double charge = level.get(i);
+            double theLast = level.get(i - 1);
+            if (recharge > theLast & recharge < charge) {
+                BigDecimal total = new BigDecimal(recharge);
+                BigDecimal nextLevel = new BigDecimal(charge);
+                int per = total.divide(nextLevel, 2, 2).multiply(new BigDecimal(100)).intValue();
+                percent = String.valueOf(per);
+                break;
+            }
+        }
+        return percent + "%";
+    }
+
 
 }

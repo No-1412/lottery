@@ -1,4 +1,4 @@
-package com.youge.yogee.interfaces.lottery.football;
+package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.BallGameCals;
@@ -8,9 +8,7 @@ import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
-import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

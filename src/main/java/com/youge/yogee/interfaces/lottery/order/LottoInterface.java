@@ -1,4 +1,4 @@
-package com.youge.yogee.interfaces.lottery.notball;
+package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.Calculations;

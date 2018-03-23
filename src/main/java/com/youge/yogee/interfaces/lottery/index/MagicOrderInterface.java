@@ -1,10 +1,7 @@
-package com.youge.yogee.interfaces.lottery.order;
+package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
-import com.youge.yogee.interfaces.lottery.index.AwardsWallInterface;
-import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
@@ -46,7 +43,7 @@ import java.util.*;
 @Controller
 @RequestMapping("${frontPath}")
 public class MagicOrderInterface {
-    private static final Logger logger = LoggerFactory.getLogger(HelpCenterInterface.class);
+    private static final Logger logger = LoggerFactory.getLogger(MagicOrderInterface.class);
     @Autowired
     private CdBasketballSingleOrderService cdBasketballSingleOrderService;  //篮球单关
     @Autowired
