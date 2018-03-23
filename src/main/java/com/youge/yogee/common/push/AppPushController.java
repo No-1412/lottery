@@ -8,8 +8,6 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.bm.entity.BmPush;
 import com.youge.yogee.modules.bm.service.BmPushService;
-import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
-import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ import java.util.Map;
  * Created by LiYuan on 2015/10/22.
  */
 @Controller
-@RequestMapping(value = "${publicPath}")
+@RequestMapping(value = "${frontPath}")
 public class AppPushController {
 
     private static Logger logger = LoggerFactory.getLogger(AppPushController.class);
@@ -35,8 +33,6 @@ public class AppPushController {
     private static String appkey = "GJzhoayflq7VCTAAUVwoC4";
     private static String master = "jzIVS4tjtf8bEqvLfXZNi6";
 
-    @Autowired
-    private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private BmPushService bmPushService;
 
@@ -52,8 +48,9 @@ public class AppPushController {
 
         String userid = (String) jsonData.get("userid");
         if (StringUtils.isEmpty(userid)) {
-            logger.error("userid为空");
-            return HttpResultUtil.errorJson("userid为空");
+            userid = "";
+//            logger.error("userid为空");
+//            return HttpResultUtil.errorJson("userid为空");
         }
         String type = (String) jsonData.get("type");//设备类型（1IOS，2Android）
         if (StringUtils.isEmpty(type)) {
@@ -66,10 +63,10 @@ public class AppPushController {
             return HttpResultUtil.errorJson("pushid为空");
         }
 
-        CdLotteryUser cdLotteryUser = cdLotteryUserService.get(userid);
-        if (null == cdLotteryUser) {
-            return HttpResultUtil.errorJson("用户不存在");
-        }
+//        CdLotteryUser cdLotteryUser = cdLotteryUserService.get(userid);
+//        if (null == cdLotteryUser) {
+//            return HttpResultUtil.errorJson("用户不存在");
+//        }
 
         BmPush bmPush = bmPushService.findByPushID(pushid);
         bmPush.setPushid(pushid);
@@ -78,7 +75,7 @@ public class AppPushController {
         bmPushService.save(bmPush);
 
         //如果是Android绑定个推
-        if(type.equals("2") && StringUtils.isNotEmpty(pushid)){
+        if(type.equals("2") && StringUtils.isNotEmpty(pushid) && StringUtils.isNotEmpty(userid)){
             IGtPush push = new IGtPush(appkey, master);
             // 单个CID绑定别名
             IAliasResult bindSCid = push.bindAlias(appId, userid, pushid);
@@ -104,9 +101,11 @@ public class AppPushController {
         }
 
         String userid = (String) jsonData.get("userid");
-        if (StringUtils.isEmpty(userid)) {
-            logger.error("userid为空");
-            return HttpResultUtil.errorJson("userid为空");
+        if (StringUtils.isNotEmpty(userid)) {
+            userid = "";
+
+
+
         }
         String type = (String) jsonData.get("type");//设备类型（1IOS，2Android）
         if (StringUtils.isEmpty(type)) {
@@ -119,12 +118,8 @@ public class AppPushController {
             return HttpResultUtil.errorJson("pushid为空");
         }
 
-        CdLotteryUser cdLotteryUser = cdLotteryUserService.get(userid);
-        if (null == cdLotteryUser) {
-            return HttpResultUtil.errorJson("用户不存在");
-        }
 
-        if(StringUtils.isEmpty(userid)){
+        if(StringUtils.isNotEmpty(userid)){
             bmPushService.deleteByPushid(pushid);
         }else {
             BmPush bmPush = bmPushService.unBindAlias(userid,pushid,type);
@@ -132,7 +127,7 @@ public class AppPushController {
             bmPushService.save(bmPush);
         }
 
-        if(type.equals("2")){
+        if(type.equals("2") && StringUtils.isNotEmpty(userid)){
             IGtPush push = new IGtPush(appkey, master);
             // 单个CID解绑绑定别名
             IAliasResult bindSCid = push.unBindAlias(appId, userid, pushid);
