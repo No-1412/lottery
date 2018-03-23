@@ -106,6 +106,11 @@ public class BmPushService extends BaseService {
 		}
 	}
 
+	public List<String> findAllIOS() {
+		return bmPushDao.findAllIOS();
+	}
+
+
 
 
 	
