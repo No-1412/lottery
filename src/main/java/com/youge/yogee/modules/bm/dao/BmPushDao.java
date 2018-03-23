@@ -9,6 +9,8 @@ import com.youge.yogee.common.persistence.BaseDao;
 import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.modules.bm.entity.BmPush;
 
+import java.util.List;
+
 /**
  * 推送表DAO接口
  * @author ZhaoYiFeng
@@ -18,7 +20,13 @@ import com.youge.yogee.modules.bm.entity.BmPush;
 public class BmPushDao extends BaseDao<BmPush> {
 
     public int deleteByPushid(String pushid){
-        return update("delete bmPush  where pushid = :p1", new Parameter(pushid));
+        return update("delete from BmPush  where pushid = :p1", new Parameter(pushid));
     }
-	
+
+    public List<String> findAllIOS(){
+        return findBySql("select pushid from BmPush  where type = 1");
+    }
+
+
+
 }
