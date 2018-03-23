@@ -78,7 +78,7 @@ public class NotBallQuartz {
 
                             }
                         }
-                    } else if (orderPerhaps.indexOf(aCode) != -1) {
+                    } else if (orderPerhaps.contains(aCode)) {
                         c.setResult(cta.getAcode());
                         c = threeWinner(c);
 
@@ -106,10 +106,11 @@ public class NotBallQuartz {
     public void listFiveOrder() {
         System.out.println("排列五开奖");
         CdFiveAwards cfa = cdFiveAwardsService.findFirst();
-        String weekday = cfa.getWeekday();
-        //获取当期所有付款订单
-        List<CdFiveOrder> cList = cdFiveOrderService.findByStatus("3", weekday);
         if (cfa != null) {
+            String weekday = cfa.getWeekday();
+            //获取当期所有付款订单
+            List<CdFiveOrder> cList = cdFiveOrderService.findByStatus("3", weekday);
+
             String awardDate = cfa.getAtime().split(" ")[0]; //开奖时间截取日期
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
             Date today = new Date();
@@ -119,7 +120,7 @@ public class NotBallQuartz {
                 for (CdFiveOrder c : cList) {
 
                     String orderPerhaps = c.getAllPerhaps();
-                    if (orderPerhaps.indexOf(aCode) != -1) {
+                    if (orderPerhaps.contains(aCode)) {
                         c.setResult(aCode);
                         c.setStatus("4");//中奖
                         //保存中奖纪录
@@ -219,7 +220,7 @@ public class NotBallQuartz {
                             award = award.add(awardPlus);
                         }
                         c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2)));//奖金
+                        c.setAward(String.valueOf(award.setScale(2,2)));//奖金
                         //保存中奖纪录
                         saveWinnerRecord(c);
                         //更改订单状态
@@ -325,7 +326,7 @@ public class NotBallQuartz {
         }
     }
 
-    public void saveWinnerRecord(CdLottoOrder c) {
+    private void saveWinnerRecord(CdLottoOrder c) {
         //保存中奖纪录
         CdOrderWinners cdOrderWinners = new CdOrderWinners();
         cdOrderWinners.setWinOrderNum(c.getOrderNum());//中间单号
