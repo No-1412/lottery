@@ -141,4 +141,31 @@ public class AppPushController {
         return HttpResultUtil.successJson(mapData);
     }
 
+    @RequestMapping(value = "isPush")
+    @ResponseBody
+    public String isPush(HttpServletRequest request) {
+        logger.debug("app isPush---------- Start--------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("josn格式错误");
+        }
+
+        String pushid = (String) jsonData.get("pushid");//IOS是token，Android是CID
+        if (StringUtils.isEmpty(pushid)) {
+            logger.error("pushid为空");
+            return HttpResultUtil.errorJson("pushid为空");
+        }
+        Map<String, Object> mapData = new HashMap<>();
+        BmPush bmPush = bmPushService.findByPushID(pushid);
+        if(bmPush == null){
+            mapData.put("isPush","0");
+        }else {
+            mapData.put("isPush","1");
+        }
+
+
+        return HttpResultUtil.successJson(mapData);
+    }
+
 }
