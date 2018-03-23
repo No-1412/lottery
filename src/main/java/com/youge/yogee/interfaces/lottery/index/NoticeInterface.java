@@ -1,10 +1,9 @@
-package com.youge.yogee.interfaces.lottery.notice;
+package com.youge.yogee.interfaces.lottery.index;
 
 /**
  * Created by wjc on 2017-12-21 0021.
  */
 
-import com.youge.yogee.interfaces.lottery.index.HomePageInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.modules.cnotice.entity.CdNotice;
 import com.youge.yogee.modules.cnotice.service.CdNoticeService;

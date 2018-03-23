@@ -1,4 +1,4 @@
-package com.youge.yogee.interfaces.lottery.bank;
+package com.youge.yogee.interfaces.lottery.nouse;
 
 import com.google.common.collect.Maps;
 import com.youge.yogee.common.config.Global;

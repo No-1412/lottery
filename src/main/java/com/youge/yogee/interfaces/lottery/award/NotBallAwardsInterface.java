@@ -1,4 +1,4 @@
-package com.youge.yogee.interfaces.lottery.notball;
+package com.youge.yogee.interfaces.lottery.award;
 
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveAwards;

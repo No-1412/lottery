@@ -1,5 +1,6 @@
-package com.youge.yogee.interfaces.lottery.football;
+package com.youge.yogee.interfaces.lottery.award;
 
+import com.youge.yogee.interfaces.lottery.football.FootballLotteryInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineService;

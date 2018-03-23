@@ -1,4 +1,4 @@
-package com.youge.yogee.interfaces.lottery.forum;
+package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;

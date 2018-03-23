@@ -2,7 +2,6 @@ package com.youge.yogee.interfaces.lottery.football;
 
 import com.youge.yogee.common.utils.FundModel;
 import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.interfaces.lottery.help.HelpCenterInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
@@ -34,7 +33,7 @@ import java.util.Map;
 @RequestMapping("${frontPath}")
 public class FootballInterface {
 
-    private static final Logger logger = LoggerFactory.getLogger(HelpCenterInterface.class);
+    private static final Logger logger = LoggerFactory.getLogger(FootballInterface.class);
 
     @Autowired
     private CdFootballMixedService cdFootballMixedService;

@@ -1,4 +1,4 @@
-package com.youge.yogee.interfaces.lottery.help;
+package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.modules.chelpcenter.entity.CdHelpCenter;
