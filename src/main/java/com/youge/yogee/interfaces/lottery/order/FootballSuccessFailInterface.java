@@ -138,7 +138,13 @@ public class FootballSuccessFailInterface {
         csfo.setTimes(times);//倍数
         try {
             cdSuccessFailOrderService.save(csfo);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "胜负彩订单支付");
+            map.put("time", csfo.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acountStr);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("保存失败");
         }

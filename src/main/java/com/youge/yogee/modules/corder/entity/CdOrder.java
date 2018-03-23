@@ -34,7 +34,7 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     private String delFlag;    // 删除标识 (0：未删除；1：已删除)
     private String userId; //用户id
     private String userName; //用户名字
-    private String issue; //期号
+    private String issue; // 0自购 1跟单 2神单
     private String number; //彩票号码
     private String type; //彩票种类
     private String count; // 购买数量
@@ -44,6 +44,7 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     private String winPrice;//中奖金额
     private String status; //1待开奖 2已开奖 3中奖
     private String saleId; //销售id
+
 
     public CdOrder() {
         super();
@@ -194,6 +195,7 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     public void setWinPrice(String winPrice) {
         this.winPrice = winPrice;
     }
+
 }
 
 

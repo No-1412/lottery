@@ -148,7 +148,13 @@ public class FootballChooseNineInterface {
         ccno.setMatchIds(matchIds);//购买具体期数
         try {
             cdChooseNineOrderService.save(ccno);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "任选九订单支付");
+            map.put("time", ccno.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acountStr);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("保存失败");
         }

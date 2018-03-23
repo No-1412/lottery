@@ -257,7 +257,7 @@ public class BasketBallQuartz {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdBasketballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
-//改变订单总表状态
+                   //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
                     if (co != null) {
                         co.setWinPrice(award.toString());//奖金

@@ -1,6 +1,8 @@
 package com.youge.yogee.interfaces.lottery.award;
 
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
+import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveAwards;
 import com.youge.yogee.modules.cfiveawards.service.CdFiveAwardsService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoReward;
@@ -59,6 +61,56 @@ public class NotBallAwardsInterface {
         logger.info("大乐透开奖信息 lottoReward---------End---------------------");
         return HttpResultUtil.successJson(dataMap);
     }
+
+    /**
+     * 大乐透详情
+     */
+    @RequestMapping(value = "lottoRewardDetail", method = RequestMethod.POST)
+    @ResponseBody
+    public String lottoRewardDetail(HttpServletRequest request) {
+        logger.info("大乐透详情 lottoRewardDetail--------Start-------------------");
+        Map<String, Object> map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        //期次
+        String matchId = (String) jsonData.get("matchId");
+        if (StringUtils.isEmpty(matchId)) {
+            logger.error("matchId为空");
+            return HttpResultUtil.errorJson("matchId为空");
+        }
+        CdLottoReward clr = cdLottoRewardService.findByMatchId(matchId);
+        if (clr == null) {
+            return HttpResultUtil.errorJson("信息错误");
+        }
+        map.put("matchId", clr.getMatchId()); //期次
+        map.put("openingTime", clr.getOpeningTime()); //开奖时间
+        map.put("number", clr.getNumber()); //中奖号码
+        map.put("currentSales", clr.getCurrentSales()); //本期销量
+        map.put("jackpot", clr.getJackpot()); //累计奖池
+        //String noteNums = clr.getNotesNum().replaceAll("--,", ""); //注数
+        String allNoteNums = clr.getNotesNum().replaceAll("--,", "");
+        String noteNums = allNoteNums.replaceAll(",--", "");
+        String[] noteNumsArrray = noteNums.split(",");
+
+        //没注金额
+        String allAward = clr.getPerNoteMoney().replaceAll("--,", "");
+        String perNoteMoney = allAward.replaceAll(",--", "");
+        String[] perNoteMoneyArrray = perNoteMoney.split(",");
+
+        List<Map<String, String>> list = new ArrayList();
+        for (int i = 0; i < perNoteMoneyArrray.length; i++) {
+            Map<String, String> noteMap = new HashMap();
+            noteMap.put("per", perNoteMoneyArrray[i]); //每注金额
+            noteMap.put("noteNum", noteNumsArrray[i]);//注数
+            list.add(noteMap);
+        }
+
+        map.put("detail", list);
+        return HttpResultUtil.successJson(map);
+    }
+
 
     /**
      * 排列三开奖信息

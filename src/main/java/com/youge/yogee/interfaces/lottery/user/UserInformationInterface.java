@@ -104,13 +104,15 @@ public class UserInformationInterface {
             map.put("price", c.getTotalPrice());//金额
             map.put("win", c.getWinPrice());//中奖金额
             map.put("time", c.getCreateDate());//时间
+            String quality = c.getIssue();
+            map.put("quality", quality);//0自购 1跟单 2神单
             cList.add(map);
         }
         dataMap.put("cList", cList);
         return HttpResultUtil.successJson(dataMap);
     }
 
-    public String getLevelPercent(String totalRecharge) {
+    private String getLevelPercent(String totalRecharge) {
         List<Double> level = new ArrayList<>();
         level.add(2.00);
         level.add(100.00);

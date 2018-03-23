@@ -196,7 +196,13 @@ public class FootballSingleOrderInterface {
         cfso.setMatchIds(matchIds);//所有场次
         try {
             cdFootballSingleOrderService.save(cfso);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "竞猜足球订单支付");
+            map.put("time", cfso.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acountStr);//注数
+            map.put("times", "1");//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("保存失败");
         }

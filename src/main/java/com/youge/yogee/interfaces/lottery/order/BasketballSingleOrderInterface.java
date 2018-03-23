@@ -144,7 +144,13 @@ public class BasketballSingleOrderInterface {
 
         try {
             cdBasketballSingleOrderService.save(cbso);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "竞彩篮球订单支付");
+            map.put("time", cbso.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acountStr);//注数
+            map.put("times", "1");//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("保存失败");
         }

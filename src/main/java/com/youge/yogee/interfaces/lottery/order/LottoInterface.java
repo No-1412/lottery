@@ -184,7 +184,13 @@ public class LottoInterface {
         clo.setIsPlus(isPlus);//追加投注
         try {
             cdLottoOrderService.save(clo);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "大乐透订单支付");
+            map.put("time", clo.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acount);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("提交失败");
         }

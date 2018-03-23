@@ -118,7 +118,13 @@ public class ListFiveInterface {
         cfo.setWeekContinue(weekContinue);//连续期数详情
         try {
             cdFiveOrderService.save(cfo);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "排列五订单支付");
+            map.put("time", cfo.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acount);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("提交失败");
         }

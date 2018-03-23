@@ -2,6 +2,7 @@ package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
@@ -23,7 +24,9 @@ import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicFollowOrderService;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +67,8 @@ public class MagicOrderInterface {
     private CdOrderFollowTimesService cdOrderFollowTimesService;
     @Autowired
     private CdMagicFollowOrderService cdMagicFollowOrderService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     /**
      * 神单提交订单
@@ -282,8 +287,14 @@ public class MagicOrderInterface {
         cmo.setShutDownTime(shutDownTime);//截止时间
         cmo.setTimes(times);//倍数
         cmo.setStartPrice(startPrice);//起投
+        //更改订单总表
+        CdOrder co = cdOrderService.getOrderByOrderNum(orderNum);
+        if (co != null) {
+            co.setIssue("2");//订单属性 0自购 1跟单 2神单
+        }
         try {
             cdMagicOrderService.save(cmo);
+            cdOrderService.save(co);
             map.put("flag", "1");
         } catch (Exception e) {
             return HttpResultUtil.errorJson("分享失败");
@@ -396,22 +407,24 @@ public class MagicOrderInterface {
         if (day.getTime() > shutTime.getTime()) {
             if ("1".equals(type)) {
                 CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
-                orderDetail = AwardsWallInterface.getFbSingleList(cfs);
+                orderDetail = SelOrderUtil.getFbSingleList(cfs);
                 map.put("buyWays", cfs.getBuyWays());
                 map.put("followNums", "0");
             } else if ("2".equals(type)) {
                 CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
-                orderDetail = AwardsWallInterface.getFbFollowList(cff);
+                orderDetail = SelOrderUtil.getFbFollowList(cff);
                 map.put("buyWays", cff.getBuyWays());
                 map.put("followNums", cff.getFollowNum());
             } else if ("3".equals(type)) {
                 CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
-                orderDetail = AwardsWallInterface.getBbSingleList(cbs);
+                orderDetail = SelOrderUtil.getBbSingleList(cbs);
                 map.put("followNums", "0");
                 map.put("buyWays", cbs.getBuyWays());
             } else {
                 CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
-
+                orderDetail = SelOrderUtil.getBbFollowList(cbf);
+                map.put("followNums", cbf.getFollowNums());
+                map.put("buyWays", cbf.getBuyWays());
             }
         }
         map.put("cList", cList);
@@ -604,7 +617,23 @@ public class MagicOrderInterface {
         int newCount = Integer.parseInt(followNums) + 1;
         cmo.setFollowCounts(String.valueOf(newCount));
         cdMagicOrderService.save(cmo);
-
+        //订单总表添加记录
+        CdOrder co = new CdOrder();
+        co.setIssue("1");//跟单
+        co.setWinPrice("0");//奖金
+        co.setType(type);//类型
+        co.setUserId(uid);//uid
+        co.setUserName(clu.getName());//用户名
+        co.setNumber(orderNum);//订单号
+        co.setTotalPrice(price);//价格
+        //本单销售id
+        CdOrder cdOrder = cdOrderService.getOrderByOrderNum(cmo.getOrderNum());
+        String saleId = "";
+        if (cdOrder != null) {
+            saleId = cdOrder.getSaleId();
+        }
+        co.setSaleId(saleId);
+        cdOrderService.save(co);
         logger.info("跟买神单 followMagicOrder---------End---------------------");
         return HttpResultUtil.successJson(map);
     }

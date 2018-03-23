@@ -336,7 +336,13 @@ public class BasketballFollowOrderInterface {
         cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
         try {
             cdBasketballFollowOrderService.save(cbfo);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "竞彩篮球订单支付");
+            map.put("time", cbfo.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acountStr);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", followNum);//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("保存失败");
         }

@@ -125,7 +125,13 @@ public class ListThreeInterface {
         cto.setFollowType("1");//原始订单
         try {
             cdThreeOrderService.save(cto);
-            map.put("flag", "1");
+            map.put("orderNum", orderNum);
+            map.put("orderName", "排列三订单支付");
+            map.put("time", cto.getCreateDate());
+            map.put("price", price);
+            map.put("acountStr", acount);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", "");//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("提交失败");
         }
