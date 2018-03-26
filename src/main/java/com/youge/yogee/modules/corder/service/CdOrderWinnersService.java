@@ -75,4 +75,16 @@ public class CdOrderWinnersService extends BaseService {
         return cdOrderWinnersDao.find(dc);
     }
 
+    public List<CdOrderWinners> findByUid(String uid, String total, String count) {
+        DetachedCriteria dc = cdOrderWinnersDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("uid", uid));
+        dc.add(Restrictions.eq(CdOrderWinners.FIELD_DEL_FLAG, CdOrderWinners.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+
+        Criteria cri = dc.getExecutableCriteria(cdOrderWinnersDao.getSession());
+        cri.setFirstResult(Integer.parseInt(total));
+        cri.setMaxResults(Integer.parseInt(count));
+        return cdOrderWinnersDao.find(dc);
+    }
+
 }

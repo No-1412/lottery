@@ -6,7 +6,9 @@ import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.crecord.entity.CdRecordCash;
 import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
 import com.youge.yogee.modules.crecord.service.CdRecordCashService;
@@ -41,6 +43,8 @@ public class UserInformationInterface {
     private CdRecordRebateService cdRecordRebateService;
     @Autowired
     private CdRecordCashService cdRecordCashService;
+    @Autowired
+    private CdOrderWinnersService cdOrderWinnersService;
 
     /**
      * 我的首页
@@ -120,7 +124,8 @@ public class UserInformationInterface {
         return HttpResultUtil.successJson(dataMap);
     }
 
-    @RequestMapping(value = "getRecordCash", method = RequestMethod.POST)
+
+    @RequestMapping(value = "getRecordRebate", method = RequestMethod.POST)
     @ResponseBody
     public String getRecordCash(HttpServletRequest request) {
         logger.info("getRecordCash---------- Start-----------");
@@ -159,7 +164,12 @@ public class UserInformationInterface {
         return HttpResultUtil.successJson(dataMap);
     }
 
-    @RequestMapping(value = "getRecordRebate", method = RequestMethod.POST)
+    /***
+     * 提现记录
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "getRecordCash", method = RequestMethod.POST)
     @ResponseBody
     public String getRecordRebate(HttpServletRequest request) {
         logger.info("getRecordRebate---------- Start-----------");
@@ -197,6 +207,52 @@ public class UserInformationInterface {
 
         Map<String,Object> dataMap = new HashMap<>();
         dataMap.put("recordCashList", recordCashList);
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    /***
+     * 中奖记录
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "getOrderWinners", method = RequestMethod.POST)
+    @ResponseBody
+    public String getOrderWinners(HttpServletRequest request) {
+        logger.info("getOrderWinners---------- Start-----------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            return HttpResultUtil.errorJson("count为空");
+        }
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在");
+        }
+
+        List<CdOrderWinners> list = cdOrderWinnersService.findByUid(uid, total, count);
+        List<Map> orderWinnersList = new ArrayList<>();
+        for (CdOrderWinners cdOrderWinners : list) {
+            Map<String,Object> orderWinnersMap = new HashMap<>();
+            orderWinnersMap.put("type ",cdOrderWinners.getType());
+            orderWinnersMap.put("orderNum",cdOrderWinners.getWinOrderNum());
+            orderWinnersMap.put("price",cdOrderWinners.getWinPrice());
+            orderWinnersMap.put("createDate",cdOrderWinners.getCreateDate());
+            orderWinnersList.add(orderWinnersMap);
+        }
+
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("orderWinnersList", orderWinnersList);
         return HttpResultUtil.successJson(dataMap);
     }
 
