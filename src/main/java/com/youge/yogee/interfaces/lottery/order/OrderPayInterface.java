@@ -199,7 +199,7 @@ public class OrderPayInterface {
                 return HttpResultUtil.errorJson("余额不足");
             }
         }
-
+        map.put("balance", clu.getBalance());
         return HttpResultUtil.successJson(map);
     }
 

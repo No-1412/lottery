@@ -5,6 +5,7 @@ import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.CacheUtils;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.emay.emay.Example;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.FileUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -23,7 +24,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by wjc on 2017-12-13 0013.用户注册接口
@@ -224,7 +227,7 @@ public class UserRegisterInterface {
         }
 
         String recharge = user.getTotalRecharge();//充值总金额
-        String percent = getLevelPercent(recharge);
+        String percent = SelOrderUtil.getLevelPercent(recharge);
         dataMap.put("uid", user.getId());
         dataMap.put("img", user.getImg());
         dataMap.put("level", user.getMemberLevel());
@@ -424,32 +427,32 @@ public class UserRegisterInterface {
         return HttpResultUtil.successJson(mapData);
     }
 
-    private String getLevelPercent(String totalRecharge) {
-        List<Double> level = new ArrayList<>();
-        level.add(2.00);
-        level.add(100.00);
-        level.add(500.00);
-        level.add(1000.00);
-        level.add(5000.00);
-        level.add(10000.00);
-        level.add(100000.00);
-        level.add(200000.00);
-        level.add(500000.00);
-        level.add(1000000.00);
-        double recharge = Double.parseDouble(totalRecharge);
-        String percent = "0";
-        for (int i = 1; i < level.size(); i++) {
-            double charge = level.get(i);
-            double theLast = level.get(i - 1);
-            if (recharge > theLast & recharge < charge) {
-                BigDecimal total = new BigDecimal(recharge);
-                BigDecimal nextLevel = new BigDecimal(charge);
-                int per = total.divide(nextLevel, 2, 2).multiply(new BigDecimal(100)).intValue();
-                percent = String.valueOf(per);
-                break;
-            }
-        }
-        return percent + "%";
-    }
+//    private String getLevelPercent(String totalRecharge) {
+//        List<Double> level = new ArrayList<>();
+//        level.add(2.00);
+//        level.add(100.00);
+//        level.add(500.00);
+//        level.add(1000.00);
+//        level.add(5000.00);
+//        level.add(10000.00);
+//        level.add(100000.00);
+//        level.add(200000.00);
+//        level.add(500000.00);
+//        level.add(1000000.00);
+//        double recharge = Double.parseDouble(totalRecharge);
+//        String percent = "0";
+//        for (int i = 1; i < level.size(); i++) {
+//            double charge = level.get(i);
+//            double theLast = level.get(i - 1);
+//            if (recharge > theLast & recharge < charge) {
+//                BigDecimal total = new BigDecimal(recharge);
+//                BigDecimal nextLevel = new BigDecimal(charge);
+//                int per = total.divide(nextLevel, 2, 2).multiply(new BigDecimal(100)).intValue();
+//                percent = String.valueOf(per);
+//                break;
+//            }
+//        }
+//        return percent + "%";
+//    }
 
 }

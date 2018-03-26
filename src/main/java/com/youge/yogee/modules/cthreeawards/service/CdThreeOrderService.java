@@ -97,4 +97,20 @@ public class CdThreeOrderService extends BaseService {
         }
     }
 
+    /**
+     * 用户追单的订单
+     *
+     * @return
+     */
+    public List<CdThreeOrder> findAllFollowOrdersByUid(String uid) {
+        DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq("type", "2"));
+        dc.add(Restrictions.or(Restrictions.eq("followType", "1"), Restrictions.eq("followType", "2")));
+        dc.add(Restrictions.eq("uid", uid));
+        dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdThreeOrderDao.find(dc);
+    }
+
 }
