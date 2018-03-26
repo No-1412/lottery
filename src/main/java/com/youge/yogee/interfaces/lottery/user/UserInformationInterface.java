@@ -7,6 +7,8 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
+import com.youge.yogee.modules.crecord.service.CdRecordRebateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class UserInformationInterface {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdOrderService cdOrderService;
+    @Autowired
+    private CdRecordRebateService cdRecordRebateService;
 
     /**
      * 我的首页
@@ -112,6 +116,46 @@ public class UserInformationInterface {
         return HttpResultUtil.successJson(dataMap);
     }
 
+    @RequestMapping(value = "getRecordRebate", method = RequestMethod.POST)
+    @ResponseBody
+    public String getRecordRebate(HttpServletRequest request) {
+        logger.info("getRecordRebate---------- Start-----------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            return HttpResultUtil.errorJson("count为空");
+        }
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在");
+        }
+
+        List<CdRecordRebate> cdRecordRebateList = cdRecordRebateService.findByUid(uid, total, count);
+        List<Map> recordRebateList = new ArrayList<>();
+        for (CdRecordRebate cdRecordRebate : cdRecordRebateList) {
+            Map<String,Object> cdRecordRebateMap = new HashMap<>();
+            cdRecordRebateMap.put("rebate",cdRecordRebate.getRebate());
+            cdRecordRebateMap.put("createDate",cdRecordRebate.getCreateDate());
+            cdRecordRebateMap.put("type",cdRecordRebate.getType());
+            recordRebateList.add(cdRecordRebateMap);
+        }
+
+        Map<String,Object> dataMap = new HashMap<>();
+        dataMap.put("recordRebateList", recordRebateList);//等级百分比
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
     private String getLevelPercent(String totalRecharge) {
         List<Double> level = new ArrayList<>();
         level.add(2.00);
@@ -139,6 +183,9 @@ public class UserInformationInterface {
         }
         return percent + "%";
     }
+
+
+
 
 
 }

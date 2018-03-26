@@ -3,6 +3,7 @@
  */
 package com.youge.yogee.modules.crecord.service;
 
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -17,6 +18,8 @@ import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
 import com.youge.yogee.modules.crecord.dao.CdRecordRebateDao;
+
+import java.util.List;
 
 /**
  * 返利记录Service
@@ -59,5 +62,17 @@ public class CdRecordRebateService extends BaseService {
 	public void delete(String id) {
 		cdRecordRebateDao.deleteById(id);
 	}
-	
+
+	public List<CdRecordRebate> findByUid(String uid,String total,String count) {
+		DetachedCriteria dc = cdRecordRebateDao.createDetachedCriteria();
+		dc.add(Restrictions.eq("uid", uid));
+		dc.add(Restrictions.eq(CdRecordRebate.FIELD_DEL_FLAG, CdRecordRebate.DEL_FLAG_NORMAL));
+		dc.addOrder(Order.desc("createDate"));
+
+		Criteria cri = dc.getExecutableCriteria(cdRecordRebateDao.getSession());
+		cri.setFirstResult(Integer.parseInt(total));
+		cri.setMaxResults(Integer.parseInt(count));
+		return cdRecordRebateDao.find(dc);
+	}
+
 }
