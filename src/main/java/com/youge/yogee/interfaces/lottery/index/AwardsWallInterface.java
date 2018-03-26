@@ -131,6 +131,7 @@ public class AwardsWallInterface {
             map.put("startTime", co.getCreateDate());//发起时间
             map.put("orderTime", co.getCreateDate());//约单时间
             orderNum = co.getNumber();
+            map.put("orderNum", orderNum);//订单号
         }
         map = SelOrderUtil.getOrderDetailMap(orderNum, map);
         logger.info("大奖墙列表接口--------------End--------");

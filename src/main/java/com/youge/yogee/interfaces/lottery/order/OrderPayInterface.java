@@ -19,6 +19,7 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
 import com.youge.yogee.modules.crecord.service.CdRecordRebateService;
@@ -75,7 +76,7 @@ public class OrderPayInterface {
     @RequestMapping(value = "orderPay", method = RequestMethod.POST)
     @ResponseBody
     public String orderPay(HttpServletRequest request) throws ParseException {
-        logger.info("=orderPay--------Start-------------------");
+        logger.info("orderPay--------Start-------------------");
         logger.debug("interface 请求--orderPay-------- Start--------");
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
@@ -103,82 +104,129 @@ public class OrderPayInterface {
             CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
             price = cfs.getPrice();
             if (canPay(price, balance)) {
-                clu = getLeftMoney(price, balance, clu);
+                //更该订单信息
                 cfs.setStatus("2");//已付款
-
+                cdFootballSingleOrderService.save(cfs);
+                saveAllChange(price, balance, clu, orderNum, "1");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("ZCG")) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
             price = cff.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                cff.setStatus("2");//已付款
+                cdFootballFollowOrderService.save(cff);
+                saveAllChange(price, balance, clu, orderNum, "2");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("LDG")) {
             CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
             price = cbs.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                cbs.setStatus("2");//已付款
+                cdBasketballSingleOrderService.save(cbs);
+                saveAllChange(price, balance, clu, orderNum, "3");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("LCG")) {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
             price = cbf.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                cbf.setStatus("2");//已付款
+                cdBasketballFollowOrderService.save(cbf);
+                saveAllChange(price, balance, clu, orderNum, "4");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("RXJ")) {
             CdChooseNineOrder ccno = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
             price = ccno.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                ccno.setStatus("2");//已付款
+                cdChooseNineOrderService.save(ccno);
+                saveAllChange(price, balance, clu, orderNum, "5");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("SFC")) {
             CdSuccessFailOrder csfo = cdSuccessFailOrderService.findOrderByOrderNum(orderNum);
             price = csfo.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                csfo.setStatus("2");//已付款
+                cdSuccessFailOrderService.save(csfo);
+                saveAllChange(price, balance, clu, orderNum, "6");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("PLS")) {
             CdThreeOrder dto = cdThreeOrderService.findOrderByOrderNum(orderNum);
             price = dto.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                dto.setStatus("2");//已付款
+                cdThreeOrderService.save(dto);
+                saveAllChange(price, balance, clu, orderNum, "7");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("PLW")) {
             CdFiveOrder cfo = cdFiveOrderService.findOrderByOrderNum(orderNum);
             price = cfo.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                cfo.setStatus("2");//已付款
+                cdFiveOrderService.save(cfo);
+                saveAllChange(price, balance, clu, orderNum, "8");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("DLT")) {
             CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(orderNum);
             price = clo.getPrice();
             if (canPay(price, balance)) {
-
+                //更该订单信息
+                clo.setStatus("2");//已付款
+                cdLottoOrderService.save(clo);
+                saveAllChange(price, balance, clu, orderNum, "9");
+            } else {
+                return HttpResultUtil.errorJson("余额不足");
             }
         }
+
         return HttpResultUtil.successJson(map);
     }
 
+    //判断余额是否充足
     private boolean canPay(String price, String leftMoney) {
         boolean flag = false;
         double priDouble = Double.parseDouble(price);
         double leftDouble = Double.parseDouble(leftMoney);
-        if (priDouble >= leftDouble) {
+        if (leftDouble >= priDouble) {
             flag = true;
         }
         return flag;
     }
 
+    //保存返利
     private void saveRebate(String price, String uid) {
         double priceDouble = Double.parseDouble(price);
         boolean flag = false;
         String rebate = "";
-        if (priceDouble > 1000.0) {
-
-        } else if (priceDouble > 5000.0) {
+        if (priceDouble > 0.0) {
+            flag = true;
+            rebate = String.valueOf(priceDouble * 0.01);
+        } else if (priceDouble >= 1000.0) {
             flag = true;
             rebate = String.valueOf(priceDouble * 0.02);
-        } else if (priceDouble > 10000.0) {
+        } else if (priceDouble >= 10000.0) {
             flag = true;
             rebate = String.valueOf(priceDouble * 0.03);
         }
@@ -190,11 +238,38 @@ public class OrderPayInterface {
         }
     }
 
+    //更新余额
     private CdLotteryUser getLeftMoney(String price, String balance, CdLotteryUser clu) {
         BigDecimal priceBig = new BigDecimal(price);
         BigDecimal balanceBig = new BigDecimal(balance);
         BigDecimal left = balanceBig.subtract(priceBig).setScale(2, 2);
-        clu.setBalance(left);//更新余额
+        clu.setBalance(left);
         return clu;
+    }
+
+    //保存到订单总表
+    private void saveOrder(CdLotteryUser clu, String number, String price, String type) {
+        CdOrder co = new CdOrder();
+        co.setIssue("0");//自购
+        co.setSaleId(clu.getSaleId());//销售id
+        co.setTotalPrice(price);//金额
+        co.setNumber(number);//订单号
+        co.setType(type);//彩种
+        co.setUserName(clu.getName());
+        co.setStatus("1");//待开奖
+        co.setWinPrice("0");//中奖金额
+        co.setUserId(clu.getId());
+        cdOrderService.save(co);
+    }
+
+    private void saveAllChange(String price, String balance, CdLotteryUser clu, String orderNum, String type) {
+        //更新用户信息
+        clu = getLeftMoney(price, balance, clu);
+        cdLotteryUserService.save(clu);
+        //保存返利
+        saveRebate(price, clu.getId());
+        //保存订单总表
+        saveOrder(clu, orderNum, price, type);
+
     }
 }
