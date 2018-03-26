@@ -4,6 +4,7 @@
 package com.youge.yogee.modules.corder.entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -37,7 +38,7 @@ public class CdOrderFollowTimes extends BaseEntity<T> implements Serializable {
 	private String createDate; 	// 创建时间
 	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
 
-	private String times;      //跟单倍数
+	private BigDecimal times;      //跟单倍数
 	private String remarks;    //
 
 	public CdOrderFollowTimes() {
@@ -86,13 +87,6 @@ public class CdOrderFollowTimes extends BaseEntity<T> implements Serializable {
 		this.delFlag = delFlag;
 	}
 
-	public String getTimes() {
-		return times;
-	}
-
-	public void setTimes(String times) {
-		this.times = times;
-	}
 
 	public String getRemarks() {
 		return remarks;
@@ -100,6 +94,14 @@ public class CdOrderFollowTimes extends BaseEntity<T> implements Serializable {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public BigDecimal getTimes() {
+		return times;
+	}
+
+	public void setTimes(BigDecimal times) {
+		this.times = times;
 	}
 }
 

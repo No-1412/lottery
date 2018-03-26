@@ -8,14 +8,23 @@ import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
+import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
+import com.youge.yogee.modules.cmagicorder.service.CdMagicFollowOrderService;
+import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.entity.CdOrderFollowTimes;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +47,14 @@ public class QuartzListener {
     private CdOrderWinnersService cdOrderWinnersService;
     @Autowired
     private CdOrderService cdOrderService;
+    @Autowired
+    private CdOrderFollowTimesService cdOrderFollowTimesService;
+    @Autowired
+    private CdMagicOrderService cdMagicOrderService;
+    @Autowired
+    private CdMagicFollowOrderService cdMagicFollowOrderService;
+    @Autowired
+    private CdLotteryUserService cdLotteryUserService;
 
     //    "0/10 * * * * ?" 每10秒触发
 //
@@ -283,6 +300,29 @@ public class QuartzListener {
                     cdFootballFollowOrder.setAward(award.toString());
                     cdFootballFollowOrder.setStatus("4");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
+
+                    //---------------------------------计算跟单佣金-------------------------
+
+                    if (cdFootballFollowOrder.getType().equals("2")) {
+                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+
+                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballFollowOrder.getOrderNum());
+                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
+
+                        if (new BigDecimal(cdFootballFollowOrder.getPrice())
+                                .multiply(cdOrderFollowTimes.getTimes())
+                                .compareTo(new BigDecimal(award)) == 1) {
+                            //全部佣金
+                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
+                                    .multiply(new BigDecimal(0.01))
+                                    .multiply(new BigDecimal(award));
+
+                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
+                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
+                            cdLotteryUserService.save(cdLotteryUser);
+                        }
+                    }
+
                     //保存中奖纪录
                     CdOrderWinners cdOrderWinners = new CdOrderWinners();
                     cdOrderWinners.setWinOrderNum(cdFootballFollowOrder.getOrderNum());//中间单号
@@ -376,6 +416,29 @@ public class QuartzListener {
                     cdFootballSingleOrder.setAward(award.toString());
                     cdFootballSingleOrder.setStatus("4");
                     cdFootballSingleOrderService.save(cdFootballSingleOrder);
+
+                    //---------------------------------计算跟单佣金-------------------------
+
+                    if (cdFootballSingleOrder.getType().equals("2")) {
+                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+
+                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballSingleOrder.getOrderNum());
+                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
+
+                        if (new BigDecimal(cdFootballSingleOrder.getPrice())
+                                .multiply(cdOrderFollowTimes.getTimes())
+                                .compareTo(new BigDecimal(award)) == 1) {
+                            //全部佣金
+                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
+                                    .multiply(new BigDecimal(0.01))
+                                    .multiply(new BigDecimal(award));
+
+                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
+                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
+                            cdLotteryUserService.save(cdLotteryUser);
+                        }
+                    }
+
                     //保存中奖纪录
                     CdOrderWinners cdOrderWinners = new CdOrderWinners();
                     cdOrderWinners.setWinOrderNum(cdFootballSingleOrder.getOrderNum());//中间单号
@@ -387,7 +450,7 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballSingleOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
-//改变订单总表状态
+                    //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
                     if (co != null) {
                         co.setWinPrice(award.toString());//奖金

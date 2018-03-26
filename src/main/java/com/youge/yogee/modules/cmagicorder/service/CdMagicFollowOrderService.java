@@ -73,4 +73,16 @@ public class CdMagicFollowOrderService extends BaseService {
         return cdMagicFollowOrderDao.find(dc);
     }
 
+    public CdMagicFollowOrder findOrderByNumber(String orderNumber) {
+        DetachedCriteria dc = cdMagicFollowOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdMagicFollowOrder.FIELD_DEL_FLAG, CdMagicFollowOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("orderNum", orderNumber));
+        List<CdMagicFollowOrder> list = cdMagicFollowOrderDao.find(dc);
+        if(list.size() == 0){
+            return null;
+        }else {
+            return list.get(0);
+        }
+    }
+
 }
