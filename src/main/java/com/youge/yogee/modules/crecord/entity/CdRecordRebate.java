@@ -34,6 +34,7 @@ public class CdRecordRebate extends BaseEntity<T> implements Serializable {
     private String remarks;
     private String rebate;  //返利金额
     private String uid;    //用户id
+    private String type;    ////1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
 
     public CdRecordRebate() {
         super();
@@ -103,6 +104,14 @@ public class CdRecordRebate extends BaseEntity<T> implements Serializable {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
 

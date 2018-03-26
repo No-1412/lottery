@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -274,7 +275,7 @@ public class MagicOrderInterface {
             }
         }
         //拿到倍率
-        String times = cdOrderFollowTimesService.get("1").getTimes();
+        BigDecimal times = cdOrderFollowTimesService.get("1").getTimes();
         CdMagicOrder cmo = new CdMagicOrder();
         cmo.setOrderNum(orderNum);//订单号
         cmo.setCharges(charges);//佣金百分比
@@ -285,7 +286,7 @@ public class MagicOrderInterface {
         cmo.setuImg(uImg);//头像
         cmo.setuName(uName);//姓名
         cmo.setShutDownTime(shutDownTime);//截止时间
-        cmo.setTimes(times);//倍数
+        cmo.setTimes(times.toString());//倍数
         cmo.setStartPrice(startPrice);//起投
         //更改订单总表
         CdOrder co = cdOrderService.getOrderByOrderNum(orderNum);
