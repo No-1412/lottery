@@ -127,8 +127,8 @@ public class UserInformationInterface {
 
     @RequestMapping(value = "getRecordRebate", method = RequestMethod.POST)
     @ResponseBody
-    public String getRecordCash(HttpServletRequest request) {
-        logger.info("getRecordCash---------- Start-----------");
+    public String getRecordRebate(HttpServletRequest request) {
+        logger.info("getRecordRebate---------- Start-----------");
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
 
@@ -171,8 +171,8 @@ public class UserInformationInterface {
      */
     @RequestMapping(value = "getRecordCash", method = RequestMethod.POST)
     @ResponseBody
-    public String getRecordRebate(HttpServletRequest request) {
-        logger.info("getRecordRebate---------- Start-----------");
+    public String getRecordCash(HttpServletRequest request) {
+        logger.info("getRecordCash---------- Start-----------");
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
 
