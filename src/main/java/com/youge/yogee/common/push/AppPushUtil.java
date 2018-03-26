@@ -51,7 +51,7 @@ public class AppPushUtil {
         message.setPushNetWorkType(0);
         Target target = new Target();
         target.setAppId(appId);
-//        target.setClientId("17d60b4bb6e91679f8df2b1ff2d65f36");//ios
+//        target.setClientId("17d60b4bb6e91679  8f8df2b1ff2d65f36");//ios
 //        target.setClientId("aab81546d109dc440cff8bffeea06c9d");//s6
 //        target.setClientId(cid);//zhanghao
         target.setAlias(userid);

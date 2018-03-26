@@ -6,6 +6,7 @@
 package com.youge.yogee.modules.sys.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.security.Digests;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.Encodes;
@@ -26,8 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 系统管理，安全相关实体的管理类,包括用户、角色、菜单.
@@ -247,6 +247,55 @@ public class SystemService extends BaseService  {
 	}
 
 	///////////////// Synchronized to the Activiti //////////////////
+
+
+	public User findByGencode(String gencode) {
+		List<User> list = userDao.find("FROM User where code = :p1", new Parameter(gencode));
+		if (list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public List<User> findAllUser() {
+		return userDao.findAllList();
+	}
+
+	public long findCount() {
+		DetachedCriteria dc = userDao.createDetachedCriteria();
+		return userDao.count(dc);
+	}
+
+	//充值轮播墙
+	public List findRechargeList(String count) {
+		List<Map<String, String>> list=new ArrayList();
+		List rechargeList = userDao.findRechargeList(count);
+		for (int i =0 ;i<rechargeList.size();i++){
+			Object[] objects = (Object[]) rechargeList.get(i);
+			Map data = new HashMap();
+			data.put("salename",objects[0] == null ? "" : objects[0].toString());
+			data.put("uname",objects[1] == null ? "" : objects[1].toString());
+			data.put("money",objects[2] == null ? "" : objects[2].toString());
+			data.put("createdate",objects[3] == null ? "" : objects[3].toString());
+			list.add(data);
+		}
+		return list;
+	}
+
+	//开户轮播墙
+	public List findRegisterList(String count) {
+		List<Map<String, String>> list=new ArrayList();
+		List rechargeList = userDao.findRegisterList(count);
+		for (int i =0 ;i<rechargeList.size();i++){
+			Object[] objects = (Object[]) rechargeList.get(i);
+			Map data = new HashMap();
+			data.put("salename",objects[0] == null ? "" : objects[0].toString());
+			data.put("uname",objects[1] == null ? "" : objects[1].toString());
+			data.put("createdate",objects[2] == null ? "" : objects[2].toString());
+			list.add(data);
+		}
+		return list;
+	}
 
 	/**
 	 * 手工同步所有Activiti数据
