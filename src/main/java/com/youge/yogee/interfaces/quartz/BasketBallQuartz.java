@@ -8,14 +8,23 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
+import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
+import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
+import com.youge.yogee.modules.cmagicorder.service.CdMagicFollowOrderService;
+import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.entity.CdOrderFollowTimes;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +47,14 @@ public class BasketBallQuartz {
     private CdOrderWinnersService cdOrderWinnersService;
     @Autowired
     private CdOrderService cdOrderService;
+    @Autowired
+    private CdOrderFollowTimesService cdOrderFollowTimesService;
+    @Autowired
+    private CdMagicOrderService cdMagicOrderService;
+    @Autowired
+    private CdMagicFollowOrderService cdMagicFollowOrderService;
+    @Autowired
+    private CdLotteryUserService cdLotteryUserService;
     //    "0/10 * * * * ?" 每10秒触发
 //
 //    "0 0 12 * * ?" 每天中午12点触发
@@ -246,6 +263,28 @@ public class BasketBallQuartz {
                     cdBasketballFollowOrder.setAward(award.toString());
                     cdBasketballFollowOrder.setStatus("4");
                     cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+
+                    //---------------------------------计算跟单佣金-------------------------
+
+                    if (cdBasketballFollowOrder.getType().equals("2")) {
+                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+
+                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdBasketballFollowOrder.getOrderNum());
+                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
+
+                        if (new BigDecimal(cdBasketballFollowOrder.getPrice())
+                                .multiply(cdOrderFollowTimes.getTimes())
+                                .compareTo(new BigDecimal(award)) == 1) {
+                            //全部佣金
+                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
+                                    .multiply(new BigDecimal(0.01))
+                                    .multiply(new BigDecimal(award));
+
+                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
+                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
+                            cdLotteryUserService.save(cdLotteryUser);
+                        }
+                    }
                     //保存中奖纪录
                     CdOrderWinners cdOrderWinners = new CdOrderWinners();
                     cdOrderWinners.setWinOrderNum(cdBasketballFollowOrder.getOrderNum());//中间单号
@@ -329,6 +368,26 @@ public class BasketBallQuartz {
                         cdBasketballSingleOrder.setAward(award.toString());
                         cdBasketballSingleOrder.setStatus("4");
                         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+
+                        if (cdBasketballSingleOrder.getType().equals("2")) {
+                            CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+
+                            CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdBasketballSingleOrder.getOrderNum());
+                            CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
+
+                            if (new BigDecimal(cdBasketballSingleOrder.getPrice())
+                                    .multiply(cdOrderFollowTimes.getTimes())
+                                    .compareTo(new BigDecimal(award)) == 1) {
+                                //全部佣金
+                                BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
+                                        .multiply(new BigDecimal(0.01))
+                                        .multiply(new BigDecimal(award));
+
+                                CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
+                                cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
+                                cdLotteryUserService.save(cdLotteryUser);
+                            }
+                        }
                         //保存中奖纪录
                         CdOrderWinners cdOrderWinners = new CdOrderWinners();
                         cdOrderWinners.setWinOrderNum(cdBasketballSingleOrder.getOrderNum());//中间单号
