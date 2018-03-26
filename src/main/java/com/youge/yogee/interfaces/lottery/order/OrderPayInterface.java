@@ -77,7 +77,6 @@ public class OrderPayInterface {
     @ResponseBody
     public String orderPay(HttpServletRequest request) throws ParseException {
         logger.info("orderPay--------Start-------------------");
-        logger.debug("interface 请求--orderPay-------- Start--------");
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -216,7 +215,7 @@ public class OrderPayInterface {
     }
 
     //保存返利
-    private void saveRebate(String price, String uid) {
+    private void saveRebate(String price, String uid, String type) {
         double priceDouble = Double.parseDouble(price);
         boolean flag = false;
         String rebate = "";
@@ -234,6 +233,7 @@ public class OrderPayInterface {
             CdRecordRebate crr = new CdRecordRebate();
             crr.setRebate(rebate);
             crr.setUid(uid);
+            crr.setType(type);
             cdRecordRebateService.save(crr);
         }
     }
@@ -267,7 +267,7 @@ public class OrderPayInterface {
         clu = getLeftMoney(price, balance, clu);
         cdLotteryUserService.save(clu);
         //保存返利
-        saveRebate(price, clu.getId());
+        saveRebate(price, clu.getId(), type);
         //保存订单总表
         saveOrder(clu, orderNum, price, type);
 
