@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.CacheUtils;
 import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.interfaces.emay.emay.Example;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.FileUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;

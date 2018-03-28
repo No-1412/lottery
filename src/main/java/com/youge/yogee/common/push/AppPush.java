@@ -32,8 +32,11 @@ public class AppPush {
 
     public static void pushAll(String title, String content) {
 
+        List<String> allIOS = bmPushService.findAllIOS();
+        if(allIOS.size()!=0){
+            IphonePushUtil.toUser(allIOS, title, content, 1, null);
+        }
 
-        IphonePushUtil.toUser(bmPushService.findAllIOS(), title, content, 1, null);
 
 
         AppPushUtil.pushtoAPP(title, content);

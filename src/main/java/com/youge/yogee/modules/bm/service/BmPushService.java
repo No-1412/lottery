@@ -106,6 +106,7 @@ public class BmPushService extends BaseService {
 		}
 	}
 
+	@Transactional(readOnly = false)
 	public List<String> findAllIOS() {
 		return bmPushDao.findAllIOS();
 	}

@@ -24,7 +24,7 @@ public class BmPushDao extends BaseDao<BmPush> {
     }
 
     public List<String> findAllIOS(){
-        return findBySql("select pushid from BmPush  where type = 1");
+        return findBySql("select pushid from bm_push  where type = 1");
     }
 
 

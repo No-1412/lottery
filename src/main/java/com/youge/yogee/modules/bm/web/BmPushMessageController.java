@@ -71,7 +71,7 @@ public class BmPushMessageController extends BaseController {
         }
         bmPushMessageService.save(bmPushMessage);
         AppPush.pushAll("凯旋彩票", bmPushMessage.getMessage());
-        addMessage(redirectAttributes, "保存推送消息'" + bmPushMessage.getName() + "'成功");
+        addMessage(redirectAttributes, "保存推送消息成功");
         return "redirect:" + Global.getAdminPath() + "/bm/bmPushMessage/?repage";
     }
 
