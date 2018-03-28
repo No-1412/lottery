@@ -69,7 +69,7 @@ public class CdLottoOrderController extends BaseController {
 			typeStr="胆拖";
 		}
 		CdLotteryUser clu = cdLotteryUserService.get(cdLottoOrder.getUid());
-		String uName = clu.getReality();
+		String uName = clu.getName();
 		model.addAttribute("uName", uName);
 		model.addAttribute("typeStr", typeStr);
 		model.addAttribute("cdLottoOrder", cdLottoOrder);

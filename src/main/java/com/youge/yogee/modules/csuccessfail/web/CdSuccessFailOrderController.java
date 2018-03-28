@@ -3,12 +3,16 @@
  */
 package com.youge.yogee.modules.csuccessfail.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
+import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
+import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
+import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,15 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.youge.yogee.common.config.Global;
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.web.BaseController;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.modules.sys.entity.User;
-import com.youge.yogee.modules.sys.utils.UserUtils;
-import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
-import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,16 +58,16 @@ public class CdSuccessFailOrderController extends BaseController {
 
         Page<CdSuccessFailOrder> page = cdSuccessFailOrderService.find(new Page<CdSuccessFailOrder>(request, response), cdSuccessFailOrder);
 
-        List<CdSuccessFailOrder> list=page.getList();
-        List<CdSuccessFailOrder> newList=new ArrayList<>();
-        for(CdSuccessFailOrder c:list){
-            CdSuccessFailOrder ccn=new CdSuccessFailOrder();
+        List<CdSuccessFailOrder> list = page.getList();
+        List<CdSuccessFailOrder> newList = new ArrayList<>();
+        for (CdSuccessFailOrder c : list) {
+            CdSuccessFailOrder ccn = new CdSuccessFailOrder();
             ccn.setId(c.getId());
             ccn.setOrderNumber(c.getOrderNumber());
             ccn.setWeekday(c.getWeekday());
             ccn.setAcount(c.getAcount());
             ccn.setPrice(c.getPrice());
-            CdLotteryUser clu=cdLotteryUserService.get(c.getUid());
+            CdLotteryUser clu = cdLotteryUserService.get(c.getUid());
             ccn.setUid(clu.getReality());
             ccn.setCreateDate(c.getCreateDate());
             ccn.setStatus(c.getStatus());
@@ -97,7 +94,7 @@ public class CdSuccessFailOrderController extends BaseController {
                 }
             }
             CdLotteryUser clu = cdLotteryUserService.get(cdSuccessFailOrder.getUid());
-            uName = clu.getReality();
+            uName = clu.getName();
         }
 
         model.addAttribute("list", list);

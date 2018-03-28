@@ -77,7 +77,7 @@ public class CdBasketballSingleOrderController extends BaseController {
         String uName = "";
         if (StringUtils.isNotEmpty(uid)) {
             CdLotteryUser clu = cdLotteryUserService.get(uid);
-            uName = clu.getReality();
+            uName = clu.getName();
         }
         String hostWin = cdBasketballSingleOrder.getHostWin();
         List<String> wList = new ArrayList<>();

@@ -80,7 +80,7 @@ public class CdBasketballFollowOrderController extends BaseController {
         String uName = "";
         if (StringUtils.isNotEmpty(uid)) {
             CdLotteryUser clu = cdLotteryUserService.get(uid);
-            uName = clu.getReality();
+            uName = clu.getName();
         }
         String hostWin = cdBasketballFollowOrder.getHostWin();
         List<String> wList = new ArrayList<>();

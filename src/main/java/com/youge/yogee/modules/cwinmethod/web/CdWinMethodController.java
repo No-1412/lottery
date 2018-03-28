@@ -11,6 +11,7 @@ import com.youge.yogee.modules.cwinmethod.entity.CdWinMethod;
 import com.youge.yogee.modules.cwinmethod.service.CdWinMethodService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -67,6 +68,16 @@ public class CdWinMethodController extends BaseController {
 		if (!beanValidator(model, cdWinMethod)){
 			return form(cdWinMethod, model);
 		}
+		//对富文本进行转码
+		String introduce = StringEscapeUtils.unescapeHtml(cdWinMethod.getIssue());
+		//图片处理
+		introduce = introduce.replaceAll("src=\"/userfiles", "src=\"" + Global.getConfig("domain.name") + "/userfiles");
+		String reg = "style=\\\"width[^>]*";
+		introduce = introduce.replaceAll(reg, "style=\"width:100%\" /");
+		if (!introduce.contains(reg)) {
+			introduce = introduce.replaceAll("<img", "<img style=\"width:100%\" /");
+		}
+		cdWinMethod.setIssue(introduce);
 		cdWinMethodService.save(cdWinMethod);
 		addMessage(redirectAttributes, "保存中奖攻略'" + cdWinMethod.getName() + "'成功");
 		return "redirect:"+Global.getAdminPath()+"/cwinmethod/cdWinMethod/?repage";

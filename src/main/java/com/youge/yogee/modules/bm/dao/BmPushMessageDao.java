@@ -1,0 +1,20 @@
+/**
+ * There are <a href="https://github.com/thinkgem/jeesite">JeeSite</a> code generation
+ */
+package com.youge.yogee.modules.bm.dao;
+
+import org.springframework.stereotype.Repository;
+
+import com.youge.yogee.common.persistence.BaseDao;
+import com.youge.yogee.common.persistence.Parameter;
+import com.youge.yogee.modules.bm.entity.BmPushMessage;
+
+/**
+ * 推送消息DAO接口
+ * @author ZhaoYiFeng
+ * @version 2018-03-28
+ */
+@Repository
+public class BmPushMessageDao extends BaseDao<BmPushMessage> {
+	
+}

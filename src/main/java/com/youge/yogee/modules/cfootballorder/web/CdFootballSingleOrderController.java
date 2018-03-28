@@ -81,7 +81,7 @@ public class CdFootballSingleOrderController extends BaseController {
         String uName = "";
         if (StringUtils.isNotEmpty(uid)) {
             CdLotteryUser clu = cdLotteryUserService.get(uid);
-            uName = clu.getReality();
+            uName = clu.getName();
         }
         String score = cdFootballSingleOrder.getScore();
         List<String> sList = new ArrayList<>();

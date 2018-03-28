@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.ceventproject.dao.CdEventProjectDao;
 import com.youge.yogee.modules.ceventproject.entity.CdEventProject;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -63,10 +64,13 @@ public class CdEventProjectService extends BaseService {
     }
 
     @Transactional(readOnly = false)
-    public List<CdEventProject> getEvent() {
+    public List<CdEventProject> getEvent(String total,String count) {
         DetachedCriteria dc = cdEventProjectDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdEventProject.FIELD_DEL_FLAG, CdEventProject.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
+        Criteria cri = dc.getExecutableCriteria(cdEventProjectDao.getSession());
+        cri.setMaxResults(Integer.parseInt(count));
+        cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
         return cdEventProjectDao.find(dc);
     }
 }

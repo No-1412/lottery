@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>中奖攻略管理</title>
+	<title>推送消息管理</title>
 	<meta name="decorator" content="default"/>
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -28,41 +28,24 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li>
-			<a href="${ctx}/cwinmethod/cdWinMethod/">中奖攻略列表</a>
+			<a href="${ctx}/bm/bmPushMessage/">推送消息列表</a>
 		</li>
 		<li class="active">
-			<a href="${ctx}/cwinmethod/cdWinMethod/form?id=${cdWinMethod.id}">中奖攻略<shiro:hasPermission name="cwinmethod:cdWinMethod:edit">${not empty cdWinMethod.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="cwinmethod:cdWinMethod:edit">查看</shiro:lacksPermission></a>
+			<a href="${ctx}/bm/bmPushMessage/form?id=${bmPushMessage.id}">推送消息<shiro:hasPermission name="bm:bmPushMessage:edit">${not empty bmPushMessage.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="bm:bmPushMessage:edit">查看</shiro:lacksPermission></a>
 		</li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="cdWinMethod" action="${ctx}/cwinmethod/cdWinMethod/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="bmPushMessage" action="${ctx}/bm/bmPushMessage/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<tags:message content="${message}"/>
 
-
-		<div class="control-group">
-			<label class="control-label">标题:</label>
-			<div class="controls">
-				<form:input path="name" htmlEscape="false" maxlength="200" class="required"/>
-			</div>
-		</div>
 		<div class="control-group">
 			<label class="control-label">内容:</label>
 			<div class="controls">
-				<form:textarea id="issue" htmlEscape="false" path="issue" rows="4" maxlength="200" class="input-xxlarge"/>
-				<tags:ckeditor replace="issue" uploadPath="/report/content" />
+				<form:textarea path="message" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>
 			</div>
-			<div class="control-group">
-				<label class="control-label">封面:</label>
-				<div class="controls">
-					<input type="hidden" id="img" name="img" value="${cdWinMethod.img}"/>
-					<tags:ckfinder input="img" type="images" uploadPath="/cwinMethod/cdWinMethod" selectMultiple="false"/>
-				</div>
-			</div>
-
-
-
+		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="cwinmethod:cdWinMethod:edit">
+			<shiro:hasPermission name="bm:bmPushMessage:edit">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>

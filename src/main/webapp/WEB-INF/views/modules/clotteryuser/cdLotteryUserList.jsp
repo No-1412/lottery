@@ -33,7 +33,7 @@
 	<table id="contentTable" class="table table-striped table-bordered table-condensed">
 		<thead>
 			<tr>
-				<th>姓名</th>
+				<th>昵称</th>
 				<th>手机号</th>
 				<th>会员类型</th>
 				<th>会员级别</th>
@@ -51,7 +51,7 @@
 			<%--	<td><a href="${ctx}/clotteryuser/cdLotteryUser/form?id=${cdLotteryUser.id}">${cdLotteryUser.name}</a></td>
 				<td>${cdLotteryUser.remarks}</td>--%>
 				<input type="hidden" name="xm" value="${cdLotteryUser.id}">
-				<td>${cdLotteryUser.reality}</td>
+				<td>${cdLotteryUser.name}</td>
 				<td>${cdLotteryUser.mobile}</td>
 				<td>${cdLotteryUser.memberType=='0'?"普通":"永久"}</td>
 				<td>${cdLotteryUser.memberLevel}级会员</td>

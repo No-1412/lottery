@@ -3,20 +3,20 @@
  */
 package com.youge.yogee.modules.cmagicorder.service;
 
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.service.BaseService;
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.common.utils.IdGen;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.modules.cmagicorder.dao.CdMagicFollowOrderDao;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.service.BaseService;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.IdGen;
-import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
-import com.youge.yogee.modules.cmagicorder.dao.CdMagicFollowOrderDao;
 
 import java.util.List;
 
@@ -78,11 +78,22 @@ public class CdMagicFollowOrderService extends BaseService {
         dc.add(Restrictions.eq(CdMagicFollowOrder.FIELD_DEL_FLAG, CdMagicFollowOrder.DEL_FLAG_NORMAL));
         dc.add(Restrictions.eq("orderNum", orderNumber));
         List<CdMagicFollowOrder> list = cdMagicFollowOrderDao.find(dc);
-        if(list.size() == 0){
+        if (list.size() == 0) {
             return null;
-        }else {
+        } else {
             return list.get(0);
         }
+    }
+
+    public List<CdMagicFollowOrder> findAll(String total, String count) {
+        DetachedCriteria dc = cdMagicFollowOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdMagicFollowOrder.FIELD_DEL_FLAG, CdMagicFollowOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        Criteria cri = dc.getExecutableCriteria(cdMagicFollowOrderDao.getSession());
+        cri.setMaxResults(Integer.parseInt(count));
+        cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
+        return cdMagicFollowOrderDao.find(dc);
+
     }
 
 }

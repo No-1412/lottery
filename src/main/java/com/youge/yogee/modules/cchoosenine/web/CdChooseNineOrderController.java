@@ -94,7 +94,7 @@ public class CdChooseNineOrderController extends BaseController {
                 }
             }
             CdLotteryUser clu = cdLotteryUserService.get(cdChooseNineOrder.getUid());
-            uName = clu.getReality();
+            uName = clu.getName();
         }
 
 

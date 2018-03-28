@@ -76,7 +76,7 @@ public class CdFootballFollowOrderController extends BaseController {
         String uName = "";
         if (StringUtils.isNotEmpty(uid)) {
             CdLotteryUser clu = cdLotteryUserService.get(uid);
-            uName = clu.getReality();
+            uName = clu.getName();
         }
         String score = cdFootballFollowOrder.getScore();
         List<String> sList = new ArrayList<>();
@@ -167,19 +167,19 @@ public class CdFootballFollowOrderController extends BaseController {
         //更新让球
         String let = cdFootballFollowOrder.getLet();
         if (StringUtils.isNotEmpty(let)) {
-            String letScore="";
+            String letScore = "";
             String[] letArray = let.split("\\|");
             for (String aLet : letArray) {
-                String[] aLetArray=aLet.split("\\+");
-                String matchId=aLetArray[1];
+                String[] aLetArray = aLet.split("\\+");
+                String matchId = aLetArray[1];
                 //查询比赛
                 CdFootballMixed cfm = cdFootballMixedService.findByMatchId(matchId);
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
                     return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-                }else {
-                    letScore+=cfm.getClose()+",";
+                } else {
+                    letScore += cfm.getClose() + ",";
                 }
             }
             cdFootballFollowOrder.setLetBalls(letScore);

@@ -644,33 +644,47 @@ public class MagicOrderInterface {
         return HttpResultUtil.successJson(map);
     }
 
-//    public static Map<String, String> getSingleMap(String s, String[] strArray) {
-//        Map<String, String> map = new HashMap<>();
-//        if (strArray.length > 0) {
-//            for (String aStr : strArray) {
-//                String[] aStrArray = aStr.split("\\+");
-//                if (s.equals(aStrArray[0])) {
-//                    map.put("vs", aStrArray[1]);
-//                    map.put("result", aStrArray[2]);
-//                }
-//            }
-//        }
-//        return map;
-//    }
+    /**
+     * 获得跟单记录
+     */
+    @RequestMapping(value = "getMagicOrderFollowRecord", method = RequestMethod.POST)
+    @ResponseBody
+    public String getMagicOrderFollowRecord(HttpServletRequest request){
+        logger.info("getMagicOrderFollowRecord--------Start-------------------");
+        Map map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
 
-//    public static Map<String, String> getFollowMap(String s, String[] strArray) {
-//        Map<String, String> map = new HashMap<>();
-//        if (strArray.length > 0) {
-//            for (String aStr : strArray) {
-//                String[] aStrArray = aStr.split("\\+");
-//                if (s.equals(aStrArray[1])) {
-//                    map.put("vs", aStrArray[2]);
-//                    map.put("result", aStrArray[3]);
-//                }
-//            }
-//        }
-//        return map;
-//    }
+        List<CdMagicFollowOrder> list = cdMagicFollowOrderService.findAll(total, count);
+        List cList = new ArrayList();
+        for (CdMagicFollowOrder c : list) {
+            Map cMap = new HashMap();
+            String mid=c.getMagicOrderId();
+            CdMagicOrder cmo=cdMagicOrderService.get(mid);
+            CdLotteryUser clu=cdLotteryUserService.get(cmo.getUid());
+            String followName=c.getuName();
+            String startName=clu.getName();
+            cMap.put("followName", followName);
+            cMap.put("startName", startName);
+            cMap.put("price", c.getPrice()); //购买金额
+            cList.add(cMap);
+        }
+        map.put("list", cList);
+        logger.info("获取神单 getMagicOrderList---------End---------------------");
+        return HttpResultUtil.successJson(map);
+    }
 
 
 }
