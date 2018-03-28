@@ -50,6 +50,7 @@ public class CdFiveOrder extends BaseEntity<T> implements Serializable {
     private String weekContinue;//继续买的期数
     private String followType; //追号状态 1原始单 2原始单已追 3追号中的单 4追号单不再追号
     private String result;//比赛结果
+    private String followCode;//追号方案编号
 
     public CdFiveOrder() {
         super();
@@ -231,6 +232,14 @@ public class CdFiveOrder extends BaseEntity<T> implements Serializable {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getFollowCode() {
+        return followCode;
+    }
+
+    public void setFollowCode(String followCode) {
+        this.followCode = followCode;
     }
 }
 

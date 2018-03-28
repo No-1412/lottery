@@ -143,6 +143,42 @@ public class SelOrderUtil {
         return map;
     }
 
+
+    public static Map getOrderDetailMapToPay(String orderNum, Map map) {
+        //Map<String, Object> map = new HashMap();
+        if (orderNum.startsWith("ZDG")) {
+            CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
+            map.put("price", cfs.getPrice()); //价格
+            map.put("acount", cfs.getAcount()); //注数
+            map.put("times", "1"); //倍数
+            map.put("followNums", "单关");// 过关方式
+            map.put("buyWays", cfs.getBuyWays()); //1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+        } else if (orderNum.startsWith("ZCG")) {
+            CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
+            map.put("price", cff.getPrice());
+            map.put("acount", cff.getAcount());
+            map.put("times", cff.getTimes());
+            map.put("followNums", cff.getFollowNum());
+            map.put("buyWays", cff.getBuyWays()); //1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+        } else if (orderNum.startsWith("LDG")) {
+            CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
+            map.put("price", cbs.getPrice());
+            map.put("acount", cbs.getAcount());
+            map.put("times", "1");
+            map.put("followNums", "单关");
+            map.put("buyWays", cbs.getBuyWays()); //1混投 2胜负 3让分胜负 4大小分 5胜分差
+        } else if (orderNum.startsWith("LCG")) {
+            CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
+            map.put("price", cbf.getPrice());
+            map.put("acount", cbf.getAcount());
+            map.put("times", cbf.getTimes());
+            map.put("followNums", cbf.getFollowNums());
+            map.put("buyWays", cbf.getBuyWays()); //1混投 2胜负 3让分胜负 4大小分 5胜分差
+        }
+        return map;
+    }
+
+
     /**
      * 胜负平转换
      *
@@ -188,7 +224,7 @@ public class SelOrderUtil {
      */
     private static Map<String, String> getSingleMap(String s, String[] strArray) {
         Map<String, String> map = new HashMap<>();
-        if (strArray.length > 0) {
+        if (StringUtils.isNotEmpty(strArray[0])) {
             for (String aStr : strArray) {
                 String[] aStrArray = aStr.split("\\+");
                 if (s.equals(aStrArray[0])) {
@@ -202,7 +238,7 @@ public class SelOrderUtil {
 
     private static Map<String, String> getFollowMap(String s, String[] strArray) {
         Map<String, String> map = new HashMap<>();
-        if (strArray.length > 0) {
+        if (StringUtils.isNotEmpty(strArray[0])) {
             for (String aStr : strArray) {
                 String[] aStrArray = aStr.split("\\+");
                 if (s.equals(aStrArray[1])) {

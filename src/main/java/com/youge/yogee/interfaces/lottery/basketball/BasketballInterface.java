@@ -88,12 +88,15 @@ public class BasketballInterface {
 
                 map.put("hm", cd.getWinningRank());//主队排名
                 map.put("gm", cd.getDefeatedRank());//客队排名
-                map.put("htn", cd.getRecentWinningSurpass());//主队近期战绩胜
-                map.put("gtn", cd.getRecentDefeatedSurpass());//客队近期战绩胜
-                map.put("htf", cd.getRecentWinningDefeat());//主队近期战绩败
-                map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
-                map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
-                map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
+                if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
+                    map.put("hrn", cd.getRecentWinningSurpass() + "胜" + cd.getRecentWinningDefeat() + "负");//主队近期战绩
+                    map.put("grn", cd.getRecentDefeatedSurpass() + "胜" + cd.getRecentDefeatedDefeat() + "负");//客队近期战绩
+                    map.put("history", "主队" + cd.getHistoryWinningSurpass() + "胜" + cd.getHistoryWinningDefeat() + "负");//历史交锋
+                } else {
+                    map.put("hrn", "-");//主队近期战绩
+                    map.put("grn", "-");//客队近期战绩
+                    map.put("history", "-");//历史交锋
+                }
                 if ("79".equals(cd.getIsale())) {
                     map.put("isSingle", "0");//是否单关 1是 0不是
                 } else {
@@ -151,12 +154,16 @@ public class BasketballInterface {
                 map.put("sf", cd.getVictoryordefeatOdds());//胜负:主负主胜赔率',
                 map.put("hm", cd.getWinningRank());//主队排名
                 map.put("gm", cd.getDefeatedRank());//客队排名
-                map.put("htn", cd.getRecentWinningSurpass());//主队近期战绩胜
-                map.put("gtn", cd.getRecentDefeatedSurpass());//客队近期战绩胜
-                map.put("htf", cd.getRecentWinningDefeat());//主队近期战绩败
-                map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
-                map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
-                map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
+                if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
+                    map.put("hrn", cd.getRecentWinningSurpass() + "胜" + cd.getRecentWinningDefeat() + "负");//主队近期战绩
+                    map.put("grn", cd.getRecentDefeatedSurpass() + "胜" + cd.getRecentDefeatedDefeat() + "负");//客队近期战绩
+                    map.put("history", "主队" + cd.getHistoryWinningSurpass() + "胜" + cd.getHistoryWinningDefeat() + "负");//历史交锋
+                } else {
+                    map.put("hrn", "-");//主队近期战绩
+                    map.put("grn", "-");//客队近期战绩
+                    map.put("history", "-");//历史交锋
+                }
+                map.put("close", cd.getClose());//让球
                 listbytime.add(map);
             }
             list.add(listbytime);
@@ -303,34 +310,41 @@ public class BasketballInterface {
         for (int i = 0; i < ListSize.size(); i++) {
             Map maps = new HashMap();
             List cdList = cdBasketballMixedService.findByName(ListSize.get(i).toString(), "surpassScoreGap", ",,,,,,,,,,,");//按时间进行查询数据
-            CdBasketballMixed cdball = (CdBasketballMixed) cdList.get(0);//获取比赛日期
-            maps.put("addesc", cdball.getMatchsDate());//时间日期
-            maps.put("allCount", cdList.size());//比赛总场次
-            dataList.add(maps);
-            List listbytime = new ArrayList();
-            for (int y = 0; y < cdList.size(); y++) {//当天比赛场次List
-                CdBasketballMixed cd = (CdBasketballMixed) cdList.get(y);
-                Map map = new HashMap();
-                map.put("name", cd.getMatchId());//赛事场次
-                map.put("mt", cd.getMatchDate());//比赛时间
-                map.put("itemid", cd.getItemid());//比赛时间ID
-                map.put("zid", cd.getZid());//比赛详细信息传的参数
-                map.put("mname", cd.getEventName());//赛事名称
-                map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
-                map.put("hn", cd.getWinningName());//主队名称
-                map.put("gn", cd.getDefeatedName());//客队名称
-                map.put("hm", cd.getWinningRank());//主队排名
-                map.put("gm", cd.getDefeatedRank());//客队排名
-                map.put("htn", cd.getRecentWinningSurpass());//主队近期战绩
-                map.put("gtn", cd.getRecentDefeatedSurpass());//客队近期战绩
-                map.put("htf", cd.getRecentWinningDefeat());//主队近期战绩败
-                map.put("gtf", cd.getRecentDefeatedDefeat());//客队近期战绩败
-                map.put("ghistory", cd.getHistoryWinningDefeat());//客队历史交锋
-                map.put("hhistory", cd.getHistoryWinningSurpass());//主队历史交锋
-                map.put("sfc", cd.getSurpassScoreGap());//胜分差主负主胜
-                listbytime.add(map);
+            if (cdList.size() > 0) {
+                CdBasketballMixed cdball = (CdBasketballMixed) cdList.get(0);//获取比赛日期
+                maps.put("addesc", cdball.getMatchsDate());//时间日期
+                maps.put("allCount", cdList.size());//比赛总场次
+                dataList.add(maps);
+                List listbytime = new ArrayList();
+                for (int y = 0; y < cdList.size(); y++) {//当天比赛场次List
+                    CdBasketballMixed cd = (CdBasketballMixed) cdList.get(y);
+                    Map map = new HashMap();
+                    map.put("name", cd.getMatchId());//赛事场次
+                    map.put("mt", cd.getMatchDate());//比赛时间
+                    map.put("itemid", cd.getItemid());//比赛时间ID
+                    map.put("zid", cd.getZid());//比赛详细信息传的参数
+                    map.put("mname", cd.getEventName());//赛事名称
+                    map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
+                    map.put("hn", cd.getWinningName());//主队名称
+                    map.put("gn", cd.getDefeatedName());//客队名称
+                    map.put("hm", cd.getWinningRank());//主队排名
+                    map.put("gm", cd.getDefeatedRank());//客队排名
+                    if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
+                        map.put("hrn", cd.getRecentWinningSurpass() + "胜" + cd.getRecentWinningDefeat() + "负");//主队近期战绩
+                        map.put("grn", cd.getRecentDefeatedSurpass() + "胜" + cd.getRecentDefeatedDefeat() + "负");//客队近期战绩
+                        map.put("history", "主队" + cd.getHistoryWinningSurpass() + "胜" + cd.getHistoryWinningDefeat() + "负");//历史交锋
+                    } else {
+                        map.put("hrn", "-");//主队近期战绩
+                        map.put("grn", "-");//客队近期战绩
+                        map.put("history", "-");//历史交锋
+                    }
+
+                    map.put("sfc", cd.getSurpassScoreGap());//胜分差主负主胜
+                    map.put("close", cd.getClose());//让球
+                    listbytime.add(map);
+                }
+                list.add(listbytime);
             }
-            list.add(listbytime);
         }
         Map dataMap = new HashMap();
         dataMap.put("list", list);
@@ -660,15 +674,13 @@ public class BasketballInterface {
         }
 
 
-
-
-        Map<String,Object> dataMap = new HashMap<>();
-        dataMap.put("hnScore",cdBbLive.getHnScore().split(","));
-        dataMap.put("gnScore",cdBbLive.getGnScore().split(","));
-        dataMap.put("hnSkill",StringUtils.split(cdBbLive.getHnSkill(),","));
-        dataMap.put("gnSkill",StringUtils.split(cdBbLive.getGnSkill(),","));
-        dataMap.put("hnPlayer",StringUtils.split(cdBbLive.getHnPlayer(),"|"));
-        dataMap.put("gnPlayer",StringUtils.split(cdBbLive.getGnPlayer(),"|"));
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("hnScore", cdBbLive.getHnScore().split(","));
+        dataMap.put("gnScore", cdBbLive.getGnScore().split(","));
+        dataMap.put("hnSkill", StringUtils.split(cdBbLive.getHnSkill(), ","));
+        dataMap.put("gnSkill", StringUtils.split(cdBbLive.getGnSkill(), ","));
+        dataMap.put("hnPlayer", StringUtils.split(cdBbLive.getHnPlayer(), "|"));
+        dataMap.put("gnPlayer", StringUtils.split(cdBbLive.getGnPlayer(), "|"));
 
 
         logger.info("getBtMatchDetailById 获取篮球详情---------End---------");

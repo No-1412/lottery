@@ -9,6 +9,7 @@ import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.FileUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
+import com.youge.yogee.interfaces.util.SMSUtil;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmessage.service.CdMessageService;
@@ -76,21 +77,28 @@ public class UserRegisterInterface {
         for (int i = 0; i < 6; i++) {
             code += random.nextInt(10);
         }
-        try {
-            if ("1".equals(type)) {
-                CacheUtils.put("registeredCode", phone, code);
-            } else if ("2".equals(type)) {
-                CacheUtils.put("forgetPwdCode", phone, code);
-            } else if ("3".equals(type)) {
-                CacheUtils.put("changePwdCode", phone, code);
-            } else {
-                CacheUtils.put("changePhoneCode", phone, code);
-            }
+        String smsType = "";
 
-            Example.sendCode(code, phone);
+        if ("1".equals(type)) {
+            CacheUtils.put("registeredCode", phone, code);
+            smsType = "SMS_129595014";
+        } else if ("2".equals(type)) {
+            CacheUtils.put("forgetPwdCode", phone, code);
+            smsType = "SMS_129595013";
+        } else if ("3".equals(type)) {
+            CacheUtils.put("changePwdCode", phone, code);
+            smsType = "SMS_129595013";
+        } else {
+            CacheUtils.put("changePhoneCode", phone, code);
+            smsType = "SMS_129595012";
+        }
+        //登录确认验证码:SMS_129595016
+        //修改密码验证码:SMS_129595013
+        //信息变更验证码:SMS_129595012
+        boolean flag = SMSUtil.sendAliSMS(phone, smsType, code);
+        if (flag) {
             dataMap.put("flag", "1");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
             return HttpResultUtil.errorJson("验证码发送失败");
         }
 

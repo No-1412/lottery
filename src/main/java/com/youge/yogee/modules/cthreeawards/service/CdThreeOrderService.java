@@ -113,4 +113,12 @@ public class CdThreeOrderService extends BaseService {
         return cdThreeOrderDao.find(dc);
     }
 
+    public List<CdThreeOrder> findByFollowCode(String followCode) {
+        DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("followCode", followCode));
+        dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdThreeOrderDao.find(dc);
+    }
+
 }

@@ -344,6 +344,7 @@ public class MagicOrderInterface {
             cMap.put("charges", c.getCharges() + "%"); //佣金
             cMap.put("times", c.getTimes()); //保字
             cMap.put("startPrice", c.getStartPrice());//起投
+            cMap.put("orderNum", c.getOrderNum());//订单号
             cList.add(cMap);
         }
         map.put("list", cList);
@@ -364,13 +365,16 @@ public class MagicOrderInterface {
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
-        String id = (String) jsonData.get("id");
-        if (StringUtils.isEmpty(id)) {
-            logger.error("id为空");
-            return HttpResultUtil.errorJson("id为空");
+        String followNum = (String) jsonData.get("followNum");
+        if (StringUtils.isEmpty(followNum)) {
+            logger.error("followNum为空");
+            return HttpResultUtil.errorJson("followNum为空");
         }
 
-        CdMagicOrder cmo = cdMagicOrderService.get(id);
+        CdMagicOrder cmo = cdMagicOrderService.findOrderByNumber(followNum);
+        if (cmo == null) {
+            return HttpResultUtil.errorJson("神单不存在");
+        }
 
         Map cMap = new HashMap();
         cMap.put("id", cmo.getId());
@@ -385,7 +389,7 @@ public class MagicOrderInterface {
         cMap.put("startPrice", cmo.getStartPrice());//起投
         map.put("cmo", cMap);
 
-        List<CdMagicFollowOrder> list = cdMagicFollowOrderService.findByMid(id);
+        List<CdMagicFollowOrder> list = cdMagicFollowOrderService.findByMid(cmo.getId());
         List<Map<String, Object>> cList = new ArrayList();
         for (CdMagicFollowOrder cmfo : list) {
             Map<String, Object> aMap = new HashMap<>();
@@ -627,6 +631,7 @@ public class MagicOrderInterface {
         co.setUserName(clu.getName());//用户名
         co.setNumber(orderNum);//订单号
         co.setTotalPrice(price);//价格
+        co.setFollowNum(magicOrderNum);//神单订单号
         //本单销售id
         CdOrder cdOrder = cdOrderService.getOrderByOrderNum(cmo.getOrderNum());
         String saleId = "";

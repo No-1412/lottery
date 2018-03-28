@@ -1,7 +1,9 @@
 package com.youge.yogee.interfaces.lottery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //
 //import com.youge.yogee.interfaces.util.Calculations;
@@ -26,17 +28,39 @@ import java.util.List;
 public class TestDemo {
 
     public static void main(String[] args) {
-        List<String> list=new ArrayList<>();
-        list.add("1");
-        list.add("2");
-        for (String s : list) {
-            System.out.println("加强的循环" + s);
+        List<String> fiveList = new ArrayList<>();
+        fiveList.add("1");
+        fiveList.add("2");
+        List<String> threeList = new ArrayList<>();
+        threeList.add("1");
+        threeList.add("2");
+        threeList.add("3");
+        threeList.add("4");
+        List<Integer> lottoList = new ArrayList<>();
+        lottoList.add(1);
+        lottoList.add(2);
+        lottoList.add(3);
+        List fList = new ArrayList<>();
+        int min = fiveList.size() + threeList.size() + lottoList.size();
+        for (int i = 0; i < min; i++) {
+            if (i < fiveList.size()) {
+                String s1 = fiveList.get(i);
+                Map map = new HashMap();
+                map.put("value", s1);
+                fList.add(map);
+            } else if (i < threeList.size() + fiveList.size()) {
+                String s2 = threeList.get(i - fiveList.size());
+                Map map = new HashMap();
+                map.put("value", s2);
+                fList.add(map);
+            } else {
+                Map map = new HashMap();
+                map.put("value", lottoList.get(i - fiveList.size() - threeList.size()));
+                fList.add(map);
+            }
+            //System.out.println(i);
         }
-
-        for(int j=0;j<1;j++){
-            String ss=list.get(j);
-            System.out.println("简单循环" + ss);
-        }
+        System.out.println(fList);
     }
 
 //

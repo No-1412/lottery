@@ -67,7 +67,7 @@ public class SMSUtil {
      *
      * @param phoneNumbers 必填:待发送手机号
      * @param templateCode 必填:短信模板-可在短信控制台中找到
-     *                                                  登录确认验证码:SMS_129595016
+     *                                                  登录确认验证码:SMS_129595014
      *                                                  修改密码验证码:SMS_129595013
      *                                                  信息变更验证码:SMS_129595012
      * @param code 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"

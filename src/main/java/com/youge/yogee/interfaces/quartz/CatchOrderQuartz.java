@@ -9,6 +9,8 @@ import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoReward;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.clottoreward.service.CdLottoRewardService;
+import com.youge.yogee.modules.corder.entity.CdOrderCatch;
+import com.youge.yogee.modules.corder.service.CdOrderCatchService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeAwards;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeAwardsService;
@@ -22,7 +24,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component("NotBallOrderFollowQuartz")
-public class NotBallOrderFollowQuartz {
+public class CatchOrderQuartz {
 
     @Autowired
     private CdThreeOrderService cdThreeOrderService;
@@ -36,6 +38,8 @@ public class NotBallOrderFollowQuartz {
     private CdLottoRewardService cdLottoRewardService;
     @Autowired
     private CdLottoOrderService cdLottoOrderService;
+    @Autowired
+    private CdOrderCatchService cdOrderCatchService;
 
     @Scheduled(cron = "*/59 * * * * ?")//59秒
     public void listThreeOrder() {
@@ -70,7 +74,7 @@ public class NotBallOrderFollowQuartz {
                             c.setFollowType("2");
                             cdThreeOrderService.save(c);
                         }
-                        if("3".equals(c.getFollowType())){
+                        if ("3".equals(c.getFollowType())) {
                             c.setFollowType("5");
                             cdThreeOrderService.save(c);
                         }
@@ -89,8 +93,20 @@ public class NotBallOrderFollowQuartz {
                         cdThreeOrder.setStatus("2");//已付款
                         cdThreeOrder.setTimes(c.getTimes());//倍数
                         cdThreeOrder.setType("2");//追号订单
+                        cdThreeOrder.setFollowCode(c.getFollowCode());//追单方案
                         cdThreeOrderService.save(cdThreeOrder);
                         System.out.println("生成追号订单" + cdThreeOrder.getOrderNum());
+                        //更改追号记录
+                        CdOrderCatch coc = cdOrderCatchService.findByOrderNum(c.getOrderNum());
+                        String hasCon = coc.getHasContinue();//已追
+                        String continuity = coc.getContinuity();//追的期数
+                        int hasConInt = Integer.parseInt(hasCon);
+                        String nextCon = String.valueOf(hasConInt + 1);
+                        if (nextCon.equals(continuity)) {
+                            coc.setStatus("2");//已结束
+                        }
+                        coc.setHasContinue(nextCon);//更新已追期数
+                        cdOrderCatchService.save(coc);
                     }
                 }
             }
@@ -149,8 +165,21 @@ public class NotBallOrderFollowQuartz {
                         cdFiveOrder.setStatus("2");//已付款
                         cdFiveOrder.setTimes(c.getTimes());//倍数
                         cdFiveOrder.setType("2");//追号订单
+                        cdFiveOrder.setFollowCode(c.getFollowCode());//追单方案
                         cdFiveOrderService.save(cdFiveOrder);
                         System.out.println("生成追号订单" + cdFiveOrder.getOrderNum());
+                        //更改追号记录
+                        CdOrderCatch coc = cdOrderCatchService.findByOrderNum(c.getOrderNum());
+                        String hasCon = coc.getHasContinue();//已追
+                        String continuity = coc.getContinuity();//追的期数
+                        int hasConInt = Integer.parseInt(hasCon);
+                        String nextCon = String.valueOf(hasConInt + 1);
+                        if (nextCon.equals(continuity)) {
+                            coc.setStatus("2");//已结束
+                        }
+                        coc.setHasContinue(nextCon);//更新已追期数
+                        cdOrderCatchService.save(coc);
+
                     }
                 }
             }
@@ -210,8 +239,20 @@ public class NotBallOrderFollowQuartz {
                         cdLottoOrder.setStatus("2");//已付款
                         cdLottoOrder.setTimes(c.getTimes());//倍数
                         cdLottoOrder.setConType("2");//追号订单
+                        cdLottoOrder.setFollowCode(c.getFollowCode());//追单方案
                         cdLottoOrderService.save(cdLottoOrder);
                         System.out.println("生成追号订单" + cdLottoOrder.getOrderNum());
+                        //更改追号记录
+                        CdOrderCatch coc = cdOrderCatchService.findByOrderNum(c.getOrderNum());
+                        String hasCon = coc.getHasContinue();//已追
+                        String continuity = coc.getContinuity();//追的期数
+                        int hasConInt = Integer.parseInt(hasCon);
+                        String nextCon = String.valueOf(hasConInt + 1);
+                        if (nextCon.equals(continuity)) {
+                            coc.setStatus("2");//已结束
+                        }
+                        coc.setHasContinue(nextCon);//更新已追期数
+                        cdOrderCatchService.save(coc);
                     }
                 }
             }

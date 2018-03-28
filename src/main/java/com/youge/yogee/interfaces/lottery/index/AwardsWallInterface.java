@@ -94,7 +94,7 @@ public class AwardsWallInterface {
         logger.info("大奖墙详情--------------Start-----");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         Map<String, Object> map = new HashMap();
-        //id
+        //orderNum
         String wid = (String) jsonData.get("wid");
         if (StringUtils.isEmpty(wid)) {
             logger.error("wid为空！");
@@ -119,7 +119,7 @@ public class AwardsWallInterface {
             map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
             orderNum = cow.getWinOrderNum();
         } else {
-            CdOrder co = cdOrderService.get(wid);
+            CdOrder co = cdOrderService.getOrderByOrderNum(wid);
             if (co == null) {
                 return HttpResultUtil.errorJson("信息错误!");
             }

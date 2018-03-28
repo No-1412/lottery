@@ -78,6 +78,8 @@ public class ListThreeInterface {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
+        //生成跟单方案
+        String followCode = "";
         //1自购 2追号
         String type = "";
         String weekContinue = "";
@@ -91,6 +93,8 @@ public class ListThreeInterface {
                 week++;
                 weekContinue += String.valueOf(week) + ",";
             }
+            //订单方案
+            followCode = util.genOrderNo("", util.getFourRandom());
         }
 
         //所有可能
@@ -104,7 +108,8 @@ public class ListThreeInterface {
         double money = 2.00;
         double acountDouble = Double.parseDouble(acount);
         double timesDouble = Double.parseDouble(times);
-        String price = String.valueOf(money * acountDouble * timesDouble);
+        double continuityDouble = Double.parseDouble(continuity);
+        String price = String.valueOf(money * acountDouble * timesDouble * continuityDouble);
         //奖金
         String award = dataMap.get("award");
         CdThreeOrder cto = new CdThreeOrder();
@@ -123,6 +128,7 @@ public class ListThreeInterface {
         cto.setType(type);//类型
         cto.setWeekContinue(weekContinue);//连续期数详情
         cto.setFollowType("1");//原始订单
+        cto.setFollowCode(followCode);//追号方案
         try {
             cdThreeOrderService.save(cto);
             map.put("orderNum", orderNum);

@@ -93,7 +93,8 @@ public class LottoInterface {
             return HttpResultUtil.errorJson("uid为空");
         }
 
-
+        //生成跟单方案
+        String followCode = "";
         //1自购 2追号
         String conType = "";
         String weekContinue = "";
@@ -107,6 +108,8 @@ public class LottoInterface {
                 week++;
                 weekContinue += String.valueOf(week) + ",";
             }
+            //订单方案
+            followCode = util.genOrderNo("", util.getFourRandom());
         }
 
 
@@ -161,7 +164,8 @@ public class LottoInterface {
 
         double acountDouble = Double.parseDouble(acount);
         double timesDouble = Double.parseDouble(times);
-        String price = String.valueOf(money * acountDouble * timesDouble);
+        double continuityDouble = Double.parseDouble(continuity);
+        String price = String.valueOf(money * acountDouble * timesDouble * continuityDouble);
         //奖金 未中奖为0
         String award = "0";
 
@@ -182,6 +186,7 @@ public class LottoInterface {
         clo.setConType(conType);//类型
         clo.setWeekContinue(weekContinue);//连续期数详情
         clo.setIsPlus(isPlus);//追加投注
+        clo.setFollowCode(followCode);//追加方案
         try {
             cdLottoOrderService.save(clo);
             map.put("orderNum", orderNum);

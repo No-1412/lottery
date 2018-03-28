@@ -87,4 +87,19 @@ public class CdOrderWinnersService extends BaseService {
         return cdOrderWinnersDao.find(dc);
     }
 
+
+    public CdOrderWinners findByOrderNum(String winOrderNum) {
+        DetachedCriteria dc = cdOrderWinnersDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("winOrderNum", winOrderNum));
+        dc.add(Restrictions.eq(CdOrderWinners.FIELD_DEL_FLAG, CdOrderWinners.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+
+        List<CdOrderWinners> list = cdOrderWinnersDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
+
 }

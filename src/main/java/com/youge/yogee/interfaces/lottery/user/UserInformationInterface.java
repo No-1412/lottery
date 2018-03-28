@@ -11,7 +11,9 @@ import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.entity.CdOrderCatch;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
+import com.youge.yogee.modules.corder.service.CdOrderCatchService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.crecord.entity.CdRecordCash;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +54,8 @@ public class UserInformationInterface {
     private CdRecordCashService cdRecordCashService;
     @Autowired
     private CdOrderWinnersService cdOrderWinnersService;
+    @Autowired
+    private CdOrderCatchService cdOrderCatchService;
     @Autowired
     private CdFiveOrderService cdFiveOrderService;
     @Autowired
@@ -130,6 +135,8 @@ public class UserInformationInterface {
             map.put("time", c.getCreateDate());//时间
             String quality = c.getIssue();
             map.put("quality", quality);//0自购 1跟单 2神单
+            map.put("orderNum", c.getNumber());//订单号
+            map.put("followNum", c.getFollowNum());//神单订单号
             cList.add(map);
         }
         dataMap.put("cList", cList);
@@ -142,48 +149,185 @@ public class UserInformationInterface {
 
     @RequestMapping(value = "myFollowOrderList", method = RequestMethod.POST)
     @ResponseBody
-    public String myFollowOrderList(HttpServletRequest request) {
+    public String myFollowOrderList(HttpServletRequest request) throws ParseException {
         logger.info("myFollowOrderList---------- Start-----------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         Map dataMap = new HashMap();
-//
-//        String total = (String) jsonData.get("total");
-//        if (StringUtils.isEmpty(total)) {
-//            return HttpResultUtil.errorJson("total为空");
-//        }
-//        String count = (String) jsonData.get("count");
-//        if (StringUtils.isEmpty(count)) {
-//            return HttpResultUtil.errorJson("count为空");
-//        }
+
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            return HttpResultUtil.errorJson("count为空");
+        }
         String uid = (String) jsonData.get("uid");
         if (StringUtils.isEmpty(uid)) {
             return HttpResultUtil.errorJson("uid为空");
         }
-        List<CdFiveOrder> fiveList = cdFiveOrderService.findAllFollowOrdersByUid(uid);
-        List<CdThreeOrder> threeList = cdThreeOrderService.findAllFollowOrdersByUid(uid);
-        List<CdLottoOrder> lottoList = cdLottoOrderService.findAllFollowOrdersByUid(uid);
-        //int min = fiveList.size() + threeList.size() + lottoList.size();
-        List<Object> list = new ArrayList<>();
-        list.addAll(fiveList);
-        list.addAll(threeList);
-        list.addAll(lottoList);
 
-//        for (int i = 0; i < min; i++) {
-//            CdFiveOrder cdFiveOrder;
-//            CdThreeOrder cdThreeOrder;
-//            CdLottoOrder cdLottoOrder;
-//            if (i < fiveList.size()) {
-//                cdFiveOrder = fiveList.get(i);
-//                Map map = new HashMap();
-//                map.put("orderNum", cdFiveOrder.getOrderNum());
-//            } else if (i < threeList.size() + fiveList.size()) {
-//                cdThreeOrder = threeList.get(i - fiveList.size());
-//            } else {
-//                cdLottoOrder = lottoList.get(i - fiveList.size() - threeList.size());
-//            }
-//
-//        }
-        dataMap.put("list", list);
+        List<CdOrderCatch> list = cdOrderCatchService.findByUid(uid, total, count);
+        List cList = new ArrayList();
+        for (CdOrderCatch c : list) {
+            Map<String, String> map = new HashMap<>();
+            map.put("id", c.getId());
+            map.put("time", c.getCreateDate());
+            map.put("status", c.getStatus());//1进行中 2已结束
+            map.put("type", c.getType());///1排列三 2排列五 3大乐透
+            map.put("continuity", c.getContinuity());//追的期数
+            map.put("hasContinue", c.getHasContinue());//已追期数
+            map.put("price", c.getPrice());//金额
+            map.put("orderNum", c.getOrderNum());//订单号
+            cList.add(map);
+        }
+
+        dataMap.put("list", cList);
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    /**
+     * 我的追号详情
+     */
+
+    @RequestMapping(value = "myFollowOrderDetail", method = RequestMethod.POST)
+    @ResponseBody
+    public String myFollowOrderDetail(HttpServletRequest request) throws ParseException {
+        logger.info("myFollowOrderDetail---------- Start-----------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        Map dataMap = new HashMap();
+
+        String orderNum = (String) jsonData.get("orderNum");
+        if (StringUtils.isEmpty(orderNum)) {
+            return HttpResultUtil.errorJson("orderNum为空");
+        }
+        List hasList = new ArrayList();
+        List notList = new ArrayList();
+        List finalList = new ArrayList();
+        CdOrderCatch coc = cdOrderCatchService.findByOrderNum(orderNum);
+        dataMap.put("continuity", coc.getContinuity());//追的期数
+        dataMap.put("hasContinue", coc.getHasContinue());//已追期数
+        dataMap.put("status", coc.getStatus());//1进行中 2已结束
+        dataMap.put("type", coc.getType());///1排列三 2排列五 3大乐透
+        dataMap.put("time", coc.getCreateDate());//时间
+        if (orderNum.startsWith("PLS")) {
+            CdThreeOrder cto = cdThreeOrderService.findOrderByOrderNum(orderNum);
+            String followCode = cto.getFollowCode();
+            dataMap.put("nums", cto.getNums());//号码
+            dataMap.put("followCode", followCode);//追单方案
+            List<CdThreeOrder> cList = cdThreeOrderService.findByFollowCode(followCode);
+            for (CdThreeOrder c : cList) {
+                Map<String, String> map = new HashMap();
+                map.put("weekday", c.getWeekday());
+                map.put("result", c.getResult());
+                map.put("status", c.getStatus());//状态
+                if ("4".equals(c.getStatus())) {
+                    map.put("award", c.getAward());
+                } else {
+                    map.put("award", "0");
+                }
+                double priceDouble = Double.parseDouble(c.getPrice());
+                double continuity = Double.parseDouble(c.getContinuity());
+                double perPrice = priceDouble / continuity;
+                map.put("price", c.getPrice() + "/" + String.valueOf(perPrice));
+                hasList.add(map);
+            }
+            int conInt = Integer.parseInt(coc.getContinuity());
+            int conHas = Integer.parseInt(coc.getHasContinue());
+            if (conInt > conHas) {
+                int left = conInt - conHas;
+                String weekContinue = cto.getWeekContinue();
+                String[] weekArray = weekContinue.split(",");
+                for (int i = weekArray.length - 1; i > weekArray.length - 1 - left; i--) {
+                    notList.add(weekArray[i]);
+                }
+                for (int i = notList.size() - 1; i >= 0; i--) {
+                    finalList.add(notList.get(i));
+                }
+            }
+            dataMap.put("hasList", hasList);
+            dataMap.put("notList", finalList);
+        } else if (orderNum.startsWith("PLW")) {
+            CdFiveOrder cfo = cdFiveOrderService.findOrderByOrderNum(orderNum);
+            String followCode = cfo.getFollowCode();
+            dataMap.put("nums", cfo.getNums());//号码
+            dataMap.put("followCode", followCode);//追单方案
+            List<CdFiveOrder> cList = cdFiveOrderService.findByFollowCode(followCode);
+            if (cList.size() > 0) {
+                for (CdFiveOrder c : cList) {
+                    Map<String, String> map = new HashMap();
+                    map.put("weekday", c.getWeekday());
+                    map.put("result", c.getResult());
+                    map.put("status", c.getStatus());//状态
+                    if ("4".equals(c.getStatus())) {
+                        map.put("award", c.getAward());
+                    } else {
+                        map.put("award", "0");
+                    }
+                    double priceDouble = Double.parseDouble(c.getPrice());
+                    double continuity = Double.parseDouble(c.getContinuity());
+                    double perPrice = priceDouble / continuity;
+                    map.put("price", c.getPrice() + "/" + String.valueOf(perPrice));
+                    hasList.add(map);
+                }
+            }
+            int conInt = Integer.parseInt(coc.getContinuity());
+            int conHas = Integer.parseInt(coc.getHasContinue());
+            if (conInt > conHas) {
+                int left = conInt - conHas;
+                String weekContinue = cfo.getWeekContinue();
+                String[] weekArray = weekContinue.split(",");
+                for (int i = weekArray.length - 1; i > weekArray.length - 1 - left; i--) {
+                    notList.add(weekArray[i]);
+                }
+                for (int i = notList.size() - 1; i >= 0; i--) {
+                    finalList.add(notList.get(i));
+                }
+            }
+            dataMap.put("hasList", hasList);
+            dataMap.put("notList", finalList);
+        } else {
+            CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(orderNum);
+            String followCode = clo.getFollowCode();
+            dataMap.put("nums", clo.getRedNums() + "|" + clo.getBlueNums());//号码
+            dataMap.put("followCode", followCode);//追单方案
+            List<CdLottoOrder> cList = cdLottoOrderService.findByFollowCode(followCode);
+            if (cList.size() > 0) {
+                for (CdLottoOrder c : cList) {
+                    Map<String, String> map = new HashMap();
+                    map.put("weekday", c.getWeekday());
+                    map.put("result", c.getResult());
+                    map.put("status", c.getStatus());//状态
+                    if ("4".equals(c.getStatus())) {
+                        map.put("award", c.getAward());
+                    } else {
+                        map.put("award", "0");
+                    }
+                    double priceDouble = Double.parseDouble(c.getPrice());
+                    double continuity = Double.parseDouble(c.getContinuity());
+                    double perPrice = priceDouble / continuity;
+                    map.put("price", c.getPrice() + "/" + String.valueOf(perPrice));
+                    hasList.add(map);
+                }
+            }
+            int conInt = Integer.parseInt(coc.getContinuity());
+            int conHas = Integer.parseInt(coc.getHasContinue());
+            if (conInt > conHas) {
+                int left = conInt - conHas;
+                String weekContinue = clo.getWeekContinue();
+                String[] weekArray = weekContinue.split(",");
+                for (int i = weekArray.length - 1; i > weekArray.length - 1 - left; i--) {
+                    notList.add(weekArray[i]);
+                }
+                for (int i = notList.size() - 1; i >= 0; i--) {
+                    finalList.add(notList.get(i));
+                }
+            }
+            dataMap.put("hasList", hasList);
+            dataMap.put("notList", finalList);
+        }
+
         return HttpResultUtil.successJson(dataMap);
     }
 

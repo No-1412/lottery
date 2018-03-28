@@ -44,6 +44,7 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     private String winPrice;//中奖金额
     private String status; //1待开奖 2已开奖 3中奖
     private String saleId; //销售id
+    private String followNum;//跟单单号
 
 
     public CdOrder() {
@@ -196,6 +197,13 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
         this.winPrice = winPrice;
     }
 
+    public String getFollowNum() {
+        return followNum;
+    }
+
+    public void setFollowNum(String followNum) {
+        this.followNum = followNum;
+    }
 }
 
 

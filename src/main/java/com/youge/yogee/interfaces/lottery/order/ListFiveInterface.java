@@ -72,6 +72,24 @@ public class ListFiveInterface {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
+        //生成跟单方案
+        String followCode = "";
+        //所有可能
+        Map<String, String> dataMap = ListThreeWays.listThree(nums, "7");
+        String allPerhaps = dataMap.get("allPerhaps");
+        //注数
+        String acount = dataMap.get("count");
+        //生成订单号
+        String orderNum = util.genOrderNo("PLW", util.getFourRandom());
+        //计算金额
+        double money = 2.00;
+        double acountDouble = Double.parseDouble(acount);
+        double timesDouble = Double.parseDouble(times);
+        double continuityDouble = Double.parseDouble(continuity);
+        String price = String.valueOf(money * acountDouble * timesDouble * continuityDouble);
+        //奖金
+        String award = dataMap.get("award");
+
         //1自购 2追号
         String type = "";
         String weekContinue = "";
@@ -85,22 +103,11 @@ public class ListFiveInterface {
                 week++;
                 weekContinue += String.valueOf(week) + ",";
             }
+            //订单方案
+            followCode = util.genOrderNo("", util.getFourRandom());
+
         }
 
-        //所有可能
-        Map<String, String> dataMap = ListThreeWays.listThree(nums, "7");
-        String allPerhaps = dataMap.get("allPerhaps");
-        //注数
-        String acount = dataMap.get("count");
-        //生成订单号
-        String orderNum = util.genOrderNo("PLW", util.getFourRandom());
-        //计算金额
-        double money = 2.00;
-        double acountDouble = Double.parseDouble(acount);
-        double timesDouble = Double.parseDouble(times);
-        String price = String.valueOf(money * acountDouble * timesDouble);
-        //奖金
-        String award = dataMap.get("award");
         CdFiveOrder cfo = new CdFiveOrder();
         cfo.setOrderNum(orderNum);//订单号
         cfo.setNums(nums);//订单详情
@@ -116,6 +123,7 @@ public class ListFiveInterface {
         cfo.setContinuity(continuity);//连续期数
         cfo.setType(type);//类型
         cfo.setWeekContinue(weekContinue);//连续期数详情
+        cfo.setFollowCode(followCode);//追号方案号
         try {
             cdFiveOrderService.save(cfo);
             map.put("orderNum", orderNum);

@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
@@ -20,6 +21,8 @@ import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.entity.CdOrderCatch;
+import com.youge.yogee.modules.corder.service.CdOrderCatchService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
 import com.youge.yogee.modules.crecord.service.CdRecordRebateService;
@@ -69,6 +72,8 @@ public class OrderPayInterface {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdRecordRebateService cdRecordRebateService;
+    @Autowired
+    private CdOrderCatchService cdOrderCatchService;
 
     /**
      * 彩票订单支付
@@ -173,6 +178,18 @@ public class OrderPayInterface {
                 dto.setStatus("2");//已付款
                 cdThreeOrderService.save(dto);
                 saveAllChange(price, balance, clu, orderNum, "7");
+                if ("2".equals(dto.getType())) {
+                    //保存追号信息
+                    CdOrderCatch coc = new CdOrderCatch();
+                    coc.setContinuity(dto.getContinuity());//追的期数
+                    coc.setHasContinue("1");//已追的期数
+                    coc.setOrderNum(dto.getOrderNum());//订单号
+                    coc.setPrice(dto.getPrice());//价格
+                    coc.setStatus("1");//进心中
+                    coc.setType("1");
+                    coc.setUid(dto.getUid());
+                    cdOrderCatchService.save(coc);
+                }
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
@@ -184,6 +201,19 @@ public class OrderPayInterface {
                 cfo.setStatus("2");//已付款
                 cdFiveOrderService.save(cfo);
                 saveAllChange(price, balance, clu, orderNum, "8");
+                if ("2".equals(cfo.getType())) {
+                    //保存追号信息
+                    CdOrderCatch coc = new CdOrderCatch();
+                    coc.setContinuity(cfo.getContinuity());//追的期数
+                    coc.setHasContinue("1");//已追的期数
+                    coc.setOrderNum(cfo.getOrderNum());//订单号
+                    coc.setPrice(cfo.getPrice());//价格
+                    coc.setStatus("1");//进心中
+                    coc.setType("2");
+                    coc.setUid(cfo.getUid());
+                    cdOrderCatchService.save(coc);
+                }
+
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
@@ -195,13 +225,50 @@ public class OrderPayInterface {
                 clo.setStatus("2");//已付款
                 cdLottoOrderService.save(clo);
                 saveAllChange(price, balance, clu, orderNum, "9");
+                if ("2".equals(clo.getConType())) {
+                    //保存追号信息
+                    CdOrderCatch coc = new CdOrderCatch();
+                    coc.setContinuity(clo.getContinuity());//追的期数
+                    coc.setHasContinue("1");//已追的期数
+                    coc.setOrderNum(clo.getOrderNum());//订单号
+                    coc.setPrice(clo.getPrice());//价格
+                    coc.setStatus("1");//进心中
+                    coc.setType("3");
+                    coc.setUid(clo.getUid());
+                    cdOrderCatchService.save(coc);
+                }
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
         }
-        map.put("balance", clu.getBalance());
+        map.put("balance", clu.getBalance().toString());
         return HttpResultUtil.successJson(map);
     }
+
+
+    /**
+     * 订单详情
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "getOrderToPay")
+    @ResponseBody
+    public String getOrderToPay(HttpServletRequest request) {
+        logger.info("getOrderToPay--------------Start-----");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        Map<String, Object> map = new HashMap();
+        //orderNum
+        String orderNum = (String) jsonData.get("orderNum");
+        if (StringUtils.isEmpty(orderNum)) {
+            logger.error("orderNum为空！");
+            return HttpResultUtil.errorJson("orderNum为空!");
+        }
+        map = SelOrderUtil.getOrderDetailMapToPay(orderNum, map);
+        logger.info("getOrderToPay--------------End--------");
+        return HttpResultUtil.successJson(map);
+    }
+
 
     //判断余额是否充足
     private boolean canPay(String price, String leftMoney) {
@@ -215,7 +282,7 @@ public class OrderPayInterface {
     }
 
     //保存返利
-    private void saveRebate(String price, String uid, String type) {
+    private void saveRebate(String price, String uid, String type, CdLotteryUser cdLotteryUser) {
         double priceDouble = Double.parseDouble(price);
         boolean flag = false;
         String rebate = "";
@@ -235,6 +302,9 @@ public class OrderPayInterface {
             crr.setUid(uid);
             crr.setType(type);
             cdRecordRebateService.save(crr);
+            //保存用户表返利字段
+            cdLotteryUser.setRebate(rebate);
+            cdLotteryUserService.save(cdLotteryUser);
         }
     }
 
@@ -259,15 +329,17 @@ public class OrderPayInterface {
         co.setStatus("1");//待开奖
         co.setWinPrice("0");//中奖金额
         co.setUserId(clu.getId());
+        co.setFollowNum("");
         cdOrderService.save(co);
     }
 
     private void saveAllChange(String price, String balance, CdLotteryUser clu, String orderNum, String type) {
         //更新用户信息
         clu = getLeftMoney(price, balance, clu);
+
         cdLotteryUserService.save(clu);
         //保存返利
-        saveRebate(price, clu.getId(), type);
+        saveRebate(price, clu.getId(), type, clu);
         //保存订单总表
         saveOrder(clu, orderNum, price, type);
 
