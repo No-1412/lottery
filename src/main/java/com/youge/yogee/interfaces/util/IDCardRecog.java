@@ -1,100 +1,59 @@
 package com.youge.yogee.interfaces.util;
 
-import com.google.common.collect.Maps;
 import com.youge.yogee.common.mapper.JsonMapper;
+import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 public class IDCardRecog {
-	
-	public static String request(String httpUrl, String httpArg) {
-		BufferedReader reader = null;
-	    String result = null;
-	    StringBuffer sbf = new StringBuffer();
 
-	    try {
-	        URL url = new URL(httpUrl);
-	        HttpURLConnection connection = (HttpURLConnection) url
-	                .openConnection();
-	        connection.setRequestMethod("POST");
-	        connection.setRequestProperty("Content-Type",
-	                        "application/x-www-form-urlencoded");
+	private static final String appcode = "56366a54460b491aba7cba9cc5696f6e";
 
-			connection.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 5.0; Windows NT; DigExt)");
-	        // 填入apix-key到HTTP header
-	        connection.setRequestProperty("apix-key",  "b425fba1eee64efe5a65c219eddda6c1");
-	        connection.setDoOutput(true);
-	        connection.getOutputStream().write(httpArg.getBytes("UTF-8"));
-	        connection.connect();
-	        InputStream is = connection.getInputStream();
-	        reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-	        String strRead = null;
-	        while ((strRead = reader.readLine()) != null) {
-	            sbf.append(strRead);
-	            sbf.append("\r\n");
-	        }
-	        reader.close();
-	        result = sbf.toString();
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	    return result;
-	}
 
-	public static void main(String[] args) {
-	    //发送 GET 请求
-		String httpUrl = "http://a.apix.cn/apixlab/idcardrecog/idcardimage";
+	public static Boolean IDCardVerify(String idcard,String name) {
+		String host = "https://eid.shumaidata.com";
+		String path = "/eid/check";
+		String method = "POST";
+		Map<String, String> headers = new HashMap<String, String>();
+		//最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
+		headers.put("Authorization", "APPCODE " + appcode);
+		//根据API的要求，定义相对应的Content-Type
+		headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+		Map<String, String> querys = new HashMap<>();
+		Map<String, String> bodys = new HashMap<>();
+		bodys.put("idcard", idcard);
+		bodys.put("name", name);
 
-		//String httpArg = "{\"cmd\": \"idcard_front\",\"imgurl\": \"http://images0.cnblogs.com/blog2015/51591/201506/151449465134350.jpg\"}";
-
-		String image =FaceRecognition.encodeImgageToBase64(new File("D:\\svn\\zhaoshi\\target\\zhaoshi-1.0.0\\userfiles\\img\\081dfaebbdfb4bd19041fd3985dd1006.jpg"));
-		Map map = Maps.newHashMap();
-
-		map.put("cmd","idcard_front");
-		//map.put("imgurl","http://www.51wj.com/uploads/memberPicture/356343/cards/20111114231717101.jpg");
-		map.put("pictype","jpg");
-		map.put("pic",image);
-
-		String httpArg = JsonMapper.getInstance().toJson(map);
-
-		String jsonResult = request(httpUrl, httpArg);
-
-		Map<?, ?> jsonData = JsonMapper.nonDefaultMapper().fromJson(
-				jsonResult, HashMap.class);
-
-		Map mapdata = (Map)jsonData.get("data");
-
-		System.out.println("name----"+mapdata.get("name"));
-		System.out.println("nation----"+mapdata.get("nation"));
-		System.out.println("number----"+mapdata.get("number"));
-		System.out.println("address----"+mapdata.get("address"));
-		System.out.println(jsonResult);
+		try {
+			/**
+			 * 重要提示如下:
+			 * HttpUtils请从
+			 * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/src/main/java/com/aliyun/api/gateway/demo/util/HttpUtils.java
+			 * 下载
+			 *
+			 * 相应的依赖请参照
+			 * https://github.com/aliyun/api-gateway-demo-sign-java/blob/master/pom.xml
+			 */
+			HttpResponse response = HttpUtils.doPost(host, path, method, headers, querys, bodys);
+			System.out.println(response.toString());
+			//获取response的body
+			String s = EntityUtils.toString(response.getEntity());
+			Map<String ,Object> access_token = JsonMapper.getInstance().fromJson(s, Map.class );
+			Map<String ,Object> b = (Map<String ,Object>)(access_token.get("result"));
+			if(b.get("res").toString().equals("1")){
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
 	}
 
 
 
-	//http://apix.cn/     账号 ccyouge@163.com	  1q2w3e4r5t
-	public static String IDCard(String file){
-
-		String httpUrl = "http://a.apix.cn/apixlab/idcardrecog/idcardimage";
-		String image =FaceRecognition.encodeImgageToBase64(new File(file));
-		Map map = Maps.newHashMap();
-		map.put("cmd","idcard_front");
-		map.put("pictype","jpg");
-		map.put("pic",image);
-
-		String httpArg = JsonMapper.getInstance().toJson(map);
-		String jsonResult = request(httpUrl, httpArg);
 
 
-
-		return jsonResult;
-	}
 }
