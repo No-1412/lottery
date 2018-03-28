@@ -8,9 +8,11 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.aliyuncs.profile.IClientProfile;
 import com.youge.yogee.common.cloopen.sdk.CCPRestSDK;
 import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.mapper.JsonMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -65,15 +67,19 @@ public class SMSUtil {
      *
      * @param phoneNumbers 必填:待发送手机号
      * @param templateCode 必填:短信模板-可在短信控制台中找到
-     *                                                  登录确认验证码-SMS_129595016
-     *                                                  修改密码验证码-SMS_129595013
-     *                                                  信息变更验证码-SMS_129595012
-     * @param templateParam 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"
+     *                                                  登录确认验证码:SMS_129595016
+     *                                                  修改密码验证码:SMS_129595013
+     *                                                  信息变更验证码:SMS_129595012
+     * @param code 可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"
      * @return 发送成功返回 true
      */
-    public static boolean sendAliSMS(String phoneNumbers, String templateCode, String templateParam) {
+    public static boolean sendAliSMS(String phoneNumbers, String templateCode, String code) {
 
         try {
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",code);
+            String templateParam = JsonMapper.toJsonString(map);
+
             SendSmsResponse response = AliSMSUtil.sendSms(phoneNumbers,  templateCode, templateParam);
             if(response.getCode() != null && response.getCode().equals("OK")) {
                 return true;
@@ -86,6 +92,9 @@ public class SMSUtil {
     }
 
     public static void main(String[] args) {
+
+//        sendAliSMS("15584336023","SMS_129595013","5554");
+
 //        System.out.println((int)((Math.random()*9+1)*100000));
 //        SMSUtil.sendSMS("13144868088", "1", "66666","5");
     }

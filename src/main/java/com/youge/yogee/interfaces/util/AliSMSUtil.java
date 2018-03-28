@@ -32,13 +32,13 @@ import java.util.UUID;
 public class AliSMSUtil {
 
     //产品名称:云通信短信API产品,开发者无需替换
-    static final String product = "Dysmsapi";
+    private static final String product = "Dysmsapi";
     //产品域名,开发者无需替换
-    static final String domain = "dysmsapi.aliyuncs.com";
+    private static final String domain = "dysmsapi.aliyuncs.com";
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-    static final String accessKeyId = "LTAIb0s9OIYTVlHF";
-    static final String accessKeySecret = "AytJ7OX5W9iamLY6HAOMlwTp45ZGbs";
+    private static final String accessKeyId = "LTAIb0s9OIYTVlHF";
+    private static final String accessKeySecret = "AytJ7OX5W9iamLY6HAOMlwTp45ZGbs";
 
     /***
      *
@@ -68,7 +68,7 @@ public class AliSMSUtil {
         //必填:短信模板-可在短信控制台中找到
         request.setTemplateCode(templateCode);
         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
-        request.setTemplateParam("{\"name\":\"Tom\", \"code\":\"123\"}");
+        request.setTemplateParam(templateParam);
 
         //选填-上行短信扩展码(无特殊需求用户请忽略此字段)
         //request.setSmsUpExtendCode("90997");
