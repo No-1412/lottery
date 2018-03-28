@@ -72,6 +72,11 @@ public class CdFiveOrderService extends BaseService {
         return cdFiveOrderDao.find(dc);
     }
 
+    /**
+     * 所有追单的订单
+     *
+     * @return
+     */
     public List<CdFiveOrder> findAllFollowOrders() {
         DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
         dc.add(Restrictions.ne("status", "1"));
@@ -93,5 +98,22 @@ public class CdFiveOrderService extends BaseService {
         } else {
             return null;
         }
+    }
+
+
+    /**
+     * 用户追单的订单
+     *
+     * @return
+     */
+    public List<CdFiveOrder> findAllFollowOrdersByUid(String uid) {
+        DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq("type", "2"));
+        dc.add(Restrictions.or(Restrictions.eq("followType", "1"), Restrictions.eq("followType", "2")));
+        dc.add(Restrictions.eq("uid", uid));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdFiveOrderDao.find(dc);
     }
 }

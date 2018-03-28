@@ -93,4 +93,16 @@ public class CdLottoOrderService extends BaseService {
             return null;
         }
     }
+
+    public List<CdLottoOrder> findAllFollowOrdersByUid(String uid) {
+        DetachedCriteria dc = cdLottoOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq("conType", "2"));
+        dc.add(Restrictions.or(Restrictions.eq("followType", "1"), Restrictions.eq("followType", "2")));
+        dc.add(Restrictions.eq("uid", uid));
+        dc.add(Restrictions.eq(CdLottoOrder.FIELD_DEL_FLAG, CdLottoOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdLottoOrderDao.find(dc);
+    }
+
 }
