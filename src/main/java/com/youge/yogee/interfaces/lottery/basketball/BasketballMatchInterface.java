@@ -230,6 +230,7 @@ public class BasketballMatchInterface {
             map.put("matchId", str.getMatchId());//场次id
             map.put("hnImg", str.getHnImg());//主队LOGO
             map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("itemid", str.getItemid());
             map.put("hf",str.getHf());//主队分数
             map.put("gf",str.getGf());//客队分数
             list.add(map);
