@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 /**
  * 篮球未完赛Entity
+ *
  * @author RenHaipeng
  * @version 2018-01-31
  */
@@ -23,139 +24,167 @@ import java.io.Serializable;
 @Table(name = "cd_bb_notfinsh")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CdBbNotFinsh extends BaseEntity<T> implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	private String id; 		// 识别id
-	private String name; 	// 名称
-	
-	private String createDate; 	// 创建时间
-	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
-	private String remarks; //
-	private String type; //
-	private String hn; //
-	private String gn; //
-	private String day; //
-	private String matchId; //
-	private String hnImg; //
-	private String gnImg; //
-	private String zid; //
-	public CdBbNotFinsh() {
-		super();
-	}
 
-	public CdBbNotFinsh(String id){
-		this();
-		this.id = id;
-	}
-	
-	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_bb_notfinsh")
-	//@SequenceGenerator(name = "seq_cd_bb_notfinsh", sequenceName = "seq_cd_bb_notfinsh")
-	public String getId() {
-		return id;
-	}
+    private static final long serialVersionUID = 1L;
+    private String id;        // 识别id
+    private String name;    // 名称
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    private String createDate;    // 创建时间
+    private String delFlag;    // 删除标识 (0：未删除；1：已删除)
+    private String remarks; //
+    private String type; //
+    private String hn; //
+    private String gn; //
+    private String day; //
+    private String matchId; //
+    private String hnImg; //
+    private String gnImg; //
+    private String zid; //
+    private String itemid;
+    private String hf;
+    private String gf;
 
-	@Length(min=1, max=200)
-	public String getName() {
-		return name;
-	}
+    public CdBbNotFinsh() {
+        super();
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getCreateDate() {
-		return createDate;
-	}
+    public CdBbNotFinsh(String id) {
+        this();
+        this.id = id;
+    }
 
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_bb_notfinsh")
+    //@SequenceGenerator(name = "seq_cd_bb_notfinsh", sequenceName = "seq_cd_bb_notfinsh")
+    public String getId() {
+        return id;
+    }
 
-	public String getDelFlag() {
-		return delFlag;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public void setDelFlag(String delFlag) {
-		this.delFlag = delFlag;
-	}
+    @Length(min = 1, max = 200)
+    public String getName() {
+        return name;
+    }
 
-	public String getRemarks() {
-		return remarks;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public String getCreateDate() {
+        return createDate;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public String getDelFlag() {
+        return delFlag;
+    }
 
-	public String getHn() {
-		return hn;
-	}
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
 
-	public void setHn(String hn) {
-		this.hn = hn;
-	}
+    public String getRemarks() {
+        return remarks;
+    }
 
-	public String getGn() {
-		return gn;
-	}
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
-	public void setGn(String gn) {
-		this.gn = gn;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public String getDay() {
-		return day;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public void setDay(String day) {
-		this.day = day;
-	}
+    public String getHn() {
+        return hn;
+    }
 
-	public String getMatchId() {
-		return matchId;
-	}
+    public void setHn(String hn) {
+        this.hn = hn;
+    }
 
-	public void setMatchId(String matchId) {
-		this.matchId = matchId;
-	}
+    public String getGn() {
+        return gn;
+    }
 
-	public String getHnImg() {
-		return hnImg;
-	}
+    public void setGn(String gn) {
+        this.gn = gn;
+    }
 
-	public void setHnImg(String hnImg) {
-		this.hnImg = hnImg;
-	}
+    public String getDay() {
+        return day;
+    }
 
-	public String getGnImg() {
-		return gnImg;
-	}
+    public void setDay(String day) {
+        this.day = day;
+    }
 
-	public void setGnImg(String gnImg) {
-		this.gnImg = gnImg;
-	}
+    public String getMatchId() {
+        return matchId;
+    }
 
-	public String getZid() {
-		return zid;
-	}
+    public void setMatchId(String matchId) {
+        this.matchId = matchId;
+    }
 
-	public void setZid(String zid) {
-		this.zid = zid;
-	}
+    public String getHnImg() {
+        return hnImg;
+    }
+
+    public void setHnImg(String hnImg) {
+        this.hnImg = hnImg;
+    }
+
+    public String getGnImg() {
+        return gnImg;
+    }
+
+    public void setGnImg(String gnImg) {
+        this.gnImg = gnImg;
+    }
+
+    public String getZid() {
+        return zid;
+    }
+
+    public void setZid(String zid) {
+        this.zid = zid;
+    }
+
+    public String getItemid() {
+        return itemid;
+    }
+
+    public void setItemid(String itemid) {
+        this.itemid = itemid;
+    }
+
+    public String getHf() {
+        return hf;
+    }
+
+    public void setHf(String hf) {
+        this.hf = hf;
+    }
+
+    public String getGf() {
+        return gf;
+    }
+
+    public void setGf(String gf) {
+        this.gf = gf;
+    }
 }
 
 

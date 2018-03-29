@@ -109,8 +109,21 @@ public class CdLottoOrderService extends BaseService {
         DetachedCriteria dc = cdLottoOrderDao.createDetachedCriteria();
         dc.add(Restrictions.eq("followCode", followCode));
         dc.add(Restrictions.eq(CdLottoOrder.FIELD_DEL_FLAG, CdLottoOrder.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.asc("createDate"));
         return cdLottoOrderDao.find(dc);
     }
 
+    public CdLottoOrder findByFollowCodeAndStatus(String followCode, String followType) {
+        DetachedCriteria dc = cdLottoOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("followCode", followCode));
+        dc.add(Restrictions.eq("followType", followType));
+        dc.add(Restrictions.eq(CdLottoOrder.FIELD_DEL_FLAG, CdLottoOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.asc("createDate"));
+        List<CdLottoOrder> list = cdLottoOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 }

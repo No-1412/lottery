@@ -5,6 +5,7 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
 import com.youge.yogee.modules.cbbalreadyfinsh.service.CdBbAlreadyFinshService;
+import com.youge.yogee.modules.cbblive.entity.CdBbLive;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinishCollection;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
 import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinishCollectionService;
@@ -68,7 +69,7 @@ public class BasketballMatchInterface {
 
         //球队实力
         CdBbStrengthpk cdBbStrengthpk = cdBbStrengthpkService.getStrengthPk(itemId);
-        if(cdBbStrengthpk == null){
+        if (cdBbStrengthpk == null) {
             return HttpResultUtil.errorJson("数据未更新");
         }
         Map<String, Object> pkMap = new HashMap<>();
@@ -174,6 +175,7 @@ public class BasketballMatchInterface {
             map.put("matchId", str.getMatchId());//场次id
             map.put("hnImg", str.getHnImg());//主队LOGO
             map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("itemid", str.getItemid());
             list.add(map);
         }
         Map dataMap = new HashMap();
@@ -228,6 +230,8 @@ public class BasketballMatchInterface {
             map.put("matchId", str.getMatchId());//场次id
             map.put("hnImg", str.getHnImg());//主队LOGO
             map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("hf",str.getHf());//主队分数
+            map.put("gf",str.getGf());//客队分数
             list.add(map);
         }
         Map dataMap = new HashMap();
@@ -330,5 +334,52 @@ public class BasketballMatchInterface {
         logger.info("bbNotFinshHasCol---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
+//    /**
+//     * 通过itemid查询篮球实况
+//     *
+//     * @param request
+//     * @return
+//     */
+//    @ResponseBody
+//    @RequestMapping(value = "getBasketballMatchTitle", method = RequestMethod.POST)
+//    public String getBasketballMatchTitle(HttpServletRequest request) {
+//        logger.info("getBasketballMatchTitle--------Start---------");
+//
+//        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+//        if (jsonData == null) {
+//            return HttpResultUtil.errorJson("json格式错误");
+//        }
+//        String itemid = (String) jsonData.get("itemid");
+//        if (StringUtils.isEmpty(itemid)) {
+//            logger.error("itemid为空");
+//            return HttpResultUtil.errorJson("itemid为空");
+//        }
+//        //已完赛
+//        String type = (String) jsonData.get("type");
+//        if (StringUtils.isEmpty(type)) {
+//            logger.error("type为空");
+//            return HttpResultUtil.errorJson("type为空");
+//        }
+//
+//        CdBbLive cdBbLive = cdBbLiveService.findByMatchId(itemid);
+//        if (cdBbLive == null) {
+//            return HttpResultUtil.errorJson("比赛不存在");
+//        }
+//
+//
+//        Map<String, Object> dataMap = new HashMap<>();
+//        dataMap.put("hnScore", cdBbLive.getHnScore().split(","));
+//        dataMap.put("gnScore", cdBbLive.getGnScore().split(","));
+//        dataMap.put("hnSkill", StringUtils.split(cdBbLive.getHnSkill(), ","));
+//        dataMap.put("gnSkill", StringUtils.split(cdBbLive.getGnSkill(), ","));
+//        dataMap.put("hnPlayer", StringUtils.split(cdBbLive.getHnPlayer(), "|"));
+//        dataMap.put("gnPlayer", StringUtils.split(cdBbLive.getGnPlayer(), "|"));
+//
+//
+//        logger.info("getBtMatchDetailById 获取篮球详情---------End---------");
+//        return HttpResultUtil.successJson(dataMap);
+//    }
+
 
 }

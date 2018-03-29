@@ -125,8 +125,23 @@ public class CdFiveOrderService extends BaseService {
         DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
         dc.add(Restrictions.eq("followCode", followCode));
         dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.asc("createDate"));
         return cdFiveOrderDao.find(dc);
+    }
+
+    public CdFiveOrder findByFollowCodeAndStatus(String followCode, String followType) {
+        DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("followCode", followCode));
+        dc.add(Restrictions.eq("followType", followType));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.asc("createDate"));
+        List<CdFiveOrder> list = cdFiveOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
     }
 
 }

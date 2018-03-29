@@ -41,6 +41,7 @@ public class CdBbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 	private String hnImg;
 	private String gnImg;
 	private String zid;
+	private String itemid;
 
 	public CdBbAlreadyFinsh() {
 		super();
@@ -174,6 +175,14 @@ public class CdBbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 
 	public void setZid(String zid) {
 		this.zid = zid;
+	}
+
+	public String getItemid() {
+		return itemid;
+	}
+
+	public void setItemid(String itemid) {
+		this.itemid = itemid;
 	}
 }
 

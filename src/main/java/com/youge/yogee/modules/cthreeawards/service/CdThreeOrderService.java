@@ -117,8 +117,23 @@ public class CdThreeOrderService extends BaseService {
         DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
         dc.add(Restrictions.eq("followCode", followCode));
         dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.asc("createDate"));
         return cdThreeOrderDao.find(dc);
+    }
+
+    public CdThreeOrder findByFollowCodeAndStatus(String followCode, String followType) {
+        DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("followCode", followCode));
+        dc.add(Restrictions.eq("followType", followType));
+        dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.asc("createDate"));
+        List<CdThreeOrder> list = cdThreeOrderDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
     }
 
 }

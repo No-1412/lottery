@@ -115,7 +115,7 @@ public class BasketballInterface {
     }
 
     /**
-     * wangsong
+     *
      * 篮球胜负
      * 180122
      *
@@ -686,5 +686,6 @@ public class BasketballInterface {
         logger.info("getBtMatchDetailById 获取篮球详情---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
+
 
 }

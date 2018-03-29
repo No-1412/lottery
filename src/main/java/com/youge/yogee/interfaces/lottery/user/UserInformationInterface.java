@@ -216,6 +216,7 @@ public class UserInformationInterface {
             String followCode = cto.getFollowCode();
             dataMap.put("nums", cto.getNums());//号码
             dataMap.put("followCode", followCode);//追单方案
+            dataMap.put("buyWays", cto.getBuyWays());//
             List<CdThreeOrder> cList = cdThreeOrderService.findByFollowCode(followCode);
             for (CdThreeOrder c : cList) {
                 Map<String, String> map = new HashMap();
@@ -253,6 +254,7 @@ public class UserInformationInterface {
             String followCode = cfo.getFollowCode();
             dataMap.put("nums", cfo.getNums());//号码
             dataMap.put("followCode", followCode);//追单方案
+            dataMap.put("buyWays", cfo.getBuyWays());//
             List<CdFiveOrder> cList = cdFiveOrderService.findByFollowCode(followCode);
             if (cList.size() > 0) {
                 for (CdFiveOrder c : cList) {
@@ -292,6 +294,7 @@ public class UserInformationInterface {
             String followCode = clo.getFollowCode();
             dataMap.put("nums", clo.getRedNums() + "|" + clo.getBlueNums());//号码
             dataMap.put("followCode", followCode);//追单方案
+            dataMap.put("buyWays", clo.getType());//
             List<CdLottoOrder> cList = cdLottoOrderService.findByFollowCode(followCode);
             if (cList.size() > 0) {
                 for (CdLottoOrder c : cList) {
@@ -326,6 +329,68 @@ public class UserInformationInterface {
             }
             dataMap.put("hasList", hasList);
             dataMap.put("notList", finalList);
+        }
+
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    /**
+     * 停止追号
+     */
+
+    @RequestMapping(value = "stopCatchFollowOrder", method = RequestMethod.POST)
+    @ResponseBody
+    public String stopCatchFollowOrder(HttpServletRequest request) throws ParseException {
+        logger.info("stopCatchFollowOrder---------- Start-----------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        Map dataMap = new HashMap();
+
+        String orderNum = (String) jsonData.get("orderNum");
+        if (StringUtils.isEmpty(orderNum)) {
+            return HttpResultUtil.errorJson("orderNum为空");
+        }
+        List hasList = new ArrayList();
+        List notList = new ArrayList();
+        List finalList = new ArrayList();
+        CdOrderCatch coc = cdOrderCatchService.findByOrderNum(orderNum);
+        if (coc == null) {
+            return HttpResultUtil.errorJson("追号单不存在");
+        }
+        coc.setStatus("2");//已结束
+        cdOrderCatchService.save(coc);
+        if (orderNum.startsWith("PLS")) {
+            CdThreeOrder cto = cdThreeOrderService.findOrderByOrderNum(orderNum);
+            String followCode = cto.getFollowCode();
+            CdThreeOrder lastOrder = cdThreeOrderService.findByFollowCodeAndStatus(followCode, "3");
+            if (lastOrder != null) {
+                lastOrder.setFollowType("4");
+                cdThreeOrderService.save(lastOrder);
+            } else {
+                return HttpResultUtil.errorJson("没有在追的单");
+            }
+
+        } else if (orderNum.startsWith("PLW")) {
+            CdFiveOrder cfo = cdFiveOrderService.findOrderByOrderNum(orderNum);
+            String followCode = cfo.getFollowCode();
+            CdFiveOrder lastOrder = cdFiveOrderService.findByFollowCodeAndStatus(followCode, "3");
+            if (lastOrder != null) {
+                lastOrder.setFollowType("4");
+                cdFiveOrderService.save(lastOrder);
+            } else {
+                return HttpResultUtil.errorJson("没有在追的单");
+            }
+
+        } else {
+            CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(orderNum);
+            String followCode = clo.getFollowCode();
+            CdLottoOrder lastOrder = cdLottoOrderService.findByFollowCodeAndStatus(followCode, "3");
+            if (lastOrder != null) {
+                lastOrder.setFollowType("4");
+                cdLottoOrderService.save(lastOrder);
+            } else {
+                return HttpResultUtil.errorJson("没有在追的单");
+            }
         }
 
         return HttpResultUtil.successJson(dataMap);
