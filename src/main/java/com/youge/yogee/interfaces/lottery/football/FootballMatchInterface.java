@@ -3,12 +3,12 @@ package com.youge.yogee.interfaces.lottery.football;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
-import com.youge.yogee.modules.cfbalreadyfinsh.entity.CdFbAlreadyFinsh;
-import com.youge.yogee.modules.cfbalreadyfinsh.service.CdFbAlreadyFinshService;
 import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinishedCollection;
 import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinshed;
 import com.youge.yogee.modules.cfbfinshed.service.CdFbFinishedCollectionService;
 import com.youge.yogee.modules.cfbfinshed.service.CdFbFinshedService;
+import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
+import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
 import com.youge.yogee.modules.cftlogo.service.CdFtLogoService;
 import com.youge.yogee.modules.cftskill.entity.CdFtSkill;
 import com.youge.yogee.modules.cftskill.service.CdFtSkillService;
@@ -40,8 +40,6 @@ public class FootballMatchInterface {
     @Autowired
     private CdFbFinshedService cdFbFinshedService;
     @Autowired
-    private CdFbAlreadyFinshService cdFbAlreadyFinshService;
-    @Autowired
     private CdSceneEchartsService cdSceneEchartsService;
     @Autowired
     private CdFtSkillService cdFtSkillService;
@@ -49,6 +47,8 @@ public class FootballMatchInterface {
     private CdFtLogoService cdFtLogoService;
     @Autowired
     private CdFbFinishedCollectionService cdFbFinishedCollectionService;
+    @Autowired
+    private CdFootballAwardsService cdFootballAwardsService;
 
 
     /**
@@ -139,19 +139,22 @@ public class FootballMatchInterface {
         }
 
         List list = new ArrayList();
-        List<CdFbAlreadyFinsh> dataList = cdFbAlreadyFinshService.getAlreadyFinsh(total, count);
-        for (CdFbAlreadyFinsh str : dataList) {
+        //List<CdFbAlreadyFinsh> dataList = cdFbAlreadyFinshService.getAlreadyFinsh(total, count);
+        List<CdFootballAwards> dataList = cdFootballAwardsService.findALL(total, count);
+        for (CdFootballAwards str : dataList) {
             Map map = new HashMap();
-            map.put("qc", str.getQc());
-            map.put("sort", str.getSort());//赛事名称
-            map.put("type", str.getType());//比赛时间
-            map.put("ln", str.getLn());//赛事类型
-            map.put("hn", str.getHn());//主队
-            map.put("gn", str.getGn());//客队
-            map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
-            map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
-            map.put("jn", str.getJn());//平赔率
-            map.put("time", str.getTime());//比赛时间
+//            map.put("qc", str.getQc());
+            map.put("sort", str.getMatchDate());//标示
+//            map.put("type", str.getType());//比赛时间
+            map.put("ln", str.getEventName());//赛事类型
+            map.put("hn", str.getHomeTeam());//主队
+            map.put("gn", str.getAwayTeam());//客队
+            map.put("hnLogo", cdFtLogoService.findLogo(str.getHomeTeam())); //主队图标
+            map.put("gnLogo", cdFtLogoService.findLogo(str.getAwayTeam())); //客队图标
+            map.put("jn", str.getMatchId());//平赔率
+            map.put("time", str.getMt());//比赛时间
+            map.put("score", str.getHs() + "-" + str.getVs());//比分
+
             list.add(map);
         }
         Map dataMap = new HashMap();
@@ -167,7 +170,7 @@ public class FootballMatchInterface {
     @ResponseBody
     public String ftEcharts(HttpServletRequest request) {
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String itemId = (String) jsonData.get("itemId");
+        String itemId = (String) jsonData.get("itemid");
         logger.info("ftEcharts  比赛事件echarts图表---------Start---------");
         List list = new ArrayList();
         List<CdSceneEcharts> dataList = cdSceneEchartsService.getEcharts(itemId);
@@ -197,7 +200,7 @@ public class FootballMatchInterface {
     public String ftBallSkill(HttpServletRequest request) {
         logger.info("ftBallSkill  足球实况(技术统计 首发名单和替补名单)---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String itemId = (String) jsonData.get("itemId");
+        String itemId = (String) jsonData.get("itemid");
         List list = new ArrayList();
         List<CdFtSkill> dataList = cdFtSkillService.getFtSkill(itemId);
         CdFtSkill str = new CdFtSkill();
@@ -346,6 +349,56 @@ public class FootballMatchInterface {
         Map dataMap = new HashMap();
         dataMap.put("list", list);
         logger.info("notFinishedHasCol  未完赛数据---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+
+    /**
+     * 获取比赛主队客队比分或开赛时间
+     *
+     * @param
+     */
+    @RequestMapping(value = "getFootBallMatchTitle", method = RequestMethod.POST)
+    @ResponseBody
+    public String getFootBallMatchTitle(HttpServletRequest request) {
+        logger.info("getFootBallMatchTitle---------Start---------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        Map dataMap = new HashMap();
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+        String sort = (String) jsonData.get("sort");
+        if (StringUtils.isEmpty(sort)) {
+            logger.error("itemid为空");
+            return HttpResultUtil.errorJson("itemid为空");
+        }
+        //1未完赛 2已完赛
+        String type = (String) jsonData.get("type");
+        if (StringUtils.isEmpty(type)) {
+            logger.error("type为空");
+            return HttpResultUtil.errorJson("type为空");
+        }
+
+        if ("2".equals(type)) {
+            CdFootballAwards cfa = cdFootballAwardsService.findBymatchDate(sort);
+            if (cfa == null) {
+                return HttpResultUtil.errorJson("数据不存在");
+            }
+            dataMap.put("host", cfa.getHomeTeam());//主队
+            dataMap.put("guest", cfa.getAwayTeam());//客队
+            dataMap.put("middle", cfa.getHs() + "-" + cfa.getVs());//别分
+        } else {
+            CdFbFinshed cff = cdFbFinshedService.findBySort(sort);
+            if (cff == null) {
+                return HttpResultUtil.errorJson("数据不存在");
+            }
+            dataMap.put("host", cff.getHn());//主队
+            dataMap.put("guest", cff.getGn());//客队
+            dataMap.put("middle", cff.getTime().substring(0,16));//开赛时间
+        }
+
+
         return HttpResultUtil.successJson(dataMap);
     }
 

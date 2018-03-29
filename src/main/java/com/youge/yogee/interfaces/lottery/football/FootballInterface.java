@@ -10,6 +10,8 @@ import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
 import com.youge.yogee.modules.cfboutcome.service.CdFbOutcomeService;
 import com.youge.yogee.modules.cfbscoer.entity.CdFbScoer;
 import com.youge.yogee.modules.cfbscoer.service.CdFbScoerService;
+import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
+import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import org.slf4j.Logger;
@@ -43,7 +45,8 @@ public class FootballInterface {
     private CdFbScoerService cdFbScoerService;
     @Autowired
     private CdFbFutureService cdFbFutureService;
-
+    @Autowired
+    private CdFootballAwardsService cdFootballAwardsService;
 
     //region Description
 
@@ -698,7 +701,7 @@ public class FootballInterface {
     //endregion
 
     /**
-     * 足球详情
+     * 足球详情(分析)
      * wangsong
      * 20180124
      *
@@ -710,7 +713,7 @@ public class FootballInterface {
     public String listFtDetail(HttpServletRequest request) {
         logger.info("listFtDetail  足球详情---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String itemID = (String) jsonData.get("itemid");//比赛id
+        String matchDate = (String) jsonData.get("itemid");//比赛id
         Map<String, Object> dataMap = new HashMap<>();
         List scoerList = new ArrayList();
         List hFutureList = new ArrayList();
@@ -718,15 +721,16 @@ public class FootballInterface {
 
         logger.info("listFtDetail  足球近期战绩详情---------Start---------");
         //region Description
-        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemID);
-        if (cdFootballMixed == null) {
-            return HttpResultUtil.errorJson("数据未更新");
-        }
-        String hostName = cdFootballMixed.getWinningName();//主队名称
-        String guestName = cdFootballMixed.getDefeatedName();//客队名称
+//        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(matchDate);
+//        if (cdFootballMixed == null) {
+//            return HttpResultUtil.errorJson("数据未更新");
+//        }
+        CdFootballAwards cfa = cdFootballAwardsService.findBymatchDate(matchDate);
+        String hostName = cfa.getHomeTeam();//主队名称
+        String guestName = cfa.getAwayTeam();//客队名称
 
         //主队近期战绩
-        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(itemID, hostName, "0");
+        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(matchDate, hostName, "0");
         if (hnList.size() > 0) {
             int win = 0;//胜
             int dogfall = 0;//平
@@ -775,7 +779,7 @@ public class FootballInterface {
         }
 
         //客场近期战绩
-        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(itemID, hostName, "0");
+        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(matchDate, hostName, "0");
         if (gnList.size() > 0) {
             int win = 0;//胜
             int dogfall = 0;//平
@@ -829,7 +833,7 @@ public class FootballInterface {
 
         logger.info("listFtDetail  足球历史战绩详情---------Start---------");
         //历史交锋
-        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(itemID);
+        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(matchDate);
         if (cdHList != null) {
             int win = 0;//胜
             int dogfall = 0;//平
@@ -880,7 +884,7 @@ public class FootballInterface {
 
         logger.info("listFtDetail  足球积分详情---------Start---------");
         //region Description
-        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(itemID);
+        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(matchDate);
         for (CdFbScoer cdFbScoer : cdScoerList) {
             Map<String, Object> map = new HashMap();
             map.put("rank", cdFbScoer.getRank());//球队排名
@@ -898,9 +902,9 @@ public class FootballInterface {
         //region Description
 //        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemid);
         //查询队id
-        List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(cdFootballMixed.getWinningName());
+        List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(hostName);
         String teamId = cdFutureName.get(0).getTeamHid();
-        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(itemID);
+        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(matchDate);
         for (CdFbFuture cd : cdFutureList) {
             Map<String, Object> map = new HashMap();
             if (teamId.equals(cd.getTeamHid()) || teamId.equals(cd.getTeamAid())) {

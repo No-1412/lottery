@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cfootballawards.dao.CdFootballAwardsDao;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -75,16 +76,40 @@ public class CdFootballAwardsService extends BaseService {
         return cdFootballAwardsDao.find(dc);
     }
 
+    public CdFootballAwards findBymatchDate(String matchDate) {
+        DetachedCriteria dc = cdFootballAwardsDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootballAwards.FIELD_DEL_FLAG, CdFootballAwards.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("matchDate", matchDate));
+        List<CdFootballAwards> list = cdFootballAwardsDao.find(dc);
+        if (list.size() != 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
+
     public CdFootballAwards findByMatchId(String matchId) {
         DetachedCriteria dc = cdFootballAwardsDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdFootballAwards.FIELD_DEL_FLAG, CdFootballAwards.DEL_FLAG_NORMAL));
         dc.add(Restrictions.eq("matchId", matchId));
-        List<CdFootballAwards> list =  cdFootballAwardsDao.find(dc);
-        if (list.size()!=0){
+        List<CdFootballAwards> list = cdFootballAwardsDao.find(dc);
+        if (list.size() != 0) {
             return list.get(0);
-        }else {
+        } else {
             return null;
         }
+    }
+
+
+    public List<CdFootballAwards> findALL(String total, String count) {
+        DetachedCriteria dc = cdFootballAwardsDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootballAwards.FIELD_DEL_FLAG, CdFootballAwards.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("mt"));
+        // 限制条数|分页
+        Criteria cri = dc.getExecutableCriteria(cdFootballAwardsDao.getSession());
+        cri.setMaxResults(Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
+        return cdFootballAwardsDao.find(dc);
     }
 
     public List<String> getAllMatchId() {
