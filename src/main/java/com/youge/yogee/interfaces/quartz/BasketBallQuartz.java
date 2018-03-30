@@ -90,7 +90,7 @@ public class BasketBallQuartz {
     public void basketBallFollowOrder() {
 
 
-        System.out.println("篮球串关开奖");
+//        System.out.println("篮球串关开奖");
         List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatus();
 
         //全部可以比赛完的场次
@@ -324,7 +324,7 @@ public class BasketBallQuartz {
 
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballSingleOrder() {
-        System.out.println("篮球单关开奖");
+//        System.out.println("篮球单关开奖");
 
         List<CdBasketballSingleOrder> cdBasketballSingleOrderList = cdBasketballSingleOrderService.findStatus();
 

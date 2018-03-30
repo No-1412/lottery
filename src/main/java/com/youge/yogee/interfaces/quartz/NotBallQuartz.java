@@ -48,7 +48,7 @@ public class NotBallQuartz {
 
     @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void listThreeOrder() {
-        System.out.println("排列三开奖");
+//        System.out.println("排列三开奖");
         CdThreeAwards cta = cdThreeAwardsService.findFirst();
         if (cta != null) {
             String awardDate = cta.getAtime().split(" ")[0]; //开奖时间截取日期
@@ -104,7 +104,7 @@ public class NotBallQuartz {
 
     @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void listFiveOrder() {
-        System.out.println("排列五开奖");
+//        System.out.println("排列五开奖");
         CdFiveAwards cfa = cdFiveAwardsService.findFirst();
         if (cfa != null) {
             String weekday = cfa.getWeekday();
@@ -164,7 +164,7 @@ public class NotBallQuartz {
 
     @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void lotteryOrder() {
-        System.out.println("大乐透开奖");
+//        System.out.println("大乐透开奖");
         CdLottoReward clr = cdLottoRewardService.findFirst();
         if (clr != null) {
             String awardDate = clr.getOpeningTime().split(" ")[0]; //开奖时间截取日期

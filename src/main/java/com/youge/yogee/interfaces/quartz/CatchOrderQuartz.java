@@ -43,7 +43,7 @@ public class CatchOrderQuartz {
 
     @Scheduled(cron = "*/59 * * * * ?")//59秒
     public void listThreeOrder() {
-        System.out.println("排列三追号");
+//        System.out.println("排列三追号");
         CdThreeAwards cta = cdThreeAwardsService.findFirst();
         if (cta != null) {
             String awardDate = cta.getAtime().split(" ")[0]; //开奖时间截取日期
@@ -115,7 +115,7 @@ public class CatchOrderQuartz {
 
     @Scheduled(cron = "*/59 * * * * ?")//59秒  //后期改成十点
     public void listFiveOrder() {
-        System.out.println("排列五追号");
+//        System.out.println("排列五追号");
         CdFiveAwards cfa = cdFiveAwardsService.findFirst();
         if (cfa != null) {
             String awardDate = cfa.getAtime().split(" ")[0]; //开奖时间截取日期
@@ -188,7 +188,7 @@ public class CatchOrderQuartz {
 
     @Scheduled(cron = "*/59 * * * * ?")//59秒  //后期改成十点
     public void lotteryOrder() {
-        System.out.println("大乐透追号");
+//        System.out.println("大乐透追号");
         CdLottoReward clr = cdLottoRewardService.findFirst();
         if (clr != null) {
             String awardDate = clr.getOpeningTime().split(" ")[0]; //开奖时间截取日期

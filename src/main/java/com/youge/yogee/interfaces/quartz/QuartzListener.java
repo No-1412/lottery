@@ -88,7 +88,7 @@ public class QuartzListener {
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballFollowOrder() {
-        System.out.println("足球串关开奖");
+//        System.out.println("足球串关开奖");
 
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatus();
 
@@ -361,7 +361,7 @@ public class QuartzListener {
 
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballSingleOrder() {
-        System.out.println("足球单关开奖");
+//        System.out.println("足球单关开奖");
 
         List<CdFootballSingleOrder> cdFootballSingleOrderList = cdFootballSingleOrderService.findStatus();
 

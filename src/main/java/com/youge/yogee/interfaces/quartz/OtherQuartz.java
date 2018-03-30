@@ -45,7 +45,7 @@ public class OtherQuartz {
 
     @Scheduled(cron = "0 0 12 * * ?")//每天十二点
     public void awardWallUpType() {
-        System.out.println("大奖墙更新");
+//        System.out.println("大奖墙更新");
         List<CdOrderWinners> list = cdOrderWinnersService.findByWallType("1");
         if (list.size() > 0) {
             for (CdOrderWinners c : list) {
