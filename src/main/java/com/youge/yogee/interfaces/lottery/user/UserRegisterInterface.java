@@ -185,6 +185,7 @@ public class UserRegisterInterface {
         cdLotteryUser.setTotalRecharge("0.00");
         cdLotteryUser.setTotalPay("0.00");
         cdLotteryUser.setRebate("0.00");
+        cdLotteryUser.setCatchTimes("3");
         cdLotteryUserService.save(cdLotteryUser);
 
         dataMap.put("uid", cdLotteryUser.getId());
@@ -243,6 +244,9 @@ public class UserRegisterInterface {
         dataMap.put("balance", user.getBalance().setScale(2).toString());//余额
         dataMap.put("rebate", user.getRebate());//返利金额
         dataMap.put("percent", percent);//等级百分比
+        dataMap.put("tel", user.getMobile());//等级电话
+        dataMap.put("isReal", user.getIsRealNameVerified());//实名认证 1已认证 2未认证
+        dataMap.put("catchTimes", user.getCatchTimes());//今日提现次数
         logger.info("pc：用户登录userLogin---------- End----------");
         return HttpResultUtil.successJson(dataMap);
 

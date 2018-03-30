@@ -69,6 +69,7 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
     private String totalRecharge;//充值总金额
     private String totalPay;//购彩总金额
     private String rebate;//返利金额
+    private String catchTimes;//返利金额
 
     public CdLotteryUser() {
         super();
@@ -395,6 +396,14 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
 
     public void setRebate(String rebate) {
         this.rebate = rebate;
+    }
+
+    public String getCatchTimes() {
+        return catchTimes;
+    }
+
+    public void setCatchTimes(String catchTimes) {
+        this.catchTimes = catchTimes;
     }
 }
 
