@@ -399,7 +399,18 @@ public class UserRegisterInterface {
         Map dataMap = Maps.newHashMap();
         cdLotteryUserService.save(cdLotteryUser);
 
+        String recharge = cdLotteryUser.getTotalRecharge();//充值总金额
+        String percent = SelOrderUtil.getLevelPercent(recharge);
+
         dataMap.put("uid", cdLotteryUser.getId());
+        //dataMap.put("uid", user.getId());
+        dataMap.put("img", cdLotteryUser.getImg());
+        dataMap.put("level", cdLotteryUser.getMemberLevel());
+        dataMap.put("name", cdLotteryUser.getName());
+        dataMap.put("phone", cdLotteryUser.getMobile());
+        dataMap.put("balance", cdLotteryUser.getBalance().setScale(2).toString());//余额
+        dataMap.put("rebate", cdLotteryUser.getRebate());//返利金额
+        dataMap.put("percent", percent);//等级百分比
 
         logger.info("pc：userChangeInformation---------- End----------");
 
