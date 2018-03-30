@@ -73,6 +73,7 @@ public class RecordInterface {
             clu.setReality(cardName);
             clu.setIsRealNameVerified("1");
             cdLotteryUserService.save(clu);
+            map.put("uid", clu.getId());
         } else {
             return HttpResultUtil.errorJson("认证失败");
         }
@@ -91,12 +92,6 @@ public class RecordInterface {
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
-        }
-        //提款金额
-        String price = (String) jsonData.get("price");
-        if (StringUtils.isEmpty(price)) {
-            logger.error("price为空");
-            return HttpResultUtil.errorJson("price为空");
         }
         //卡号
         String cardNum = (String) jsonData.get("cardNum");
