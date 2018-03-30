@@ -99,8 +99,8 @@ public class FootballMatchInterface {
             map.put("ln", str.getLn());//赛事类型
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
-            map.put("hf", str.getHf());//主队
-            map.put("gf", str.getGf());//客队
+            map.put("hf", str.getHf());//主队比分
+            map.put("gf", str.getGf());//客队比分
             map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
             map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
             map.put("jn", str.getJn());//平赔率
@@ -151,11 +151,13 @@ public class FootballMatchInterface {
             map.put("ln", str.getEventName());//赛事类型
             map.put("hn", str.getHomeTeam());//主队
             map.put("gn", str.getAwayTeam());//客队
+            map.put("hf",str.getHs());//主队分数
+            map.put("gf",str.getVs());//客队分数
             map.put("hnLogo", cdFtLogoService.findLogo(str.getHomeTeam())); //主队图标
             map.put("gnLogo", cdFtLogoService.findLogo(str.getAwayTeam())); //客队图标
             map.put("jn", str.getMatchId());//平赔率
             map.put("time", str.getMt());//比赛时间
-            map.put("score", str.getHs() + "-" + str.getVs());//比分
+            //map.put("score", str.getHs() + "-" + );//比分
 
             list.add(map);
         }
@@ -301,7 +303,7 @@ public class FootballMatchInterface {
     @RequestMapping(value = "notFinishedHasCol", method = RequestMethod.POST)
     @ResponseBody
     public String notFinishedHasCol(HttpServletRequest request) {
-        logger.info("notFinishedHasCol  未完赛数据---------Start---------");
+        logger.info("notFinishedHasCol---------Start---------");
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {

@@ -450,32 +450,33 @@ public class UserRegisterInterface {
         return HttpResultUtil.successJson(mapData);
     }
 
-//    private String getLevelPercent(String totalRecharge) {
-//        List<Double> level = new ArrayList<>();
-//        level.add(2.00);
-//        level.add(100.00);
-//        level.add(500.00);
-//        level.add(1000.00);
-//        level.add(5000.00);
-//        level.add(10000.00);
-//        level.add(100000.00);
-//        level.add(200000.00);
-//        level.add(500000.00);
-//        level.add(1000000.00);
-//        double recharge = Double.parseDouble(totalRecharge);
-//        String percent = "0";
-//        for (int i = 1; i < level.size(); i++) {
-//            double charge = level.get(i);
-//            double theLast = level.get(i - 1);
-//            if (recharge > theLast & recharge < charge) {
-//                BigDecimal total = new BigDecimal(recharge);
-//                BigDecimal nextLevel = new BigDecimal(charge);
-//                int per = total.divide(nextLevel, 2, 2).multiply(new BigDecimal(100)).intValue();
-//                percent = String.valueOf(per);
-//                break;
-//            }
-//        }
-//        return percent + "%";
-//    }
+    /**
+     * 验证密码
+     */
+    @RequestMapping(value = "checkPassword", method = RequestMethod.POST)
+    @ResponseBody
+    public String checkPassword(HttpServletRequest request) {
+        logger.info("checkPassword---------- Start-----------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        Map dataMap = new HashMap();
+        String password = (String) jsonData.get("password");
+        if (StringUtils.isEmpty(password)) {
+            return HttpResultUtil.errorJson("password为空!");
+        }
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空!");
+        }
+        CdLotteryUser user = cdLotteryUserService.get(uid);
+        if (user == null) {
+            return HttpResultUtil.errorJson("用户不存在!");
+        }
+        if (SystemService.validatePassword(password, user.getPassword())) {
+            return HttpResultUtil.successJson(dataMap);
+        } else {
+            return HttpResultUtil.errorJson("密码错误!");
+        }
+    }
 
 }
