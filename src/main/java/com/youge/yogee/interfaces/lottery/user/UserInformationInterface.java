@@ -94,6 +94,8 @@ public class UserInformationInterface {
         dataMap.put("tel", clu.getMobile());//等级电话
         dataMap.put("isReal", clu.getIsRealNameVerified());//实名认证 1已认证 2未认证
         dataMap.put("catchTimes", clu.getCatchTimes());//今日提现次数
+        dataMap.put("realName", clu.getReality());//真实姓名
+        dataMap.put("idCard", clu.getIdNumber());//身份证号
         return HttpResultUtil.successJson(dataMap);
     }
 

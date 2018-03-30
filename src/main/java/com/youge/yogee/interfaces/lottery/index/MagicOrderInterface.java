@@ -649,7 +649,7 @@ public class MagicOrderInterface {
      */
     @RequestMapping(value = "getMagicOrderFollowRecord", method = RequestMethod.POST)
     @ResponseBody
-    public String getMagicOrderFollowRecord(HttpServletRequest request){
+    public String getMagicOrderFollowRecord(HttpServletRequest request) {
         logger.info("getMagicOrderFollowRecord--------Start-------------------");
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
@@ -671,15 +671,17 @@ public class MagicOrderInterface {
         List cList = new ArrayList();
         for (CdMagicFollowOrder c : list) {
             Map cMap = new HashMap();
-            String mid=c.getMagicOrderId();
-            CdMagicOrder cmo=cdMagicOrderService.get(mid);
-            CdLotteryUser clu=cdLotteryUserService.get(cmo.getUid());
-            String followName=c.getuName();
-            String startName=clu.getName();
-            cMap.put("followName", followName);
-            cMap.put("startName", startName);
-            cMap.put("price", c.getPrice()); //购买金额
-            cList.add(cMap);
+            String mid = c.getMagicOrderId();
+            CdMagicOrder cmo = cdMagicOrderService.get(mid);
+            if (cmo != null) {
+                CdLotteryUser clu = cdLotteryUserService.get(cmo.getUid());
+                String followName = c.getuName();
+                String startName = clu.getName();
+                cMap.put("followName", followName);
+                cMap.put("startName", startName);
+                cMap.put("price", c.getPrice()); //购买金额
+                cList.add(cMap);
+            }
         }
         map.put("list", cList);
         logger.info("获取神单 getMagicOrderList---------End---------------------");
