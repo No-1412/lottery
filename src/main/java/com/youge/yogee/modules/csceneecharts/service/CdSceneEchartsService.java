@@ -72,7 +72,7 @@ public class CdSceneEchartsService extends BaseService {
         DetachedCriteria dc = cdSceneEchartsDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdSceneEcharts.FIELD_DEL_FLAG, CdSceneEcharts.DEL_FLAG_NORMAL));
         dc.add(Restrictions.eq("itemId", itemId));
-        dc.addOrder(Order.desc("createDate"));
+        dc.addOrder(Order.asc("createDate"));
         return cdSceneEchartsDao.find(dc);
     }
 }

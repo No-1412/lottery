@@ -99,10 +99,12 @@ public class FootballMatchInterface {
             map.put("ln", str.getLn());//赛事类型
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
+            map.put("hf", str.getHf());//主队
+            map.put("gf", str.getGf());//客队
             map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
             map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
             map.put("jn", str.getJn());//平赔率
-            map.put("time", str.getTime());//比赛时间
+            map.put("time", str.getTime().substring(10,16));//比赛时间
             list.add(map);
         }
         Map dataMap = new HashMap();

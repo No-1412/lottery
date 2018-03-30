@@ -72,8 +72,10 @@ public class CdFbFinshedService extends BaseService {
     public List<CdFbFinshed> getNotFinshed(String total, String count) {
         DetachedCriteria dc = cdFbFinshedDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdFbFinshed.FIELD_DEL_FLAG, CdFbFinshed.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("type", "4"));
         dc.addOrder(Order.asc("time"));
         dc.addOrder(Order.asc("jn"));
+
         // 限制条数|分页
         Criteria cri = dc.getExecutableCriteria(cdFbFinshedDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
