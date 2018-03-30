@@ -31,7 +31,8 @@ public class CdBbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 	private String createDate; 	// 创建时间
 	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
 	private String remarks; //
-	private String type; //
+	private String type; //比赛状态(已知：0未开赛，100已完赛)
+	private String ln;
 	private String hf; //
 	private String hn; //
 	private String gn; //
@@ -183,6 +184,14 @@ public class CdBbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 
 	public void setItemid(String itemid) {
 		this.itemid = itemid;
+	}
+
+	public String getLn() {
+		return ln;
+	}
+
+	public void setLn(String ln) {
+		this.ln = ln;
 	}
 }
 
