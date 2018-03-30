@@ -416,7 +416,7 @@ public class BasketballInterface {
     }
 
     /**
-     * 篮球详情
+     * 篮球详情(分析)
      * wangsong
      * 20180126
      *

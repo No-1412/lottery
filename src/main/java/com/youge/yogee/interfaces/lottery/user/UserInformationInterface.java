@@ -363,7 +363,7 @@ public class UserInformationInterface {
         if (orderNum.startsWith("PLS")) {
             CdThreeOrder cto = cdThreeOrderService.findOrderByOrderNum(orderNum);
             String followCode = cto.getFollowCode();
-            CdThreeOrder lastOrder = cdThreeOrderService.findByFollowCodeAndStatus(followCode, "3");
+            CdThreeOrder lastOrder = cdThreeOrderService.findByFollowCodeAndStatus(followCode);
             if (lastOrder != null) {
                 lastOrder.setFollowType("4");
                 cdThreeOrderService.save(lastOrder);
@@ -374,7 +374,7 @@ public class UserInformationInterface {
         } else if (orderNum.startsWith("PLW")) {
             CdFiveOrder cfo = cdFiveOrderService.findOrderByOrderNum(orderNum);
             String followCode = cfo.getFollowCode();
-            CdFiveOrder lastOrder = cdFiveOrderService.findByFollowCodeAndStatus(followCode, "3");
+            CdFiveOrder lastOrder = cdFiveOrderService.findByFollowCodeAndStatus(followCode);
             if (lastOrder != null) {
                 lastOrder.setFollowType("4");
                 cdFiveOrderService.save(lastOrder);
@@ -385,7 +385,7 @@ public class UserInformationInterface {
         } else {
             CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(orderNum);
             String followCode = clo.getFollowCode();
-            CdLottoOrder lastOrder = cdLottoOrderService.findByFollowCodeAndStatus(followCode, "3");
+            CdLottoOrder lastOrder = cdLottoOrderService.findByFollowCodeAndStatus(followCode);
             if (lastOrder != null) {
                 lastOrder.setFollowType("4");
                 cdLottoOrderService.save(lastOrder);

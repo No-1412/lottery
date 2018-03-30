@@ -121,12 +121,12 @@ public class CdThreeOrderService extends BaseService {
         return cdThreeOrderDao.find(dc);
     }
 
-    public CdThreeOrder findByFollowCodeAndStatus(String followCode, String followType) {
+    public CdThreeOrder findByFollowCodeAndStatus(String followCode) {
         DetachedCriteria dc = cdThreeOrderDao.createDetachedCriteria();
         dc.add(Restrictions.eq("followCode", followCode));
-        dc.add(Restrictions.eq("followType", followType));
+        dc.add(Restrictions.or(Restrictions.eq("followType", "1"), Restrictions.eq("followType", "3")));
         dc.add(Restrictions.eq(CdThreeOrder.FIELD_DEL_FLAG, CdThreeOrder.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.asc("createDate"));
+        dc.addOrder(Order.desc("createDate"));
         List<CdThreeOrder> list = cdThreeOrderDao.find(dc);
         if (list.size() > 0) {
             return list.get(0);

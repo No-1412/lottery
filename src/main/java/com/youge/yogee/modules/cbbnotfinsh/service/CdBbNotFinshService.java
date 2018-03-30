@@ -80,4 +80,19 @@ public class CdBbNotFinshService extends BaseService {
         cri.setFirstResult(Integer.parseInt(total));
         return cdBbNotFinshDao.find(dc);
     }
+
+    @Transactional(readOnly = false)
+    public CdBbNotFinsh getMatchByItemId(String itemId) {
+        DetachedCriteria dc = cdBbNotFinshDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBbNotFinsh.FIELD_DEL_FLAG, CdBbNotFinsh.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("itemid", itemId));
+        List<CdBbNotFinsh> list = cdBbNotFinshDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
 }
