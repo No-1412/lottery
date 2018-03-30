@@ -165,7 +165,8 @@ public class BasketballMatchInterface {
             Map map = new HashMap();
             map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
-            map.put("type", str.getType());//赛事类型
+            map.put("type", str.getType());
+            map.put("ln", str.getLn());//赛事类型
             map.put("hf", str.getHf());//主队分数
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
@@ -222,7 +223,8 @@ public class BasketballMatchInterface {
 
             map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
-            map.put("type", str.getType());//赛事类型
+            map.put("type", str.getType());
+            map.put("ln", str.getLn());//赛事类型
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
             map.put("day", str.getDay());//日期
