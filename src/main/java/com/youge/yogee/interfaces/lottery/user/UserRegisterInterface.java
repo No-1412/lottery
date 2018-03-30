@@ -412,6 +412,7 @@ public class UserRegisterInterface {
         dataMap.put("rebate", cdLotteryUser.getRebate());//返利金额
         dataMap.put("percent", percent);//等级百分比
         dataMap.put("tel", cdLotteryUser.getMobile());//等级电话
+        dataMap.put("isReal", cdLotteryUser.getIsRealNameVerified());//实名认证 1已认证 2未认证
         logger.info("pc：userChangeInformation---------- End----------");
 
         return HttpResultUtil.successJson(dataMap);

@@ -92,6 +92,7 @@ public class UserInformationInterface {
         dataMap.put("rebate", clu.getRebate());//返利金额
         dataMap.put("percent", percent);//等级百分比
         dataMap.put("tel", clu.getMobile());//等级电话
+        dataMap.put("isReal",clu.getIsRealNameVerified());//实名认证 1已认证 2未认证
         return HttpResultUtil.successJson(dataMap);
     }
 
