@@ -144,7 +144,7 @@ public class FootballMatchInterface {
         //List<CdFbAlreadyFinsh> dataList = cdFbAlreadyFinshService.getAlreadyFinsh(total, count);
         List<CdFootballAwards> dataList = cdFootballAwardsService.findALL(total, count);
         for (CdFootballAwards str : dataList) {
-            Map map = new HashMap();
+            Map<String,Object> map = new HashMap<>();
 //            map.put("qc", str.getQc());
             map.put("sort", str.getMatchDate());//标示
 //            map.put("type", str.getType());//比赛时间
@@ -174,10 +174,10 @@ public class FootballMatchInterface {
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String itemId = (String) jsonData.get("itemid");
         logger.info("ftEcharts  比赛事件echarts图表---------Start---------");
-        List list = new ArrayList();
+        List<Map> list = new ArrayList<>();
         List<CdSceneEcharts> dataList = cdSceneEchartsService.getEcharts(itemId);
         for (CdSceneEcharts str : dataList) {
-            Map map = new HashMap();
+            Map<String,Object> map = new HashMap<>();
             map.put("pn", str.getPn()); //
             map.put("eventType", str.getEventType());//类型(0进球3黄牌5红牌)
             map.put("teamType", str.getTeamType());
@@ -202,15 +202,21 @@ public class FootballMatchInterface {
     public String ftBallSkill(HttpServletRequest request) {
         logger.info("ftBallSkill  足球实况(技术统计 首发名单和替补名单)---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
         String itemId = (String) jsonData.get("itemid");
-        List list = new ArrayList();
+        if (StringUtils.isEmpty(itemId)) {
+            logger.error("itemid为空");
+            return HttpResultUtil.errorJson("itemid为空");
+        }
         List<CdFtSkill> dataList = cdFtSkillService.getFtSkill(itemId);
         CdFtSkill str = new CdFtSkill();
         if (dataList.size() > 0) {
             str = dataList.get(0);
         }
-        //for (CdFtSkill str : dataList) {
-        Map map = new HashMap();
+        Map<String,Object> map = new HashMap<>();
         map.put("itemId", str.getItemId());
         map.put("shootnuma", str.getShootnuma()); //射门a
         map.put("shotsongoala", str.getShotsongoala()); //射正a
@@ -230,18 +236,12 @@ public class FootballMatchInterface {
         map.put("yellowcardnumb", str.getYellowcardnumb());//黄牌b
         map.put("savesb", str.getSavesb());//救球b
 
-//        map.put("time", str.getPlayera());//主队名单
-//        map.put("playera", str.getTbplayera());//替补A
-//        map.put("playerb", str.getPlayerb());//客队名单b
-//        map.put("tbplayerb", str.getTbplayerb());//替补b
-
-
         List<String> paList = getList(str.getPlayera());
         List<String> pbList = getList(str.getPlayerb());
         List<String> tpaList = getList(str.getTbplayera());
         List<String> tpbList = getList(str.getTbplayerb());
 
-        Map dataMap = new HashMap();
+        Map<String,Object> dataMap = new HashMap<>();
         dataMap.put("list", map);
         dataMap.put("paList", paList);
         dataMap.put("pbList", pbList);
@@ -255,7 +255,6 @@ public class FootballMatchInterface {
     /**
      * 未完赛比赛收藏
      *
-     * @param
      */
     @RequestMapping(value = "footNotFinishedCollection", method = RequestMethod.POST)
     @ResponseBody
@@ -298,7 +297,6 @@ public class FootballMatchInterface {
     /**
      * 用户已关注未完赛列表
      *
-     * @param
      */
     @RequestMapping(value = "notFinishedHasCol", method = RequestMethod.POST)
     @ResponseBody
@@ -328,7 +326,7 @@ public class FootballMatchInterface {
             return HttpResultUtil.errorJson("uid为空");
         }
 
-        List list = new ArrayList();
+        List<Map> list = new ArrayList<>();
         List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed(total, count);
         for (CdFbFinshed str : dataList) {
             Map<String, Object> map = new HashMap<>();
@@ -348,7 +346,7 @@ public class FootballMatchInterface {
                 list.add(map);
             }
         }
-        Map dataMap = new HashMap();
+        Map<String,Object> dataMap = new HashMap<>();
         dataMap.put("list", list);
         logger.info("notFinishedHasCol  未完赛数据---------End---------");
         return HttpResultUtil.successJson(dataMap);
@@ -358,14 +356,13 @@ public class FootballMatchInterface {
     /**
      * 获取比赛主队客队比分或开赛时间
      *
-     * @param
      */
     @RequestMapping(value = "getFootBallMatchTitle", method = RequestMethod.POST)
     @ResponseBody
     public String getFootBallMatchTitle(HttpServletRequest request) {
         logger.info("getFootBallMatchTitle---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        Map dataMap = new HashMap();
+        Map<String,Object> dataMap = new HashMap<>();
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
