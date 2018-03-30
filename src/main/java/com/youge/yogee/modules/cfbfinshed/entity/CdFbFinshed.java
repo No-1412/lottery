@@ -16,6 +16,7 @@ import java.io.Serializable;
 
 /**
  * 足球未完赛信息Entity
+ *
  * @author RenHaipeng
  * @version 2018-01-15
  */
@@ -23,140 +24,158 @@ import java.io.Serializable;
 @Table(name = "cd_fb_finshed")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CdFbFinshed extends BaseEntity<T> implements Serializable {
-	
-	private static final long serialVersionUID = 1L;
-	private String id; 		// 识别id
-	private String name; 	// 名称
-	
-	private String createDate; 	// 创建时间
-	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
-	private String remarks; //
-	private String qc; //
-	private String sort; //
-	private String type; //
-	private String ln; //
-	private String hn; //
-	private String gn; //
-	private String jn; //
-	private String time; //
 
-	public CdFbFinshed() {
-		super();
-	}
+    private static final long serialVersionUID = 1L;
+    private String id;        // 识别id
+    private String name;    // 名称
 
-	public CdFbFinshed(String id){
-		this();
-		this.id = id;
-	}
-	
-	@Id
-	//@GeneratedValue(strategy = GenerationType.AUTO)
-	//@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_fb_finshed")
-	//@SequenceGenerator(name = "seq_cd_fb_finshed", sequenceName = "seq_cd_fb_finshed")
-	public String getId() {
-		return id;
-	}
+    private String createDate;    // 创建时间
+    private String delFlag;    // 删除标识 (0：未删除；1：已删除)
+    private String remarks; //
+    private String qc; //
+    private String sort; //
+    private String type; //
+    private String ln; //
+    private String hn; //
+    private String gn; //
+    private String jn; //
+    private String time; //
+    private String hf;    //主队分数
+    private String gf;    //客队分数
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public CdFbFinshed() {
+        super();
+    }
 
-	@Length(min=1, max=200)
-	public String getName() {
-		return name;
-	}
+    public CdFbFinshed(String id) {
+        this();
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getCreateDate() {
-		return createDate;
-	}
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_cd_fb_finshed")
+    //@SequenceGenerator(name = "seq_cd_fb_finshed", sequenceName = "seq_cd_fb_finshed")
+    public String getId() {
+        return id;
+    }
 
-	public void setCreateDate(String createDate) {
-		this.createDate = createDate;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public String getDelFlag() {
-		return delFlag;
-	}
+    @Length(min = 1, max = 200)
+    public String getName() {
+        return name;
+    }
 
-	public void setDelFlag(String delFlag) {
-		this.delFlag = delFlag;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getRemarks() {
-		return remarks;
-	}
+    public String getCreateDate() {
+        return createDate;
+    }
 
-	public void setRemarks(String remarks) {
-		this.remarks = remarks;
-	}
+    public void setCreateDate(String createDate) {
+        this.createDate = createDate;
+    }
 
-	public String getQc() {
-		return qc;
-	}
+    public String getDelFlag() {
+        return delFlag;
+    }
 
-	public void setQc(String qc) {
-		this.qc = qc;
-	}
+    public void setDelFlag(String delFlag) {
+        this.delFlag = delFlag;
+    }
 
-	public String getSort() {
-		return sort;
-	}
+    public String getRemarks() {
+        return remarks;
+    }
 
-	public void setSort(String sort) {
-		this.sort = sort;
-	}
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
 
-	public String getType() {
-		return type;
-	}
+    public String getQc() {
+        return qc;
+    }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public void setQc(String qc) {
+        this.qc = qc;
+    }
 
-	public String getLn() {
-		return ln;
-	}
+    public String getSort() {
+        return sort;
+    }
 
-	public void setLn(String ln) {
-		this.ln = ln;
-	}
+    public void setSort(String sort) {
+        this.sort = sort;
+    }
 
-	public String getHn() {
-		return hn;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setHn(String hn) {
-		this.hn = hn;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
-	public String getGn() {
-		return gn;
-	}
+    public String getLn() {
+        return ln;
+    }
 
-	public void setGn(String gn) {
-		this.gn = gn;
-	}
+    public void setLn(String ln) {
+        this.ln = ln;
+    }
 
-	public String getJn() {
-		return jn;
-	}
+    public String getHn() {
+        return hn;
+    }
 
-	public void setJn(String jn) {
-		this.jn = jn;
-	}
+    public void setHn(String hn) {
+        this.hn = hn;
+    }
 
-	public String getTime() {
-		return time;
-	}
+    public String getGn() {
+        return gn;
+    }
 
-	public void setTime(String time) {
-		this.time = time;
-	}
+    public void setGn(String gn) {
+        this.gn = gn;
+    }
+
+    public String getJn() {
+        return jn;
+    }
+
+    public void setJn(String jn) {
+        this.jn = jn;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public String getHf() {
+        return hf;
+    }
+
+    public void setHf(String hf) {
+        this.hf = hf;
+    }
+
+    public String getGf() {
+        return gf;
+    }
+
+    public void setGf(String gf) {
+        this.gf = gf;
+    }
 }
 
 
