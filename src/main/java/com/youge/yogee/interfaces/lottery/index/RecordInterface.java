@@ -74,6 +74,8 @@ public class RecordInterface {
             clu.setIsRealNameVerified("1");
             cdLotteryUserService.save(clu);
             map.put("uid", clu.getId());
+            map.put("idCard", cardNum);
+            map.put("realName", cardName);
         } else {
             return HttpResultUtil.errorJson("认证失败");
         }

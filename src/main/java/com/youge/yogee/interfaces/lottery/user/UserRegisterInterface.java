@@ -247,6 +247,8 @@ public class UserRegisterInterface {
         dataMap.put("tel", user.getMobile());//等级电话
         dataMap.put("isReal", user.getIsRealNameVerified());//实名认证 1已认证 2未认证
         dataMap.put("catchTimes", user.getCatchTimes());//今日提现次数
+        dataMap.put("idCard", user.getIdNumber());
+        dataMap.put("realName", user.getReality());
         logger.info("pc：用户登录userLogin---------- End----------");
         return HttpResultUtil.successJson(dataMap);
 
