@@ -36,6 +36,8 @@ public class CdFbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 	private String type; //
 	private String ln; //
 	private String hn; //
+	private String hf;	//主队分数
+	private String gf;	//客队分数
 	private String gn; //
 	private String jn; //
 	private String time; //
@@ -155,6 +157,22 @@ public class CdFbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 
 	public void setTime(String time) {
 		this.time = time;
+	}
+
+	public String getHf() {
+		return hf;
+	}
+
+	public void setHf(String hf) {
+		this.hf = hf;
+	}
+
+	public String getGf() {
+		return gf;
+	}
+
+	public void setGf(String gf) {
+		this.gf = gf;
 	}
 }
 
