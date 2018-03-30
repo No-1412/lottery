@@ -411,7 +411,7 @@ public class UserRegisterInterface {
         dataMap.put("balance", cdLotteryUser.getBalance().setScale(2).toString());//余额
         dataMap.put("rebate", cdLotteryUser.getRebate());//返利金额
         dataMap.put("percent", percent);//等级百分比
-
+        dataMap.put("tel", cdLotteryUser.getMobile());//等级电话
         logger.info("pc：userChangeInformation---------- End----------");
 
         return HttpResultUtil.successJson(dataMap);

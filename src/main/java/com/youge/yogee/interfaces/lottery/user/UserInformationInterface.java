@@ -91,6 +91,7 @@ public class UserInformationInterface {
         dataMap.put("balance", clu.getBalance().setScale(2).toString());//余额
         dataMap.put("rebate", clu.getRebate());//返利金额
         dataMap.put("percent", percent);//等级百分比
+        dataMap.put("tel", clu.getMobile());//等级电话
         return HttpResultUtil.successJson(dataMap);
     }
 
