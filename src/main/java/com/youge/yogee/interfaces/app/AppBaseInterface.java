@@ -34,6 +34,7 @@ public class AppBaseInterface {
     @RequestMapping(value = "otherDetail", method = RequestMethod.POST)
     @ResponseBody
     public String otherDetail(HttpServletRequest request) {
+
         logger.info("app otherDetail ----------Start--------");
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
@@ -43,7 +44,6 @@ public class AppBaseInterface {
             logger.error("数据提取失败！");
             return HttpResultUtil.errorJson("数据提取失败，请重新获取!");
         }
-
         Map dataMap = new HashMap();
         String content = "";
         BmBase info = bmBaseService.findByKind(type);

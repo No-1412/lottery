@@ -3,10 +3,10 @@ package com.youge.yogee.interfaces.lottery.football;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
-import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinishedCollection;
-import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinshed;
-import com.youge.yogee.modules.cfbfinshed.service.CdFbFinishedCollectionService;
-import com.youge.yogee.modules.cfbfinshed.service.CdFbFinshedService;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinish;
+import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishCollectionService;
+import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishService;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
 import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
 import com.youge.yogee.modules.cftlogo.service.CdFtLogoService;
@@ -38,7 +38,7 @@ public class FootballMatchInterface {
     private static final Logger logger = LoggerFactory.getLogger(FootballMatchInterface.class);
 
     @Autowired
-    private CdFbFinshedService cdFbFinshedService;
+    private CdFbNotFinishService cdFbNotFinishService;
     @Autowired
     private CdSceneEchartsService cdSceneEchartsService;
     @Autowired
@@ -46,7 +46,7 @@ public class FootballMatchInterface {
     @Autowired
     private CdFtLogoService cdFtLogoService;
     @Autowired
-    private CdFbFinishedCollectionService cdFbFinishedCollectionService;
+    private CdFbNotFinishCollectionService cdFbNotFinishCollectionService;
     @Autowired
     private CdFootballAwardsService cdFootballAwardsService;
 
@@ -84,10 +84,10 @@ public class FootballMatchInterface {
         }
 
         List list = new ArrayList();
-        List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed(total, count);
-        for (CdFbFinshed str : dataList) {
+        List<CdFbNotFinish> dataList = cdFbNotFinishService.getNotFinish(total, count);
+        for (CdFbNotFinish str : dataList) {
             Map<String, Object> map = new HashMap<>();
-            CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(str.getSort(), uid);
+            CdFbNotFinishCollection cffc = cdFbNotFinishCollectionService.findByMatIdAndUid(str.getSort(), uid);
             if (cffc != null) {
                 map.put("col", "1");
             } else {
@@ -141,7 +141,7 @@ public class FootballMatchInterface {
         }
 
         List list = new ArrayList();
-        //List<CdFbAlreadyFinsh> dataList = cdFbAlreadyFinshService.getAlreadyFinsh(total, count);
+        //List<CdFbAlreadyFinish> dataList = cdFbAlreadyFinshService.getAlreadyFinsh(total, count);
         List<CdFootballAwards> dataList = cdFootballAwardsService.findALL(total, count);
         for (CdFootballAwards str : dataList) {
             Map<String,Object> map = new HashMap<>();
@@ -280,15 +280,15 @@ public class FootballMatchInterface {
             return HttpResultUtil.errorJson("sort为空");
         }
 
-        CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(sort, uid);
+        CdFbNotFinishCollection cffc = cdFbNotFinishCollectionService.findByMatIdAndUid(sort, uid);
         if (cffc == null) {
-            CdFbFinishedCollection cdFbFinishedCollection = new CdFbFinishedCollection();
-            cdFbFinishedCollection.setSort(sort);
-            cdFbFinishedCollection.setUid(uid);
+            CdFbNotFinishCollection cdFbNotFinishCollection = new CdFbNotFinishCollection();
+            cdFbNotFinishCollection.setSort(sort);
+            cdFbNotFinishCollection.setUid(uid);
 
-            cdFbFinishedCollectionService.save(cdFbFinishedCollection);
+            cdFbNotFinishCollectionService.save(cdFbNotFinishCollection);
         } else {
-            cdFbFinishedCollectionService.delete(cffc.getId());
+            cdFbNotFinishCollectionService.delete(cffc.getId());
         }
         Map dataMap = new HashMap();
         logger.info("footNotFinishedCollection---------End---------");
@@ -329,10 +329,10 @@ public class FootballMatchInterface {
         }
 
         List<Map> list = new ArrayList<>();
-        List<CdFbFinshed> dataList = cdFbFinshedService.getNotFinshed(total, count);
-        for (CdFbFinshed str : dataList) {
+        List<CdFbNotFinish> dataList = cdFbNotFinishService.getNotFinish(total, count);
+        for (CdFbNotFinish str : dataList) {
             Map<String, Object> map = new HashMap<>();
-            CdFbFinishedCollection cffc = cdFbFinishedCollectionService.findByMatIdAndUid(str.getSort(), uid);
+            CdFbNotFinishCollection cffc = cdFbNotFinishCollectionService.findByMatIdAndUid(str.getSort(), uid);
             if (cffc != null) {
                 map.put("col", "1");
                 map.put("qc", str.getQc());
@@ -390,7 +390,7 @@ public class FootballMatchInterface {
             dataMap.put("guest", cfa.getAwayTeam());//客队
             dataMap.put("middle", cfa.getHs() + "-" + cfa.getVs());//别分
         } else {
-            CdFbFinshed cff = cdFbFinshedService.findBySort(sort);
+            CdFbNotFinish cff = cdFbNotFinishService.findBySort(sort);
             if (cff == null) {
                 return HttpResultUtil.errorJson("数据不存在");
             }

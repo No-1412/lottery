@@ -1,7 +1,7 @@
 /**
  * There are <a href="https://github.com/thinkgem/jeesite">JeeSite</a> code generation
  */
-package com.youge.yogee.modules.cfbfinshed.entity;
+package com.youge.yogee.modules.cfbnotfinish.entity;
 
 import com.youge.yogee.common.persistence.BaseEntity;
 import org.apache.poi.ss.formula.functions.T;
@@ -21,9 +21,9 @@ import java.io.Serializable;
  * @version 2018-01-15
  */
 @Entity
-@Table(name = "cd_fb_finshed")
+@Table(name = "cd_fb_notfinish")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class CdFbFinshed extends BaseEntity<T> implements Serializable {
+public class CdFbNotFinish extends BaseEntity<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String id;        // 识别id
@@ -43,11 +43,11 @@ public class CdFbFinshed extends BaseEntity<T> implements Serializable {
     private String hf;    //主队分数
     private String gf;    //客队分数
 
-    public CdFbFinshed() {
+    public CdFbNotFinish() {
         super();
     }
 
-    public CdFbFinshed(String id) {
+    public CdFbNotFinish(String id) {
         this();
         this.id = id;
     }

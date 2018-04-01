@@ -28,13 +28,13 @@
 <body>
 	<ul class="nav nav-tabs">
 		<li>
-			<a href="${ctx}/cfbfinshed/cdFbFinishedCollection/">足球比赛收藏列表</a>
+			<a href="${ctx}/cfbfinshed/cdFbNotFinishCollection/">足球比赛收藏列表</a>
 		</li>
 		<li class="active">
-			<a href="${ctx}/cfbfinshed/cdFbFinishedCollection/form?id=${cdFbFinishedCollection.id}">足球比赛收藏<shiro:hasPermission name="cfbfinshed:cdFbFinishedCollection:edit">${not empty cdFbFinishedCollection.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="cfbfinshed:cdFbFinishedCollection:edit">查看</shiro:lacksPermission></a>
+			<a href="${ctx}/cfbfinshed/cdFbNotFinishCollection/form?id=${cdFbNotFinishCollection.id}">足球比赛收藏<shiro:hasPermission name="cfbfinshed:cdFbNotFinishCollection:edit">${not empty cdFbNotFinishCollection.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="cfbfinshed:cdFbNotFinishCollection:edit">查看</shiro:lacksPermission></a>
 		</li>
 	</ul><br/>
-	<form:form id="inputForm" modelAttribute="cdFbFinishedCollection" action="${ctx}/cfbfinshed/cdFbFinishedCollection/save" method="post" class="form-horizontal">
+	<form:form id="inputForm" modelAttribute="cdFbNotFinishCollection" action="${ctx}/cfbfinshed/cdFbNotFinishCollection/save" method="post" class="form-horizontal">
 		<form:hidden path="id"/>
 		<tags:message content="${message}"/>
 		<div class="control-group">
@@ -50,7 +50,7 @@
 			</div>
 		</div>
 		<div class="form-actions">
-			<shiro:hasPermission name="cfbfinshed:cdFbFinishedCollection:edit">
+			<shiro:hasPermission name="cfbfinshed:cdFbNotFinishCollection:edit">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
 			</shiro:hasPermission>
 			<input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>

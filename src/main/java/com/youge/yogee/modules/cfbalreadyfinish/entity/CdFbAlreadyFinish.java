@@ -1,7 +1,7 @@
 /**
  * There are <a href="https://github.com/thinkgem/jeesite">JeeSite</a> code generation
  */
-package com.youge.yogee.modules.cfbalreadyfinsh.entity;
+package com.youge.yogee.modules.cfbalreadyfinish.entity;
 
 import com.youge.yogee.common.persistence.BaseEntity;
 import org.apache.poi.ss.formula.functions.T;
@@ -20,9 +20,9 @@ import java.io.Serializable;
  * @version 2018-01-15
  */
 @Entity
-@Table(name = "cd_fb_alreadyfinsh")
+@Table(name = "cd_fb_alreadyfinish")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class CdFbAlreadyFinsh extends BaseEntity<T> implements Serializable {
+public class CdFbAlreadyFinish extends BaseEntity<T> implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private String id; 		// 识别id
@@ -41,11 +41,11 @@ public class CdFbAlreadyFinsh extends BaseEntity<T> implements Serializable {
 	private String gn; //
 	private String jn; //
 	private String time; //
-	public CdFbAlreadyFinsh() {
+	public CdFbAlreadyFinish() {
 		super();
 	}
 
-	public CdFbAlreadyFinsh(String id){
+	public CdFbAlreadyFinish(String id){
 		this();
 		this.id = id;
 	}

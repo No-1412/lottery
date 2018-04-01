@@ -1,7 +1,7 @@
 /**
  * There are <a href="https://github.com/thinkgem/jeesite">JeeSite</a> code generation
  */
-package com.youge.yogee.modules.cfbfinshed.entity;
+package com.youge.yogee.modules.cfbnotfinish.entity;
 
 import com.youge.yogee.common.persistence.BaseEntity;
 import org.apache.poi.ss.formula.functions.T;
@@ -21,9 +21,9 @@ import java.io.Serializable;
  * @version 2018-03-19
  */
 @Entity
-@Table(name = "cd_fb_finished_collection")
+@Table(name = "cd_fb_notfinish_collection")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class CdFbFinishedCollection extends BaseEntity<T> implements Serializable {
+public class CdFbNotFinishCollection extends BaseEntity<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String id;        // 识别id
@@ -35,11 +35,11 @@ public class CdFbFinishedCollection extends BaseEntity<T> implements Serializabl
     private String createDate;    // 创建时间
     private String delFlag;    // 删除标识 (0：未删除；1：已删除)
 
-    public CdFbFinishedCollection() {
+    public CdFbNotFinishCollection() {
         super();
     }
 
-    public CdFbFinishedCollection(String id) {
+    public CdFbNotFinishCollection(String id) {
         this();
         this.id = id;
     }

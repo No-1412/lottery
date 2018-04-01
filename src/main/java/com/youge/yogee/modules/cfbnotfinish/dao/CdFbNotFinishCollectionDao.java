@@ -1,13 +1,12 @@
 /**
  * There are <a href="https://github.com/thinkgem/jeesite">JeeSite</a> code generation
  */
-package com.youge.yogee.modules.cfbfinshed.dao;
+package com.youge.yogee.modules.cfbnotfinish.dao;
 
 import org.springframework.stereotype.Repository;
 
 import com.youge.yogee.common.persistence.BaseDao;
-import com.youge.yogee.common.persistence.Parameter;
-import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinishedCollection;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
 
 /**
  * 足球比赛收藏DAO接口
@@ -15,6 +14,6 @@ import com.youge.yogee.modules.cfbfinshed.entity.CdFbFinishedCollection;
  * @version 2018-03-19
  */
 @Repository
-public class CdFbFinishedCollectionDao extends BaseDao<CdFbFinishedCollection> {
+public class CdFbNotFinishCollectionDao extends BaseDao<CdFbNotFinishCollection> {
 	
 }
