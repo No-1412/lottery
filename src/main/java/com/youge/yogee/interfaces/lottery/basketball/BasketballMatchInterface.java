@@ -5,6 +5,7 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
 import com.youge.yogee.modules.cbbalreadyfinsh.service.CdBbAlreadyFinshService;
+import com.youge.yogee.modules.cbblogo.service.CdBbLogoService;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinishCollection;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
 import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinishCollectionService;
@@ -48,6 +49,8 @@ public class BasketballMatchInterface {
     private CdBbStrengthpkInjuryService cdBbStrengthpkInjuryService;
     @Autowired
     private CdBbNotFinishCollectionService cdBbNotFinishCollectionService;
+    @Autowired
+    private CdBbLogoService cdBbLogoService;
 
     /**
      * 篮球实力PK数据接口
@@ -160,10 +163,12 @@ public class BasketballMatchInterface {
             return HttpResultUtil.errorJson("count为空");
         }
         List<CdBbAlreadyFinsh> dataList = cdBbAlreadyFinshService.getBbFinshed(total, count);
+
+
         List list = new ArrayList();
         for (CdBbAlreadyFinsh str : dataList) {
             Map map = new HashMap();
-            map.put("hn", str.getHn());//主队名
+            //map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
             map.put("type", str.getType());
             map.put("ln", str.getLn());//赛事类型
@@ -173,8 +178,8 @@ public class BasketballMatchInterface {
             map.put("gf", str.getGf());//客队分数
             map.put("day", str.getDay());//日期
             map.put("matchId", str.getMatchId());//场次id
-            map.put("hnImg", str.getHnImg());//主队LOGO
-            map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
+            map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
             map.put("itemid", str.getItemid());
             list.add(map);
         }
@@ -221,7 +226,7 @@ public class BasketballMatchInterface {
                 map.put("col", "0");
             }
 
-            map.put("hn", str.getHn());//主队名
+            //map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
             map.put("type", str.getType());
             map.put("ln", str.getLn());//赛事类型
@@ -229,8 +234,8 @@ public class BasketballMatchInterface {
             map.put("gn", str.getGn());//客队
             map.put("day", str.getDay());//日期
             map.put("matchId", str.getMatchId());//场次id
-            map.put("hnImg", str.getHnImg());//主队LOGO
-            map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
+            map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
             map.put("itemid", str.getItemid());
             map.put("hf", str.getHf());//主队分数
             map.put("gf", str.getGf());//客队分数
@@ -319,15 +324,15 @@ public class BasketballMatchInterface {
             CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(str.getZid(), uid);
             if (cbnfc != null) {
                 map.put("col", "1");
-                map.put("hn", str.getHn());//主队名
+                //map.put("hn", str.getHn());//主队名
                 map.put("zid", str.getZid());//队Id
                 map.put("type", str.getType());//赛事类型
                 map.put("hn", str.getHn());//主队
                 map.put("gn", str.getGn());//客队
                 map.put("day", str.getDay());//日期
                 map.put("matchId", str.getMatchId());//场次id
-                map.put("hnImg", str.getHnImg());//主队LOGO
-                map.put("gnImg", str.getGnImg());//客队LOGO
+                map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
+                map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
                 map.put("itemid", str.getItemid());
                 list.add(map);
             }
@@ -369,16 +374,16 @@ public class BasketballMatchInterface {
         if ("2".equals(type)) {
             CdBbAlreadyFinsh cbaf = cdBbAlreadyFinshService.getMatchByItemId(itemid);
             if (cbaf != null) {
-                dataMap.put("hn", cbaf.getHn());//主队
-                dataMap.put("gn", cbaf.getGn());//客队
+                dataMap.put("host", cbaf.getHn());//主队
+                dataMap.put("guest", cbaf.getGn());//客队
                 dataMap.put("middle", cbaf.getHf() + ":" + cbaf.getGf());//比分
             }
         } else {
             CdBbNotFinsh cbnf = cdBbNotFinshService.getMatchByItemId(itemid);
             if (cbnf != null) {
-                dataMap.put("hn", cbnf.getHn());//主队
-                dataMap.put("gn", cbnf.getGn());//客队
-                dataMap.put("middle", cbnf.getDay().substring(10, 16));//时间
+                dataMap.put("host", cbnf.getHn());//主队
+                dataMap.put("guest", cbnf.getGn());//客队
+                dataMap.put("middle", cbnf.getDay());//时间
             }
         }
 

@@ -25,8 +25,8 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("${frontPath}")
-public class RecordInterface {
-    private static final Logger logger = LoggerFactory.getLogger(RecordInterface.class);
+public class TryCashInterface {
+    private static final Logger logger = LoggerFactory.getLogger(TryCashInterface.class);
     @Autowired
     private CdRecordCashService cdRecordCashService;
     @Autowired

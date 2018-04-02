@@ -65,7 +65,7 @@ public class CdBbNotFinshService extends BaseService {
 
     @Transactional(readOnly = false)
     public List<CdBbNotFinsh> selectIsExit(String matchId, String day) {
-        return cdBbNotFinshDao.findBySql("select * from cd_bb_notfinsh where day= '" + day + "' and match_id= '" + matchId + "'");
+        return cdBbNotFinshDao.findBySql("select * from cd_bb_notfinish where day= '" + day + "' and match_id= '" + matchId + "'");
     }
 
     @Transactional(readOnly = false)

@@ -481,8 +481,12 @@ public class UserInformationInterface {
             Map<String, Object> cdRecordCashMap = new HashMap<>();
             cdRecordCashMap.put("price", cdRecordCash.getPrice());
             cdRecordCashMap.put("orderNum", cdRecordCash.getOrderNum());
-            cdRecordCashMap.put("cardNum", cdRecordCash.getCreateDate());
-            cdRecordCashMap.put("dealTime", cdRecordCash.getDealTime());
+            cdRecordCashMap.put("cardNum", cdRecordCash.getCardNum());
+            String dealTime = cdRecordCash.getDealTime();
+            if (StringUtils.isEmpty(dealTime)) {
+                dealTime = cdRecordCash.getCreateDate();
+            }
+            cdRecordCashMap.put("dealTime", dealTime);
             cdRecordCashMap.put("status", cdRecordCash.getStatus());
             recordCashList.add(cdRecordCashMap);
         }
