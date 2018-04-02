@@ -168,7 +168,7 @@ public class BasketballMatchInterface {
         List list = new ArrayList();
         for (CdBbAlreadyFinsh str : dataList) {
             Map map = new HashMap();
-            map.put("hn", str.getHn());//主队名
+            //map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
             map.put("type", str.getType());
             map.put("ln", str.getLn());//赛事类型
@@ -226,7 +226,7 @@ public class BasketballMatchInterface {
                 map.put("col", "0");
             }
 
-            map.put("hn", str.getHn());//主队名
+            //map.put("hn", str.getHn());//主队名
             map.put("zid", str.getZid());//队Id
             map.put("type", str.getType());
             map.put("ln", str.getLn());//赛事类型
@@ -324,7 +324,7 @@ public class BasketballMatchInterface {
             CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(str.getZid(), uid);
             if (cbnfc != null) {
                 map.put("col", "1");
-                map.put("hn", str.getHn());//主队名
+                //map.put("hn", str.getHn());//主队名
                 map.put("zid", str.getZid());//队Id
                 map.put("type", str.getType());//赛事类型
                 map.put("hn", str.getHn());//主队
@@ -374,15 +374,15 @@ public class BasketballMatchInterface {
         if ("2".equals(type)) {
             CdBbAlreadyFinsh cbaf = cdBbAlreadyFinshService.getMatchByItemId(itemid);
             if (cbaf != null) {
-                dataMap.put("hn", cbaf.getHn());//主队
-                dataMap.put("gn", cbaf.getGn());//客队
+                dataMap.put("host", cbaf.getHn());//主队
+                dataMap.put("guest", cbaf.getGn());//客队
                 dataMap.put("middle", cbaf.getHf() + ":" + cbaf.getGf());//比分
             }
         } else {
             CdBbNotFinsh cbnf = cdBbNotFinshService.getMatchByItemId(itemid);
             if (cbnf != null) {
-                dataMap.put("hn", cbnf.getHn());//主队
-                dataMap.put("gn", cbnf.getGn());//客队
+                dataMap.put("host", cbnf.getHn());//主队
+                dataMap.put("guest", cbnf.getGn());//客队
                 dataMap.put("middle", cbnf.getDay());//时间
             }
         }
