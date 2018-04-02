@@ -165,7 +165,6 @@ public class BasketballMatchInterface {
         List<CdBbAlreadyFinsh> dataList = cdBbAlreadyFinshService.getBbFinshed(total, count);
 
 
-
         List list = new ArrayList();
         for (CdBbAlreadyFinsh str : dataList) {
             Map map = new HashMap();
@@ -332,8 +331,8 @@ public class BasketballMatchInterface {
                 map.put("gn", str.getGn());//客队
                 map.put("day", str.getDay());//日期
                 map.put("matchId", str.getMatchId());//场次id
-                map.put("hnImg", str.getHnImg());//主队LOGO
-                map.put("gnImg", str.getGnImg());//客队LOGO
+                map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
+                map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
                 map.put("itemid", str.getItemid());
                 list.add(map);
             }
@@ -384,7 +383,7 @@ public class BasketballMatchInterface {
             if (cbnf != null) {
                 dataMap.put("hn", cbnf.getHn());//主队
                 dataMap.put("gn", cbnf.getGn());//客队
-                dataMap.put("middle", cbnf.getDay().substring(10, 16));//时间
+                dataMap.put("middle", cbnf.getDay());//时间
             }
         }
 
