@@ -31,6 +31,8 @@ public class ErpRechargeLog extends BaseEntity<T> implements Serializable {
 	private ErpUser userId; 	// 购彩用户id
 	private BigDecimal money; 	// 充值金额
 
+	private String remark; 	// 备注
+	private String type; 	// 类型（0充值 1扣款）
 	private String createDate; 	// 充值时间
 	private String delFlag; 	// 删除标识 (0：未删除；1：已删除)
 
@@ -100,6 +102,22 @@ public class ErpRechargeLog extends BaseEntity<T> implements Serializable {
 
 	public void setMoney(BigDecimal money) {
 		this.money = money;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
 

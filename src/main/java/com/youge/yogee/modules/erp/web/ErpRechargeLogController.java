@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * 销售后台充值记录Controller
@@ -46,11 +47,12 @@ public class ErpRechargeLogController extends BaseController {
 	
 	@RequiresPermissions("erp:erpRechargeLog:view")
 	@RequestMapping(value = {"list", ""})
-	public String list(ErpRechargeLog erpRechargeLog, HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String list(ErpRechargeLog erpRechargeLog, HttpServletRequest request, HttpServletResponse response, Model model, @RequestParam Map<String, Object> paramMap) {
 		User user = UserUtils.getUser();
 		
-        Page<ErpRechargeLog> page = erpRechargeLogService.find(new Page<ErpRechargeLog>(request, response), erpRechargeLog);
+        Page<ErpRechargeLog> page = erpRechargeLogService.find(new Page<ErpRechargeLog>(request, response), erpRechargeLog,paramMap);
         model.addAttribute("page", page);
+		model.addAllAttributes(paramMap);
 		return "modules/erp/erpRechargeLogList";
 	}
 
@@ -61,14 +63,34 @@ public class ErpRechargeLogController extends BaseController {
 		return "modules/erp/erpRechargeLogForm";
 	}
 
+
+	/****************************************扣款*************************************************/
+	@RequiresPermissions("erp:erpRechargeLog:view")
+	@RequestMapping(value = "withholdList")
+	public String withholdList(ErpRechargeLog erpRechargeLog, HttpServletRequest request, HttpServletResponse response, Model model, @RequestParam Map<String, Object> paramMap) {
+		User user = UserUtils.getUser();
+
+		Page<ErpRechargeLog> page = erpRechargeLogService.findWithhold(new Page<ErpRechargeLog>(request, response), erpRechargeLog,paramMap);
+		model.addAttribute("page", page);
+		model.addAllAttributes(paramMap);
+		return "modules/erp/erpRechargeLogWithholdList";
+	}
+
+	@RequiresPermissions("erp:erpRechargeLog:view")
+	@RequestMapping(value = "withholdForm")
+	public String withholdForm(ErpRechargeLog erpRechargeLog, Model model) {
+		model.addAttribute("erpRechargeLog", erpRechargeLog);
+		return "modules/erp/erpRechargeLogWithholdForm";
+	}
+	/****************************************扣款*************************************************/
+
+
 	@RequiresPermissions("erp:erpRechargeLog:edit")
 	@RequestMapping(value = "save")
-	public String save(ErpRechargeLog erpRechargeLog, Model model, RedirectAttributes redirectAttributes) {
-		if (!beanValidator(model, erpRechargeLog)){
-			return form(erpRechargeLog, model);
-		}
-		erpRechargeLogService.save(erpRechargeLog);
-		addMessage(redirectAttributes, "保存销售后台充值记录成功");
+	public String save(ErpRechargeLog erpRechargeLog, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+		String type = request.getParameter("type");
+		erpRechargeLogService.save(erpRechargeLog,type);
+		addMessage(redirectAttributes, "操作成功");
 		return "redirect:"+ Global.getAdminPath()+"/erp/erpRechargeLog/?repage";
 	}
 	
@@ -76,7 +98,7 @@ public class ErpRechargeLogController extends BaseController {
 	@RequestMapping(value = "delete")
 	public String delete(String id, RedirectAttributes redirectAttributes) {
 		erpRechargeLogService.delete(id);
-		addMessage(redirectAttributes, "删除销售后台充值记录成功");
+		addMessage(redirectAttributes, "操作成功");
 		return "redirect:"+ Global.getAdminPath()+"/erp/erpRechargeLog/?repage";
 	}
 

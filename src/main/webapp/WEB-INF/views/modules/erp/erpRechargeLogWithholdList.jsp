@@ -18,12 +18,12 @@
 </head>
 <body>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="${ctx}/erp/erpRechargeLog/">销售后台充值记录列表</a></li>
+		<li class="active"><a href="${ctx}/erp/erpRechargeLog/withholdList">销售后台扣款记录</a></li>
 		<shiro:hasPermission name="erp:erpRechargeLog:edit">
-			<li><a href="${ctx}/erp/erpRechargeLog/form">充值</a></li>
+			<li><a href="${ctx}/erp/erpRechargeLog/withholdForm">扣款</a></li>
 		</shiro:hasPermission>
 	</ul>
-	<form:form id="searchForm" modelAttribute="erpRechargeLog" action="${ctx}/erp/erpRechargeLog/" method="post" class="breadcrumb form-search">
+	<form:form id="searchForm" modelAttribute="erpRechargeLog" action="${ctx}/erp/erpRechargeLog/withholdList" method="post" class="breadcrumb form-search">
 		<input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
 		<input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
 		<label>名称 ：</label><form:input path="userId.name" htmlEscape="false" maxlength="50" class="input-small"/>
@@ -38,9 +38,9 @@
 		<thead>
 			<tr>
 				<th>操作人员</th>
-				<th>充值用户</th>
-				<th>充值金额（元）</th>
-				<th>充值时间</th>
+				<th>扣款用户</th>
+				<th>扣款金额（元）</th>
+				<th>扣款时间</th>
 				<%--<shiro:hasPermission name="erp:erpRechargeLog:edit"><th>操作</th></shiro:hasPermission>--%>
 			</tr>
 		</thead>
@@ -56,6 +56,5 @@
 		</tbody>
 	</table>
 	<div class="pagination">${page}</div>
-	<%@ include file="/WEB-INF/views/modules/erp/loopWall.jsp"%>
 </body>
 </html>
