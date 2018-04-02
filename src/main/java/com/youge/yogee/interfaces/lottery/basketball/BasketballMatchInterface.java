@@ -5,6 +5,7 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
 import com.youge.yogee.modules.cbbalreadyfinsh.service.CdBbAlreadyFinshService;
+import com.youge.yogee.modules.cbblogo.service.CdBbLogoService;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinishCollection;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
 import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinishCollectionService;
@@ -48,6 +49,8 @@ public class BasketballMatchInterface {
     private CdBbStrengthpkInjuryService cdBbStrengthpkInjuryService;
     @Autowired
     private CdBbNotFinishCollectionService cdBbNotFinishCollectionService;
+    @Autowired
+    private CdBbLogoService cdBbLogoService;
 
     /**
      * 篮球实力PK数据接口
@@ -160,6 +163,9 @@ public class BasketballMatchInterface {
             return HttpResultUtil.errorJson("count为空");
         }
         List<CdBbAlreadyFinsh> dataList = cdBbAlreadyFinshService.getBbFinshed(total, count);
+
+
+
         List list = new ArrayList();
         for (CdBbAlreadyFinsh str : dataList) {
             Map map = new HashMap();
@@ -173,8 +179,8 @@ public class BasketballMatchInterface {
             map.put("gf", str.getGf());//客队分数
             map.put("day", str.getDay());//日期
             map.put("matchId", str.getMatchId());//场次id
-            map.put("hnImg", str.getHnImg());//主队LOGO
-            map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
+            map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
             map.put("itemid", str.getItemid());
             list.add(map);
         }
@@ -229,8 +235,8 @@ public class BasketballMatchInterface {
             map.put("gn", str.getGn());//客队
             map.put("day", str.getDay());//日期
             map.put("matchId", str.getMatchId());//场次id
-            map.put("hnImg", str.getHnImg());//主队LOGO
-            map.put("gnImg", str.getGnImg());//客队LOGO
+            map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
+            map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
             map.put("itemid", str.getItemid());
             map.put("hf", str.getHf());//主队分数
             map.put("gf", str.getGf());//客队分数
