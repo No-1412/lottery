@@ -70,6 +70,7 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
     private String totalPay;//购彩总金额
     private String rebate;//返利金额
     private String catchTimes;//返利金额
+    private String continent;//大洲
 
     public CdLotteryUser() {
         super();
@@ -401,9 +402,16 @@ public class CdLotteryUser extends BaseEntity<T> implements Serializable {
     public String getCatchTimes() {
         return catchTimes;
     }
-
     public void setCatchTimes(String catchTimes) {
         this.catchTimes = catchTimes;
+    }
+
+    public String getContinent() {
+        return continent;
+    }
+
+    public void setContinent(String continent) {
+        this.continent = continent;
     }
 }
 

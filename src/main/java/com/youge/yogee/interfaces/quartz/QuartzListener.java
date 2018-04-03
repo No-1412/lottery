@@ -334,6 +334,13 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
+                    //保存中獎大洲
+                    String continent = cdFootballFollowOrder.getContinent();
+                    CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
+                    String newContinent = clu.getContinent() + continent;//大洲
+                    clu.setContinent(newContinent);
+                    cdLotteryUserService.save(clu);
+
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
                     if (co != null) {
@@ -450,6 +457,12 @@ public class QuartzListener {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdFootballSingleOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
+                    //保存中獎大洲
+                    String continent = cdFootballSingleOrder.getContinent();
+                    CdLotteryUser clu = cdLotteryUserService.get(cdFootballSingleOrder.getUid());
+                    String newContinent = clu.getContinent() + continent;//大洲
+                    clu.setContinent(newContinent);
+                    cdLotteryUserService.save(clu);
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
                     if (co != null) {

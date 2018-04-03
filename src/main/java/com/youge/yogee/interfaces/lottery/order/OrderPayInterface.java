@@ -110,6 +110,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 cfs.setStatus("2");//已付款
+                cfs.setUid(uid);//预约单是写死的 支付后更新
                 cdFootballSingleOrderService.save(cfs);
                 saveAllChange(price, balance, clu, orderNum, "1");
             } else {
@@ -121,6 +122,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 cff.setStatus("2");//已付款
+                cff.setUid(uid);//预约单是写死的 支付后更新
                 cdFootballFollowOrderService.save(cff);
                 saveAllChange(price, balance, clu, orderNum, "2");
             } else {
@@ -132,6 +134,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 cbs.setStatus("2");//已付款
+                cbs.setUid(uid);//预约单是写死的 支付后更新
                 cdBasketballSingleOrderService.save(cbs);
                 saveAllChange(price, balance, clu, orderNum, "3");
             } else {
@@ -143,6 +146,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 cbf.setStatus("2");//已付款
+                cbf.setUid(uid);//预约单是写死的 支付后更新
                 cdBasketballFollowOrderService.save(cbf);
                 saveAllChange(price, balance, clu, orderNum, "4");
             } else {
@@ -154,6 +158,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 ccno.setStatus("2");//已付款
+                ccno.setUid(uid);//预约单是写死的 支付后更新
                 cdChooseNineOrderService.save(ccno);
                 saveAllChange(price, balance, clu, orderNum, "5");
             } else {
@@ -165,6 +170,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 csfo.setStatus("2");//已付款
+                csfo.setUid(uid);//预约单是写死的 支付后更新
                 cdSuccessFailOrderService.save(csfo);
                 saveAllChange(price, balance, clu, orderNum, "6");
             } else {
@@ -176,6 +182,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 dto.setStatus("2");//已付款
+                dto.setUid(uid);//预约单是写死的 支付后更新
                 cdThreeOrderService.save(dto);
                 saveAllChange(price, balance, clu, orderNum, "7");
                 if ("2".equals(dto.getType())) {
@@ -199,6 +206,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 cfo.setStatus("2");//已付款
+                cfo.setUid(uid);//预约单是写死的 支付后更新
                 cdFiveOrderService.save(cfo);
                 saveAllChange(price, balance, clu, orderNum, "8");
                 if ("2".equals(cfo.getType())) {
@@ -223,6 +231,7 @@ public class OrderPayInterface {
             if (canPay(price, balance)) {
                 //更该订单信息
                 clo.setStatus("2");//已付款
+                clo.setUid(uid);//预约单是写死的 支付后更新
                 cdLottoOrderService.save(clo);
                 saveAllChange(price, balance, clu, orderNum, "9");
                 if ("2".equals(clo.getConType())) {
@@ -284,17 +293,18 @@ public class OrderPayInterface {
     //保存返利
     private void saveRebate(String price, String uid, String type, CdLotteryUser cdLotteryUser) {
         double priceDouble = Double.parseDouble(price);
+        BigDecimal priceBig = new BigDecimal(price);
         boolean flag = false;
         String rebate = "";
         if (priceDouble > 0.0) {
             flag = true;
-            rebate = String.valueOf(priceDouble * 0.01);
+            rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.01)).setScale(2, 2));
         } else if (priceDouble >= 1000.0) {
             flag = true;
-            rebate = String.valueOf(priceDouble * 0.02);
+            rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.02).setScale(2, 2)));
         } else if (priceDouble >= 10000.0) {
             flag = true;
-            rebate = String.valueOf(priceDouble * 0.03);
+            rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.03).setScale(2, 2)));
         }
         if (flag) {
             CdRecordRebate crr = new CdRecordRebate();
@@ -303,7 +313,9 @@ public class OrderPayInterface {
             crr.setType(type);
             cdRecordRebateService.save(crr);
             //保存用户表返利字段
-            cdLotteryUser.setRebate(rebate);
+            String userRebate = cdLotteryUser.getRebate();
+            BigDecimal newRebate = new BigDecimal(userRebate).add(new BigDecimal(rebate));
+            cdLotteryUser.setRebate(String.valueOf(newRebate));
             cdLotteryUserService.save(cdLotteryUser);
         }
     }

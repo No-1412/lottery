@@ -376,7 +376,7 @@ public class BasketballMatchInterface {
             if (cbaf != null) {
                 dataMap.put("host", cbaf.getHn());//主队
                 dataMap.put("guest", cbaf.getGn());//客队
-                dataMap.put("middle", cbaf.getHf() + ":" + cbaf.getGf());//比分
+                dataMap.put("middle", cbaf.getHf() + "-" + cbaf.getGf());//比分
             }
         } else {
             CdBbNotFinsh cbnf = cdBbNotFinshService.getMatchByItemId(itemid);
