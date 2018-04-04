@@ -5,8 +5,8 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
 import com.youge.yogee.modules.cfbfuture.service.CdFbFutureService;
-import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
 import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinish;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
 import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishCollectionService;
 import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishService;
 import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
@@ -292,11 +292,18 @@ public class FootballMatchInterface {
         List scoerList = new ArrayList();
         List hFutureList = new ArrayList();
         List gFutureList = new ArrayList();
-
-        logger.info("listFtDetail  足球近期战绩详情---------Start---------");
+        String hostName = "";//主队名称
+        String guestName = "";//客队名称
         CdFootballAwards cfa = cdFootballAwardsService.findBymatchDate(itemid);
-        String hostName = cfa.getHomeTeam();//主队名称
-        String guestName = cfa.getAwayTeam();//客队名称
+        if (cfa != null) {
+            hostName = cfa.getHomeTeam();//主队名称
+            guestName = cfa.getAwayTeam();//客队名称
+        } else {
+            CdFbNotFinish cfnf = cdFbNotFinishService.findBySort(itemid);
+            hostName = cfnf.getHn();
+            guestName = cfnf.getGn();
+        }
+
 
         //主队近期战绩
         List<CdFbOutcome> hnList = cdFbOutcomeService.findById(itemid, hostName, "0");
