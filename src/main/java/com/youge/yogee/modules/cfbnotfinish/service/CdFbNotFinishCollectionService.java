@@ -4,11 +4,13 @@
 package com.youge.yogee.modules.cfbnotfinish.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cfbnotfinish.dao.CdFbNotFinishCollectionDao;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinish;
 import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -77,4 +79,9 @@ public class CdFbNotFinishCollectionService extends BaseService {
             return null;
         }
     }
+
+    public List<CdFbNotFinish> findColByUid(String uid) {
+        return cdFbNotFinishCollectionDao.findBySql("SELECT * FROM cd_fb_notfinish_collection a LEFT JOIN cd_fb_notfinish b ON a.sort=b.sort WHERE uid=:p1 AND b.type !='4' AND a.del_flag=0", new Parameter(uid), CdFbNotFinish.class);
+    }
+
 }

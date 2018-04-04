@@ -569,30 +569,17 @@ public class FootballMatchInterface {
             return HttpResultUtil.errorJson("json格式错误");
         }
 
-        String total = (String) jsonData.get("total");
-        if (StringUtils.isEmpty(total)) {
-            logger.error("total为空");
-            return HttpResultUtil.errorJson("total为空");
-        }
-
-        String count = (String) jsonData.get("count");
-        if (StringUtils.isEmpty(count)) {
-            logger.error("count为空");
-            return HttpResultUtil.errorJson("count为空");
-        }
-
         String uid = (String) jsonData.get("uid");
         if (StringUtils.isEmpty(uid)) {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
 
-        List<Map> list = new ArrayList<>();
-        List<CdFbNotFinish> dataList = cdFbNotFinishService.getNotFinish(total, count);
-        for (CdFbNotFinish str : dataList) {
-            Map<String, Object> map = new HashMap<>();
-            CdFbNotFinishCollection cffc = cdFbNotFinishCollectionService.findByMatIdAndUid(str.getSort(), uid);
-            if (cffc != null) {
+        List<CdFbNotFinish> list = cdFbNotFinishCollectionService.findColByUid(uid);
+        List cList = new ArrayList();
+        if (list.size() > 0) {
+            for (CdFbNotFinish str : list) {
+                Map map = new HashMap();
                 map.put("col", "1");
                 map.put("qc", str.getQc());
                 map.put("sort", str.getSort());//赛事名称
@@ -606,11 +593,13 @@ public class FootballMatchInterface {
                 map.put("time", str.getTime());//比赛时间
                 map.put("hf", str.getHf());//主队分数
                 map.put("gf", str.getGf());//客队分数
-                list.add(map);
+                cList.add(map);
             }
+
         }
+
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("list", list);
+        dataMap.put("list", cList);
         logger.info("notFinishedHasCol  未完赛数据---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }

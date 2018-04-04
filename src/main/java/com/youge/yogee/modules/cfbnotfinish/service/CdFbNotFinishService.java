@@ -97,4 +97,16 @@ public class CdFbNotFinishService extends BaseService {
 
     }
 
+
+    @Transactional(readOnly = false)
+    public List<CdFbNotFinish> getNotFinish() {
+        DetachedCriteria dc = cdFbNotFinishDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFbNotFinish.FIELD_DEL_FLAG, CdFbNotFinish.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("type", "4"));
+        dc.addOrder(Order.asc("time"));
+        dc.addOrder(Order.asc("jn"));
+        return cdFbNotFinishDao.find(dc);
+    }
+
+
 }

@@ -3,7 +3,6 @@ package com.youge.yogee.interfaces.lottery.basketball;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
-import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbbalreadyfinsh.entity.CdBbAlreadyFinsh;
 import com.youge.yogee.modules.cbbalreadyfinsh.service.CdBbAlreadyFinshService;
 import com.youge.yogee.modules.cbblive.entity.CdBbLive;
@@ -279,7 +278,6 @@ public class BasketballMatchInterface {
 
     /**
      * 通过itemid查询篮球实况
-     *
      */
     @ResponseBody
     @RequestMapping(value = "getBtLiveById", method = RequestMethod.POST)
@@ -334,7 +332,7 @@ public class BasketballMatchInterface {
             logger.error("itemid为空");
             return HttpResultUtil.errorJson("itemid为空");
         }
-        Map<String,Object> dataMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
 
         int hs = 0;//主队主场胜
         int hf = 0;//主队主场负
@@ -344,8 +342,8 @@ public class BasketballMatchInterface {
         int hhp = 0;//历史主队平
         int hhf = 0;//历史主队负
 
-        String hn ;//主队名称
-        String gn ;//客队名称
+        String hn;//主队名称
+        String gn;//客队名称
         CdBbNotFinsh cdBbNotFinsh = cdBbNotFinshService.getMatchByItemId(itemid);
         if (cdBbNotFinsh == null) {
             CdFbAlreadyFinish cdFbAlreadyFinish = cdFbAlreadyFinishService.getMatchByItemId(itemid);
@@ -367,7 +365,7 @@ public class BasketballMatchInterface {
         List<CdBtOutcome> hnList = cdBtOutcomeService.findById(itemid, hn, "0");
         if (hnList != null) {
             for (CdBtOutcome cd : hnList) {
-                Map<String,Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("mname", cd.getEventName());//赛事名称
                 map.put("hn", cd.getHn());//主队
                 map.put("gn", cd.getGn());//客队
@@ -393,7 +391,7 @@ public class BasketballMatchInterface {
         List<CdBtOutcome> gnList = cdBtOutcomeService.findById(itemid, gn, "0");
         if (gnList != null) {
             for (CdBtOutcome cd : gnList) {
-                Map<String,Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("mname", cd.getEventName());//赛事名称
                 map.put("hn", cd.getHn());//主队
                 map.put("gn", cd.getGn());//客队
@@ -421,7 +419,7 @@ public class BasketballMatchInterface {
         List<Map> historyList = new ArrayList<>();
         if (cdHList != null) {
             for (CdBtOutcome cd : cdHList) {
-                Map<String,Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>();
                 map.put("mname", cd.getEventName());//赛事名称
                 map.put("hn", cd.getHn());//主队
                 map.put("gn", cd.getGn());//客队
@@ -453,7 +451,7 @@ public class BasketballMatchInterface {
         List<Map> gFutureList = new ArrayList<>();
         List<CdBtFuture> cdFutureList = cdBtFutureService.findById(itemid);
         for (CdBtFuture cd : cdFutureList) {
-            Map<String,Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>();
             if ("0".equals(cd.getOutcomeType())) {//赛事 0主队1客队
                 if (hFutureList.size() == 3) {//查询3条未来赛事
                     continue;
@@ -493,7 +491,6 @@ public class BasketballMatchInterface {
 
     /**
      * 未完赛比赛关注
-     *
      */
     @RequestMapping(value = "basketNotFinishedCollection", method = RequestMethod.POST)
     @ResponseBody
@@ -516,7 +513,6 @@ public class BasketballMatchInterface {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
-
 
         CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(zid, uid);
         if (cbnfc == null) {
@@ -544,29 +540,16 @@ public class BasketballMatchInterface {
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
-        String total = (String) jsonData.get("total");
-        if (StringUtils.isEmpty(total)) {
-            logger.error("total为空");
-            return HttpResultUtil.errorJson("total为空");
-        }
-        String count = (String) jsonData.get("count");
-        if (StringUtils.isEmpty(count)) {
-            logger.error("count为空");
-            return HttpResultUtil.errorJson("count为空");
-        }
         String uid = (String) jsonData.get("uid");
         if (StringUtils.isEmpty(uid)) {
             uid = "";
         }
-
-        List<CdBbNotFinsh> dataList = cdBbNotFinshService.getBbFinshed(total, count);
-        List<Map> list = new ArrayList<>();
-        for (CdBbNotFinsh str : dataList) {
-            Map<String,Object> map = new HashMap<>();
-            CdBbNotFinishCollection cbnfc = cdBbNotFinishCollectionService.findByMatIdAndUid(str.getZid(), uid);
-            if (cbnfc != null) {
+        List<CdBbNotFinsh> list = cdBbNotFinishCollectionService.findColByUid(uid);
+        List cList = new ArrayList<>();
+        if (list.size() > 0) {
+            for (CdBbNotFinsh str : list) {
+                Map<String, Object> map = new HashMap<>();
                 map.put("col", "1");
-                //map.put("hn", str.getHn());//主队名
                 map.put("zid", str.getZid());//队Id
                 map.put("type", str.getType());//赛事类型
                 map.put("hn", str.getHn());//主队
@@ -576,10 +559,11 @@ public class BasketballMatchInterface {
                 map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
                 map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO
                 map.put("itemid", str.getItemid());
-                list.add(map);
+                cList.add(map);
             }
         }
-        Map<String,Object> dataMap = new HashMap<>();
+
+        Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("list", list);
         logger.info("bbNotFinshHasCol---------End---------");
         return HttpResultUtil.successJson(dataMap);
@@ -587,7 +571,6 @@ public class BasketballMatchInterface {
 
     /**
      * 通过itemid查询篮球主队客队比分 开赛时间
-     *
      */
     @ResponseBody
     @RequestMapping(value = "getBasketballMatchTitle", method = RequestMethod.POST)
@@ -598,7 +581,7 @@ public class BasketballMatchInterface {
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
-        Map<String,Object> dataMap = new HashMap<>();
+        Map<String, Object> dataMap = new HashMap<>();
         String itemid = (String) jsonData.get("itemid");
         if (StringUtils.isEmpty(itemid)) {
             logger.error("itemid为空");

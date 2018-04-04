@@ -4,13 +4,14 @@
 package com.youge.yogee.modules.cbbnotfinsh.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cbbnotfinsh.dao.CdBbNotFinishCollectionDao;
 import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinishCollection;
-import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
+import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -63,11 +64,15 @@ public class CdBbNotFinishCollectionService extends BaseService {
         cdBbNotFinishCollectionDao.deleteById(id);
     }
 
+    public List<CdBbNotFinsh> findColByUid(String uid) {
+        return cdBbNotFinishCollectionDao.findBySql("SELECT * FROM cd_bb_notfinish_collection a INNER JOIN cd_bb_notfinsh b ON a.zid=b.zid WHERE uid=:p1 AND a.del_flag=0;", new Parameter(uid), CdBbNotFinsh.class);
+    }
+
     public CdBbNotFinishCollection findByMatIdAndUid(String zid, String uid) {
         DetachedCriteria dc = cdBbNotFinishCollectionDao.createDetachedCriteria();
         dc.add(Restrictions.eq("zid", zid));
         dc.add(Restrictions.eq("uid", uid));
-        dc.add(Restrictions.eq(CdFbNotFinishCollection.FIELD_DEL_FLAG, CdFbNotFinishCollection.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq(CdBbNotFinishCollection.FIELD_DEL_FLAG, CdBbNotFinishCollection.DEL_FLAG_NORMAL));
         List<CdBbNotFinishCollection> list = cdBbNotFinishCollectionDao.find(dc);
         if (list.size() > 0) {
             return list.get(0);
