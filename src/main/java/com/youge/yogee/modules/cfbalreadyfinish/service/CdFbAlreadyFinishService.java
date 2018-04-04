@@ -81,4 +81,17 @@ public class CdFbAlreadyFinishService extends BaseService {
         return cdFbAlreadyFinishDao.find(dc);
     }
 
+    public CdFbAlreadyFinish getMatchByItemId(String itemId) {
+        DetachedCriteria dc = cdFbAlreadyFinishDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFbAlreadyFinish.FIELD_DEL_FLAG, CdFbAlreadyFinish.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("itemid", itemId));
+        List<CdFbAlreadyFinish> list = cdFbAlreadyFinishDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
 }

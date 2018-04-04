@@ -73,11 +73,9 @@ public class CdBtOutcomeService extends BaseService {
 	}
 
 	/**
-	 * wangsong
 	 * 20180105
 	 * 查询篮球近期战绩5场
 	 */
-	@Transactional(readOnly = false)
 	public List<CdBtOutcome> findById(String itemid, String name,String type){
 		DetachedCriteria dc = cdBtOutcomeDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdBtOutcome.FIELD_DEL_FLAG, CdBtOutcome.DEL_FLAG_NORMAL));
