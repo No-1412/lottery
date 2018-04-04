@@ -279,24 +279,27 @@ public class FootballMatchInterface {
     public String listFtDetail(HttpServletRequest request) {
         logger.info("listFtDetail  足球详情---------Start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String matchDate = (String) jsonData.get("itemid");//比赛id
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String itemid = (String) jsonData.get("itemid");//比赛id
+        if (StringUtils.isEmpty(itemid)) {
+            logger.error("itemid为空");
+            return HttpResultUtil.errorJson("itemid为空");
+        }
+
         Map<String, Object> dataMap = new HashMap<>();
         List scoerList = new ArrayList();
         List hFutureList = new ArrayList();
         List gFutureList = new ArrayList();
 
         logger.info("listFtDetail  足球近期战绩详情---------Start---------");
-        //region Description
-//        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(matchDate);
-//        if (cdFootballMixed == null) {
-//            return HttpResultUtil.errorJson("数据未更新");
-//        }
-        CdFootballAwards cfa = cdFootballAwardsService.findBymatchDate(matchDate);
+        CdFootballAwards cfa = cdFootballAwardsService.findBymatchDate(itemid);
         String hostName = cfa.getHomeTeam();//主队名称
         String guestName = cfa.getAwayTeam();//客队名称
 
         //主队近期战绩
-        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(matchDate, hostName, "0");
+        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(itemid, hostName, "0");
         if (hnList.size() > 0) {
             int win = 0;//胜
             int dogfall = 0;//平
@@ -345,7 +348,7 @@ public class FootballMatchInterface {
         }
 
         //客场近期战绩
-        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(matchDate, hostName, "0");
+        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(itemid, hostName, "0");
         if (gnList.size() > 0) {
             int win = 0;//胜
             int dogfall = 0;//平
@@ -399,7 +402,7 @@ public class FootballMatchInterface {
 
         logger.info("listFtDetail  足球历史战绩详情---------Start---------");
         //历史交锋
-        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(matchDate);
+        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(itemid);
         if (cdHList != null) {
             int win = 0;//胜
             int dogfall = 0;//平
@@ -450,7 +453,7 @@ public class FootballMatchInterface {
 
         logger.info("listFtDetail  足球积分详情---------Start---------");
         //region Description
-        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(matchDate);
+        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(itemid);
         for (CdFbScoer cdFbScoer : cdScoerList) {
             Map<String, Object> map = new HashMap();
             map.put("rank", cdFbScoer.getRank());//球队排名
@@ -470,7 +473,7 @@ public class FootballMatchInterface {
         //查询队id
         List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(hostName);
         String teamId = cdFutureName.get(0).getTeamHid();
-        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(matchDate);
+        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(itemid);
         for (CdFbFuture cd : cdFutureList) {
             Map<String, Object> map = new HashMap();
             if (teamId.equals(cd.getTeamHid()) || teamId.equals(cd.getTeamAid())) {
