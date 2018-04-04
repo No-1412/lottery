@@ -2,6 +2,7 @@ package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.interfaces.util.FileUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cforum.entity.CdForum;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -51,27 +53,54 @@ public class ForumInterface {
         String forumType = request.getParameter("forumType");
         String userId = request.getParameter("uid");
         String content = request.getParameter("content");
-
+        logger.info(userId);
         String name = " ";//没用上
         if (StringUtils.isEmpty(content)) {
             return HttpResultUtil.errorJson("请填写内容!");
         }
         Map mapData = new HashMap();
-        CdLotteryUser user = cdLotteryUserService.get(userId);
-        /******************图片上传start**********************/
-        String fileUrl = " ";
-        if(file!=null){
-            Map  map = ImgUploudUtlis.getUploud(request, file);
-            fileUrl = map.get("fileListNames").toString();
+        CdLotteryUser clu = cdLotteryUserService.get(userId);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在!");
         }
-        /******************图片上传end**********************/
-        String id = AddUtils.createBigSmallLetterStrOrNumberRadom(20);
-        AddUtils.addForum(cdForumService, name, id, userId, user.getName(), fileUrl, content, "1", "", "",forumType);
-        logger.info("添加论坛信息addForum---------- End--------");
+        String fileNames = "";
+        boolean flag = FileUtil.isMultipatr(request);
+        if (flag) {
+            MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
+            fileNames = FileUtil.fileUploadUnused(multiRequest, "/userfiles/1/images/bbs/");
+        } else {
+            return HttpResultUtil.errorJson("图片上传异常");
+        }
+        //String imgList = Global.getConfig("domain.name") + fileNames.replace("|", "");
+        CdForum cdForum = new CdForum();
+        cdForum.setName(name); //标题
+        cdForum.setContent(content); //内容
+        cdForum.setUserId(userId);
+        cdForum.setUserName(clu.getName());
+        cdForum.setImgList(fileNames); //图片
+        cdForum.setIsPosts("1"); //是否是帖子(1帖子  0回复内容)
+        cdForum.setDianzanCount("0");
+        cdForum.setIsUse("1");
+        cdForum.setParentsId("");
+        cdForum.setParentsUser("");
+        cdForum.setForumType(forumType);
+        cdForumService.save(cdForum);
         return HttpResultUtil.successJson(mapData);
+//        /******************图片上传start**********************/
+//        String fileUrl = " ";
+//        if(file!=null){
+//            Map  map = ImgUploudUtlis.getUploud(request, file);
+//            fileUrl = map.get("fileListNames").toString();
+//        }
+//        /******************图片上传end**********************/
+//        String id = AddUtils.createBigSmallLetterStrOrNumberRadom(20);
+//        AddUtils.addForum(cdForumService, name, id, userId, user.getName(), fileUrl, content, "1", "", "", forumType);
+//        logger.info("添加论坛信息addForum---------- End--------");
+
+
+        //Map<String, Object> mapData = new HashMap<>();
+
     }
-
-
 
 
     /***
@@ -83,7 +112,7 @@ public class ForumInterface {
         logger.info("论坛回复addReply---------- Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String userId = (String) jsonData.get("uid");//当前登录人id
-       // String userId = "111";
+        // String userId = "111";
         String sid = (String) jsonData.get("sid");//主人A的帖子或者评论内容的id
         String content = (String) jsonData.get("content");
 
@@ -96,7 +125,7 @@ public class ForumInterface {
         CdForum cd = cdForumService.get(sid);
         //把回复内容的id,保存到帖子表的replyId字段
         String parentsId = "";
-        if (cd.getParentsId() != null && !"".equals(cd.getParentsId())&& !" ".equals(cd.getParentsId())) {
+        if (cd.getParentsId() != null && !"".equals(cd.getParentsId()) && !" ".equals(cd.getParentsId())) {
             if (cd.getParentsId().contains(",")) {
                 parentsId = cd.getParentsId() + sid; //如果已经有父id 则在后边继续拼上sid
             }
@@ -105,7 +134,7 @@ public class ForumInterface {
         }
         //用户名字
         String parentsUser = "";
-        if (cd.getParentsUser() != null && !"".equals(cd.getParentsUser())&& !" ".equals(cd.getParentsUser())) {
+        if (cd.getParentsUser() != null && !"".equals(cd.getParentsUser()) && !" ".equals(cd.getParentsUser())) {
             if (cd.getParentsUser().contains(",")) {
                 parentsUser = cd.getParentsUser() + cd.getUserName(); //如果已经有父name 则在后边继续拼上name
             }
@@ -116,11 +145,12 @@ public class ForumInterface {
         CdLotteryUser user = cdLotteryUserService.get(userId);
         String id = AddUtils.createBigSmallLetterStrOrNumberRadom(20);
         //无图片评论
-        AddUtils.addForum(cdForumService, " ", id, userId, user.getName(), " ", content, "0", parentsId, parentsUser," "); //回复内容的id
+        AddUtils.addForum(cdForumService, " ", id, userId, user.getName(), " ", content, "0", parentsId, parentsUser, " "); //回复内容的id
 
         logger.info("论坛回复addReply---------- End--------");
         return HttpResultUtil.successJson(mapData);
     }
+
     /**
      * 查询所有的帖子
      */
@@ -130,7 +160,6 @@ public class ForumInterface {
         logger.info("查询所有的帖子selectForumList---------- Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String forumType = (String) jsonData.get("forumType");
-
         Map mapData = new HashMap();
         List listMs = new ArrayList();
         List<CdForum> list = cdForumService.getForum(forumType); //查询所有帖子.
@@ -141,18 +170,23 @@ public class ForumInterface {
             //map.put("name", s.getName());//标题
             map.put("content", s.getContent());//内容
             map.put("userName", s.getUserName());//发布人
-            if(StringUtils.isNotEmpty(s.getUserId())){
-                CdLotteryUser cdLotteryUser = cdLotteryUserService.get(s.getUserId());
-                map.put("uImg", Global.getConfig("domain.name") + cdLotteryUser.getImg());//用户头像
-            }else {
-                map.put("uImg", " ");
-            }
+            CdLotteryUser clu = cdLotteryUserService.get(s.getUserId());
+            map.put("uImg", clu.getImg());
             map.put("dianZanCount", s.getDianzanCount());//点赞数量
-            if(StringUtils.isNotEmpty(s.getImgList())){
-            map.put("bannerImg", s.getImgList().substring(1,s.getImgList().length()));
-            }else {
-                map.put("bannerImg", s.getImgList());
+            //List<String> imgList = new ArrayList<>();
+            String imgs = s.getImgList();
+            String[] imgsArray = imgs.split("\\|");
+            String bannerImg = "";
+            for (int i = 1; i < imgsArray.length; i++) {
+                //imgList.add(Global.getConfig("domain.name") + imgsArray[i]);
+                if (i == imgsArray.length - 1) {
+                    bannerImg += Global.getConfig("domain.name") + imgsArray[i];
+                    break;
+                }
+                bannerImg += Global.getConfig("domain.name") + imgsArray[i] + "|";
+
             }
+            map.put("bannerImg", bannerImg);
          /*   List bannerList = new ArrayList();
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(s.getImgList())){
                 String str = s.getImgList().substring(1);
@@ -191,9 +225,9 @@ public class ForumInterface {
         //map.put("name", forumDetail.getName());//标题
         map.put("content", forumDetail.getContent());//内容
         map.put("userName", forumDetail.getUserName());//发布人
-        if(StringUtils.isNotEmpty(forumDetail.getUserId())){
+        if (StringUtils.isNotEmpty(forumDetail.getUserId())) {
             CdLotteryUser cdLotteryUser = cdLotteryUserService.get(forumDetail.getUserId());
-            map.put("uImg", Global.getConfig("domain.name") + cdLotteryUser.getImg());//用户头像
+            map.put("uImg", cdLotteryUser.getImg());//用户头像
         }
         map.put("dianZanCount", forumDetail.getDianzanCount());//点赞数量
         listMs.add(map);
@@ -207,16 +241,16 @@ public class ForumInterface {
             } else {
                 //拆分parentsUser
                 String[] arr = forum[1].toString().split(",");
-                if(forum[0].equals(arr[arr.length - 1])){
+                if (forum[0].equals(arr[arr.length - 1])) {
                     mapForum.put("userName", arr[arr.length - 1]);
-                }else {
+                } else {
                     mapForum.put("userName", forum[0] + ">" + arr[arr.length - 1]);
                 }
             }
             mapForum.put("content", forum[2]); //内容
             mapForum.put("id", forum[3]); //主键
             mapForum.put("dianZanCount", forum[4]); //点赞数量
-            if(StringUtils.isNotEmpty(forum[5].toString())){
+            if (StringUtils.isNotEmpty(forum[5].toString())) {
                 CdLotteryUser cdLotteryUser = cdLotteryUserService.get(forum[5].toString());
                 mapForum.put("uImg", Global.getConfig("domain.name") + cdLotteryUser.getImg());//用户头像
             }
