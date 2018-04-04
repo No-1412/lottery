@@ -39,16 +39,23 @@
 		<form:hidden path="id"/>
 		<tags:message content="${message}"/>
 		<div class="control-group">
-			<label class="control-label">充值金额:</label>
-			<div class="controls">
-				<form:input path="money" htmlEscape="false" maxlength="200" class="required"/>
-			</div>
-		</div>
-		<div class="control-group">
-			<label class="control-label">销售员:</label>
+			<label class="control-label">用户名:</label>
 			<div class="controls">
 				<tags:treeselect id="userId" name="userId.id" value="${erpRechargeLog.userId.id}" labelName="userId.name" labelValue="${erpUser.userId.name}"
 								 title="用户" url="/erp/user/treeDatas" cssClass="required" disabled="false"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">充值金额:</label>
+			<div class="controls">
+				<form:input id="money" path="money" htmlEscape="false" maxlength="200" class="required"/>
+			</div>
+		</div>
+		<div class="control-group">
+			<label class="control-label">确认金额:</label>
+			<div class="controls">
+				<input id="confirmMoney" htmlEscape="false" maxlength="200" class="required" style="border: 1px solid #cccccc;border-radius: 4px;height: 20px;padding: 4px 6px"/>
+				<label id="errormessage" for="confirmMoney" style="color: red">*两次金额不正确</label>
 			</div>
 		</div>
 		<div class="form-actions">
