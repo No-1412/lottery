@@ -105,6 +105,7 @@ public class CdFootballAwardsService extends BaseService {
         DetachedCriteria dc = cdFootballAwardsDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdFootballAwards.FIELD_DEL_FLAG, CdFootballAwards.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("mt"));
+        dc.addOrder(Order.desc("matchId"));
         // 限制条数|分页
         Criteria cri = dc.getExecutableCriteria(cdFootballAwardsDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
