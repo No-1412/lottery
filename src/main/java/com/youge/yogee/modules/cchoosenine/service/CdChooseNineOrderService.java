@@ -4,6 +4,7 @@
 package com.youge.yogee.modules.cchoosenine.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
@@ -42,6 +43,7 @@ public class CdChooseNineOrderService extends BaseService {
             dc.add(Restrictions.eq("orderNumber", cdChooseNineOrder.getOrderNumber()));
         }
         dc.add(Restrictions.eq(CdChooseNineOrder.FIELD_DEL_FLAG, CdChooseNineOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdChooseNineOrderDao.find(page, dc);
     }
@@ -82,6 +84,19 @@ public class CdChooseNineOrderService extends BaseService {
         } else {
             return null;
         }
+    }
+
+    public List<CdChooseNineOrder> findNotPay() {
+        DetachedCriteria dc = cdChooseNineOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdChooseNineOrder.FIELD_DEL_FLAG, CdChooseNineOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "1"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdChooseNineOrderDao.find(dc);
+    }
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdChooseNineOrderDao.update("delete from CdChooseNineOrder where id=:p1", new Parameter(id));
     }
 
 }

@@ -315,7 +315,10 @@ public class OrderPayInterface {
             //保存用户表返利字段
             String userRebate = cdLotteryUser.getRebate();
             BigDecimal newRebate = new BigDecimal(userRebate).add(new BigDecimal(rebate));
-            cdLotteryUser.setRebate(String.valueOf(newRebate));
+            BigDecimal balance = cdLotteryUser.getBalance();
+            BigDecimal newBalance = balance.add(new BigDecimal(rebate));
+            cdLotteryUser.setBalance(newBalance);//更新余额
+            cdLotteryUser.setRebate(String.valueOf(newRebate));//更新返利
             cdLotteryUserService.save(cdLotteryUser);
         }
     }

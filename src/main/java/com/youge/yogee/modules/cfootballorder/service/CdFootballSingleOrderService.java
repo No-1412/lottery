@@ -3,22 +3,20 @@
  */
 package com.youge.yogee.modules.cfootballorder.service;
 
-import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
+import com.youge.yogee.common.service.BaseService;
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.common.utils.IdGen;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.modules.cfootballorder.dao.CdFootballSingleOrderDao;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.service.BaseService;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.IdGen;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
-import com.youge.yogee.modules.cfootballorder.dao.CdFootballSingleOrderDao;
 
 import java.util.List;
 
@@ -44,8 +42,8 @@ public class CdFootballSingleOrderService extends BaseService {
         if (StringUtils.isNotEmpty(cdFootballSingleOrder.getOrderNum())) {
             dc.add(Restrictions.eq("orderNum", cdFootballSingleOrder.getOrderNum()));
         }
-
-        dc.add(Restrictions.eq(CdFootballSingleOrder.FIELD_DEL_FLAG, CdFootballSingleOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("orderNum", cdFootballSingleOrder.getOrderNum()));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdFootballSingleOrderDao.find(page, dc);
     }
@@ -88,4 +86,19 @@ public class CdFootballSingleOrderService extends BaseService {
             return null;
         }
     }
+
+
+    public List<CdFootballSingleOrder> findNotPay() {
+        DetachedCriteria dc = cdFootballSingleOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootballSingleOrder.FIELD_DEL_FLAG, CdFootballSingleOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "1"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdFootballSingleOrderDao.find(dc);
+    }
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdFootballSingleOrderDao.update("delete from CdFootballSingleOrder where id=:p1", new Parameter(id));
+    }
+
 }

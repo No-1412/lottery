@@ -4,6 +4,7 @@
 package com.youge.yogee.modules.clottoreward.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
@@ -42,6 +43,7 @@ public class CdLottoOrderService extends BaseService {
             dc.add(Restrictions.like("orderNum", cdLottoOrder.getOrderNum()));
         }
         dc.add(Restrictions.eq(CdLottoOrder.FIELD_DEL_FLAG, CdLottoOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdLottoOrderDao.find(page, dc);
     }
@@ -126,4 +128,18 @@ public class CdLottoOrderService extends BaseService {
             return null;
         }
     }
+
+    public List<CdLottoOrder> findNotPay() {
+        DetachedCriteria dc = cdLottoOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("status", "1"));
+        dc.add(Restrictions.eq(CdLottoOrder.FIELD_DEL_FLAG, CdLottoOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return cdLottoOrderDao.find(dc);
+    }
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdLottoOrderDao.update("delete from CdLottoOrder where id=:p1", new Parameter(id));
+    }
+
 }

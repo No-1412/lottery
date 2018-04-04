@@ -1,7 +1,29 @@
 package com.youge.yogee.interfaces.quartz;
 
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
+import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinishCollection;
+import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinishCollectionService;
+import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
+import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinishCollection;
+import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishCollectionService;
+import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
+import com.youge.yogee.modules.cfiveawards.service.CdFiveOrderService;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
+import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
+import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
+import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
+import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -42,6 +64,28 @@ import java.util.List;
 public class OtherQuartz {
     @Autowired
     private CdOrderWinnersService cdOrderWinnersService;
+    @Autowired
+    private CdBasketballFollowOrderService cdBasketballFollowOrderService;
+    @Autowired
+    private CdBasketballSingleOrderService cdBasketballSingleOrderService;
+    @Autowired
+    private CdChooseNineOrderService cdChooseNineOrderService;
+    @Autowired
+    private CdFiveOrderService cdFiveOrderService;
+    @Autowired
+    private CdFootballFollowOrderService cdFootballFollowOrderService;
+    @Autowired
+    private CdFootballSingleOrderService cdFootballSingleOrderService;
+    @Autowired
+    private CdLottoOrderService cdLottoOrderService;
+    @Autowired
+    private CdSuccessFailOrderService cdSuccessFailOrderService;
+    @Autowired
+    private CdThreeOrderService cdThreeOrderService;
+    @Autowired
+    private CdFbNotFinishCollectionService cdFbNotFinishCollectionService;
+    @Autowired
+    private CdBbNotFinishCollectionService cdBbNotFinishCollectionService;
 
     @Scheduled(cron = "0 0 12 * * ?")//每天十二点
     public void awardWallUpType() {
@@ -55,4 +99,150 @@ public class OtherQuartz {
         }
 
     }
+
+    /**
+     * 删除篮球串关没付款的订单1
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delFollowBasketBallNotPay() {
+        List<CdBasketballFollowOrder> list = cdBasketballFollowOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdBasketballFollowOrder c : list) {
+                cdBasketballFollowOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除篮球单关没付款的订单2
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delSingleBasketBallNotPay() {
+        List<CdBasketballSingleOrder> list = cdBasketballSingleOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdBasketballSingleOrder c : list) {
+                cdBasketballSingleOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除任选九没付款的订单3
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delChooseNineNotPay() {
+        List<CdChooseNineOrder> list = cdChooseNineOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdChooseNineOrder c : list) {
+                cdChooseNineOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除排列五没付款的订单4
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delFiveNotPay() {
+        List<CdFiveOrder> list = cdFiveOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdFiveOrder c : list) {
+                cdFiveOrderService.delById(c.getId());
+            }
+        }
+    }
+
+
+    /**
+     * 删除足球串关没付款的订单5
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delFollowFootballNotPay() {
+        List<CdFootballFollowOrder> list = cdFootballFollowOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdFootballFollowOrder c : list) {
+                cdFootballFollowOrderService.delById(c.getId());
+            }
+        }
+    }
+
+
+    /**
+     * 删除足球单关没付款的订单6
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delSingleFootballNotPay() {
+        List<CdFootballSingleOrder> list = cdFootballSingleOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdFootballSingleOrder c : list) {
+                cdFootballSingleOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除大乐透没付款的订单7
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delLottoNotPay() {
+        List<CdLottoOrder> list = cdLottoOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdLottoOrder c : list) {
+                cdLottoOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除胜负彩没付款的订单8
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delSuccessFailNotPay() {
+        List<CdSuccessFailOrder> list = cdSuccessFailOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdSuccessFailOrder c : list) {
+                cdSuccessFailOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除排列三没付款的订单9
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delThreeNotPay() {
+        List<CdThreeOrder> list = cdThreeOrderService.findNotPay();
+        if (list.size() > 0) {
+            for (CdThreeOrder c : list) {
+                cdThreeOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除足球没用的收藏
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delFootBallNotCol() {
+        List<CdFbNotFinishCollection> list = cdFbNotFinishCollectionService.findHasDel();
+        if (list.size() > 0) {
+            for (CdFbNotFinishCollection c : list) {
+                cdThreeOrderService.delById(c.getId());
+            }
+        }
+    }
+
+    /**
+     * 删除篮球没用的收藏
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void delBasketBallNotCol() {
+        List<CdBbNotFinishCollection> list = cdBbNotFinishCollectionService.findHasDel();
+        if (list.size() > 0) {
+            for (CdBbNotFinishCollection c : list) {
+                cdBbNotFinishCollectionService.delById(c.getId());
+            }
+        }
+    }
+
 }

@@ -84,4 +84,16 @@ public class CdFbNotFinishCollectionService extends BaseService {
         return cdFbNotFinishCollectionDao.findBySql("SELECT * FROM cd_fb_notfinish_collection a LEFT JOIN cd_fb_notfinish b ON a.sort=b.sort WHERE uid=:p1 AND b.type !='4' AND a.del_flag=0", new Parameter(uid), CdFbNotFinish.class);
     }
 
+
+    public List<CdFbNotFinishCollection> findHasDel() {
+        DetachedCriteria dc = cdFbNotFinishCollectionDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFbNotFinishCollection.FIELD_DEL_FLAG, CdFbNotFinishCollection.DEL_FLAG_DELETE));
+        dc.addOrder(Order.desc("id"));
+        return cdFbNotFinishCollectionDao.find(dc);
+    }
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdFbNotFinishCollectionDao.update("delete from CdFbNotFinishCollection where id=:p1", new Parameter(id));
+    }
 }

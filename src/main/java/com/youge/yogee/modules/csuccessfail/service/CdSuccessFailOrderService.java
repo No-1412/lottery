@@ -3,20 +3,21 @@
  */
 package com.youge.yogee.modules.csuccessfail.service;
 
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
+import com.youge.yogee.common.service.BaseService;
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.common.utils.IdGen;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
+import com.youge.yogee.modules.csuccessfail.dao.CdSuccessFailOrderDao;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.service.BaseService;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.IdGen;
-import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
-import com.youge.yogee.modules.csuccessfail.dao.CdSuccessFailOrderDao;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class CdSuccessFailOrderService extends BaseService {
             dc.add(Restrictions.like("orderNumber", cdSuccessFailOrder.getOrderNumber()));
         }
         dc.add(Restrictions.eq(CdSuccessFailOrder.FIELD_DEL_FLAG, CdSuccessFailOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdSuccessFailOrderDao.find(page, dc);
     }
@@ -85,4 +87,18 @@ public class CdSuccessFailOrderService extends BaseService {
         }
 
     }
+
+    public List<CdSuccessFailOrder> findNotPay() {
+        DetachedCriteria dc = cdSuccessFailOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("status", "1"));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.asc("createDate"));
+        return cdSuccessFailOrderDao.find(dc);
+    }
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdSuccessFailOrderDao.update("delete from CdSuccessFailOrder where id=:p1", new Parameter(id));
+    }
+
 }

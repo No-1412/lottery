@@ -58,23 +58,26 @@ public class CdSuccessFailOrderController extends BaseController {
 
         Page<CdSuccessFailOrder> page = cdSuccessFailOrderService.find(new Page<CdSuccessFailOrder>(request, response), cdSuccessFailOrder);
 
-        List<CdSuccessFailOrder> list = page.getList();
-        List<CdSuccessFailOrder> newList = new ArrayList<>();
-        for (CdSuccessFailOrder c : list) {
-            CdSuccessFailOrder ccn = new CdSuccessFailOrder();
-            ccn.setId(c.getId());
-            ccn.setOrderNumber(c.getOrderNumber());
-            ccn.setWeekday(c.getWeekday());
-            ccn.setAcount(c.getAcount());
-            ccn.setPrice(c.getPrice());
-            CdLotteryUser clu = cdLotteryUserService.get(c.getUid());
-            ccn.setUid(clu.getReality());
-            ccn.setCreateDate(c.getCreateDate());
-            ccn.setStatus(c.getStatus());
-            ccn.setTimes(c.getTimes());
-            newList.add(ccn);
-        }
-        page.setList(newList);
+//        List<CdSuccessFailOrder> list = page.getList();
+//        List<CdSuccessFailOrder> newList = new ArrayList<>();
+//        if (list.size() > 0) {
+//            for (CdSuccessFailOrder c : list) {
+//                CdSuccessFailOrder ccn = new CdSuccessFailOrder();
+//                ccn.setId(c.getId());
+//                ccn.setOrderNumber(c.getOrderNumber());
+//                ccn.setWeekday(c.getWeekday());
+//                ccn.setAcount(c.getAcount());
+//                ccn.setPrice(c.getPrice());
+//                CdLotteryUser clu = cdLotteryUserService.get(c.getUid());
+//                ccn.setUid(clu.getReality());
+//                ccn.setCreateDate(c.getCreateDate());
+//                ccn.setStatus(c.getStatus());
+//                ccn.setTimes(c.getTimes());
+//                newList.add(ccn);
+//            }
+//        }
+//
+//        page.setList(newList);
 
         model.addAttribute("page", page);
         return "modules/csuccessfail/cdSuccessFailOrderList";

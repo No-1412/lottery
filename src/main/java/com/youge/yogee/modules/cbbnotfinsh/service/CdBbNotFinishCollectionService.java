@@ -81,4 +81,14 @@ public class CdBbNotFinishCollectionService extends BaseService {
         }
     }
 
+    public List<CdBbNotFinishCollection> findHasDel() {
+        DetachedCriteria dc = cdBbNotFinishCollectionDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBbNotFinishCollection.FIELD_DEL_FLAG, CdBbNotFinishCollection.DEL_FLAG_DELETE));
+        dc.addOrder(Order.desc("id"));
+        return cdBbNotFinishCollectionDao.find(dc);
+    }
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdBbNotFinishCollectionDao.update("delete from CdBbNotFinishCollection where id=:p1", new Parameter(id));
+    }
 }

@@ -3,20 +3,20 @@
  */
 package com.youge.yogee.modules.cbasketballorder.service;
 
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
+import com.youge.yogee.common.service.BaseService;
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.common.utils.IdGen;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.modules.cbasketballorder.dao.CdBasketballSingleOrderDao;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.service.BaseService;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.IdGen;
-import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
-import com.youge.yogee.modules.cbasketballorder.dao.CdBasketballSingleOrderDao;
 
 import java.util.List;
 
@@ -46,6 +46,7 @@ public class CdBasketballSingleOrderService extends BaseService {
             dc.add(Restrictions.eq("buyWays", cdBasketballSingleOrder.getBuyWays()));
         }
         dc.add(Restrictions.eq(CdBasketballSingleOrder.FIELD_DEL_FLAG, CdBasketballSingleOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdBasketballSingleOrderDao.find(page, dc);
     }
@@ -87,6 +88,18 @@ public class CdBasketballSingleOrderService extends BaseService {
         dc.add(Restrictions.eq("status", "3"));
         dc.addOrder(Order.desc("createDate"));
         return cdBasketballSingleOrderDao.find(dc);
+    }
+
+    public List<CdBasketballSingleOrder> findNotPay() {
+        DetachedCriteria dc = cdBasketballSingleOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBasketballSingleOrder.FIELD_DEL_FLAG, CdBasketballSingleOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "1"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdBasketballSingleOrderDao.find(dc);
+    }
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdBasketballSingleOrderDao.update("delete from CdBasketballSingleOrder where id=:p1", new Parameter(id));
     }
 
 }

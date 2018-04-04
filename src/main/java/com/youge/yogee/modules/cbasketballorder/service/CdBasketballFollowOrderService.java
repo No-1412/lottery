@@ -4,6 +4,7 @@
 package com.youge.yogee.modules.cbasketballorder.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
@@ -45,6 +46,7 @@ public class CdBasketballFollowOrderService extends BaseService {
             dc.add(Restrictions.eq("buyWays", cdBasketballFollowOrder.getBuyWays()));
         }
         dc.add(Restrictions.eq(CdBasketballFollowOrder.FIELD_DEL_FLAG, CdBasketballFollowOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdBasketballFollowOrderDao.find(page, dc);
     }
@@ -87,4 +89,18 @@ public class CdBasketballFollowOrderService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         return cdBasketballFollowOrderDao.find(dc);
     }
+
+    public List<CdBasketballFollowOrder> findNotPay() {
+        DetachedCriteria dc = cdBasketballFollowOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBasketballFollowOrder.FIELD_DEL_FLAG, CdBasketballFollowOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "1"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdBasketballFollowOrderDao.find(dc);
+    }
+
+    @Transactional(readOnly = false)
+    public void delById(String id) {
+        cdBasketballFollowOrderDao.update("delete from CdBasketballFollowOrder where id=:p1", new Parameter(id));
+    }
+
 }

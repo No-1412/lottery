@@ -3,11 +3,16 @@
  */
 package com.youge.yogee.modules.cchoosenine.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.web.BaseController;
+import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
+import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,15 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.youge.yogee.common.config.Global;
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.web.BaseController;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.modules.sys.entity.User;
-import com.youge.yogee.modules.sys.utils.UserUtils;
-import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
-import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,23 +57,27 @@ public class CdChooseNineOrderController extends BaseController {
         User user = UserUtils.getUser();
 
         Page<CdChooseNineOrder> page = cdChooseNineOrderService.find(new Page<CdChooseNineOrder>(request, response), cdChooseNineOrder);
-        List<CdChooseNineOrder> list = page.getList();
-        List<CdChooseNineOrder> newList = new ArrayList<>();
-        for (CdChooseNineOrder c : list) {
-            CdChooseNineOrder ccn = new CdChooseNineOrder();
-            ccn.setId(c.getId());
-            ccn.setOrderNumber(c.getOrderNumber());
-            ccn.setWeekday(c.getWeekday());
-            ccn.setAcount(c.getAcount());
-            ccn.setPrice(c.getPrice());
-            CdLotteryUser clu = cdLotteryUserService.get(c.getUid());
-            ccn.setUid(clu.getReality());
-            ccn.setCreateDate(c.getCreateDate());
-            ccn.setStatus(c.getStatus());
-            ccn.setTimes(c.getTimes());
-            newList.add(ccn);
-        }
-        page.setList(newList);
+//        List<CdChooseNineOrder> list = page.getList();
+//        List<CdChooseNineOrder> newList = new ArrayList<>();
+//        if (list.size() > 0) {
+//            for (CdChooseNineOrder c : list) {
+//                CdChooseNineOrder ccn = new CdChooseNineOrder();
+//                ccn.setId(c.getId());
+//                ccn.setOrderNumber(c.getOrderNumber());
+//                ccn.setWeekday(c.getWeekday());
+//                ccn.setAcount(c.getAcount());
+//                ccn.setPrice(c.getPrice());
+//                CdLotteryUser clu = cdLotteryUserService.get(c.getUid());
+//                ccn.setUid(clu.getReality());
+//                ccn.setCreateDate(c.getCreateDate());
+//                ccn.setStatus(c.getStatus());
+//                ccn.setTimes(c.getTimes());
+//                newList.add(ccn);
+//            }
+//
+//        }
+//
+//        page.setList(newList);
         model.addAttribute("page", page);
         return "modules/cchoosenine/cdChooseNineOrderList";
     }
