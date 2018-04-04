@@ -698,7 +698,6 @@ public class FootballInterface {
         logger.info("listDgFootbalAllOdds  足球单关总进球---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
-    //endregion
 
     /**
      * 足球详情(分析)
