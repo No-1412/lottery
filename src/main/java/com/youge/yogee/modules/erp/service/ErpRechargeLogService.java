@@ -113,9 +113,9 @@ public class ErpRechargeLogService extends BaseService {
 
 		String userId = erpRechargeLog.getUserId().getId();
 		ErpUser erpUser = erpUserService.get(userId);
-		BigDecimal money2 = erpRechargeLog.getMoney();
-		BigDecimal money1 = erpUser.getBalance();
-		if (type == "0"){//充值
+		BigDecimal money2 = erpRechargeLog.getMoney();//充值钱数
+		BigDecimal money1 = erpUser.getBalance();//余额
+		if (type.equals("0")){//充值
 			erpUser.setBalance(money1.add(money2));
 		}else {//扣款
 			erpUser.setBalance(money1.subtract(money2));
