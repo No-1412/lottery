@@ -63,12 +63,12 @@ public class IphonePushUtil {
             certificatePath = "/home/tomcat/apache-tomcat-8.5.8/webapps/qingyouhuiPush.p12";
             isTest = true;
         } else {
-            certificatePath = "D:\\qingyouhuiDevelopePush.p12";
+            certificatePath = "D:\\Push.p12";
             isTest = false;
         }
 
         //此处注意导出的证书密码不能为空因为空密码会报错
-        String certificatePassword = "qingyouhui";
+        String certificatePassword = "123456zoe";
 
         try {
             PushNotificationPayload payLoad = new PushNotificationPayload();
