@@ -180,6 +180,7 @@ public class UserInformationInterface {
             map.put("quality", quality);//0自购 1跟单 2神单
             map.put("orderNum", c.getNumber());//订单号
             map.put("followNum", c.getFollowNum());//神单订单号
+            map.put("status", c.getStatus());//1待开奖 2已开奖 3中奖
             cList.add(map);
         }
         dataMap.put("cList", cList);

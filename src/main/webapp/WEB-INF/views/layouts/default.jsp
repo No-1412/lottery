@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html style="overflow-x:hidden;overflow-y:auto;">
 <head>
-	<title><sitemesh:title/>彩票</title>
+	<title><sitemesh:title/>凯旋彩票</title>
 	<%@include file="/WEB-INF/views/include/head.jsp" %>
 	<sitemesh:head/>
 </head>

@@ -6,10 +6,13 @@ import com.youge.yogee.interfaces.util.FileUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cforum.entity.CdForum;
+import com.youge.yogee.modules.cforum.entity.CdForumReplay;
+import com.youge.yogee.modules.cforum.entity.CdForumSupport;
+import com.youge.yogee.modules.cforum.service.CdForumReplayService;
 import com.youge.yogee.modules.cforum.service.CdForumService;
+import com.youge.yogee.modules.cforum.service.CdForumSupportService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
-import com.youge.yogee.publicutils.AddUtils;
 import com.youge.yogee.publicutils.ImgUploudUtlis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +40,12 @@ public class ForumInterface {
 
     @Autowired
     private CdForumService cdForumService;
-
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
-
+    @Autowired
+    private CdForumSupportService cdForumSupportService;
+    @Autowired
+    private CdForumReplayService cdForumReplayService;
 
     /***
      * weijinchao，2017-12-28，添加论坛信息
@@ -111,44 +116,64 @@ public class ForumInterface {
     public String addReply(HttpServletRequest request) {
         logger.info("论坛回复addReply---------- Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String userId = (String) jsonData.get("uid");//当前登录人id
-        // String userId = "111";
-        String sid = (String) jsonData.get("sid");//主人A的帖子或者评论内容的id
+        String uid = (String) jsonData.get("uid");//当前登录人id
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空!");
+        }
+        String fid = (String) jsonData.get("fid");//主人A的帖子或者评论内容的id
+        if (StringUtils.isEmpty(fid)) {
+            return HttpResultUtil.errorJson("fid为空!");
+        }
         String content = (String) jsonData.get("content");
-
         if (StringUtils.isEmpty(content)) {
             return HttpResultUtil.errorJson("请填写内容!");
         }
 
         Map mapData = new HashMap();
         //获取论坛帖子
-        CdForum cd = cdForumService.get(sid);
-        //把回复内容的id,保存到帖子表的replyId字段
-        String parentsId = "";
-        if (cd.getParentsId() != null && !"".equals(cd.getParentsId()) && !" ".equals(cd.getParentsId())) {
-            if (cd.getParentsId().contains(",")) {
-                parentsId = cd.getParentsId() + sid; //如果已经有父id 则在后边继续拼上sid
-            }
-        } else {
-            parentsId = sid + ",";//存放该评论的父id即帖子id
+        CdForum cd = cdForumService.get(fid);
+        if (cd == null) {
+            return HttpResultUtil.errorJson("帖子不存在!");
         }
-        //用户名字
-        String parentsUser = "";
-        if (cd.getParentsUser() != null && !"".equals(cd.getParentsUser()) && !" ".equals(cd.getParentsUser())) {
-            if (cd.getParentsUser().contains(",")) {
-                parentsUser = cd.getParentsUser() + cd.getUserName(); //如果已经有父name 则在后边继续拼上name
-            }
-        } else {
-            parentsUser = cd.getUserName() + ",";//存放该评论的父name即帖子name
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在!");
         }
-
-        CdLotteryUser user = cdLotteryUserService.get(userId);
-        String id = AddUtils.createBigSmallLetterStrOrNumberRadom(20);
-        //无图片评论
-        AddUtils.addForum(cdForumService, " ", id, userId, user.getName(), " ", content, "0", parentsId, parentsUser, " "); //回复内容的id
-
+        CdForumReplay cfr = new CdForumReplay();
+        cfr.setText(content);//回复内容
+        cfr.setUid(uid);//用户id
+        cfr.setFid(fid);//帖子id
+        cfr.setUserName(clu.getName());//用户名
+        cfr.setUserImg(clu.getImg());//头像
+        cfr.setSupportCount("0");//点赞数
+        cdForumReplayService.save(cfr);
         logger.info("论坛回复addReply---------- End--------");
         return HttpResultUtil.successJson(mapData);
+//        //把回复内容的id,保存到帖子表的replyId字段
+//        String parentsId = "";
+//        if (cd.getParentsId() != null && !"".equals(cd.getParentsId()) && !" ".equals(cd.getParentsId())) {
+//            if (cd.getParentsId().contains(",")) {
+//                parentsId = cd.getParentsId() + sid; //如果已经有父id 则在后边继续拼上sid
+//            }
+//        } else {
+//            parentsId = sid + ",";//存放该评论的父id即帖子id
+//        }
+//        //用户名字
+//        String parentsUser = "";
+//        if (cd.getParentsUser() != null && !"".equals(cd.getParentsUser()) && !" ".equals(cd.getParentsUser())) {
+//            if (cd.getParentsUser().contains(",")) {
+//                parentsUser = cd.getParentsUser() + cd.getUserName(); //如果已经有父name 则在后边继续拼上name
+//            }
+//        } else {
+//            parentsUser = cd.getUserName() + ",";//存放该评论的父name即帖子name
+//        }
+//
+//        CdLotteryUser user = cdLotteryUserService.get(userId);
+//        String id = AddUtils.createBigSmallLetterStrOrNumberRadom(20);
+//        //无图片评论
+//        AddUtils.addForum(cdForumService, " ", id, userId, user.getName(), " ", content, "0", parentsId, parentsUser, ""); //回复内容的id
+
+
     }
 
     /**
@@ -158,13 +183,28 @@ public class ForumInterface {
     @ResponseBody
     public String selectForumList(HttpServletRequest request) {
         logger.info("查询所有的帖子selectForumList---------- Start--------");
+
+
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         String forumType = (String) jsonData.get("forumType");
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空!");
+        }
+
         Map mapData = new HashMap();
         List listMs = new ArrayList();
         List<CdForum> list = cdForumService.getForum(forumType); //查询所有帖子.
         for (CdForum s : list) {
             Map map = new HashMap();
+            CdForumSupport cfs = cdForumSupportService.findByFidAndUid(s.getId(), uid);
+            if (cfs == null) {
+                map.put("sup", "0"); //没点赞
+            } else {
+                map.put("sup", "1"); //点赞
+            }
+
             map.put("id", s.getId()); //主键
             map.put("createDate", s.getCreateDate());//发布时间
             //map.put("name", s.getName());//标题
@@ -197,8 +237,8 @@ public class ForumInterface {
                     bannerList.add(maps);
                 }
             }*/
-            List listfor = cdForumService.getForumPing(s.getId());
-            map.put("commentCount", listfor.size()); //帖子的评论数量
+            List rList = cdForumReplayService.findByFid(s.getId());
+            map.put("commentCount", String.valueOf(rList.size())); //帖子的评论数量
             listMs.add(map);
         }
         mapData.put("listMs", listMs);
@@ -214,52 +254,52 @@ public class ForumInterface {
     public String selectForumDetail(HttpServletRequest request) {
         logger.info("查看单个帖子的详细内容以及回复selectForumDetail---------- Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String id = (String) jsonData.get("id");
+        String fid = (String) jsonData.get("fid");
+        if (StringUtils.isEmpty(fid)) {
+            return HttpResultUtil.errorJson("fid为空!");
+        }
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空!");
+        }
         Map mapData = new HashMap();
-        List listMs = new ArrayList();
-        List listPing = new ArrayList();
-        CdForum forumDetail = cdForumService.get(id); //查询帖子的详细内容.
-        Map map = new HashMap();
-        map.put("id", forumDetail.getId());
-        map.put("createDate", forumDetail.getCreateDate());//发布时间
+        CdForum forumDetail = cdForumService.get(fid); //查询帖子的详细内容.
+
+        mapData.put("id", forumDetail.getId());
+        mapData.put("createDate", forumDetail.getCreateDate());//发布时间
         //map.put("name", forumDetail.getName());//标题
-        map.put("content", forumDetail.getContent());//内容
-        map.put("userName", forumDetail.getUserName());//发布人
+        mapData.put("content", forumDetail.getContent());//内容
+        mapData.put("userName", forumDetail.getUserName());//发布人
         if (StringUtils.isNotEmpty(forumDetail.getUserId())) {
             CdLotteryUser cdLotteryUser = cdLotteryUserService.get(forumDetail.getUserId());
-            map.put("uImg", cdLotteryUser.getImg());//用户头像
+            mapData.put("uImg", cdLotteryUser.getImg());//用户头像
         }
-        map.put("dianZanCount", forumDetail.getDianzanCount());//点赞数量
-        listMs.add(map);
+        mapData.put("dianZanCount", forumDetail.getDianzanCount());//点赞数量
+
         //评论列表
-        List listfor = cdForumService.getForumPing(id);
-        for (int i = 0; i < listfor.size(); i++) {
-            Map mapForum = new HashMap();
-            Object[] forum = (Object[]) listfor.get(i);
-            if (!forum[1].toString().contains(",")) {
-                mapForum.put("userName", forum[0]); //用户名
-            } else {
-                //拆分parentsUser
-                String[] arr = forum[1].toString().split(",");
-                if (forum[0].equals(arr[arr.length - 1])) {
-                    mapForum.put("userName", arr[arr.length - 1]);
+        List<CdForumReplay> rList = cdForumReplayService.findByFid(fid);
+        List repList = new ArrayList();
+        if (rList.size() > 0) {
+            for (CdForumReplay r : rList) {
+                Map<String, String> map = new HashMap<>();
+                map.put("id", r.getId());//
+                map.put("text", r.getText());//评论内容
+                map.put("createDate", r.getCreateDate());//时间
+                map.put("count", r.getSupportCount());//点赞数
+                map.put("name", r.getUserName());//用户名
+                map.put("img", r.getUserImg());//头像
+                CdForumSupport cfs = cdForumSupportService.findByFidAndUid(r.getId(), uid);
+                if (cfs == null) {
+                    map.put("sup", "0"); //没点赞
                 } else {
-                    mapForum.put("userName", forum[0] + ">" + arr[arr.length - 1]);
+                    map.put("sup", "1"); //已点赞
                 }
+                repList.add(map);
             }
-            mapForum.put("content", forum[2]); //内容
-            mapForum.put("id", forum[3]); //主键
-            mapForum.put("dianZanCount", forum[4]); //点赞数量
-            if (StringUtils.isNotEmpty(forum[5].toString())) {
-                CdLotteryUser cdLotteryUser = cdLotteryUserService.get(forum[5].toString());
-                mapForum.put("uImg", Global.getConfig("domain.name") + cdLotteryUser.getImg());//用户头像
-            }
-            listPing.add(mapForum);
         }
-        mapData.put("pingCount", listfor.size()); //评论数
-        mapData.put("listMs", listMs); //帖子的所有信息
-        mapData.put("listPing", listPing); //所有评论和自评论的信息
-        logger.info("查看单个帖子的详细内容以及回复selectForumDetail---------- End--------");
+        mapData.put("pingCount", String.valueOf(repList.size())); //评论数
+        mapData.put("listPing", repList); //所有评论和自评论的信息
+
         return HttpResultUtil.successJson(mapData);
     }
 
@@ -296,11 +336,35 @@ public class ForumInterface {
     public String dianZan(HttpServletRequest request) {
         logger.info("点赞方法dianZan---------- Start--------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String id = (String) jsonData.get("id"); //获得帖子id
-        CdForum forum = cdForumService.get(id);
-        forum.setDianzanCount(String.valueOf(Integer.valueOf(forum.getDianzanCount()) + 1)); //点赞数量加一
-        cdForumService.save(forum);
-        logger.info("点赞方法dianZan---------- End--------");
+        String id = (String) jsonData.get("id"); //获得帖子或评论的id
+        if (StringUtils.isEmpty(id)) {
+            return HttpResultUtil.errorJson("id为空!");
+        }
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空!");
+        }
+        String type = (String) jsonData.get("type");
+        if (StringUtils.isEmpty(type)) {
+            return HttpResultUtil.errorJson("type为空!");
+        }
+        //添加点赞记录
+        CdForumSupport cfs = new CdForumSupport();
+        cfs.setFid(id);
+        cfs.setUid(uid);
+        cdForumSupportService.save(cfs);
+        //修改点赞数量
+        if ("1".equals(type)) {
+            CdForum forum = cdForumService.get(id);
+            forum.setDianzanCount(String.valueOf(Integer.valueOf(forum.getDianzanCount()) + 1)); //点赞数量加一
+            cdForumService.save(forum);
+        } else {
+            CdForumReplay cfr = cdForumReplayService.get(id);
+            int newCount = Integer.parseInt(cfr.getSupportCount()) + 1;
+            cfr.setSupportCount(String.valueOf(newCount));
+            cdForumReplayService.save(cfr);
+        }
+
         Map mapData = new HashMap();
         return HttpResultUtil.successJson(mapData);
     }

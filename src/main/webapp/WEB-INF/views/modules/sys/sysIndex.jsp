@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>${fns:getConfig('productName')}</title>
+	<title></title>
 	<%@include file="/WEB-INF/views/include/dialog.jsp" %>
 	<meta name="decorator" content="default"/>
 	<style type="text/css">
@@ -28,7 +28,7 @@
 	<div id="main">
 		<div id="header" class="navbar navbar-fixed-top">
 	      <div class="navbar-inner">
-	      	 <div class="brand">彩票</div>
+	      	 <div class="brand">凯旋彩票</div>
 	         <div class="nav-collapse">
 	           <ul id="menu" class="nav">
 				 <c:set var="firstMenu" value="true"/>
