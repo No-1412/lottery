@@ -21,5 +21,5 @@ public class SpringTransactionalContextTests extends AbstractTransactionalJUnit4
 		super.setDataSource(dataSource);
 		this.dataSource = dataSource;
 	}
-	
+
 }
