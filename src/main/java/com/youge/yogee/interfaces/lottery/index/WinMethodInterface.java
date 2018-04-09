@@ -2,6 +2,7 @@ package com.youge.yogee.interfaces.lottery.index;
 
 import com.google.common.collect.Maps;
 import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cwinmethod.entity.CdWinMethod;
@@ -36,8 +37,22 @@ public class WinMethodInterface {
     @ResponseBody
     public String getWinMethodList(HttpServletRequest request) {
         logger.info("中奖攻略列表 ---------- Start--------");
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
         List dataList = new ArrayList();
-        List<CdWinMethod> list = cdWinMethodService.getMethodList(null);
+        List<CdWinMethod> list = cdWinMethodService.getMethodList(total, count);
         for (CdWinMethod lst : list) {
             Map map = new HashMap();
             map.put("id", lst.getId());

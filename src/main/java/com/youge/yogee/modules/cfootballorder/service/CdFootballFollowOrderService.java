@@ -3,21 +3,20 @@
  */
 package com.youge.yogee.modules.cfootballorder.service;
 
-import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
+import com.youge.yogee.common.service.BaseService;
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.common.utils.IdGen;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.modules.cfootballorder.dao.CdFootballFollowOrderDao;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.service.BaseService;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.IdGen;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
-import com.youge.yogee.modules.cfootballorder.dao.CdFootballFollowOrderDao;
 
 import java.util.List;
 
@@ -46,6 +45,7 @@ public class CdFootballFollowOrderService extends BaseService {
         if (StringUtils.isNotEmpty(cdFootballFollowOrder.getBuyWays())) {
             dc.add(Restrictions.eq("buyWays", cdFootballFollowOrder.getBuyWays()));
         }
+        dc.add(Restrictions.ne("status", "1"));
         dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
         return cdFootballFollowOrderDao.find(page, dc);
@@ -88,6 +88,20 @@ public class CdFootballFollowOrderService extends BaseService {
         } else {
             return null;
         }
+    }
+
+    public List<CdFootballFollowOrder> findNotPay() {
+        DetachedCriteria dc = cdFootballFollowOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFootballFollowOrder.FIELD_DEL_FLAG, CdFootballFollowOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("status", "1"));
+        dc.addOrder(Order.desc("createDate"));
+        return cdFootballFollowOrderDao.find(dc);
+    }
+
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdFootballFollowOrderDao.update("delete from CdFootballFollowOrder where id=:p1", new Parameter(id));
     }
 
 }

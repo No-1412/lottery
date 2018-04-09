@@ -5,6 +5,8 @@ import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
+import com.youge.yogee.modules.bm.entity.BmEventBelong;
+import com.youge.yogee.modules.bm.service.BmEventBelongService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
@@ -34,7 +36,8 @@ public class FootballFollowOrderInterface {
 
     @Autowired
     private CdFootballFollowOrderService cdFootballFollowOrderService;
-
+    @Autowired
+    private BmEventBelongService bmEventBelongService;
     @Autowired
     private CdFootballMixedService cdFootballMixedService;
 
@@ -93,7 +96,8 @@ public class FootballFollowOrderInterface {
         String letDetail = "";
         //让球详情
         String letBalls = "";
-
+        //大洲
+        String continent = "";
         int acount = 0;//注数
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
@@ -122,8 +126,14 @@ public class FootballFollowOrderInterface {
                 } else {
                     danMatchIds += "非" + "+" + matchId + ",";
                 }
-
+                //比赛详情
                 String partDetail = isMust + "+" + matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
+                //查询赛事名称 获取大洲
+                BmEventBelong beb = bmEventBelongService.findByEventName(sfm.getEventName());
+                if (beb != null) {
+                    String aContinent = beb.getContinentName();
+                    continent += aContinent + ",";
+                }
                 //胜负平所有押注结果 2胜负平
                 String beat = (String) d.get("beat");
                 if (StringUtils.isNotEmpty(beat)) {
@@ -338,9 +348,9 @@ public class FootballFollowOrderInterface {
             map.put("orderName", "竞猜足球订单支付");
             map.put("time", cffo.getCreateDate());
             map.put("price", price);
-            map.put("acountStr",acountStr);//注数
-            map.put("times",times);//倍数
-            map.put("followNum",followNum);//串关
+            map.put("acountStr", acountStr);//注数
+            map.put("times", times);//倍数
+            map.put("followNum", followNum);//串关
         } catch (Exception e) {
             return HttpResultUtil.errorJson("保存失败");
         }

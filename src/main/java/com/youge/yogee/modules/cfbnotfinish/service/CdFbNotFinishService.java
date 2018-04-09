@@ -77,9 +77,12 @@ public class CdFbNotFinishService extends BaseService {
         dc.addOrder(Order.asc("jn"));
 
         // 限制条数|分页
+//        Criteria cri = dc.getExecutableCriteria(cdFbNotFinishDao.getSession());
+//        cri.setMaxResults(Integer.parseInt(count));
+//        cri.setFirstResult(Integer.parseInt(total));
         Criteria cri = dc.getExecutableCriteria(cdFbNotFinishDao.getSession());
-        cri.setMaxResults(Integer.parseInt(count));
         cri.setFirstResult(Integer.parseInt(total));
+        cri.setMaxResults(Integer.parseInt(count));
         return cdFbNotFinishDao.find(dc);
     }
 
@@ -96,5 +99,17 @@ public class CdFbNotFinishService extends BaseService {
         }
 
     }
+
+
+    @Transactional(readOnly = false)
+    public List<CdFbNotFinish> getNotFinish() {
+        DetachedCriteria dc = cdFbNotFinishDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFbNotFinish.FIELD_DEL_FLAG, CdFbNotFinish.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("type", "4"));
+        dc.addOrder(Order.asc("time"));
+        dc.addOrder(Order.asc("jn"));
+        return cdFbNotFinishDao.find(dc);
+    }
+
 
 }

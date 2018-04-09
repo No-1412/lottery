@@ -38,7 +38,7 @@
 				<th>注数</th>
 				<th>倍数</th>
 				<th>金额</th>
-				<th>用户</th>
+				<%--<th>用户</th>--%>
 				<th>下单时间</th>
 				<th>订单状态</th>
 				<shiro:hasPermission name="cchoosenine:cdChooseNineOrder:edit"><th>操作</th></shiro:hasPermission>
@@ -52,7 +52,7 @@
 				<td>${cdChooseNineOrder.acount}</td>
 				<td>${cdChooseNineOrder.times}倍</td>
 				<td>${cdChooseNineOrder.price}</td>
-				<td>${cdChooseNineOrder.uid}</td>
+				<%--<td>${cdChooseNineOrder.uid}</td>--%>
 				<td>${cdChooseNineOrder.createDate}</td>
 				<td><c:choose>
 					<c:when test="${cdChooseNineOrder.status==1}">

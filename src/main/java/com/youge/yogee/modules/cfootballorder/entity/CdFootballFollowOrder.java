@@ -3,22 +3,16 @@
  */
 package com.youge.yogee.modules.cfootballorder.entity;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.youge.yogee.common.persistence.BaseEntity;
+import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.validator.constraints.Length;
 
-import com.youge.yogee.modules.sys.entity.User;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * 竞彩足球订单Entity
@@ -63,6 +57,9 @@ public class CdFootballFollowOrder extends BaseEntity<T> implements Serializable
 
     private String type;     // 0普通订单 1发起的 2跟单的
     private String result;       //开奖结果
+    private String continent; //大洲
+
+
     public CdFootballFollowOrder() {
         super();
     }
@@ -268,6 +265,14 @@ public class CdFootballFollowOrder extends BaseEntity<T> implements Serializable
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getContinent() {
+        return continent;
+    }
+
+    public void setContinent(String continent) {
+        this.continent = continent;
     }
 }
 

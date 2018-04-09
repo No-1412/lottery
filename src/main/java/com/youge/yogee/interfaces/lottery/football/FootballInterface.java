@@ -12,8 +12,14 @@ import com.youge.yogee.modules.cfbscoer.entity.CdFbScoer;
 import com.youge.yogee.modules.cfbscoer.service.CdFbScoerService;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
 import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
+import com.youge.yogee.modules.cfootballdouble.entity.CdFootBallDouble;
+import com.youge.yogee.modules.cfootballdouble.service.CdFootBallDoubleService;
+import com.youge.yogee.modules.cfootballgoal.entity.CdFootBallGoal;
+import com.youge.yogee.modules.cfootballgoal.service.CdFootBallGoalService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFail;
+import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,15 +46,11 @@ public class FootballInterface {
     @Autowired
     private CdFootballMixedService cdFootballMixedService;
     @Autowired
-    private CdFbOutcomeService cdFbOutcomeService;
+    private CdSuccessFailService cdSuccessFailService;
     @Autowired
-    private CdFbScoerService cdFbScoerService;
+    private CdFootBallGoalService cdFootBallGoalService;
     @Autowired
-    private CdFbFutureService cdFbFutureService;
-    @Autowired
-    private CdFootballAwardsService cdFootballAwardsService;
-
-    //region Description
+    private CdFootBallDoubleService cdFootBallDoubleService;
 
     /**
      * 查询足球混投
@@ -698,249 +700,169 @@ public class FootballInterface {
         logger.info("listDgFootbalAllOdds  足球单关总进球---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
-    //endregion
 
     /**
-     * 足球详情(分析)
-     * wangsong
-     * 20180124
-     *
-     * @param request
-     * @return
+     * 足彩--胜负彩,任选九数据接口(非竞彩足球)
      */
-    @RequestMapping(value = "listFtDetail", method = RequestMethod.POST)
+    @RequestMapping(value = "successFail", method = RequestMethod.POST)
     @ResponseBody
-    public String listFtDetail(HttpServletRequest request) {
-        logger.info("listFtDetail  足球详情---------Start---------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String matchDate = (String) jsonData.get("itemid");//比赛id
-        Map<String, Object> dataMap = new HashMap<>();
-        List scoerList = new ArrayList();
-        List hFutureList = new ArrayList();
-        List gFutureList = new ArrayList();
+    public String successFail(HttpServletRequest request) {
+        logger.info("successFail  足彩胜负彩,任选九(非竞彩足球)---------Start---------");
 
-        logger.info("listFtDetail  足球近期战绩详情---------Start---------");
-        //region Description
-//        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(matchDate);
-//        if (cdFootballMixed == null) {
-//            return HttpResultUtil.errorJson("数据未更新");
-//        }
-        CdFootballAwards cfa = cdFootballAwardsService.findBymatchDate(matchDate);
-        String hostName = cfa.getHomeTeam();//主队名称
-        String guestName = cfa.getAwayTeam();//客队名称
-
-        //主队近期战绩
-        List<CdFbOutcome> hnList = cdFbOutcomeService.findById(matchDate, hostName, "0");
-        if (hnList.size() > 0) {
-            int win = 0;//胜
-            int dogfall = 0;//平
-            int lost = 0;//负
-
-            List<Map> competitionList = new ArrayList<>();
-            for (CdFbOutcome cdFbOutcome : hnList) {
-                Map<String, Object> hnMap = new HashMap<>();
-                hnMap.put("mname", cdFbOutcome.getEventName());//赛事名称
-                hnMap.put("mt", cdFbOutcome.getMt());//时间
-                hnMap.put("hn", cdFbOutcome.getHn());//主队名称
-                hnMap.put("gn", cdFbOutcome.getGn());//客队名称
-                hnMap.put("score", cdFbOutcome.getHsc() + ":" + cdFbOutcome.getGsc());//比分
-
-                //判断主场
-                if (hostName.equals(cdFbOutcome.getHn())) {//作为主队
-                    if (Integer.parseInt(cdFbOutcome.getHsc()) > Integer.parseInt(cdFbOutcome.getGsc())) {
-                        win++;
-                        hnMap.put("result", "胜");
-                    } else if (Integer.parseInt(cdFbOutcome.getHsc()) == Integer.parseInt(cdFbOutcome.getGsc())) {//平
-                        dogfall++;
-                        hnMap.put("result", "平");
-                    } else {
-                        lost++;
-                        hnMap.put("result", "负");
-                    }
-                } else {//作为客队
-                    if (Integer.parseInt(cdFbOutcome.getGsc()) > Integer.parseInt(cdFbOutcome.getHsc())) {
-                        win++;
-                        hnMap.put("result", "胜");
-                    } else if (Integer.parseInt(cdFbOutcome.getGsc()) == Integer.parseInt(cdFbOutcome.getHsc())) {//平
-                        dogfall++;
-                        hnMap.put("result", "平");
-                    } else {
-                        lost++;
-                        hnMap.put("result", "负");
-                    }
-                }
-                competitionList.add(hnMap);
+        List<CdSuccessFail> dataList = cdSuccessFailService.getSuccessFail();
+        List<String> dateList = new ArrayList<>();
+        String weekDay = "";
+        for (int i = 0; i < dataList.size(); i++) {
+            if (i == 0) {
+                weekDay = dataList.get(i).getWeekday();
+                dateList.add(weekDay);
             }
-
-            int[] scoreArray = {win, dogfall, lost};
-
-            dataMap.put("hnCompetitionList", competitionList);
-            dataMap.put("hnScoreArray", scoreArray);
-        }
-
-        //客场近期战绩
-        List<CdFbOutcome> gnList = cdFbOutcomeService.findById(matchDate, hostName, "0");
-        if (gnList.size() > 0) {
-            int win = 0;//胜
-            int dogfall = 0;//平
-            int lost = 0;//负
-
-            List<Map> competitionList = new ArrayList<>();
-            for (CdFbOutcome cdFbOutcome : gnList) {
-                Map<String, Object> gnMap = new HashMap<>();
-                gnMap.put("mname", cdFbOutcome.getEventName());//赛事名称
-                gnMap.put("mt", cdFbOutcome.getMt());//时间
-                gnMap.put("hn", cdFbOutcome.getHn());//主队名称
-                gnMap.put("gn", cdFbOutcome.getGn());//客队名称
-                gnMap.put("score", cdFbOutcome.getHsc() + ":" + cdFbOutcome.getGsc());//比分
-
-                //判断主场
-                if (guestName.equals(cdFbOutcome.getGn())) {
-                    //客队胜
-                    if (Integer.parseInt(cdFbOutcome.getGsc()) > Integer.parseInt(cdFbOutcome.getHsc())) {
-                        win++;
-                        gnMap.put("result", "胜");
-                    } else if (Integer.parseInt(cdFbOutcome.getGsc()) == Integer.parseInt(cdFbOutcome.getHsc())) {//平
-                        dogfall++;
-                        gnMap.put("result", "平");
-                    } else {
-                        lost++;
-                        gnMap.put("result", "负");
-                    }
-                } else {
-                    //主队胜
-                    if (Integer.parseInt(cdFbOutcome.getHsc()) > Integer.parseInt(cdFbOutcome.getGsc())) {
-                        win++;
-                        gnMap.put("result", "胜");//胜负
-                    } else if (Integer.parseInt(cdFbOutcome.getHsc()) == Integer.parseInt(cdFbOutcome.getGsc())) {//平
-                        dogfall++;
-                        gnMap.put("result", "平");//胜负
-                    } else {
-                        lost++;
-                        gnMap.put("result", "负");//胜负
-                    }
+            if (i > 0) {
+                if (!weekDay.equals(dataList.get(i).getWeekday())) {
+                    weekDay = dataList.get(i).getWeekday();
+                    dateList.add(weekDay);
                 }
-                competitionList.add(gnMap);
-            }
-
-            int[] scoreArray = {win, dogfall, lost};
-
-            dataMap.put("gnCompetitionList", competitionList);
-            dataMap.put("gnScoreArray", scoreArray);
-        }
-        logger.info("listFtDetail  足球近期战绩详情---------End---------");
-
-
-        logger.info("listFtDetail  足球历史战绩详情---------Start---------");
-        //历史交锋
-        List<CdFbOutcome> cdHList = cdFbOutcomeService.findByOldTime(matchDate);
-        if (cdHList != null) {
-            int win = 0;//胜
-            int dogfall = 0;//平
-            int lost = 0;//负
-
-            List<Map> competitionList = new ArrayList<>();
-            for (CdFbOutcome cdFbOutcome : cdHList) {
-                Map<String, Object> map = new HashMap<>();
-                map.put("mname", cdFbOutcome.getEventName());//赛事名称
-                map.put("mt", cdFbOutcome.getMt());//时间
-                map.put("hn", cdFbOutcome.getHn());//主队名称
-                map.put("gn", cdFbOutcome.getGn());//客队名称
-                map.put("score", cdFbOutcome.getHsc() + ":" + cdFbOutcome.getGsc());//比分
-
-                //判断主场
-                if (hostName.equals(cdFbOutcome.getHn())) {//作为主队
-                    if (Integer.parseInt(cdFbOutcome.getHsc()) > Integer.parseInt(cdFbOutcome.getGsc())) {
-                        win++;
-                        map.put("result", "胜");
-                    } else if (Integer.parseInt(cdFbOutcome.getHsc()) == Integer.parseInt(cdFbOutcome.getGsc())) {//平
-                        dogfall++;
-                        map.put("result", "平");
-                    } else {
-                        lost++;
-                        map.put("result", "负");
-                    }
-                } else {//作为客队
-                    if (Integer.parseInt(cdFbOutcome.getGsc()) > Integer.parseInt(cdFbOutcome.getHsc())) {
-                        win++;
-                        map.put("result", "胜");
-                    } else if (Integer.parseInt(cdFbOutcome.getGsc()) == Integer.parseInt(cdFbOutcome.getHsc())) {//平
-                        dogfall++;
-                        map.put("result", "平");
-                    } else {
-                        lost++;
-                        map.put("result", "负");
-                    }
-                    competitionList.add(map);
-                }
-
-                int[] scoreArray = {win, dogfall, lost};
-
-                dataMap.put("historyCompetitionList", competitionList);
-                dataMap.put("historyScoreArray", scoreArray);
             }
         }
-        logger.info("listFtDetail  足球历史战绩详情---------End---------");
 
-        logger.info("listFtDetail  足球积分详情---------Start---------");
-        //region Description
-        List<CdFbScoer> cdScoerList = cdFbScoerService.findById(matchDate);
-        for (CdFbScoer cdFbScoer : cdScoerList) {
-            Map<String, Object> map = new HashMap();
-            map.put("rank", cdFbScoer.getRank());//球队排名
-            map.put("teamname", cdFbScoer.getTeamname());//球队名称
-            map.put("points", cdFbScoer.getPoints());//球队积分
-            map.put("scoerAll", cdFbScoer.getScoerAll());//球队总成绩
-            map.put("host", cdFbScoer.getHost());//球队主场成绩
-            map.put("guest", cdFbScoer.getGuest());//球队客场成绩
-            scoerList.add(map);
-        }
-        //endregion
-        logger.info("listFtDetail  足球积分详情---------End---------");
-
-        logger.info("listFtDetail  足球未来赛事详情---------Start---------");
-        //region Description
-//        CdFootballMixed cdFootballMixed = cdFootballMixedService.getByItem(itemid);
-        //查询队id
-        List<CdFbFuture> cdFutureName = cdFbFutureService.findByName(hostName);
-        String teamId = cdFutureName.get(0).getTeamHid();
-        List<CdFbFuture> cdFutureList = cdFbFutureService.findById(matchDate);
-        for (CdFbFuture cd : cdFutureList) {
-            Map<String, Object> map = new HashMap();
-            if (teamId.equals(cd.getTeamHid()) || teamId.equals(cd.getTeamAid())) {
-                if (hFutureList.size() == 3) {//查询3条未来赛事
-                    continue;
-                }
-                map.put("match_name", cd.getMatchName());//赛事名称
-                map.put("time", cd.getTime());//比赛日期
-                map.put("host", cd.getHost());//主队
-                map.put("guest", cd.getGuest());//客队
-                map.put("later", cd.getLater());//相隔天数
-                hFutureList.add(map);
-            } else {
-                if (gFutureList.size() == 3) {
-                    continue;
-                }
-                map.put("match_name", cd.getMatchName());//赛事名称
-                map.put("time", cd.getTime());//比赛日期
-                map.put("host", cd.getHost());//主队
-                map.put("guest", cd.getGuest());//客队
-                map.put("later", cd.getLater());//相隔天数
-                gFutureList.add(map);
+        List lastList = new ArrayList();
+        for (String s : dateList) {
+            List<CdSuccessFail> sList = cdSuccessFailService.getSuccessFailByWeekDay(s);
+            List list = new ArrayList();
+            for (CdSuccessFail str : sList) {
+                Map map = new HashMap();
+                map.put("matchId", str.getMatchId());//场次id
+                map.put("eventName", str.getEventName());//赛事名称
+                map.put("matchDate", str.getMatchDate());//比赛时间
+                map.put("homeTeam", str.getHomeTeam());//主队
+                map.put("awayTeam", str.getAwayTeam());//客队
+                map.put("winningOdds", str.getWinningOdds());//主胜赔率
+                map.put("flatOdds", str.getFlatOdds());//平赔率
+                map.put("defeatedOdds", str.getDefeatedOdds());//负赔率
+                map.put("timeEndSale", str.getTimeEndSale());//截止时间
+                map.put("weekday", str.getWeekday());//期号
+                list.add(map);
             }
 
+            lastList.add(list);
         }
-        //endregion
-        logger.info("listFtDetail  足球未来赛事详情---------End---------");
+//        List<CdSuccessFail> sList = cdSuccessFailService.getSuccessFailByWeekDay(weekday);
 
-//        dataMap.put("glist", glist);//客队近期
-//        dataMap.put("hlist", hlist);//主队近期
-//        dataMap.put("historyList", historyList);//历史战绩
-//        dataMap.put("dataList", dataList);//比赛成绩
-        dataMap.put("scoerList", scoerList);//战绩分数
-        dataMap.put("hFutureList", hFutureList);//主队未来赛事
-        dataMap.put("gFutureList", gFutureList);//客队未来赛事
-        logger.info("listFtDetail  足球详情---------Start---------");
+        Map dataMap = new HashMap();
+        dataMap.put("list", lastList);
+        dataMap.put("dateList", dateList);
+        logger.info("successFail  足彩胜负彩,任选九(非竞彩足球)---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+    /**
+     * 四场进球彩赔率数据(非竞彩足球)
+     *
+     * @param
+     */
+
+    @RequestMapping(value = "footballGoal", method = RequestMethod.POST)
+    @ResponseBody
+    public String footballGoal(HttpServletRequest request) {
+        logger.info("footballGoal  足彩进球彩---------Start---------");
+
+        List<CdFootBallGoal> dataList = cdFootBallGoalService.getfootGoal();
+        List<String> dateList = new ArrayList<>();
+        String weekDay = "";
+        for (int i = 0; i < dataList.size(); i++) {
+            if (i == 0) {
+                weekDay = dataList.get(i).getWeekday();
+                dateList.add(weekDay);
+            }
+            if (i > 0) {
+                if (!weekDay.equals(dataList.get(i).getWeekday())) {
+                    weekDay = dataList.get(i).getWeekday();
+                    dateList.add(weekDay);
+                }
+            }
+        }
+
+        List lastList = new ArrayList();
+        for (String s : dateList) {
+            List<CdFootBallGoal> sList = cdFootBallGoalService.getFootBallGoalByWeekDay(s);
+            List list = new ArrayList();
+            for (CdFootBallGoal str : sList) {
+                Map map = new HashMap();
+                map.put("matchId", str.getMatchId());//场次id
+                map.put("eventName", str.getEventName());//赛事名称
+                map.put("matchDate", str.getMatchDate());//比赛时间
+                map.put("homeTeam", str.getHomeTeam());//主队
+                map.put("awayTeam", str.getAwayTeam());//客队
+                map.put("winningOdds", str.getWinningOdds());//主胜赔率
+                map.put("flatOdds", str.getFlatOdds());//平赔率
+                map.put("defeatedOdds", str.getDefeatedOdds());//负赔率
+                map.put("timeEndSale", str.getTimeEndSale());//截止时间
+                map.put("weekday", str.getWeekday());//期号
+                list.add(map);
+            }
+            lastList.add(list);
+        }
+
+
+        Map dataMap = new HashMap();
+        dataMap.put("list", lastList);
+        dataMap.put("dateList", dateList);
+        logger.info("footballGoal  足彩进球彩---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+
+    /**
+     * 六场半全场赔率数据
+     *
+     * @param
+     */
+    @RequestMapping(value = "footDoubleResult", method = RequestMethod.POST)
+    @ResponseBody
+    public String footDoubleResult(HttpServletRequest request) {
+        logger.info("footDoubleResult  足彩半全场---------Start---------");
+        //List list = new ArrayList();
+        List<CdFootBallDouble> dataList = cdFootBallDoubleService.getFootDouble();
+        List<String> dateList = new ArrayList<>();
+        String weekDay = "";
+        for (int i = 0; i < dataList.size(); i++) {
+            if (i == 0) {
+                weekDay = dataList.get(i).getWeekday();
+                dateList.add(weekDay);
+            }
+            if (i > 0) {
+                if (!weekDay.equals(dataList.get(i).getWeekday())) {
+                    weekDay = dataList.get(i).getWeekday();
+                    dateList.add(weekDay);
+                }
+            }
+        }
+
+
+        List lastList = new ArrayList();
+        for (String s : dateList) {
+            List<CdFootBallDouble> sList = cdFootBallDoubleService.getFootBallDoubleByWeekDay(s);
+            List list = new ArrayList();
+            for (CdFootBallDouble str : sList) {
+                Map map = new HashMap();
+                map.put("matchId", str.getMatchId());//场次id
+                map.put("eventName", str.getEventName());//赛事名称
+                map.put("matchDate", str.getMatchDate());//比赛时间
+                map.put("homeTeam", str.getHomeTeam());//主队
+                map.put("awayTeam", str.getAwayTeam());//客队
+                map.put("winningOdds", str.getWinningOdds());//主胜赔率
+                map.put("flatOdds", str.getFlatOdds());//平赔率
+                map.put("defeatedOdds", str.getDefeatedOdds());//负赔率
+                map.put("timeEndSale", str.getTimeEndSale());//截止时间
+                map.put("weekday", str.getWeekday());//期号
+                list.add(map);
+            }
+            lastList.add(list);
+        }
+
+        Map dataMap = new HashMap();
+        dataMap.put("list", lastList);
+        dataMap.put("dateList", dateList);
+        logger.info("footDoubleResult  足彩半全场---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
 

@@ -38,7 +38,7 @@
 				<th>注数</th>
 				<th>倍数</th>
 				<th>金额</th>
-				<th>用户</th>
+				<%--<th>用户</th>--%>
 				<th>下单时间</th>
 				<th>订单状态</th>
 				<shiro:hasPermission name="csuccessfail:cdSuccessFailOrder:edit"><th>操作</th></shiro:hasPermission>
@@ -52,7 +52,7 @@
 				<td>${cdSuccessFailOrder.acount}</td>
 				<td>${cdSuccessFailOrder.times}倍</td>
 				<td>${cdSuccessFailOrder.price}</td>
-				<td>${cdSuccessFailOrder.uid}</td>
+				<%--<td>${cdSuccessFailOrder.uid}</td>--%>
 				<td>${cdSuccessFailOrder.createDate}</td>
 				<td><c:choose>
 					<c:when test="${cdSuccessFailOrder.status==1}">

@@ -73,11 +73,8 @@ public class CdBtFutureService extends BaseService {
 	}
 
 	/**
-	 * wangsong
-	 * 20180105
 	 * 查询球队未来赛事
 	 */
-	@Transactional(readOnly = false)
 	public List<CdBtFuture> findById(String itemid){
 		DetachedCriteria dc = cdBtFutureDao.createDetachedCriteria();
 		dc.add(Restrictions.eq(CdBtFuture.FIELD_DEL_FLAG, CdBtFuture.DEL_FLAG_NORMAL));
@@ -86,4 +83,5 @@ public class CdBtFutureService extends BaseService {
 
 		return cdBtFutureDao.find(dc);
 	}
+
 }

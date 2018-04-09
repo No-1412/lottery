@@ -1,6 +1,5 @@
 package com.youge.yogee.interfaces.lottery.award;
 
-import com.youge.yogee.interfaces.lottery.football.FootballLotteryInterface;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineService;
@@ -32,7 +31,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("${frontPath}")
 public class BallRewardInterface {
-    private static final Logger logger = LoggerFactory.getLogger(FootballLotteryInterface.class);
+    private static final Logger logger = LoggerFactory.getLogger(BallRewardInterface.class);
 
     @Autowired
     private CdChooseNineService cdChooseNineService;

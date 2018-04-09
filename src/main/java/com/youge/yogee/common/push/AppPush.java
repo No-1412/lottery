@@ -24,7 +24,7 @@ public class AppPush {
                 tokens.add(bmPush.getPushid());
                 IphonePushUtil.toUser(tokens, title, content, 1, null);
             } else {
-                AppPushUtil.pubshtoSingle(userID, content, content);
+                AppPushUtil.pushToSingle(userID, content, content);
             }
         }
     }
@@ -39,7 +39,7 @@ public class AppPush {
 
 
 
-        AppPushUtil.pushtoAPP(title, content);
+        AppPushUtil.pushToAPP(title, content);
     }
 
 }

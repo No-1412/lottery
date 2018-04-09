@@ -2,13 +2,11 @@ package com.youge.yogee.common.push;
 
 import com.gexin.rp.sdk.base.IPushResult;
 import com.gexin.rp.sdk.base.impl.AppMessage;
-import com.gexin.rp.sdk.base.impl.ListMessage;
 import com.gexin.rp.sdk.base.impl.SingleMessage;
 import com.gexin.rp.sdk.base.impl.Target;
 import com.gexin.rp.sdk.base.payload.APNPayload;
 import com.gexin.rp.sdk.exceptions.RequestException;
 import com.gexin.rp.sdk.http.IGtPush;
-import com.gexin.rp.sdk.template.APNTemplate;
 import com.gexin.rp.sdk.template.LinkTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 
@@ -32,30 +30,27 @@ public class AppPushUtil {
 
 
     public static void main(String[] args) throws Exception {
-        pubshtoSingle("302999baff2044229f7ee892a22a155c","内容","内容");
+        pushToSingle("302999baff2044229f7ee892a22a155c","内容","内容");
     }
 
 
     //单人推
-    public static void pubshtoSingle(String userid,String title,String content) {
+    public static void pushToSingle(String userid, String title, String content) {
 
         IGtPush push = new IGtPush(appkey, masterSecret);
-
-        TransmissionTemplate template = getTemplate(title,content);
+        LinkTemplate linkTemplate = linkTemplate(title, content);
+//        TransmissionTemplate template = getTemplate(title,content);
         SingleMessage message = new SingleMessage();
         message.setOffline(true);
         // 离线有效时间，单位为毫秒，可选
         message.setOfflineExpireTime(24 * 3600 * 1000);
-        message.setData(template);
+        message.setData(linkTemplate);
         // 可选，1为wifi，0为不限制网络环境。根据手机处于的网络情况，决定是否下发
         message.setPushNetWorkType(0);
         Target target = new Target();
         target.setAppId(appId);
-//        target.setClientId("17d60b4bb6e91679  8f8df2b1ff2d65f36");//ios
-//        target.setClientId("aab81546d109dc440cff8bffeea06c9d");//s6
-//        target.setClientId(cid);//zhanghao
         target.setAlias(userid);
-        IPushResult ret = null;
+        IPushResult ret;
         try {
             ret = push.pushMessageToSingle(message, target);
         } catch (RequestException e) {
@@ -69,7 +64,28 @@ public class AppPushUtil {
         }
 
     }
-    public static LinkTemplate linkTemplateDemo(String text , String text1) {
+
+    //多人
+    public static void pushToAPP(String title, String content) {
+
+
+        IGtPush push = new IGtPush(hostToApp, appkey, masterSecret);
+        LinkTemplate linkTemplate = linkTemplate(title, content);
+//        TransmissionTemplate template = getTemplate(title,content);
+        AppMessage message = new AppMessage();
+        message.setData(linkTemplate);
+        message.setOffline(true);
+        message.setOfflineExpireTime(24 * 1000 * 3600);
+        List<String> appIdList = new ArrayList<>();
+        appIdList.add(appId);
+        message.setAppIdList(appIdList);
+
+        IPushResult ret = push.pushMessageToApp(message, "HotToApp");
+        System.out.println(ret.getResponse().toString());
+    }
+
+    //正常推送模版
+    public static LinkTemplate linkTemplate(String text , String text1) {
         LinkTemplate template = new LinkTemplate();
         // 设置APPID与APPKEY
         template.setAppId(appId);
@@ -108,23 +124,7 @@ public class AppPushUtil {
         return template;
     }
 
-    //多人
-    public static void pushtoAPP( String title,String content) {
 
-
-        IGtPush push = new IGtPush(hostToApp, appkey, masterSecret);
-        TransmissionTemplate template = getTemplate(title,content);
-        AppMessage message = new AppMessage();
-        message.setData(template);
-        message.setOffline(true);
-        message.setOfflineExpireTime(24 * 1000 * 3600);
-        List<String> appIdList = new ArrayList<>();
-        appIdList.add(appId);
-        message.setAppIdList(appIdList);
-
-        IPushResult ret = push.pushMessageToApp(message, "HotToApp");
-        System.out.println(ret.getResponse().toString());
-    }
 
 
 

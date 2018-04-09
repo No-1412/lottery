@@ -3,7 +3,6 @@ package com.youge.yogee.interfaces.yeepay;
 import java.util.ResourceBundle;
 
 
- 
 /**
  * @author lu.li
  *
@@ -32,8 +31,4 @@ public class Configuration {
 	public String getValue(String key) {
 		return (rb.getString(key));
 	}
-	   public static void main(String[] args) {
-	    	 System.out.println("begin:");
-	    	 System.out.println(Configuration.getInstance().getValue("p1_MerId"));
-		}
 }

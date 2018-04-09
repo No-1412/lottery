@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -92,10 +93,47 @@ public class UserInformationInterface {
         dataMap.put("rebate", clu.getRebate());//返利金额
         dataMap.put("percent", percent);//等级百分比
         dataMap.put("tel", clu.getMobile());//等级电话
-        dataMap.put("isReal", clu.getIsRealNameVerified());//实名认证 1已认证 2未认证
+        dataMap.put("isReal", clu.getIsRealNameVerified());//实名认证 1已认证 0未认证
         dataMap.put("catchTimes", clu.getCatchTimes());//今日提现次数
         dataMap.put("realName", clu.getReality());//真实姓名
         dataMap.put("idCard", clu.getIdNumber());//身份证号
+        String continent = clu.getContinent();
+        if (StringUtils.isNotEmpty(continent)) {
+            String[] continentArray = continent.split(",");
+            int asia = 0, europe = 0, america = 0, africa = 0;//亚 欧 美 非
+            for (String str : continentArray) {
+                if (str.equals("亚洲")) {
+                    asia += 1;
+                } else if (str.equals("欧洲")) {
+                    europe += 1;
+                } else if (str.equals("美洲")) {
+                    america += 1;
+                } else {
+                    africa += 1;
+                }
+            }
+            int max = asia;
+            dataMap.put("continent", "亚洲");
+            if (europe > asia) {
+                max = europe;
+                dataMap.put("continent", "欧洲");
+            }
+            if (america > max) {
+                max = america;
+                dataMap.put("continent", "美洲");
+            }
+            if (africa > max) {
+                max = america;
+                dataMap.put("continent", "非洲");
+            }
+            BigDecimal maxBig = new BigDecimal(max);
+            BigDecimal total = new BigDecimal(continentArray.length);
+            BigDecimal per = maxBig.divide(total, 2, 2).multiply(new BigDecimal(100));
+            dataMap.put("per", per.toString() + "%");
+        } else {
+            dataMap.put("continent", ""); //大洲
+            dataMap.put("per", "0.00%"); //百分比
+        }
         return HttpResultUtil.successJson(dataMap);
     }
 
@@ -142,6 +180,7 @@ public class UserInformationInterface {
             map.put("quality", quality);//0自购 1跟单 2神单
             map.put("orderNum", c.getNumber());//订单号
             map.put("followNum", c.getFollowNum());//神单订单号
+            map.put("status", c.getStatus());//1待开奖 2已开奖 3中奖
             cList.add(map);
         }
         dataMap.put("cList", cList);
@@ -481,8 +520,12 @@ public class UserInformationInterface {
             Map<String, Object> cdRecordCashMap = new HashMap<>();
             cdRecordCashMap.put("price", cdRecordCash.getPrice());
             cdRecordCashMap.put("orderNum", cdRecordCash.getOrderNum());
-            cdRecordCashMap.put("cardNum", cdRecordCash.getCreateDate());
-            cdRecordCashMap.put("dealTime", cdRecordCash.getDealTime());
+            cdRecordCashMap.put("cardNum", cdRecordCash.getCardNum());
+            String dealTime = cdRecordCash.getDealTime();
+            if (StringUtils.isEmpty(dealTime)) {
+                dealTime = cdRecordCash.getCreateDate();
+            }
+            cdRecordCashMap.put("dealTime", dealTime);
             cdRecordCashMap.put("status", cdRecordCash.getStatus());
             recordCashList.add(cdRecordCashMap);
         }

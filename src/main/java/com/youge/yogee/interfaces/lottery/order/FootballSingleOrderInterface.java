@@ -4,6 +4,8 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
+import com.youge.yogee.modules.bm.entity.BmEventBelong;
+import com.youge.yogee.modules.bm.service.BmEventBelongService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
@@ -34,6 +36,8 @@ public class FootballSingleOrderInterface {
     private CdFootballSingleOrderService cdFootballSingleOrderService;
     @Autowired
     private CdFootballMixedService cdFootballMixedService;
+    @Autowired
+    private BmEventBelongService bmEventBelongService;
 
     /**
      * 足球单关 提交订单
@@ -74,6 +78,7 @@ public class FootballSingleOrderInterface {
         String letDetail = "";
         //让球详情
         String letBalls = "";
+        String continent = "";
         int acount = 0;//注数
         String matchIds = "";
         if (detail.size() != 0) {
@@ -87,6 +92,12 @@ public class FootballSingleOrderInterface {
                 matchIds += matchId + ",";
                 //比赛详情
                 String partDetail = matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
+                //查询赛事名称 获取大洲
+                BmEventBelong beb = bmEventBelongService.findByEventName(sfm.getEventName());
+                if (beb != null) {
+                    String aContinent = beb.getContinentName();
+                    continent += aContinent + ",";
+                }
                 //比分所有押注结果
                 String score = (String) d.get("score");
                 if (StringUtils.isNotEmpty(score)) {
@@ -194,6 +205,7 @@ public class FootballSingleOrderInterface {
         cfso.setBuyWays(buyWays); //玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
         cfso.setType("0");//0普通订单 1发起的 2跟单的
         cfso.setMatchIds(matchIds);//所有场次
+        cfso.setContinent(continent);//大洲
         try {
             cdFootballSingleOrderService.save(cfso);
             map.put("orderNum", orderNum);

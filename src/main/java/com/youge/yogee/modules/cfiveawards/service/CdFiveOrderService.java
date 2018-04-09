@@ -4,6 +4,7 @@
 package com.youge.yogee.modules.cfiveawards.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
@@ -42,6 +43,7 @@ public class CdFiveOrderService extends BaseService {
             dc.add(Restrictions.eq("orderNum", cdFiveOrder.getOrderNum()));
         }
         dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.ne("status", "1"));
         dc.addOrder(Order.desc("createDate"));
         return cdFiveOrderDao.find(page, dc);
     }
@@ -142,6 +144,25 @@ public class CdFiveOrderService extends BaseService {
             return null;
         }
 
+    }
+
+    /**
+     * 未支付订单
+     *
+     * @return
+     */
+    public List<CdFiveOrder> findNotPay() {
+        DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("status", "1"));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.asc("createDate"));
+        return cdFiveOrderDao.find(dc);
+    }
+
+
+    @Transactional(readOnly = false)
+    public int delById(String id) {
+        return cdFiveOrderDao.update("delete from CdFiveOrder where id=:p1", new Parameter(id));
     }
 
 }

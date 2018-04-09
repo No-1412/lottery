@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/views/include/taglib.jsp"%>
 <html>
 <head>
-	<title>YG模板登录</title>
+	<title></title>
 	<meta name="UGTemplate" content="default"/>
 	<meta name="decorator" content="default"/>
 	<link rel="stylesheet" href="${ctxStatic}/common/typica-login.css">
