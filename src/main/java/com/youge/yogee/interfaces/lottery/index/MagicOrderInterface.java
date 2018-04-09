@@ -278,7 +278,7 @@ public class MagicOrderInterface {
         BigDecimal times = cdOrderFollowTimesService.get("1").getTimes();
         CdMagicOrder cmo = new CdMagicOrder();
         cmo.setOrderNum(orderNum);//订单号
-        cmo.setCharges(charges);//佣金百分比
+        cmo.setCharges(charges.replaceAll("%", ""));//佣金百分比
         cmo.setFollowCounts("0");//跟买人数
         cmo.setPrice(price);//金额
         cmo.setType(type);//类型

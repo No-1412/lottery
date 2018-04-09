@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cforum.dao.CdForumDao;
 import com.youge.yogee.modules.cforum.entity.CdForum;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -67,14 +68,19 @@ public class CdForumService extends BaseService {
      * @return
      */
     @Transactional(readOnly = false)
-    public List<CdForum> getForum(String forumType) {
+    public List<CdForum> getForum(String forumType, String total, String count) {
         DetachedCriteria dc = cdForumDao.createDetachedCriteria();
         dc.add(Restrictions.eq("isPosts", "1")); //1代表帖子
         dc.add(Restrictions.eq("forumType", forumType)); //球爆单0竞彩足球1竞彩篮球2
         dc.add(Restrictions.eq(CdForum.FIELD_DEL_FLAG, CdForum.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
+        // 限制条数|分页
+        Criteria cri = dc.getExecutableCriteria(cdForumDao.getSession());
+        cri.setMaxResults(Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
         return cdForumDao.find(dc);
     }
+
     /**
      * 查询下边的所有回复内容
      *
@@ -82,8 +88,9 @@ public class CdForumService extends BaseService {
      */
     @Transactional(readOnly = false)
     public List getForumPing(String ids) {
-        return cdForumDao.findBySql("select user_name,parents_user,content,id,dianzan_count,user_id from cd_forum where parents_id like '%"+ids+"%' Order by create_date asc");
+        return cdForumDao.findBySql("select user_name,parents_user,content,id,dianzan_count,user_id from cd_forum where parents_id like '%" + ids + "%' Order by create_date asc");
     }
+
     /**
      * 查询所有帖子
      */

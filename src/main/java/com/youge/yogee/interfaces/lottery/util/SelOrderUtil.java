@@ -552,12 +552,14 @@ public class SelOrderUtil {
             orderMap.put("let", letMap.get("result"));
             //大小分
             String finalSize = "";
-            if (sizeArray.length > 0) {
+            if (StringUtils.isNotEmpty(sizeArray[0])) {
                 String sizeCount = cbf.getSizeCount();
                 String[] sizeCountArray = sizeCount.split(",");
                 for (int i = 0; i < sizeCountArray.length; i++) {
                     String[] aSizeArray = sizeArray[i].split("\\+");
-                    if (s.split("\\+")[1].equals(aSizeArray[1])) {
+                    String firstMatch = s.split("\\+")[1];
+                    String secondMatch = aSizeArray[1];
+                    if (firstMatch.equals(secondMatch)) {
                         orderMap.put("vs", aSizeArray[2]);
                         String sizeResult = aSizeArray[3];
                         String[] sizeResultArray = sizeResult.split(",");
