@@ -133,6 +133,7 @@ public class AwardsWallInterface {
             orderNum = co.getNumber();
             map.put("orderNum", orderNum);//订单号
             map.put("price", co.getTotalPrice());//价格
+            map.put("status",co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
         }
         map = SelOrderUtil.getOrderDetailMap(orderNum, map);
         logger.info("大奖墙列表接口--------------End--------");

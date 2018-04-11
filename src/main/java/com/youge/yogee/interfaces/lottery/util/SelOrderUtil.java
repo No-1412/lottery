@@ -550,6 +550,7 @@ public class SelOrderUtil {
                 vs = letMap.get("vs");
             }
             orderMap.put("let", letMap.get("result"));
+            orderMap.put("vs", vs);
             //大小分
             String finalSize = "";
             if (StringUtils.isNotEmpty(sizeArray[0])) {

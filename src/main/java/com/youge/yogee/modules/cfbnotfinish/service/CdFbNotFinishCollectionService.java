@@ -80,8 +80,8 @@ public class CdFbNotFinishCollectionService extends BaseService {
         }
     }
 
-    public List<CdFbNotFinish> findColByUid(String uid) {
-        return cdFbNotFinishCollectionDao.findBySql("SELECT * FROM cd_fb_notfinish_collection a LEFT JOIN cd_fb_notfinish b ON a.sort=b.sort WHERE uid=:p1 AND b.type !='4' AND a.del_flag=0", new Parameter(uid), CdFbNotFinish.class);
+    public List<CdFbNotFinish> findColByUid(String uid, int total, int count) {
+        return cdFbNotFinishCollectionDao.findBySql("SELECT * FROM cd_fb_notfinish_collection a LEFT JOIN cd_fb_notfinish b ON a.sort=b.sort WHERE uid=:p1 AND b.type !='4' AND a.del_flag=0 LIMIT :p2,:p3", new Parameter(uid, total, count), CdFbNotFinish.class);
     }
 
 

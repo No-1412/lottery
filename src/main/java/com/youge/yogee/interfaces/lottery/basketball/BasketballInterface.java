@@ -5,12 +5,6 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
-import com.youge.yogee.modules.cbblive.entity.CdBbLive;
-import com.youge.yogee.modules.cbblive.service.CdBbLiveService;
-import com.youge.yogee.modules.cbtfuture.entity.CdBtFuture;
-import com.youge.yogee.modules.cbtfuture.service.CdBtFutureService;
-import com.youge.yogee.modules.cbtoutcome.entity.CdBtOutcome;
-import com.youge.yogee.modules.cbtoutcome.service.CdBtOutcomeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +28,6 @@ public class BasketballInterface {
     private static final Logger logger = LoggerFactory.getLogger(BasketballInterface.class);
     @Autowired
     private CdBasketballMixedService cdBasketballMixedService;
-
 
 
     /**
@@ -74,11 +67,29 @@ public class BasketballInterface {
                 map.put("hn", cd.getWinningName());//主队名称
                 map.put("gn", cd.getDefeatedName());//客队名称
                 map.put("matchId", cd.getMatchId());//期次
+                //胜负:主负主胜赔率',
+                String sf = cd.getVictoryordefeatOdds();
+                if (",".equals(sf)) {
+                    sf = "-,-";
+                }
+                map.put("sf", sf);
+                //让分胜负:主负主胜赔率
+                String spo = cd.getSpreadOdds();
+                if (",".equals(spo)) {
+                    spo = "-,-";
+                }
+                map.put("spo", spo);
+                //大小分赔率
+                String sizeOdds = cd.getSizeOdds();
+                if (StringUtils.isEmpty(sizeOdds)) {
+                    sizeOdds = "-,-";
+                }
+                map.put("dxo", sizeOdds);
+                //胜分差主负主胜
+                String surPassScoreGap = cd.getSurpassScoreGap();
+                surPassScoreGap = surPassScoreGap.replace(",,,,,,,,,,,", "-,-,-,-,-,-,-,-,-,-,-,-");
+                map.put("sfc", surPassScoreGap);
 
-                map.put("sf", cd.getVictoryordefeatOdds());//胜负:主负主胜赔率',
-                map.put("spo", cd.getSpreadOdds());//让分胜负:主负主胜赔率
-                map.put("dxo", cd.getSizeOdds());//大小分赔率
-                map.put("sfc", cd.getSurpassScoreGap());//胜分差主负主胜
                 map.put("close", cd.getClose());//让分
                 map.put("value", cd.getZclose());//大小分分值
 
@@ -111,7 +122,6 @@ public class BasketballInterface {
     }
 
     /**
-     *
      * 篮球胜负
      * 180122
      *
@@ -147,7 +157,13 @@ public class BasketballInterface {
                 map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
                 map.put("hn", cd.getWinningName());//主队名称
                 map.put("gn", cd.getDefeatedName());//客队名称
-                map.put("sf", cd.getVictoryordefeatOdds());//胜负:主负主胜赔率',
+                //胜负:主负主胜赔率',
+                String sf = cd.getVictoryordefeatOdds();
+                if (",".equals(sf)) {
+                    sf = "-,-";
+                }
+                map.put("sf", sf);
+                //map.put("sf", cd.getVictoryordefeatOdds());
                 map.put("hm", cd.getWinningRank());//主队排名
                 map.put("gm", cd.getDefeatedRank());//客队排名
                 if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
@@ -410,7 +426,6 @@ public class BasketballInterface {
         logger.info("listBtDgMixed  篮球单关混投---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
-
 
 
     /**

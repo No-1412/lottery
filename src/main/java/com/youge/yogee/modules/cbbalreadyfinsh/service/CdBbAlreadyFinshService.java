@@ -72,8 +72,8 @@ public class CdBbAlreadyFinshService extends BaseService {
     public List<CdBbAlreadyFinsh> getBbFinshed(String total, String count) {
         DetachedCriteria dc = cdBbAlreadyFinshDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdBbAlreadyFinsh.FIELD_DEL_FLAG, CdBbAlreadyFinsh.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.asc("day"));
-        dc.addOrder(Order.asc("matchId"));
+        dc.addOrder(Order.desc("day"));
+        dc.addOrder(Order.desc("matchId"));
         // 限制条数|分页
         Criteria cri = dc.getExecutableCriteria(cdBbAlreadyFinshDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
