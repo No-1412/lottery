@@ -157,7 +157,7 @@ public class CdFootballSingleOrderController extends BaseController {
             cdFootballSingleOrder.setStatus("2");
             cdFootballSingleOrderService.save(cdFootballSingleOrder);
             addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
         }
         //更新赔率
         cdFootballSingleOrder.setScore(newScoreDetail);
