@@ -16,35 +16,6 @@
             return false;
         }
 
-        var testajax = function(){
-            $.ajax({
-                url:'http://192.168.51.229:8088/f/cdoptionpass/cdOptionPassController/printFootballSingleOrder',
-                type:'get',
-                data:{
-                    id : 'ca612b266dbf40c2a7d81f0f55df698d',
-                    optionNumber : '100011001110'
-                },
-
-                async : false, //默认为true 异步
-                error:function(data, XMLHttpRequest, textStatus, errorThrown){
-
-                    alert(XMLHttpRequest.status);
-                    alert(XMLHttpRequest.readyState);
-                    alert(textStatus);
-                    alert(0)
-                } ,
-                success:function(data){
-                    // var res = JSON.parse(data);
-
-                    // var match01 = document.querySelectorAll("#match1 p");
-                    // var list01 = res.saishiList[0];
-                    // console.log(match01)
-                    // console.log(list01);
-                    // addBlackPot(match01,list01);
-                    alert(1)
-                }
-            });
-        }
     </script>
 </head>
 <body>
@@ -164,7 +135,6 @@
                        onclick="return confirmx('确认要删除该竞彩足球订单吗？', this.href)">删除</a>
                 </td>
             </shiro:hasPermission>
-            <button onclick="testajax()">testw</button>
         </tr>
     </c:forEach>
     </tbody>

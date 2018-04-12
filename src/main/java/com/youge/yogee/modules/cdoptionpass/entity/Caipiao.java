@@ -7,9 +7,18 @@ import java.util.List;
  * Created by ab on 2018/4/2.
  */
 public class Caipiao {
-    private List<Integer> fangshi =new ArrayList<Integer>();
-    private int[] beishu = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    private List<List<Integer>> saishiList = new ArrayList<List<Integer>>();
+    private List<Integer> fangshi =new ArrayList<Integer>();//过关方式
+    private int[] beishu = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//倍数
+    private List<List<Integer>> saishiList = new ArrayList<List<Integer>>();//赛事集合
+    private int[] leixing = {0,0,0,0,0,0,0,0,0,0,0,0};//竞彩过关类型
+
+    public int[] getLeixing() {
+        return leixing;
+    }
+
+    public void setLeixing(int[] leixing) {
+        this.leixing = leixing;
+    }
 
     public List<Integer> getFangshi() {
         return fangshi;

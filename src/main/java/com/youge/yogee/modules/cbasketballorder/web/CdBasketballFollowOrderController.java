@@ -3,15 +3,19 @@
  */
 package com.youge.yogee.modules.cbasketballorder.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
-import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,15 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.youge.yogee.common.config.Global;
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.web.BaseController;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.modules.sys.entity.User;
-import com.youge.yogee.modules.sys.utils.UserUtils;
-import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
-import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -152,7 +149,7 @@ public class CdBasketballFollowOrderController extends BaseController {
     @RequiresPermissions("cbasketballorder:cdBasketballFollowOrder:edit")
     @RequestMapping(value = "save")
     public String save(CdBasketballFollowOrder cdBasketballFollowOrder, Model model, RedirectAttributes redirectAttributes) {
-        if (!beanValidator(model, cdBasketballFollowOrder)) {
+       if (!beanValidator(model, cdBasketballFollowOrder)) {
             return form(cdBasketballFollowOrder, model);
         }
 
@@ -216,8 +213,78 @@ public class CdBasketballFollowOrderController extends BaseController {
         }
 
         cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
-        addMessage(redirectAttributes, "保存成功");
+       // addMessage(redirectAttributes, "保存成功");
+        //return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+        //==================start   2018-04-11   yuhongwei 跳转打印页
+        String buy_ways = cdBasketballFollowOrder.getBuyWays();
+        String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0, cdBasketballFollowOrder.getDanMatchIds().length()-1);
+        String baseUrl = "modules/print/";
+        model.addAttribute("orderNumber",cdBasketballFollowOrder.getOrderNum());
+        if("1".equals(buy_ways)){//混投
+           /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+            return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";*/
+            if(match_ids.split(",").length<=3){
+                return baseUrl+ "篮球3关";
+            }else if(match_ids.split(",").length<=6){
+                return baseUrl+  "篮球6关";
+            }else if(match_ids.split(",").length<=8){
+                return baseUrl+"篮球8关";
+            }
+        }else if("2".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){
+                return baseUrl+ "篮球胜负3关";
+            }else if(match_ids.split(",").length<=6){
+                //return baseUrl+  "篮球胜负6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=8){
+                //return baseUrl+"篮球胜负8关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }
+        }else if("3".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){
+                //return baseUrl+ "篮球让分胜负3关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=6){
+               // return baseUrl+  "篮球让分胜负6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=8){
+                return baseUrl+"篮球让分胜负8关";
+            }
+        }else if("4".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){
+                //return baseUrl+ "篮球大小分3关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=6){
+                //return baseUrl+  "篮球大小分6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=8){
+                return baseUrl+"篮球大小分8关";
+            }
+        }else if("5".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){
+                //return baseUrl+ "篮球胜负差3关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=6){
+                //return baseUrl+  "篮球胜负差6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }else if(match_ids.split(",").length<=8){
+                //return baseUrl+"篮球胜负差8关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+            }
+        }
+        addMessage(redirectAttributes, "保存成功,没有模板不能打印");
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+
+        //==================end   2018-04-11   yuhongwei 跳转打印页
     }
 
     @RequiresPermissions("cbasketballorder:cdBasketballFollowOrder:edit")
