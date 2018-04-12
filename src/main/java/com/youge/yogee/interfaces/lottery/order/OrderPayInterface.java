@@ -296,10 +296,10 @@ public class OrderPayInterface {
         BigDecimal priceBig = new BigDecimal(price);
         boolean flag = false;
         String rebate = "";
-        if (priceDouble > 0.0) {
+        if (priceDouble > 0.0 && priceDouble < 1000.0) {
             flag = true;
             rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.01)).setScale(2, 2));
-        } else if (priceDouble >= 1000.0) {
+        } else if (priceDouble >= 1000.0 && priceDouble < 10000.0) {
             flag = true;
             rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.02).setScale(2, 2)));
         } else if (priceDouble >= 10000.0) {

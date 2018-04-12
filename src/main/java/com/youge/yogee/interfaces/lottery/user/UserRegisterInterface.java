@@ -12,6 +12,7 @@ import com.youge.yogee.interfaces.util.SMSUtil;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmessage.service.CdMessageService;
+import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.service.SystemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,8 @@ public class UserRegisterInterface {
 
     @Autowired
     private CdMessageService cdMessageService;
+    @Autowired
+    private SystemService systemService;
 
     private BigDecimal INIT_MONEY = new BigDecimal("0");
 
@@ -152,6 +155,13 @@ public class UserRegisterInterface {
         Object code = CacheUtils.get("registeredCode", phone);
         if (!code.equals(mobileCode)) {
             return HttpResultUtil.errorJson("验证码错误！");
+        }
+
+        User user = systemService.findUserByCode(saleId);
+        if (user == null) {
+            return HttpResultUtil.errorJson("请填写正确的邀请码！");
+        } else {
+            saleId = user.getId();
         }
 
         Map dataMap = Maps.newHashMap();

@@ -119,6 +119,9 @@ public class UserController extends BaseController {
 			}
 		}
 		user.setRoleList(roleList);
+		if (StringUtils.isEmpty(user.getCode())){
+			user.setCode(getrandomCode());//设置推广码
+		}
 		// 保存用户信息
 		systemService.saveUser(user);
 		// 清除当前用户缓存
@@ -272,5 +275,22 @@ public class UserController extends BaseController {
 		model.addAttribute("user", user);
 		return "modules/sys/userModifyPwd";
 	}
+
+	public String getrandomCode(){
+		String charE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String charN = "1234567890";
+		String code = "";
+		for (int i = 6; i > code.length(); --i) {
+			code = code + charE.charAt((int) (Math.random() * 26));
+		}
+		for (int i = 12; i > code.length(); --i) {
+			code = code + charN.charAt((int) (Math.random() * 10));
+		}
+		if(systemService.findByGencode(code)!=null){
+			getrandomCode();
+		}
+		return code;
+	}
+
 
 }

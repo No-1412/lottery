@@ -1,7 +1,7 @@
 package com.youge.yogee.interfaces.lottery.user;
 
 import com.google.common.collect.Maps;
-import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.mapper.JsonMapper;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -73,8 +74,8 @@ public class UserRechargeInterface {
         params.put("orderAmount", price);//充值金额
         params.put("timeoutExpress", "");//订单有效期
         params.put("requestDate", todayStr);//请求时间
-        params.put("redirectUrl", "");//服务器回调地址
-        params.put("notifyUrl", notifyUrl);//回调地址
+        params.put("redirectUrl", "");//页面回调地址
+        params.put("notifyUrl", notifyUrl);//服务器回调地址
         params.put("goodsParamExt", goodsParamExt);//支付描述
         params.put("paymentParamExt", "");//扩展参数
         params.put("industryParamExt", industryParamExt);//经营主体信息
@@ -89,8 +90,43 @@ public class UserRechargeInterface {
         //String uri = Global.getConfig("tradeOrderURI");
         String uri = "/rest/v1.0/std/trade/order";
         Map<String, String> result = YeepayService.requestYOP(params, uri, YeepayService.TRADEORDER);
-        dataMap.put("token", result.get("token"));
+        //dataMap.put("token", result.get("token"));
+        String token = result.get("token");//请求的token
+        String timestamp = String.valueOf(System.currentTimeMillis());//时间戳
+        String userType = "USER_ID";//用户标示类型
+        String parentMerchantNo = result.get("parentMerchantNo");
+        String merchantNo = result.get("merchantNo");
+        //String ext = "{ &quot;appId &quot;:&quot;&quot;,&quot; openId &quot;:&quot;&quot;,&quot; clientId &quot;:&quot;&quot;}";
+        //String ext = " {\"appId\":\"" + "" + "\",\"openId\":\"" + "" + "\",\"clientId\":\"" + "" + "\"} ";
+        Map map = new HashMap();
+        map.put("appId", "");
+        map.put("openId", "");
+        map.put("clientId", "");
+        String ext = JsonMapper.nonDefaultMapper().toJson(map);
+
+        Map<String, String> param = new HashMap<String, String>();
+        param.put("parentMerchantNo", parentMerchantNo);
+        param.put("merchantNo", merchantNo);
+        param.put("token", token);
+        param.put("timestamp", timestamp);
+        param.put("directPayType", "");
+        param.put("cardType", "");
+        param.put("userNo", uid);
+        param.put("userType", userType);
+        //param.put("ext", ext);
+        String url = "";
+        try {
+            url = YeepayService.getUrl(param);
+            dataMap.put("url", url);
+
+        } catch (UnsupportedEncodingException e) {
+            dataMap.put("url", "");
+            e.printStackTrace();
+
+        }
+        //return url;
         return HttpResultUtil.successJson(dataMap);
+        //return JsonMapper.nonDefaultMapper().toJson(dataMap);
     }
 
 

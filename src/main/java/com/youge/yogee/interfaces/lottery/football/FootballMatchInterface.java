@@ -574,8 +574,19 @@ public class FootballMatchInterface {
             logger.error("uid为空");
             return HttpResultUtil.errorJson("uid为空");
         }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
 
-        List<CdFbNotFinish> list = cdFbNotFinishCollectionService.findColByUid(uid);
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+
+        List<CdFbNotFinish> list = cdFbNotFinishCollectionService.findColByUid(uid, Integer.parseInt(total), Integer.parseInt(count));
         List cList = new ArrayList();
         if (list.size() > 0) {
             for (CdFbNotFinish str : list) {

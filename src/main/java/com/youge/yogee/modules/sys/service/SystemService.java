@@ -1,6 +1,6 @@
 /**
  * Copyright &copy; 2012-2013 <a href="https://github.com/thinkgem/jeesite">JeeSite</a> All rights reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  */
 package com.youge.yogee.modules.sys.service;
@@ -34,272 +34,285 @@ import java.util.*;
  */
 @Service
 @Transactional(readOnly = true)
-public class SystemService extends BaseService  {
-	
-	public static final String HASH_ALGORITHM = "SHA-1";
-	public static final int HASH_INTERATIONS = 1024;
-	public static final int SALT_SIZE = 8;
-	
-	@Autowired
-	private UserDao userDao;
-	@Autowired
-	private RoleDao roleDao;
-	@Autowired
-	private MenuDao menuDao;
-	@Autowired
-	private SystemAuthorizingRealm systemRealm;
-	
-	//@Autowired
-	//private IdentityService identityService;
+public class SystemService extends BaseService {
 
-	//-- User Service --//
-	
-	public User getUser(String id) {
-		return userDao.get(id);
-	}
-	
-	public Page<User> findUser(Page<User> page, User user) {
-		DetachedCriteria dc = userDao.createDetachedCriteria();
-		User currentUser = UserUtils.getUser();
-		dc.createAlias("company", "company");
-		if (user.getCompany()!=null && StringUtils.isNotBlank(user.getCompany().getId())){
-			dc.add(Restrictions.or(
-					Restrictions.eq("company.id", user.getCompany().getId()),
-					Restrictions.like("company.parentIds", "%,"+user.getCompany().getId()+",%")
-					));
-		}
-		dc.createAlias("office", "office");
-		if (user.getOffice()!=null && StringUtils.isNotBlank(user.getOffice().getId())){
-			dc.add(Restrictions.or(
-					Restrictions.eq("office.id", user.getOffice().getId()),
-					Restrictions.like("office.parentIds", "%,"+user.getOffice().getId()+",%")
-					));
-		}
-		// 如果不是超级管理员，则不显示超级管理员用户
-		if (!currentUser.isAdmin()){
-			dc.add(Restrictions.ne("id", "1")); 
-		}
-		dc.add(dataScopeFilter(currentUser, "office", ""));
-		//System.out.println(dataScopeFilterString(currentUser, "office", ""));
-		if (StringUtils.isNotEmpty(user.getLoginName())){
-			dc.add(Restrictions.like("loginName", "%"+user.getLoginName()+"%"));
-		}
-		if (StringUtils.isNotEmpty(user.getName())){
-			dc.add(Restrictions.like("name", "%"+user.getName()+"%"));
-		}
-		dc.add(Restrictions.eq(User.FIELD_DEL_FLAG, User.DEL_FLAG_NORMAL));
-		if (!StringUtils.isNotEmpty(page.getOrderBy())){
-			dc.addOrder(Order.asc("company.code")).addOrder(Order.asc("office.code")).addOrder(Order.desc("name"));
-		}
-		return userDao.find(page, dc);
-	}
+    public static final String HASH_ALGORITHM = "SHA-1";
+    public static final int HASH_INTERATIONS = 1024;
+    public static final int SALT_SIZE = 8;
 
-	//取用户的数据范围
-	public String getDataScope(User user){
-		return dataScopeFilterString(user, "office", "");
-	}
-	
-	public User getUserByLoginName(String loginName) {
-		return userDao.findByLoginName(loginName);
-	}
+    @Autowired
+    private UserDao userDao;
+    @Autowired
+    private RoleDao roleDao;
+    @Autowired
+    private MenuDao menuDao;
+    @Autowired
+    private SystemAuthorizingRealm systemRealm;
 
-	@Transactional(readOnly = false)
-	public void saveUser(User user) {
-		userDao.clear();
-		userDao.save(user);
-		systemRealm.clearAllCachedAuthorizationInfo();
-		// 同步到Activiti
-		//saveActiviti(user);
-	}
+    //@Autowired
+    //private IdentityService identityService;
 
-	@Transactional(readOnly = false)
-	public void deleteUser(String id) {
-		userDao.deleteById(id);
-		// 同步到Activiti
-	//	deleteActiviti(userDao.get(id));
-	}
-	
-	@Transactional(readOnly = false)
-	public void updatePasswordById(String id, String loginName, String newPassword) {
-		userDao.updatePasswordById(entryptPassword(newPassword), id);
-		systemRealm.clearCachedAuthorizationInfo(loginName);
-	}
-	
-	@Transactional(readOnly = false)
-	public void updateUserLoginInfo(String id) {
-		userDao.updateLoginInfo(SecurityUtils.getSubject().getSession().getHost(), new Date(), id);
-	}
-	
-	/**
-	 * 生成安全的密码，生成随机的16位salt并经过1024次 sha-1 hash
-	 */
-	public static String entryptPassword(String plainPassword) {
-		byte[] salt = Digests.generateSalt(SALT_SIZE);
-		byte[] hashPassword = Digests.sha1(plainPassword.getBytes(), salt, HASH_INTERATIONS);
-		return Encodes.encodeHex(salt)+Encodes.encodeHex(hashPassword);
-	}
-	
-	/**
-	 * 验证密码
-	 * @param plainPassword 明文密码
-	 * @param password 密文密码
-	 * @return 验证成功返回true
-	 */
-	public static boolean validatePassword(String plainPassword, String password) {
-		byte[] salt = Encodes.decodeHex(password.substring(0,16));
-		byte[] hashPassword = Digests.sha1(plainPassword.getBytes(), salt, HASH_INTERATIONS);
-		return password.equals(Encodes.encodeHex(salt)+Encodes.encodeHex(hashPassword));
-	}
-	
-	//-- Role Service --//
-	
-	public Role getRole(String id) {
-		return roleDao.get(id);
-	}
+    //-- User Service --//
 
-	public Role findRoleByName(String name) {
-		return roleDao.findByName(name);
-	}
-	
-	public List<Role> findAllRole(){
-		return UserUtils.getRoleList();
-	}
-	
-	@Transactional(readOnly = false)
-	public void saveRole(Role role) {
-		roleDao.clear();
-		roleDao.save(role);
-		systemRealm.clearAllCachedAuthorizationInfo();
-		// 同步到Activiti
-		//saveActiviti(role);
-		UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
-	}
-
-	@Transactional(readOnly = false)
-	public void deleteRole(String id) {
-		roleDao.deleteById(id);
-		systemRealm.clearAllCachedAuthorizationInfo();
-		// 同步到Activiti
-	//	deleteActiviti(roleDao.get(id));
-		UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
-	}
-	
-	@Transactional(readOnly = false)
-	public Boolean outUserInRole(Role role, String userId) {
-		User user = userDao.get(userId);
-		List<String> roleIds = user.getRoleIdList();
-		List<Role> roles = user.getRoleList();
-		// 
-		if (roleIds.contains(role.getId())) {
-			roles.remove(role);
-			saveUser(user);
-			return true;
-		}
-		return false;
-	}
-	
-	@Transactional(readOnly = false)
-	public User assignUserToRole(Role role, String userId) {
-		User user = userDao.get(userId);
-		List<String> roleIds = user.getRoleIdList();
-		if (roleIds.contains(role.getId())) {
-			return null;
-		}
-		user.getRoleList().add(role);
-		saveUser(user);		
-		return user;
-	}
-
-	//-- Menu Service --//
-	
-	public Menu getMenu(String id) {
-		return menuDao.get(id);
-	}
-
-	public List<Menu> findAllMenu(){
-		return UserUtils.getMenuList();
-	}
-	
-	@Transactional(readOnly = false)
-	public void saveMenu(Menu menu) {
-		menu.setParent(this.getMenu(menu.getParent().getId()));
-		String oldParentIds = menu.getParentIds(); // 获取修改前的parentIds，用于更新子节点的parentIds
-		menu.setParentIds(menu.getParent().getParentIds()+menu.getParent().getId()+",");
-		menuDao.clear();
-		menuDao.save(menu);
-		// 更新子节点 parentIds
-		List<Menu> list = menuDao.findByParentIdsLike("%,"+menu.getId()+",%");
-		for (Menu e : list){
-			e.setParentIds(e.getParentIds().replace(oldParentIds, menu.getParentIds()));
-		}
-		menuDao.save(list);
-		systemRealm.clearAllCachedAuthorizationInfo();
-		UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
-		//saveActiviti(menu);
-	}
-
-	@Transactional(readOnly = false)
-	public void deleteMenu(String id) {
-		menuDao.deleteById(id, "%,"+id+",%");
-		systemRealm.clearAllCachedAuthorizationInfo();
-		UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
-		//deleteActiviti(id);
-	}
-
-	///////////////// Synchronized to the Activiti //////////////////
+    public User getUser(String id) {
+        return userDao.get(id);
+    }
 
 
-	public User findByGencode(String gencode) {
-		List<User> list = userDao.find("FROM User where code = :p1", new Parameter(gencode));
-		if (list.size()>0){
-			return list.get(0);
-		}
-		return null;
-	}
+    public User findUserByCode(String code) {
+        DetachedCriteria dc = userDao.createDetachedCriteria();
+        dc.add(Restrictions.ne("code", code));
+        List<User> list = userDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+    }
 
-	public List<User> findAllUser() {
-		return userDao.findAllList();
-	}
+    public Page<User> findUser(Page<User> page, User user) {
+        DetachedCriteria dc = userDao.createDetachedCriteria();
+        User currentUser = UserUtils.getUser();
+        dc.createAlias("company", "company");
+        if (user.getCompany() != null && StringUtils.isNotBlank(user.getCompany().getId())) {
+            dc.add(Restrictions.or(
+                    Restrictions.eq("company.id", user.getCompany().getId()),
+                    Restrictions.like("company.parentIds", "%," + user.getCompany().getId() + ",%")
+            ));
+        }
+        dc.createAlias("office", "office");
+        if (user.getOffice() != null && StringUtils.isNotBlank(user.getOffice().getId())) {
+            dc.add(Restrictions.or(
+                    Restrictions.eq("office.id", user.getOffice().getId()),
+                    Restrictions.like("office.parentIds", "%," + user.getOffice().getId() + ",%")
+            ));
+        }
+        // 如果不是超级管理员，则不显示超级管理员用户
+        if (!currentUser.isAdmin()) {
+            dc.add(Restrictions.ne("id", "1"));
+        }
+        dc.add(dataScopeFilter(currentUser, "office", ""));
+        //System.out.println(dataScopeFilterString(currentUser, "office", ""));
+        if (StringUtils.isNotEmpty(user.getLoginName())) {
+            dc.add(Restrictions.like("loginName", "%" + user.getLoginName() + "%"));
+        }
+        if (StringUtils.isNotEmpty(user.getName())) {
+            dc.add(Restrictions.like("name", "%" + user.getName() + "%"));
+        }
+        dc.add(Restrictions.eq(User.FIELD_DEL_FLAG, User.DEL_FLAG_NORMAL));
+        if (!StringUtils.isNotEmpty(page.getOrderBy())) {
+            dc.addOrder(Order.asc("company.code")).addOrder(Order.asc("office.code")).addOrder(Order.desc("name"));
+        }
+        return userDao.find(page, dc);
+    }
 
-	public long findCount() {
-		DetachedCriteria dc = userDao.createDetachedCriteria();
-		return userDao.count(dc);
-	}
+    //取用户的数据范围
+    public String getDataScope(User user) {
+        return dataScopeFilterString(user, "office", "");
+    }
 
-	//充值轮播墙
-	public List findRechargeList(String count) {
-		List<Map<String, String>> list=new ArrayList();
-		List rechargeList = userDao.findRechargeList(count);
-		for (int i =0 ;i<rechargeList.size();i++){
-			Object[] objects = (Object[]) rechargeList.get(i);
-			Map data = new HashMap();
-			data.put("salename",objects[0] == null ? "" : objects[0].toString());
-			data.put("uname",objects[1] == null ? "" : objects[1].toString());
-			data.put("money",objects[2] == null ? "" : objects[2].toString());
-			data.put("createdate",objects[3] == null ? "" : objects[3].toString());
-			list.add(data);
-		}
-		return list;
-	}
+    public User getUserByLoginName(String loginName) {
+        return userDao.findByLoginName(loginName);
+    }
 
-	//开户轮播墙
-	public List findRegisterList(String count) {
-		List<Map<String, String>> list=new ArrayList();
-		List rechargeList = userDao.findRegisterList(count);
-		for (int i =0 ;i<rechargeList.size();i++){
-			Object[] objects = (Object[]) rechargeList.get(i);
-			Map data = new HashMap();
-			data.put("salename",objects[0] == null ? "" : objects[0].toString());
-			data.put("uname",objects[1] == null ? "" : objects[1].toString());
-			data.put("createdate",objects[2] == null ? "" : objects[2].toString());
-			list.add(data);
-		}
-		return list;
-	}
+    @Transactional(readOnly = false)
+    public void saveUser(User user) {
+        userDao.clear();
+        userDao.save(user);
+        systemRealm.clearAllCachedAuthorizationInfo();
+        // 同步到Activiti
+        //saveActiviti(user);
+    }
 
-	/**
-	 * 手工同步所有Activiti数据
-	 *//*
+    @Transactional(readOnly = false)
+    public void deleteUser(String id) {
+        userDao.deleteById(id);
+        // 同步到Activiti
+        //	deleteActiviti(userDao.get(id));
+    }
+
+    @Transactional(readOnly = false)
+    public void updatePasswordById(String id, String loginName, String newPassword) {
+        userDao.updatePasswordById(entryptPassword(newPassword), id);
+        systemRealm.clearCachedAuthorizationInfo(loginName);
+    }
+
+    @Transactional(readOnly = false)
+    public void updateUserLoginInfo(String id) {
+        userDao.updateLoginInfo(SecurityUtils.getSubject().getSession().getHost(), new Date(), id);
+    }
+
+    /**
+     * 生成安全的密码，生成随机的16位salt并经过1024次 sha-1 hash
+     */
+    public static String entryptPassword(String plainPassword) {
+        byte[] salt = Digests.generateSalt(SALT_SIZE);
+        byte[] hashPassword = Digests.sha1(plainPassword.getBytes(), salt, HASH_INTERATIONS);
+        return Encodes.encodeHex(salt) + Encodes.encodeHex(hashPassword);
+    }
+
+    /**
+     * 验证密码
+     *
+     * @param plainPassword 明文密码
+     * @param password      密文密码
+     * @return 验证成功返回true
+     */
+    public static boolean validatePassword(String plainPassword, String password) {
+        byte[] salt = Encodes.decodeHex(password.substring(0, 16));
+        byte[] hashPassword = Digests.sha1(plainPassword.getBytes(), salt, HASH_INTERATIONS);
+        return password.equals(Encodes.encodeHex(salt) + Encodes.encodeHex(hashPassword));
+    }
+
+    //-- Role Service --//
+
+    public Role getRole(String id) {
+        return roleDao.get(id);
+    }
+
+    public Role findRoleByName(String name) {
+        return roleDao.findByName(name);
+    }
+
+    public List<Role> findAllRole() {
+        return UserUtils.getRoleList();
+    }
+
+    @Transactional(readOnly = false)
+    public void saveRole(Role role) {
+        roleDao.clear();
+        roleDao.save(role);
+        systemRealm.clearAllCachedAuthorizationInfo();
+        // 同步到Activiti
+        //saveActiviti(role);
+        UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteRole(String id) {
+        roleDao.deleteById(id);
+        systemRealm.clearAllCachedAuthorizationInfo();
+        // 同步到Activiti
+        //	deleteActiviti(roleDao.get(id));
+        UserUtils.removeCache(UserUtils.CACHE_ROLE_LIST);
+    }
+
+    @Transactional(readOnly = false)
+    public Boolean outUserInRole(Role role, String userId) {
+        User user = userDao.get(userId);
+        List<String> roleIds = user.getRoleIdList();
+        List<Role> roles = user.getRoleList();
+        //
+        if (roleIds.contains(role.getId())) {
+            roles.remove(role);
+            saveUser(user);
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional(readOnly = false)
+    public User assignUserToRole(Role role, String userId) {
+        User user = userDao.get(userId);
+        List<String> roleIds = user.getRoleIdList();
+        if (roleIds.contains(role.getId())) {
+            return null;
+        }
+        user.getRoleList().add(role);
+        saveUser(user);
+        return user;
+    }
+
+    //-- Menu Service --//
+
+    public Menu getMenu(String id) {
+        return menuDao.get(id);
+    }
+
+    public List<Menu> findAllMenu() {
+        return UserUtils.getMenuList();
+    }
+
+    @Transactional(readOnly = false)
+    public void saveMenu(Menu menu) {
+        menu.setParent(this.getMenu(menu.getParent().getId()));
+        String oldParentIds = menu.getParentIds(); // 获取修改前的parentIds，用于更新子节点的parentIds
+        menu.setParentIds(menu.getParent().getParentIds() + menu.getParent().getId() + ",");
+        menuDao.clear();
+        menuDao.save(menu);
+        // 更新子节点 parentIds
+        List<Menu> list = menuDao.findByParentIdsLike("%," + menu.getId() + ",%");
+        for (Menu e : list) {
+            e.setParentIds(e.getParentIds().replace(oldParentIds, menu.getParentIds()));
+        }
+        menuDao.save(list);
+        systemRealm.clearAllCachedAuthorizationInfo();
+        UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
+        //saveActiviti(menu);
+    }
+
+    @Transactional(readOnly = false)
+    public void deleteMenu(String id) {
+        menuDao.deleteById(id, "%," + id + ",%");
+        systemRealm.clearAllCachedAuthorizationInfo();
+        UserUtils.removeCache(UserUtils.CACHE_MENU_LIST);
+        //deleteActiviti(id);
+    }
+
+    ///////////////// Synchronized to the Activiti //////////////////
+
+
+    public User findByGencode(String gencode) {
+        List<User> list = userDao.find("FROM User where code = :p1", new Parameter(gencode));
+        if (list.size() > 0) {
+            return list.get(0);
+        }
+        return null;
+    }
+
+    public List<User> findAllUser() {
+        return userDao.findAllList();
+    }
+
+    public long findCount() {
+        DetachedCriteria dc = userDao.createDetachedCriteria();
+        return userDao.count(dc);
+    }
+
+    //充值轮播墙
+    public List findRechargeList(String count) {
+        List<Map<String, String>> list = new ArrayList();
+        List rechargeList = userDao.findRechargeList(count);
+        for (int i = 0; i < rechargeList.size(); i++) {
+            Object[] objects = (Object[]) rechargeList.get(i);
+            Map data = new HashMap();
+            data.put("salename", objects[0] == null ? "" : objects[0].toString());
+            data.put("uname", objects[1] == null ? "" : objects[1].toString());
+            data.put("money", objects[2] == null ? "" : objects[2].toString());
+            data.put("createdate", objects[3] == null ? "" : objects[3].toString());
+            list.add(data);
+        }
+        return list;
+    }
+
+    //开户轮播墙
+    public List findRegisterList(String count) {
+        List<Map<String, String>> list = new ArrayList();
+        List rechargeList = userDao.findRegisterList(count);
+        for (int i = 0; i < rechargeList.size(); i++) {
+            Object[] objects = (Object[]) rechargeList.get(i);
+            Map data = new HashMap();
+            data.put("salename", objects[0] == null ? "" : objects[0].toString());
+            data.put("uname", objects[1] == null ? "" : objects[1].toString());
+            data.put("createdate", objects[2] == null ? "" : objects[2].toString());
+            list.add(data);
+        }
+        return list;
+    }
+
+    /**
+     * 手工同步所有Activiti数据
+     *//*
 	@Transactional(readOnly = false)
 	public void synToActiviti()  {
 		menuDao.updateBySql("delete from ACT_ID_MEMBERSHIP",null);
@@ -458,7 +471,7 @@ public class SystemService extends BaseService  {
 		}
 	}
 	*/
-	///////////////// Synchronized to the Activiti end //////////////////
-	
-	
+    ///////////////// Synchronized to the Activiti end //////////////////
+
+
 }

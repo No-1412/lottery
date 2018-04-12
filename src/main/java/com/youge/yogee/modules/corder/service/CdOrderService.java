@@ -80,9 +80,12 @@ public class CdOrderService extends BaseService {
         dc.add(Restrictions.eq(CdOrder.FIELD_DEL_FLAG, CdOrder.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
 
+//        Criteria cri = dc.getExecutableCriteria(cdOrderDao.getSession());
+//        cri.setMaxResults(Integer.parseInt(count));
+//        cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
         Criteria cri = dc.getExecutableCriteria(cdOrderDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
-        cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
         return cdOrderDao.find(dc);
     }
 
