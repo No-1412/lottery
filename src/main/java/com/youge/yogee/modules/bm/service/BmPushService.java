@@ -100,7 +100,7 @@ public class BmPushService extends BaseService {
 		dc.add(Restrictions.eq(BmPush.FIELD_DEL_FLAG, BmPush.DEL_FLAG_NORMAL));
 		List<BmPush> list =  bmPushDao.find(dc);
 		if(list.size() == 0){
-			return new BmPush();
+			return null;
 		}else {
 			return list.get(0);
 		}
