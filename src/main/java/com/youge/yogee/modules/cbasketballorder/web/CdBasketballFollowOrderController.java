@@ -224,6 +224,7 @@ public class CdBasketballFollowOrderController extends BaseController {
            /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
             return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";*/
             if(match_ids.split(",").length<=3){
+
                 return baseUrl+ "篮球3关";
             }else if(match_ids.split(",").length<=6){
                 return baseUrl+  "篮球6关";
