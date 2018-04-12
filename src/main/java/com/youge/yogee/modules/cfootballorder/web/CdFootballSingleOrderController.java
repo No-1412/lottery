@@ -3,17 +3,19 @@
  */
 package com.youge.yogee.modules.cfootballorder.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.util.BallGameCals;
-import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
-import org.activiti.engine.impl.bpmn.data.Data;
+import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,15 +25,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.youge.yogee.common.config.Global;
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.web.BaseController;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.modules.sys.entity.User;
-import com.youge.yogee.modules.sys.utils.UserUtils;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
-import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -146,6 +141,7 @@ public class CdFootballSingleOrderController extends BaseController {
     @RequiresPermissions("cfootballorder:cdFootballSingleOrder:edit")
     @RequestMapping(value = "save")
     public String save(CdFootballSingleOrder cdFootballSingleOrder, Model model, RedirectAttributes redirectAttributes) {
+
         if (!beanValidator(model, cdFootballSingleOrder)) {
             return form(cdFootballSingleOrder, model);
         }
@@ -161,7 +157,7 @@ public class CdFootballSingleOrderController extends BaseController {
             cdFootballSingleOrder.setStatus("2");
             cdFootballSingleOrderService.save(cdFootballSingleOrder);
             addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
         }
         //更新赔率
         cdFootballSingleOrder.setScore(newScoreDetail);
@@ -192,8 +188,88 @@ public class CdFootballSingleOrderController extends BaseController {
         }
 
         cdFootballSingleOrderService.save(cdFootballSingleOrder);
-        addMessage(redirectAttributes, "保存成功");
+        //addMessage(redirectAttributes, "保存成功");
+        //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+
+        //==================start   2018-04-11   yuhongwei 跳转打印页
+        String buy_ways = cdFootballSingleOrder.getBuyWays();
+        String match_ids = cdFootballSingleOrder.getMatchIds().substring(0,cdFootballSingleOrder.getMatchIds().length()-1);
+        String baseUrl = "modules/print/";
+        model.addAttribute("orderNumber",cdFootballSingleOrder.getOrderNum());
+        if("1".equals(buy_ways)){//混投
+           /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";*/
+            if(match_ids.split(",").length<=3){//足彩_3关
+                return baseUrl+ "足球3关";
+            }else if(match_ids.split(",").length<=6){//足彩_6关
+                return baseUrl+  "足球6关";
+            }else if(match_ids.split(",").length<=8){//足彩_8关
+                return baseUrl+"足球8关";
+            }
+        }else if("2".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){//足彩_胜负平3关
+                return baseUrl+ "足球胜平负3关";
+            }else if(match_ids.split(",").length<=6){//足彩_胜负平6关
+                //return baseUrl+ "足球胜平负6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }else if(match_ids.split(",").length<=8){//足彩_胜负平8关
+                //return baseUrl+ "足球胜平负8关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }
+        }else if("3".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){//足彩_比分3关
+                return baseUrl+ "足球比分3关";
+            }else if(match_ids.split(",").length<=6){//足彩_比分6关
+                //return baseUrl+ "足球比分6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }else if(match_ids.split(",").length<=8){//足彩_比分8关
+                //return baseUrl+ "足球比分8关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }
+        }else if("4".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){//足球_总进球3关
+                return baseUrl+ "足球总进球3关";
+            }else if(match_ids.split(",").length<=6){//足球_总进球6关
+                return baseUrl+ "足球总进球6关";
+            }else if(match_ids.split(",").length<=8){//足球_总进球8关
+                //return baseUrl+ "足球总进球6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }
+        }else if("5".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){//足彩_半全场3关
+                return baseUrl+ "足球半全场3关";
+            }else if(match_ids.split(",").length<=6){//足彩_半全场6关
+                //return baseUrl+ "足球半全场6关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }else if(match_ids.split(",").length<=8){//足彩_半全场8关
+                //return baseUrl+ "足球半全场8关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }
+        }else if("6".equals(buy_ways)){
+            if(match_ids.split(",").length<=3){//足彩_让球胜负平3关
+                //return baseUrl+ "足球半全场3关";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }else if(match_ids.split(",").length<=6){//足彩_让球胜负平6关
+                //return baseUrl+ "100011001110";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }else if(match_ids.split(",").length<=8){//足彩_让球胜负平8关
+                //return baseUrl+ "100011001110";
+                addMessage(redirectAttributes, "保存成功,没有模板不能打印");
+                return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+            }
+        }
+        addMessage(redirectAttributes, "保存成功,没有模板不能打印");
         return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+        //==================end   2018-04-11   yuhongwei 跳转打印页
     }
 
     @RequiresPermissions("cfootballorder:cdFootballSingleOrder:edit")
@@ -444,6 +520,5 @@ public class CdFootballSingleOrderController extends BaseController {
         }
         return newLetDetail;
     }
-
 
 }

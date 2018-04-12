@@ -15,6 +15,7 @@
             $("#searchForm").submit();
             return false;
         }
+
     </script>
 </head>
 <body>

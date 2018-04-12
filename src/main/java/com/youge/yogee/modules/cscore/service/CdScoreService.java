@@ -80,7 +80,7 @@ public class CdScoreService extends BaseService {
 		dc.addOrder(Order.desc("createDate"));
 		Criteria cri = dc.getExecutableCriteria(cdScoreDao.getSession());
 		cri.setMaxResults(Integer.parseInt(count));
-		cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
+		cri.setFirstResult(Integer.parseInt(total));
 		return cdScoreDao.find(dc);
 	}
 }
