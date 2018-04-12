@@ -71,7 +71,7 @@ public class CdWinMethodService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         Criteria cri = dc.getExecutableCriteria(cdWinMethodDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
-        cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
         return cdWinMethodDao.find(dc);
     }
 

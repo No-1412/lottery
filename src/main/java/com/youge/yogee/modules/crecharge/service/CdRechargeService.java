@@ -113,7 +113,7 @@ public class CdRechargeService extends BaseService {
 		dc.addOrder(Order.desc("createDate"));
 		Criteria cri = dc.getExecutableCriteria(cdRechargeDao.getSession());
 		cri.setMaxResults(Integer.parseInt(count));
-		cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
+		cri.setFirstResult(Integer.parseInt(total));
 		return cdRechargeDao.find(dc);
 	}
 }

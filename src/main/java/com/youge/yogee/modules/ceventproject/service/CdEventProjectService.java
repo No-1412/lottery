@@ -70,7 +70,7 @@ public class CdEventProjectService extends BaseService {
         dc.addOrder(Order.desc("createDate"));
         Criteria cri = dc.getExecutableCriteria(cdEventProjectDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
-        cri.setFirstResult((Integer.parseInt(total) - 1) * Integer.parseInt(count));
+        cri.setFirstResult(Integer.parseInt(total));
         return cdEventProjectDao.find(dc);
     }
 }

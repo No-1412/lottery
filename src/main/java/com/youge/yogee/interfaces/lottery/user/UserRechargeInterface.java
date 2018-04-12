@@ -74,8 +74,8 @@ public class UserRechargeInterface {
         params.put("orderAmount", price);//充值金额
         params.put("timeoutExpress", "");//订单有效期
         params.put("requestDate", todayStr);//请求时间
-        params.put("redirectUrl", "");//服务器回调地址
-        params.put("notifyUrl", notifyUrl);//回调地址
+        params.put("redirectUrl", "");//页面回调地址
+        params.put("notifyUrl", notifyUrl);//服务器回调地址
         params.put("goodsParamExt", goodsParamExt);//支付描述
         params.put("paymentParamExt", "");//扩展参数
         params.put("industryParamExt", industryParamExt);//经营主体信息
