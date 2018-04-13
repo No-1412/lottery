@@ -238,7 +238,7 @@ public class SelOrderUtil {
 
     private static Map<String, String> getFollowMap(String s, String[] strArray) {
         Map<String, String> map = new HashMap<>();
-        if (StringUtils.isNotEmpty(strArray[0])) {
+        if (!"".equals(strArray[0])) {
             for (String aStr : strArray) {
                 String[] aStrArray = aStr.split("\\+");
                 if (s.equals(aStrArray[1])) {

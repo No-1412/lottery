@@ -276,13 +276,13 @@ public class UserController extends BaseController {
 		return "modules/sys/userModifyPwd";
 	}
 
-	public String getrandomCode(){
-		String charE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	public  String getrandomCode(){
+		//String charE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		String charN = "1234567890";
 		String code = "";
-		for (int i = 6; i > code.length(); --i) {
-			code = code + charE.charAt((int) (Math.random() * 26));
-		}
+//		for (int i = 6; i > code.length(); --i) {
+//			code = code + charE.charAt((int) (Math.random() * 26));
+//		}
 		for (int i = 12; i > code.length(); --i) {
 			code = code + charN.charAt((int) (Math.random() * 10));
 		}
@@ -291,6 +291,7 @@ public class UserController extends BaseController {
 		}
 		return code;
 	}
+
 
 
 }

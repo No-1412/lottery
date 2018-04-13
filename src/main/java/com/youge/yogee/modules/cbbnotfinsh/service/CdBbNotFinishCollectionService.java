@@ -64,8 +64,8 @@ public class CdBbNotFinishCollectionService extends BaseService {
         cdBbNotFinishCollectionDao.deleteById(id);
     }
 
-    public List<CdBbNotFinsh> findColByUid(String uid) {
-        return cdBbNotFinishCollectionDao.findBySql("SELECT * FROM cd_bb_notfinish_collection a INNER JOIN cd_bb_notfinsh b ON a.zid=b.zid WHERE uid=:p1 AND a.del_flag=0;", new Parameter(uid), CdBbNotFinsh.class);
+    public List<CdBbNotFinsh> findColByUid(String uid, int total, int count) {
+        return cdBbNotFinishCollectionDao.findBySql("SELECT * FROM cd_bb_notfinish_collection a INNER JOIN cd_bb_notfinsh b ON a.zid=b.zid WHERE uid=:p1 AND a.del_flag=0 LIMIT :p2,:p3", new Parameter(uid, total, count), CdBbNotFinsh.class);
     }
 
     public CdBbNotFinishCollection findByMatIdAndUid(String zid, String uid) {
@@ -87,6 +87,7 @@ public class CdBbNotFinishCollectionService extends BaseService {
         dc.addOrder(Order.desc("id"));
         return cdBbNotFinishCollectionDao.find(dc);
     }
+
     @Transactional(readOnly = false)
     public int delById(String id) {
         return cdBbNotFinishCollectionDao.update("delete from CdBbNotFinishCollection where id=:p1", new Parameter(id));

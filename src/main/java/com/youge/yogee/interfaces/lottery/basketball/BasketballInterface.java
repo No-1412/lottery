@@ -157,6 +157,7 @@ public class BasketballInterface {
                 map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
                 map.put("hn", cd.getWinningName());//主队名称
                 map.put("gn", cd.getDefeatedName());//客队名称
+                map.put("matchId", cd.getMatchId());//期次
                 //胜负:主负主胜赔率',
                 String sf = cd.getVictoryordefeatOdds();
                 if (",".equals(sf)) {
@@ -341,6 +342,7 @@ public class BasketballInterface {
                     map.put("gn", cd.getDefeatedName());//客队名称
                     map.put("hm", cd.getWinningRank());//主队排名
                     map.put("gm", cd.getDefeatedRank());//客队排名
+                    map.put("matchId", cd.getMatchId());//期次
                     if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
                         map.put("hrn", cd.getRecentWinningSurpass() + "胜" + cd.getRecentWinningDefeat() + "负");//主队近期战绩
                         map.put("grn", cd.getRecentDefeatedSurpass() + "胜" + cd.getRecentDefeatedDefeat() + "负");//客队近期战绩
