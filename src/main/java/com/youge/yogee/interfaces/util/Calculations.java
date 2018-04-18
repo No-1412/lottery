@@ -95,12 +95,12 @@ public class Calculations {
 //        arrangeSelect(str1, new ArrayList<String>());
 //        System.out.println(list);
 
-//        double[] arr = {1, 1, 3, 4, 5, 6};
-//        doubleSum = 0;
-//        combine(0, 2, arr);
-
-        String a = getRepayPercent(9000, 2000);
-        System.out.println(a);
+        double[] arr = {10, 11, 53, 44, 5, 6};
+        //doubleSum = 0;
+        combine(0, 2, arr);
+        //System.out.println(tmpDoubleArr);
+//        String a = getRepayPercent(9000, 2000);
+//        System.out.println(a);
     }
 
 

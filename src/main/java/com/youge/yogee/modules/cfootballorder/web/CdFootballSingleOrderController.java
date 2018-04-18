@@ -200,15 +200,15 @@ public class CdFootballSingleOrderController extends BaseController {
            /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
             return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";*/
             if(match_ids.split(",").length<=3){//足彩_3关
-                return baseUrl+ "足球3关";
+                return baseUrl+ "football3";
             }else if(match_ids.split(",").length<=6){//足彩_6关
-                return baseUrl+  "足球6关";
+                return baseUrl+  "football6";
             }else if(match_ids.split(",").length<=8){//足彩_8关
-                return baseUrl+"足球8关";
+                return baseUrl+"football8";
             }
         }else if("2".equals(buy_ways)){
             if(match_ids.split(",").length<=3){//足彩_胜负平3关
-                return baseUrl+ "足球胜平负3关";
+                return baseUrl+ "footballSFP3";
             }else if(match_ids.split(",").length<=6){//足彩_胜负平6关
                 //return baseUrl+ "足球胜平负6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
@@ -220,7 +220,7 @@ public class CdFootballSingleOrderController extends BaseController {
             }
         }else if("3".equals(buy_ways)){
             if(match_ids.split(",").length<=3){//足彩_比分3关
-                return baseUrl+ "足球比分3关";
+                return baseUrl+ "footballBF3";
             }else if(match_ids.split(",").length<=6){//足彩_比分6关
                 //return baseUrl+ "足球比分6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
@@ -232,9 +232,9 @@ public class CdFootballSingleOrderController extends BaseController {
             }
         }else if("4".equals(buy_ways)){
             if(match_ids.split(",").length<=3){//足球_总进球3关
-                return baseUrl+ "足球总进球3关";
+                return baseUrl+ "footballZJQ3";
             }else if(match_ids.split(",").length<=6){//足球_总进球6关
-                return baseUrl+ "足球总进球6关";
+                return baseUrl+ "footballZJQ6";
             }else if(match_ids.split(",").length<=8){//足球_总进球8关
                 //return baseUrl+ "足球总进球6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
@@ -242,7 +242,7 @@ public class CdFootballSingleOrderController extends BaseController {
             }
         }else if("5".equals(buy_ways)){
             if(match_ids.split(",").length<=3){//足彩_半全场3关
-                return baseUrl+ "足球半全场3关";
+                return baseUrl+ "footballBQC3";
             }else if(match_ids.split(",").length<=6){//足彩_半全场6关
                 //return baseUrl+ "足球半全场6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");

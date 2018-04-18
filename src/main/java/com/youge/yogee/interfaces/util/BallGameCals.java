@@ -25,6 +25,10 @@ import java.util.Map;
       '----'
 */
 public class BallGameCals {
+    private static double doubleSum = 0;
+    private static ArrayList<Double> tmpDoubleArr = new ArrayList<>();
+    private static List<String> finalList = new ArrayList<>();
+
     /**
      * m串一注数 即任选m
      *
@@ -35,26 +39,44 @@ public class BallGameCals {
      */
     public static int countOfFootBall(List<String> list, int count, int type) {
 
-        StringBuilder str = new StringBuilder();
+        String str = "";
         if (type == 1) {
             for (String s : list) {
                 String[] sInt = s.split(";");
-                str.append(String.valueOf(sInt.length));
+                str += String.valueOf(sInt.length) + ",";
             }
         } else {
             for (String s : list) {
                 String[] sInt = s.split(",");
-                str.append(String.valueOf(sInt.length));
+                str += String.valueOf(sInt.length) + ",";
             }
         }
-
-        List<String> resultStr = getCombinationResult(count, str.toString());
-        int allSum = 0;
-        for (String string : resultStr) {
-            int sum = getSumOfString(string);
-            allSum += sum;
+        String[] strArray = str.split(",");
+        double[] arr = new double[strArray.length];
+        for (int i = 0; i < strArray.length; i++) {
+            arr[i] = Double.valueOf(strArray[i]);
         }
-
+        combine(0, count, arr);
+        //System.out.println(finalList);
+        //List<String> resultStr = getCombinationResult(count, str.toString());
+        int allSum = 0;
+//        for (double d : tmpDoubleArr) {
+//            int sum = getSumOfString(string);
+//            allSum += sum;
+//        }
+        for (int i = 0; i < finalList.size(); i++) {
+            String aFinalList = finalList.get(i).replaceAll("\\[", "");
+            String next = aFinalList.replaceAll("\\]", "");
+            String[] nextArray = next.split(",");
+            int aResult = 1;
+            for (int j = 0; j < nextArray.length; j++) {
+                aResult *= Double.parseDouble(nextArray[j]);
+            }
+            allSum += aResult;
+        }
+        doubleSum = 0;
+        tmpDoubleArr.clear();
+        finalList.clear();
         return allSum;
     }
 
@@ -81,12 +103,26 @@ public class BallGameCals {
         // for (String s : cr) {
         // System.out.println(s.length());
         // }
-        int cr = countOfFootBall(list, 2, 1);
+
 
 //        String a="胜胜";
 //        Map<String,String> map=BallGameCals.getHalfWholeResults();
 //       String c=map.get(a);
+
+        int cr = countOfFootBall(list, 2, 1);
         System.out.println(cr);
+//        List<String> wantList = new ArrayList<>();
+//        wantList.add("51");
+//        wantList.add("10");
+//        wantList.add("21");
+//        List<String> strings = getCombinationResult(2, "4951");
+//        System.out.println(strings);
+
+
+//        double[] arr = {16, 11, 53, 44, 5, 6};
+//        doubleSum = 0;
+//        combine(0, 2, arr);
+//        System.out.println(finalList);
     }
 
     /**
@@ -132,6 +168,32 @@ public class BallGameCals {
         }
         return result;
     }
+
+
+    /**
+     * 计算一个数组排列组合结果 衍生C(m,k)
+     * 没什么卵用╮(╯▽╰)╭
+     */
+
+
+    public static void combine(int index, int k, double[] arr) {
+        if (k == 1) {
+            for (int i = index; i < arr.length; i++) {
+                tmpDoubleArr.add(arr[i]);
+                doubleSum += tmpDoubleArr.get(0) * tmpDoubleArr.get(1);
+                finalList.add(tmpDoubleArr.toString());
+                //System.out.println(tmpDoubleArr.toString());
+                tmpDoubleArr.remove(arr[i]);
+            }
+        } else {
+            for (int i = index; i <= arr.length - k; i++) {
+                tmpDoubleArr.add(arr[i]);
+                combine(i + 1, k - 1, arr);
+                tmpDoubleArr.remove(arr[i]);
+            }
+        }
+    }
+
 
     public static int getSumOfString(String str) {
         int sum = 1;
@@ -262,7 +324,6 @@ public class BallGameCals {
 
         return map;
     }
-
 
 
     public static Map<String, String> getHalfWholeNames() {

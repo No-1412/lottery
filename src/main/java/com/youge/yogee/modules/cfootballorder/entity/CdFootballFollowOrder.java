@@ -58,7 +58,7 @@ public class CdFootballFollowOrder extends BaseEntity<T> implements Serializable
     private String type;     // 0普通订单 1发起的 2跟单的
     private String result;       //开奖结果
     private String continent; //大洲
-
+    private String bestType; //1普通 2优化
 
     public CdFootballFollowOrder() {
         super();
@@ -273,6 +273,14 @@ public class CdFootballFollowOrder extends BaseEntity<T> implements Serializable
 
     public void setContinent(String continent) {
         this.continent = continent;
+    }
+
+    public String getBestType() {
+        return bestType;
+    }
+
+    public void setBestType(String bestType) {
+        this.bestType = bestType;
     }
 }
 

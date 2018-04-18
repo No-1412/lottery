@@ -50,6 +50,12 @@
 			</div>
 		</div>
 		<div class="control-group">
+			<label class="control-label">邀请码:</label>
+			<div class="controls">
+				<form:input path="code" htmlEscape="false" maxlength="50" readonly="true"/>
+			</div>
+		</div>
+		<div class="control-group">
 			<label class="control-label">邮箱:</label>
 			<div class="controls">
 				<form:input path="email" htmlEscape="false" maxlength="50" class="email"/>

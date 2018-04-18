@@ -4,6 +4,7 @@
 package com.youge.yogee.modules.csceneecharts.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
@@ -68,11 +69,11 @@ public class CdSceneEchartsService extends BaseService {
     }
 
     @Transactional(readOnly = false)
-    public List<CdSceneEcharts> getEcharts(String itemId){
+    public List<CdSceneEcharts> getEcharts(String itemId) {
         DetachedCriteria dc = cdSceneEchartsDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdSceneEcharts.FIELD_DEL_FLAG, CdSceneEcharts.DEL_FLAG_NORMAL));
         dc.add(Restrictions.eq("itemId", itemId));
-        dc.addOrder(Order.asc("createDate"));
+        dc.add(Restrictions.sqlRestriction("1=1 order by CAST(time as SIGNED)"));
         return cdSceneEchartsDao.find(dc);
     }
 }

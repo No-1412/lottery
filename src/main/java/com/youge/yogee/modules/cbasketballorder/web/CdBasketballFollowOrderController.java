@@ -225,15 +225,15 @@ public class CdBasketballFollowOrderController extends BaseController {
             return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";*/
             if(match_ids.split(",").length<=3){
 
-                return baseUrl+ "篮球3关";
+                return baseUrl+ "basketball3";
             }else if(match_ids.split(",").length<=6){
-                return baseUrl+  "篮球6关";
+                return baseUrl+  "basketball6";
             }else if(match_ids.split(",").length<=8){
-                return baseUrl+"篮球8关";
+                return baseUrl+"basketball8";
             }
         }else if("2".equals(buy_ways)){
             if(match_ids.split(",").length<=3){
-                return baseUrl+ "篮球胜负3关";
+                return baseUrl+ "basketballSF3";
             }else if(match_ids.split(",").length<=6){
                 //return baseUrl+  "篮球胜负6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
@@ -253,7 +253,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
             }else if(match_ids.split(",").length<=8){
-                return baseUrl+"篮球让分胜负8关";
+                return baseUrl+"basketballRFSF8";
             }
         }else if("4".equals(buy_ways)){
             if(match_ids.split(",").length<=3){
@@ -265,7 +265,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
             }else if(match_ids.split(",").length<=8){
-                return baseUrl+"篮球大小分8关";
+                return baseUrl+"basketballDXF8";
             }
         }else if("5".equals(buy_ways)){
             if(match_ids.split(",").length<=3){

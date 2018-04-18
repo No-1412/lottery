@@ -1,7 +1,6 @@
 package com.youge.yogee.interfaces.lottery.user;
 
 import com.google.common.collect.Maps;
-import com.youge.yogee.common.mapper.JsonMapper;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -102,7 +101,7 @@ public class UserRechargeInterface {
         map.put("appId", "");
         map.put("openId", "");
         map.put("clientId", "");
-        String ext = JsonMapper.nonDefaultMapper().toJson(map);
+        //String ext = JsonMapper.nonDefaultMapper().toJson(map);
 
         Map<String, String> param = new HashMap<String, String>();
         param.put("parentMerchantNo", parentMerchantNo);

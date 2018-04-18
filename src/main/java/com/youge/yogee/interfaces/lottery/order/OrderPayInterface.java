@@ -297,14 +297,17 @@ public class OrderPayInterface {
         boolean flag = false;
         String rebate = "";
         if (priceDouble > 0.0 && priceDouble < 1000.0) {
-            flag = true;
-            rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.01)).setScale(2, 2));
+            flag=true;
+            BigDecimal result=priceBig.multiply(new BigDecimal(0.01));
+            rebate = String.valueOf(result.setScale(2, 2));
         } else if (priceDouble >= 1000.0 && priceDouble < 10000.0) {
-            flag = true;
-            rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.02).setScale(2, 2)));
+            flag=true;
+            BigDecimal result=priceBig.multiply(new BigDecimal(0.02));
+            rebate = String.valueOf(result.setScale(2, 2));
         } else if (priceDouble >= 10000.0) {
-            flag = true;
-            rebate = String.valueOf(priceBig.multiply(new BigDecimal(0.03).setScale(2, 2)));
+            flag=true;
+            BigDecimal result=priceBig.multiply(new BigDecimal(0.03));
+            rebate = String.valueOf(result.setScale(2, 2));
         }
         if (flag) {
             CdRecordRebate crr = new CdRecordRebate();
@@ -351,7 +354,6 @@ public class OrderPayInterface {
     private void saveAllChange(String price, String balance, CdLotteryUser clu, String orderNum, String type) {
         //更新用户信息
         clu = getLeftMoney(price, balance, clu);
-
         cdLotteryUserService.save(clu);
         //保存返利
         saveRebate(price, clu.getId(), type, clu);

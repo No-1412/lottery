@@ -7,7 +7,9 @@ import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
@@ -19,10 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Created by zhaoyifeng on 2018-02-26.
@@ -35,9 +35,11 @@ public class BasketballFollowOrderInterface {
     private CdBasketballMixedService cdBasketballMixedService;
     @Autowired
     private CdBasketballFollowOrderService cdBasketballFollowOrderService;
+    @Autowired
+    private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
 
     /**
-     * 篮球串关 提交订单
+     * 篮球串关 非奖金优化 订单提交
      */
     @RequestMapping(value = "basketballFollowOrderCommit", method = RequestMethod.POST)
     @ResponseBody
@@ -334,6 +336,7 @@ public class BasketballFollowOrderInterface {
         cbfo.setTimes(times); //倍数
         cbfo.setDanMatchIds(danMatchIds);//胆场次
         cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
+        cbfo.setBestType("1");//1普通单 2优化单
         try {
             cdBasketballFollowOrderService.save(cbfo);
             map.put("orderNum", orderNum);
@@ -349,6 +352,143 @@ public class BasketballFollowOrderInterface {
 
         logger.info("basketballFollowOrderCommit---------End---------------------");
         return HttpResultUtil.successJson(map);
+    }
+
+
+    /**
+     * 篮球串关 奖金优化 订单提交
+     */
+    @RequestMapping(value = "basketballBestFollowOrderCommit", method = RequestMethod.POST)
+    @ResponseBody
+    public String basketballBestFollowOrderCommit(HttpServletRequest request) {
+        logger.info("basketballBestFollowOrderCommit--------Start-------------------");
+        logger.debug("basketballBestFollowOrderCommit-------- Start--------");
+        Map map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+        //玩法 1混投 2胜负 3让分胜负 4大小分 5胜分差
+        String buyWays = (String) jsonData.get("buyWays");
+        if (StringUtils.isEmpty(buyWays)) {
+            logger.error("buyWays为空");
+            return HttpResultUtil.errorJson("buyWays为空");
+        }
+        //串关数
+        String followNum = (String) jsonData.get("followNum");
+        if (StringUtils.isEmpty(followNum)) {
+            logger.error("followNum为空");
+            return HttpResultUtil.errorJson("followNum为空");
+        }
+        //用户id
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            logger.error("uid为空");
+            return HttpResultUtil.errorJson("uid为空");
+        }
+        //订单整体的list
+        Object jsonString = jsonData.get("detail");
+        JSONArray jsonArray = JSONArray.fromObject(jsonString);
+        List<Map<String, Object>> detailList = (List<Map<String, Object>>) jsonArray.toCollection(jsonArray, Map.class);
+
+
+        //生成订单号
+        String orderNum = util.genOrderNo("LCG", util.getFourRandom());
+        int acount = 0; //总注数
+
+
+        //遍历整体
+        if (detailList.size() != 0) {
+            Set<String> matchSet = new HashSet<>();
+            //所有比赛
+            for (Map<String, Object> objectMap : detailList) {
+                //一条里的下单详情
+                Object portfolioChilVOList = objectMap.get("portfolioChilVOList");
+                JSONArray jsonaDetailMap = JSONArray.fromObject(portfolioChilVOList);
+                List<Map<String, Object>> aDetailMap = (List<Map<String, Object>>) jsonArray.toCollection(jsonaDetailMap, Map.class);
+                for (Map<String, Object> aBestDeatil : aDetailMap) {
+                    String matchId = (String) aBestDeatil.get("matchIds");//比赛matchids
+                    matchSet.add(matchId);
+                }
+            }
+            //保证比赛存在
+            for (String s : matchSet) {
+                CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
+                if (cbm == null) {
+                    return HttpResultUtil.errorJson("比赛不存在！");
+                }
+            }
+            //遍历整体
+            for (Map<String, Object> aDetail : detailList) {
+                String matchIds = "";//分表里的所有比赛
+                String perTimes = (String) aDetail.get("beishu");//倍数
+                acount += Integer.parseInt(perTimes);//总注数
+                String perAward = (String) aDetail.get("jiangjin");//奖金
+                String bestDetail = "";//优化的一条
+                //List<Map<String, Object>> aDetailMap = (List<Map<String, Object>>) aDetail.get("portfolioChilVOList");
+                //一条里的下单详情
+                Object portfolioChilVOList = aDetail.get("portfolioChilVOList");
+                JSONArray jsonaDetailMap = JSONArray.fromObject(portfolioChilVOList);
+                List<Map<String, Object>> aDetailMap = (List<Map<String, Object>>) jsonArray.toCollection(jsonaDetailMap, Map.class);
+
+                for (Map<String, Object> aBestDeatil : aDetailMap) {
+                    String matchId = (String) aBestDeatil.get("matchIds");//比赛matchids
+                    CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(matchId);
+                    if (cbm == null) {
+                        return HttpResultUtil.errorJson("比赛不存在！");
+                    }
+                    String close = cbm.getClose();//让分
+                    String zclose = cbm.getZclose();//大小分分数
+                    matchIds += matchId + ",";
+                    String odds = (String) aBestDeatil.get("odds");//赔率
+                    String name = (String) aBestDeatil.get("name");//球队
+                    String sf = (String) aBestDeatil.get("sf");//具体投注
+                    String buyWay = (String) aBestDeatil.get("buyWays");//玩法
+                    //场次  + 玩法 + 投注内容/赔率  + 队名/让分/大小分
+                    String minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "+" + name + "/" + close + "/" + zclose + "|";
+                    bestDetail += minDetail;//拼出一条优化详情
+                }
+                //保存优化订单一条
+                CdBasketballBestFollowOrder cbbfo = new CdBasketballBestFollowOrder();
+                cbbfo.setOrderNum(orderNum);//归属订单号
+                cbbfo.setMatchIds(matchIds);//所有比赛
+                cbbfo.setOrderDetail(bestDetail);//具体详情
+                cbbfo.setPerAward(perAward);//奖金
+                cbbfo.setPerTimes(perTimes);//倍数
+                cdBasketballBestFollowOrderService.save(cbbfo);
+            }
+            //保存订单总表
+            CdBasketballFollowOrder cbfo = new CdBasketballFollowOrder();
+            cbfo.setOrderNum(orderNum); //订单号
+            cbfo.setAcount(String.valueOf(acount));//注数
+            cbfo.setAward("0"); //奖金
+            BigDecimal countBig = new BigDecimal(acount);
+            BigDecimal price = countBig.multiply(new BigDecimal(2)).setScale(2, 1);
+            cbfo.setPrice(String.valueOf(price));//金额
+            cbfo.setStatus("1");//已提交
+            cbfo.setUid(uid);//用户
+            cbfo.setBuyWays(buyWays);//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
+            cbfo.setFollowNums(followNum);//串关数
+            cbfo.setTimes("1"); //倍数
+            cbfo.setDanMatchIds("");//胆场次
+            cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
+            cbfo.setBestType("2");//1普通单 2优化单
+            cdBasketballFollowOrderService.save(cbfo);
+
+
+            map.put("orderNum", orderNum);
+            map.put("orderName", "竞彩篮球订单支付");
+            map.put("time", cbfo.getCreateDate());
+            map.put("price", String.valueOf(price));
+            map.put("acountStr", String.valueOf(acount));//注数
+            map.put("times", "1");//倍数
+            map.put("followNum", followNum);//串关
+
+
+        }
+        logger.info("basketballFollowOrderCommit---------End---------------------");
+        return HttpResultUtil.successJson(map);
+
     }
 
 

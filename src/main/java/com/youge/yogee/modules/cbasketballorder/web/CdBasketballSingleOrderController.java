@@ -150,11 +150,11 @@ public class CdBasketballSingleOrderController extends BaseController {
            /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
             return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballSingleOrder/?repage";*/
             if(match_ids.split(",").length<=3){//足彩_3关
-                return baseUrl+ "篮球3关";
+                return baseUrl+ "basketball3";
             }else if(match_ids.split(",").length<=6){//足彩_6关
-                return baseUrl+  "篮球6关";
+                return baseUrl+  "basketball6";
             }else if(match_ids.split(",").length<=8){//足彩_8关
-                return baseUrl+"篮球8关";
+                return baseUrl+"basketball8";
             }
         }
         addMessage(redirectAttributes, "保存成功,没有模板不能打印");

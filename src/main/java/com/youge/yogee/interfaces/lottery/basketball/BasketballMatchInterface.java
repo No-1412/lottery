@@ -544,7 +544,19 @@ public class BasketballMatchInterface {
         if (StringUtils.isEmpty(uid)) {
             uid = "";
         }
-        List<CdBbNotFinsh> list = cdBbNotFinishCollectionService.findColByUid(uid);
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            logger.error("total为空");
+            return HttpResultUtil.errorJson("total为空");
+        }
+
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            logger.error("count为空");
+            return HttpResultUtil.errorJson("count为空");
+        }
+
+        List<CdBbNotFinsh> list = cdBbNotFinishCollectionService.findColByUid(uid, Integer.parseInt(total), Integer.parseInt(count));
         List cList = new ArrayList<>();
         if (list.size() > 0) {
             for (CdBbNotFinsh str : list) {
