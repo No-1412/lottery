@@ -3,22 +3,16 @@
  */
 package com.youge.yogee.modules.cbasketballorder.entity;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
 import com.youge.yogee.common.persistence.BaseEntity;
+import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-import org.apache.poi.ss.formula.functions.T;
 import org.hibernate.validator.constraints.Length;
 
-import com.youge.yogee.modules.sys.entity.User;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * 竞彩篮球订单Entity
@@ -65,6 +59,7 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 
     private String type;     // 0普通订单 1发起的 2跟单的
     private String result;       //开奖结果
+    private String bestType;       //开奖结果
 
     public CdBasketballFollowOrder() {
         super();
@@ -270,6 +265,14 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getBestType() {
+        return bestType;
+    }
+
+    public void setBestType(String bestType) {
+        this.bestType = bestType;
     }
 }
 

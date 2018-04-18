@@ -11,6 +11,7 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.erp.dao.ErpUserDao;
 import com.youge.yogee.modules.erp.entity.ErpUser;
 import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -22,6 +23,7 @@ import java.util.List;
 
 /**
  * 用户Service
+ *
  * @author RenHaipeng
  * @version 2018-03-07
  */
@@ -29,50 +31,55 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class ErpUserService extends BaseService {
 
-	@Autowired
-	private ErpUserDao erpUserDao;
-	
-	public ErpUser get(String id) {
-		return erpUserDao.get(id);
-	}
-	
-	public Page<ErpUser> find(Page<ErpUser> page, ErpUser user) {
-		DetachedCriteria dc = erpUserDao.createDetachedCriteria();
-		if (StringUtils.isNotEmpty(user.getName())){
-			dc.add(Restrictions.like("name", "%"+user.getName()+"%"));
-		}
-		dc.add(Restrictions.eq(ErpUser.FIELD_DEL_FLAG, ErpUser.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("id"));
-		return erpUserDao.find(page, dc);
-	}
-	
-	@Transactional(readOnly = false)
-	public void save(ErpUser user) {
+    @Autowired
+    private ErpUserDao erpUserDao;
 
-		if(StringUtils.isEmpty(user.getId())){
-			user.setId(IdGen.uuid());
-			user.setCreateDate(DateUtils.getDateTime());
-			user.setDelFlag(ErpUser.DEL_FLAG_NORMAL);
-		}
-		erpUserDao.save(user);
-	}
-	
-	@Transactional(readOnly = false)
-	public void delete(String id) {
-		erpUserDao.deleteById(id);
-	}
+    public ErpUser get(String id) {
+        return erpUserDao.get(id);
+    }
 
-	public List<ErpUser> findByUser(User user) {
-		DetachedCriteria dc = erpUserDao.createDetachedCriteria();
-		dc.createAlias("saleId","saleId");
-		dc.add(Restrictions.eq("saleId.id",user.getId()));
-		dc.add(Restrictions.eq(ErpUser.FIELD_DEL_FLAG, ErpUser.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("id"));
-		return erpUserDao.find(dc);
-	}
+    public Page<ErpUser> find(Page<ErpUser> page, ErpUser user) {
+        DetachedCriteria dc = erpUserDao.createDetachedCriteria();
+        String userId = UserUtils.getUser().getId();
+        if (!userId.equals("1")) {
+            dc.createAlias("saleId", "saleId");
+            dc.add(Restrictions.eq("saleId.id", userId));
+        }
+        if (StringUtils.isNotEmpty(user.getName())) {
+            dc.add(Restrictions.like("name", "%" + user.getName() + "%"));
+        }
+        dc.add(Restrictions.eq(ErpUser.FIELD_DEL_FLAG, ErpUser.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("id"));
+        return erpUserDao.find(page, dc);
+    }
 
-	public List<ErpUser> findAllUser() {
-		return erpUserDao.findAllList();
-	}
+    @Transactional(readOnly = false)
+    public void save(ErpUser user) {
+
+        if (StringUtils.isEmpty(user.getId())) {
+            user.setId(IdGen.uuid());
+            user.setCreateDate(DateUtils.getDateTime());
+            user.setDelFlag(ErpUser.DEL_FLAG_NORMAL);
+        }
+        erpUserDao.save(user);
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(String id) {
+        erpUserDao.deleteById(id);
+    }
+
+    public List<ErpUser> findByUser(User user) {
+        DetachedCriteria dc = erpUserDao.createDetachedCriteria();
+        dc.createAlias("saleId", "saleId");
+        dc.add(Restrictions.eq("saleId.id", user.getId()));
+        dc.add(Restrictions.eq(ErpUser.FIELD_DEL_FLAG, ErpUser.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("id"));
+        return erpUserDao.find(dc);
+    }
+
+    public List<ErpUser> findAllUser() {
+        return erpUserDao.findAllList();
+    }
 
 }

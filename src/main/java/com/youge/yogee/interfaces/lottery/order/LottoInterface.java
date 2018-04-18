@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -155,17 +156,20 @@ public class LottoInterface {
         //生成订单号
         String orderNum = util.genOrderNo("DLT", util.getFourRandom());
         //计算金额
-        double money = 0;
+        BigDecimal money;
         if ("1".equals(isPlus)) {
-            money = 3.00;
+            money = new BigDecimal(3);
         } else {
-            money = 2.00;
+            money =new BigDecimal(2);
         }
-
-        double acountDouble = Double.parseDouble(acount);
-        double timesDouble = Double.parseDouble(times);
-        double continuityDouble = Double.parseDouble(continuity);
-        String price = String.valueOf(money * acountDouble * timesDouble * continuityDouble);
+        BigDecimal acountBig=new BigDecimal(acount);
+        BigDecimal timesBig = new BigDecimal(times);
+        BigDecimal continuityBig=new BigDecimal(continuity);
+        //double acountDouble = Double.parseDouble(acount);
+//        double timesDouble = Double.parseDouble(times);
+        //double continuityDouble = Double.parseDouble(continuity);
+        BigDecimal finalMoney=money.multiply(acountBig).multiply(timesBig).multiply(continuityBig).setScale(2,2);
+        String price = String.valueOf(finalMoney);
         //奖金 未中奖为0
         String award = "0";
 

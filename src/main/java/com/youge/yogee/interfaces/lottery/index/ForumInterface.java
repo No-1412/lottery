@@ -222,8 +222,13 @@ public class ForumInterface {
             //map.put("name", s.getName());//标题
             map.put("content", s.getContent());//内容
             map.put("userName", s.getUserName());//发布人
-            CdLotteryUser clu = cdLotteryUserService.get(s.getUserId());
-            map.put("uImg", clu.getImg());
+            String sUid=s.getUserId();
+            CdLotteryUser clu = cdLotteryUserService.get(sUid);
+            String img="";
+            if(clu!=null){
+                img=clu.getImg();
+            }
+            map.put("uImg", img);
             map.put("dianZanCount", s.getDianzanCount());//点赞数量
             //List<String> imgList = new ArrayList<>();
             String imgs = s.getImgList();
