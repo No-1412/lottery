@@ -86,10 +86,10 @@ public class BallGameCals {
 //        list.add("D|Y");
 //        list.add("D|O");
 //        list.add("D|N");
-        list.add("0;1;2;1");
-        list.add("0;3;5");
-        list.add("N;y;1;8");
-        list.add("N;y");
+        list.add("0");
+        list.add("0");
+        list.add("N");
+        list.add("N");
 //        list.add("N");
 //        list.add("N");
 //        list.add("N");
@@ -109,7 +109,7 @@ public class BallGameCals {
 //        Map<String,String> map=BallGameCals.getHalfWholeResults();
 //       String c=map.get(a);
 
-        int cr = countOfFootBall(list, 2, 1);
+        int cr = countOfFootBall(list, 1, 1);
         System.out.println(cr);
 //        List<String> wantList = new ArrayList<>();
 //        wantList.add("51");
@@ -180,7 +180,7 @@ public class BallGameCals {
         if (k == 1) {
             for (int i = index; i < arr.length; i++) {
                 tmpDoubleArr.add(arr[i]);
-                doubleSum += tmpDoubleArr.get(0) * tmpDoubleArr.get(1);
+                //doubleSum += tmpDoubleArr.get(0) * tmpDoubleArr.get(1);
                 finalList.add(tmpDoubleArr.toString());
                 //System.out.println(tmpDoubleArr.toString());
                 tmpDoubleArr.remove(arr[i]);

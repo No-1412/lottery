@@ -412,11 +412,13 @@ public class BasketballFollowOrderInterface {
                 }
             }
             //保证比赛存在
+            String danMatchIds = "";
             for (String s : matchSet) {
                 CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在！");
                 }
+                danMatchIds += "非+" + s + ",";
             }
             //遍历整体
             for (Map<String, Object> aDetail : detailList) {
@@ -470,7 +472,7 @@ public class BasketballFollowOrderInterface {
             cbfo.setBuyWays(buyWays);//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
             cbfo.setFollowNums(followNum);//串关数
             cbfo.setTimes("1"); //倍数
-            cbfo.setDanMatchIds("");//胆场次
+            cbfo.setDanMatchIds(danMatchIds);//胆场次
             cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
             cbfo.setBestType("2");//1普通单 2优化单
             cdBasketballFollowOrderService.save(cbfo);

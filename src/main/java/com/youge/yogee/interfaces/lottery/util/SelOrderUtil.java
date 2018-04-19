@@ -629,7 +629,7 @@ public class SelOrderUtil {
         try {
             cdLotteryUserService.save(clu);
         } catch (Exception c) {
-            System.out.println("中奖金额未添加");
+            System.out.println("中奖金额到账失败");
         }
 
     }

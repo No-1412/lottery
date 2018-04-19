@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.quartz;
 
 import com.youge.yogee.common.push.AppPush;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveAwards;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
@@ -61,7 +62,7 @@ public class NotBallQuartz {
                 //获取当期所有付款订单
                 List<CdThreeOrder> cList = cdThreeOrderService.findByStatus("3", weekday);
                 for (CdThreeOrder c : cList) {
-                    System.out.println(c.getOrderNum() + "中奖");
+                    //System.out.println(c.getOrderNum() + "中奖");
                     String orderPerhaps = c.getAllPerhaps();
                     if ("2".equals(c.getBuyWays())) {
                         int sum = 0;
@@ -95,7 +96,8 @@ public class NotBallQuartz {
                         }
                     }
                     cdThreeOrderService.save(c);
-
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
                 }
             }
         }
@@ -156,7 +158,8 @@ public class NotBallQuartz {
                         }
                     }
                     cdFiveOrderService.save(c);
-
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
                 }
             }
         }
@@ -253,7 +256,7 @@ public class NotBallQuartz {
                         //推送
                         try {
                             pushMssage(c.getUid(), award);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             continue;
                         }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
@@ -279,7 +282,7 @@ public class NotBallQuartz {
                         //推送
                         try {
                             pushMssage(c.getUid(), award);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             continue;
                         }
 
@@ -307,7 +310,7 @@ public class NotBallQuartz {
                         //推送
                         try {
                             pushMssage(c.getUid(), award);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             continue;
                         }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
@@ -333,7 +336,7 @@ public class NotBallQuartz {
                         //推送
                         try {
                             pushMssage(c.getUid(), award);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             continue;
                         }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
@@ -354,7 +357,7 @@ public class NotBallQuartz {
                         //推送
                         try {
                             pushMssage(c.getUid(), award);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             continue;
                         }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
@@ -372,6 +375,8 @@ public class NotBallQuartz {
                             cdOrderService.save(co);
                         }
                     }
+                    //更新用户余额 已经看不懂了 直接加在最后
+                    SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
                 }
             }
         }
@@ -400,7 +405,6 @@ public class NotBallQuartz {
         String realAward = String.valueOf(awardDouble * timeDouble);
         c.setAward(realAward);
 
-        AppPush.push(c.getUid(), "凯旋彩票", "您购买的排列三获得中奖金额" + award + "元");
 
         //保存中奖纪录
         CdOrderWinners cdOrderWinners = new CdOrderWinners();
@@ -421,6 +425,11 @@ public class NotBallQuartz {
             co.setStatus("3");//中奖
             cdOrderService.save(co);
         }
+        try {
+            AppPush.push(c.getUid(), "凯旋彩票", "您购买的排列三获得中奖金额" + award + "元");
+        } catch (Exception e) {
+            System.out.println("推送失败");
+        }
         return c;
     }
 
@@ -428,8 +437,8 @@ public class NotBallQuartz {
         String award = c.getAward();
         BigDecimal awardBig = new BigDecimal(award);
         BigDecimal timeBig = new BigDecimal(c.getTimes());
-        BigDecimal result=awardBig.multiply(timeBig);
-        String realAward = String.valueOf(result.setScale(2,2));
+        BigDecimal result = awardBig.multiply(timeBig);
+        String realAward = String.valueOf(result.setScale(2, 2));
         //改变订单总表状态
         CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
         if (co != null) {
@@ -444,7 +453,7 @@ public class NotBallQuartz {
             //String awardStr = String.valueOf(award);
             AppPush.push(uid, "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("推送失败");
         }
 
     }

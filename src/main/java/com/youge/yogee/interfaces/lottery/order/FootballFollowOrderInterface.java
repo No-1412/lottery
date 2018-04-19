@@ -417,11 +417,13 @@ public class FootballFollowOrderInterface {
                 }
             }
             //保证比赛存在
+            String danMatchIds = "";
             for (String s : matchSet) {
                 CdFootballMixed cbm = cdFootballMixedService.findByMatchId(s);
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在！");
                 }
+                danMatchIds += "非+" + s + ",";
             }
             //遍历整体
             for (Map<String, Object> aDetail : detailList) {
@@ -475,7 +477,7 @@ public class FootballFollowOrderInterface {
             cffo.setBuyWays(buyWays);//玩法 1混投 2胜平负 3让球胜平负 4比分 5总进球 6半全场
             cffo.setFollowNum(followNum);//串关数
             cffo.setTimes("1"); //倍数
-            cffo.setDanMatchIds("");//胆场次
+            cffo.setDanMatchIds(danMatchIds);//胆场次
             cffo.setType("0"); //0普通订单 1发起的 2跟单的
             cffo.setBestType("2");//1普通单 2优化的
 
