@@ -1,11 +1,15 @@
 package com.youge.yogee.interfaces.quartz;
 
 import com.youge.yogee.common.push.AppPush;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
+import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
 import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballBestFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
@@ -20,6 +24,7 @@ import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -55,6 +60,8 @@ public class QuartzListener {
     private CdMagicFollowOrderService cdMagicFollowOrderService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
 
     //    "0/10 * * * * ?" 每10秒触发
 //
@@ -87,10 +94,167 @@ public class QuartzListener {
 //    @Scheduled(cron = "*/5 * * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    public void footballBestFollowOrder() {
+//        System.out.println("足球优化串关开奖");
+
+        List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("2");
+
+
+        //全部可以比赛完的场次
+        List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
+
+
+        for (CdFootballFollowOrder cdFootballFollowOrder : cdFootballFollowOrderList) {
+
+            //获取订单中押的全部场次
+            String danMatchIds = cdFootballFollowOrder.getDanMatchIds();
+            Set<String> matchIdList = new HashSet<>();
+            for (String finishMatchId : danMatchIds.split(",")) {
+                matchIdList.add(finishMatchId.substring(2, 7));
+            }
+
+
+            //判断订单所有赛事是否都已经比完
+            if (awardMatchIdList.containsAll(matchIdList)) {
+                //  **************************后加的-------------获取押注比赛结果并保存****************
+                String result = getResultStr(matchIdList);
+                cdFootballFollowOrder.setResult(result);
+                cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                //**********************************************************************************
+
+                List<CdFootballBestFollowOrder> CdFootballBestFollowOrderList = cdFootballBestFollowOrderService.findByNum(cdFootballFollowOrder.getOrderNum());
+                BigDecimal award = new BigDecimal(0);
+                for (CdFootballBestFollowOrder cdFootballBestFollowOrder : CdFootballBestFollowOrderList) {
+                    String orderDetail = cdFootballBestFollowOrder.getOrderDetail();
+                    String[] detailArray = orderDetail.split("\\|");
+
+                    Boolean flag = true;//如果最终为true则中奖
+                    for (String detail : detailArray) {
+                        String[] aDetail = detail.split("\\+");
+                        String key = aDetail[1];
+                        CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(aDetail[0]);
+
+                        String orderFinish = StringUtils.split(aDetail[2],"/")[0];
+
+
+                        String finish = "";
+                        switch (key) {
+                            case "score":
+                                finish = cdFootballAwards.getHs() + ":" + cdFootballAwards.getVs();
+                                break;
+                            case "goal":
+                                finish = cdFootballAwards.getTotalNum();
+                                break;
+                            case "half":
+                                finish = cdFootballAwards.getWinGrap();
+                                break;
+                            case "beat":
+                                finish = cdFootballAwards.getWinning();
+                                break;
+                            case "let":
+                                int hs = Integer.valueOf(cdFootballAwards.getHs());
+                                int vs = Integer.valueOf(cdFootballAwards.getVs());
+                                //取得出票时让球数
+                                int letBall = Integer.valueOf(StringUtils.split(aDetail[3],"/")[1]);
+
+                                if (hs + letBall > vs) {
+                                    finish = "让主胜";
+                                } else if (hs + letBall == vs) {
+                                    finish = "平";
+                                } else {
+                                    finish = "让客胜";
+                                }
+                                break;
+                        }
+                        if (!orderFinish.equals(finish)) {
+                            flag = false;
+                        }
+                    }
+
+                    //如果最终为true则中奖,计算单场奖金
+                    if (flag) {
+                        BigDecimal pertimes = new BigDecimal(cdFootballBestFollowOrder.getPerTimes());
+                        BigDecimal perAward = new BigDecimal(cdFootballBestFollowOrder.getPerAward());
+                        award = award.add(pertimes.multiply(perAward));
+                    }
+                }
+
+                //开奖结果为  未中奖
+                if (award.doubleValue() == 0) {
+                    cdFootballFollowOrder.setStatus("5");
+                    cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//未中奖
+                        cdOrderService.save(co);
+                    }
+                } else {//开奖结果为  中奖
+                    cdFootballFollowOrder.setAward(award.toString());
+                    cdFootballFollowOrder.setStatus("4");
+                    cdFootballFollowOrderService.save(cdFootballFollowOrder);
+
+                    //---------------------------------计算跟单佣金-------------------------
+
+                    if (cdFootballFollowOrder.getType().equals("2")) {
+                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+
+                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballFollowOrder.getOrderNum());
+                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
+
+                        if (new BigDecimal(cdFootballFollowOrder.getPrice())
+                                .multiply(cdOrderFollowTimes.getTimes())
+                                .compareTo(award) == 1) {
+                            //全部佣金
+                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
+                                    .multiply(new BigDecimal(0.01))
+                                    .multiply(award);
+
+                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
+                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
+                            cdLotteryUserService.save(cdLotteryUser);
+                        }
+                    }
+
+                    //保存中奖纪录
+                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                    cdOrderWinners.setWinOrderNum(cdFootballFollowOrder.getOrderNum());//中间单号
+                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                    cdOrderWinners.setUid(cdFootballFollowOrder.getUid());//中间用户
+                    String repayPercent = Calculations.getRepayPercent(award.doubleValue(), Double.parseDouble(cdFootballFollowOrder.getPrice()));
+                    cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinners.setType("2");
+                    cdOrderWinners.setWallType("1");
+                    cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
+                    cdOrderWinnersService.save(cdOrderWinners);
+                    //保存中獎大洲
+                    String continent = cdFootballFollowOrder.getContinent();
+                    CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
+                    String newContinent = clu.getContinent() + continent;//大洲
+                    clu.setContinent(newContinent);
+                    cdLotteryUserService.save(clu);
+
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice(award.toString());//奖金
+                        co.setStatus("3");//中奖
+                        cdOrderService.save(co);
+                    }
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(cdFootballFollowOrder.getAward(), cdFootballFollowOrder.getUid());
+                    AppPush.push(cdFootballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
+                }
+            }
+        }
+    }
+
+    @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
 
-        List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatus();
+        List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("1");
 
 
         //全部可以比赛完的场次
@@ -124,51 +288,59 @@ public class QuartzListener {
                 //***********************************判断押中场次************************************************
                 //判断比分
                 String score = cdFootballFollowOrder.getScore();
-                judgeFootballFollow(score, "score", winList, danWinList);
-
+                if (StringUtils.isNotEmpty(score)) {
+                    judgeFootballFollow(score, "score", winList, danWinList);
+                }
                 //判断总进球
                 String goal = cdFootballFollowOrder.getGoal();
-                judgeFootballFollow(goal, "goal", winList, danWinList);
-
+                if (StringUtils.isNotEmpty(score)) {
+                    judgeFootballFollow(goal, "goal", winList, danWinList);
+                }
                 //判断半全场
                 String half = cdFootballFollowOrder.getHalf();
-                judgeFootballFollow(half, "half", winList, danWinList);
-
+                if (StringUtils.isNotEmpty(score)) {
+                    judgeFootballFollow(half, "half", winList, danWinList);
+                }
                 //判断胜负平
                 String beat = cdFootballFollowOrder.getBeat();
-                judgeFootballFollow(beat, "beat", winList, danWinList);
+                if (StringUtils.isNotEmpty(score)) {
+                    judgeFootballFollow(beat, "beat", winList, danWinList);
+                }
+
 
                 //判断让球胜负平
                 String let = cdFootballFollowOrder.getLet();
                 //订单让球数
-                String[] letBalls = cdFootballFollowOrder.getLetBalls().split(",");
-                String[] methodArray = let.split("\\|");
-                for (int i = 0; i < methodArray.length; i++) {
-                    String[] aMethodArray = methodArray[i].split("\\+");
-                    CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(aMethodArray[1]);
-                    String finish = "";
+                if (StringUtils.isNotEmpty(let)) {
+                    String[] letBalls = cdFootballFollowOrder.getLetBalls().split(",");
+                    String[] methodArray = let.split("\\|");
+                    for (int i = 0; i < methodArray.length; i++) {
+                        String[] aMethodArray = methodArray[i].split("\\+");
+                        CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(aMethodArray[1]);
+                        String finish = "";
 
-                    int hs = Integer.valueOf(cdFootballAwards.getHs());
-                    int vs = Integer.valueOf(cdFootballAwards.getVs());
+                        int hs = Integer.valueOf(cdFootballAwards.getHs());
+                        int vs = Integer.valueOf(cdFootballAwards.getVs());
 
-                    int letBall = Integer.valueOf(letBalls[i]);
+                        int letBall = Integer.valueOf(letBalls[i]);
 
-                    if (hs + letBall > vs) {
-                        finish = "3";
-                    } else if (hs + letBall == vs) {
-                        finish = "1";
-                    } else {
-                        finish = "0";
-                    }
-
-                    String[] odds = methodArray[i].split(finish + "/");
-                    if (odds.length > 1) {
-                        if (odds[1].contains(",")) {
-                            winList.add(odds[1].split(",")[0]);
-                            danWinList.add(aMethodArray[1] + odds[1].split(",")[0]);
+                        if (hs + letBall > vs) {
+                            finish = "3";
+                        } else if (hs + letBall == vs) {
+                            finish = "1";
                         } else {
-                            winList.add(odds[1]);
-                            danWinList.add(aMethodArray[1] + odds[1]);
+                            finish = "0";
+                        }
+
+                        String[] odds = methodArray[i].split(finish + "/");
+                        if (odds.length > 1) {
+                            if (odds[1].contains(",")) {
+                                winList.add(odds[1].split(",")[0]);
+                                danWinList.add(aMethodArray[1] + odds[1].split(",")[0]);
+                            } else {
+                                winList.add(odds[1]);
+                                danWinList.add(aMethodArray[1] + odds[1]);
+                            }
                         }
                     }
                 }
@@ -283,8 +455,26 @@ public class QuartzListener {
                             continue;
                         }
                     } else {
-                        //根据串关计算奖金
                         String followNum = cdFootballFollowOrder.getFollowNum();
+                        if (followNum.contains(",")) {
+                            for (String num : followNum.split(",")) {
+                                Integer numInt = Integer.valueOf(num);
+                                if (winList.size() < numInt) {
+                                    cdFootballFollowOrder.setStatus("5");
+                                    cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                                    //改变订单总表状态
+                                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                                    if (co != null) {
+                                        co.setWinPrice("0");//奖金
+                                        co.setStatus("2");//中奖
+                                        cdOrderService.save(co);
+                                    }
+                                }
+                            }
+                            continue;
+                        }
+                        //根据串关计算奖金
+
                         if (followNum.contains(",")) {
                             for (String num : followNum.split(",")) {
                                 //TODO 需要用BigDecimal
@@ -335,10 +525,16 @@ public class QuartzListener {
                     cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
                     //保存中獎大洲
-                    String continent = cdFootballFollowOrder.getContinent();
+                    String continent = cdFootballFollowOrder.getContinent() + ",";
                     CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
-                    String newContinent = clu.getContinent() + continent;//大洲
-                    clu.setContinent(newContinent);
+                    String oldContinent = clu.getContinent();
+                    if (StringUtils.isEmpty(oldContinent)) {
+                        clu.setContinent(continent);
+                    } else {
+                        String newContinent = oldContinent + continent;//大洲
+                        clu.setContinent(newContinent);
+                    }
+
                     cdLotteryUserService.save(clu);
 
                     //改变订单总表状态
@@ -348,6 +544,8 @@ public class QuartzListener {
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(cdFootballFollowOrder.getAward(), cdFootballFollowOrder.getUid());
                     AppPush.push(cdFootballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
 
                 } else {
@@ -357,14 +555,13 @@ public class QuartzListener {
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
                     if (co != null) {
                         co.setWinPrice("0");//奖金
-                        co.setStatus("2");//中奖
+                        co.setStatus("2");//未中奖
                         cdOrderService.save(co);
                     }
                 }
             }
         }
     }
-
 
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballSingleOrder() {
@@ -470,6 +667,8 @@ public class QuartzListener {
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(cdFootballSingleOrder.getAward(), cdFootballSingleOrder.getUid());
                     AppPush.push(cdFootballSingleOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
 
                 } else {

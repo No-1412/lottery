@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.quartz;
 
 import com.youge.yogee.common.push.AppPush;
+import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cbasketballawards.entity.CdBasketballAwards;
 import com.youge.yogee.modules.cbasketballawards.service.CdBasketballAwardsService;
@@ -8,6 +9,7 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
+import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
@@ -86,7 +88,8 @@ public class BasketBallQuartz {
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
 
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0/10 * * * * ?")//10s
+//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void basketBallFollowOrder() {
 
 
@@ -120,23 +123,64 @@ public class BasketBallQuartz {
                 //***********************************判断押中场次************************************************
                 //判断主胜
                 String hostWin = cdBasketballFollowOrder.getHostWin();
-                judgeBaskerballFollow(hostWin, "hostWin", winList, danWinList, cdBasketballFollowOrder);
-
+                if (StringUtils.isNotEmpty(hostWin)) {
+                    judgeBaskerballFollow(hostWin, "hostWin", winList, danWinList, cdBasketballFollowOrder);
+                }
                 //判断主负
                 String hostFail = cdBasketballFollowOrder.getHostFail();
-                judgeBaskerballFollow(hostFail, "hostFail", winList, danWinList, cdBasketballFollowOrder);
+                if (StringUtils.isNotEmpty(hostFail)) {
+                    judgeBaskerballFollow(hostFail, "hostFail", winList, danWinList, cdBasketballFollowOrder);
+                }
 
                 //判断胜负
                 String beat = cdBasketballFollowOrder.getBeat();
-                judgeBaskerballFollow(beat, "beat", winList, danWinList, cdBasketballFollowOrder);
+                if (StringUtils.isNotEmpty(beat)) {
+                    judgeBaskerballFollow(beat, "beat", winList, danWinList, cdBasketballFollowOrder);
+                }
 
                 //判断大小分
                 String size = cdBasketballFollowOrder.getSize();
-                judgeBaskerballFollow(size, "size", winList, danWinList, cdBasketballFollowOrder);
+                if (StringUtils.isNotEmpty(size)) {
+                    judgeBaskerballFollow(size, "size", winList, danWinList, cdBasketballFollowOrder);
+                }
 
-                //判断让分胜负平
+                //判断让球胜负平
                 String let = cdBasketballFollowOrder.getLet();
-                judgeBaskerballFollow(size, "size", winList, danWinList, cdBasketballFollowOrder);
+                if (StringUtils.isNotEmpty(let)) {
+                    //订单让球数
+                    String[] letBalls = cdBasketballFollowOrder.getLetScore().split(",");
+                    String[] methodArray = let.split("\\|");
+                    for (int i = 0; i < methodArray.length; i++) {
+                        String[] aMethodArray = methodArray[i].split("\\+");
+                        CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(aMethodArray[1]);
+                        String finish = "";
+
+                        int hs = Integer.valueOf(cdBasketballAwards.getHs());
+                        int vs = Integer.valueOf(cdBasketballAwards.getVs());
+
+                        Double letBall = Double.valueOf(letBalls[i]);
+
+                        if (hs + letBall > vs) {
+                            finish = "3";
+                        } else if (hs + letBall == vs) {
+                            finish = "1";
+                        } else {
+                            finish = "0";
+                        }
+
+                        String[] odds = methodArray[i].split(finish + "/");
+                        if (odds.length > 1) {
+                            if (odds[1].contains(",")) {
+                                winList.add(odds[1].split(",")[0]);
+                                danWinList.add(aMethodArray[1] + odds[1].split(",")[0]);
+                            } else {
+                                winList.add(odds[1]);
+                                danWinList.add(aMethodArray[1] + odds[1]);
+                            }
+                        }
+                    }
+                }
+
 
                 //***************************************判断结束*******************************************************
 
@@ -296,7 +340,7 @@ public class BasketBallQuartz {
                     cdOrderWinners.setWallType("1");
                     cdOrderWinners.setResult(cdBasketballFollowOrder.getResult());
                     cdOrderWinnersService.save(cdOrderWinners);
-                   //改变订单总表状态
+                    //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
                     if (co != null) {
                         co.setWinPrice(award.toString());//奖金
@@ -464,19 +508,22 @@ public class BasketBallQuartz {
             String[] aMethodArray = methodArray[i].split("\\+");
             CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(aMethodArray[1]);
             String finish = "";
+            String score = "";
             switch (key) {
                 case "hostWin":
                     finish = cdBasketballAwards.getWinGrap();
-                    if (finish.contains("主胜")) {
-                        finish = finish.substring(0, 2);
+                    score = finish.substring(2);
+                    if (finish.contains("主胜") && aMethodArray[3].contains(score)) {
+                        finish = score;
                     } else {
                         return;
                     }
                     break;
                 case "hostFail":
                     finish = cdBasketballAwards.getWinGrap();
-                    if (finish.contains("主负")) {
-                        finish = finish.substring(0, 2);
+                    score = finish.substring(2);
+                    if (finish.contains("客胜") && aMethodArray[3].contains(score)) {
+                        finish = score;
                     } else {
                         return;
                     }
