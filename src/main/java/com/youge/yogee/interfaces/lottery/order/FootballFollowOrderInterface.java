@@ -402,6 +402,7 @@ public class FootballFollowOrderInterface {
         String orderNum = util.genOrderNo("ZCG", util.getFourRandom());
         int acount = 0; //总注数
 
+
         //遍历整体
         if (detailList.size() != 0) {
             Set<String> matchSet = new HashSet<>();
@@ -416,14 +417,28 @@ public class FootballFollowOrderInterface {
                     matchSet.add(matchId);
                 }
             }
+
+            //用于总订单的map
+            Map<String, Map<String, String>> detailMap = new HashMap<>();
+
             //保证比赛存在
             String danMatchIds = "";
+            String letBalls = "";
             for (String s : matchSet) {
                 CdFootballMixed cbm = cdFootballMixedService.findByMatchId(s);
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在！");
                 }
                 danMatchIds += "非+" + s + ",";
+                letBalls += cbm.getClose() + ",";
+
+                Map<String, String> aDetailMap = new HashMap<>();
+                aDetailMap.put("score", "");
+                aDetailMap.put("goal", "");
+                aDetailMap.put("half", "");
+                aDetailMap.put("beat", "");
+                aDetailMap.put("let", "");
+                detailMap.put(s, aDetailMap);
             }
             //遍历整体
             for (Map<String, Object> aDetail : detailList) {
@@ -454,6 +469,10 @@ public class FootballFollowOrderInterface {
                     //场次  + 玩法 + 投注内容/赔率  + 队名/让分/大小分
                     String minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "+" + name + "/" + close + "|";
                     bestDetail += minDetail;//拼出一条优化详情
+                    //处理数据给订单总表-----------*-----贼------*------他------*------妈-------*精妙*-------------------
+                    String newSf = detailMap.get(matchId).get(buyWay);
+                    newSf += sf + "/" + odds + ",";
+                    detailMap.get(matchId).put(buyWay, newSf);
                 }
                 //保存优化订单一条
                 CdFootballBestFollowOrder cfbfo = new CdFootballBestFollowOrder();
@@ -464,8 +483,34 @@ public class FootballFollowOrderInterface {
                 cfbfo.setPerTimes(perTimes);//倍数
                 cdFootballBestFollowOrderService.save(cfbfo);
             }
+            //订单总表的字段
+            String score = "";
+            String goal = "";
+            String half = "";
+            String beat = "";
+            String let = "";
+            for (String s : matchSet) {
+                Map<String, String> aMap = detailMap.get(s);
+                CdFootballMixed cfm = cdFootballMixedService.findByMatchId(s);
+                String head = "0+" + s + "+" + cfm.getWinningName() + "vs" + cfm.getDefeatedName() + "+";
+                if (StringUtils.isNotEmpty(aMap.get("score"))) {
+                    score += head + aMap.get("score") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("goal"))) {
+                    goal += head + aMap.get("goal") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("half"))) {
+                    half += head + aMap.get("half") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("beat"))) {
+                    beat += head + aMap.get("beat") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("let"))) {
+                    let += head + aMap.get("let") + "|";
+                }
+            }
+            //保存到订单主表
             CdFootballFollowOrder cffo = new CdFootballFollowOrder();
-
             cffo.setOrderNum(orderNum); //订单号
             cffo.setAcount(String.valueOf(acount));//注数
             cffo.setAward("0"); //奖金
@@ -481,6 +526,13 @@ public class FootballFollowOrderInterface {
             cffo.setType("0"); //0普通订单 1发起的 2跟单的
             cffo.setBestType("2");//1普通单 2优化的
 
+            cffo.setScore(score);//比分
+            cffo.setHalf(half);//半全场
+            cffo.setGoal(goal);//总进球
+            cffo.setLet(let);//让球胜负平
+            cffo.setBeat(beat);//胜负平
+
+            cffo.setLetBalls(letBalls);
             cdFootballFollowOrderService.save(cffo);
             map.put("orderNum", orderNum);
             map.put("orderName", "竞猜足球订单支付");

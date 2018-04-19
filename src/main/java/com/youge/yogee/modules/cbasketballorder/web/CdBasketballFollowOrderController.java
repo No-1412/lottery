@@ -98,66 +98,66 @@ public class CdBasketballFollowOrderController extends BaseController {
         String let = cdBasketballFollowOrder.getLet();
         List<String> tList = new ArrayList<>();
 
-        if ("1".equals(cdBasketballFollowOrder.getBestType())) {
-            if (StringUtils.isNotEmpty(hostWin)) {
-                String[] winStr = hostWin.split("\\|");
-                for (String s : winStr) {
-                    wList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(hostFail)) {
-                String[] failStr = hostFail.split("\\|");
-                for (String s : failStr) {
-                    fList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(beat)) {
-                String[] beatStr = beat.split("\\|");
-                for (String s : beatStr) {
-                    bList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(size)) {
-                String[] sizeStr = size.split("\\|");
-                for (String s : sizeStr) {
-                    sList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(let)) {
-                String[] letStr = let.split("\\|");
-                for (String s : letStr) {
-                    tList.add(s);
-                }
-            }
-        } else {
-            String orderNum = cdBasketballFollowOrder.getOrderNum();
-            List<CdBasketballBestFollowOrder> list = cdBasketballBestFollowOrderService.findByOrderNum(orderNum);
-            for (CdBasketballBestFollowOrder cbbfo : list) {
-                String detail = cbbfo.getOrderDetail();//详情
-                String[] detailArray = detail.split("\\|");//拆分详情
-                for (String str : detailArray) {
-                    String[] strArray = str.split("\\+");
-                    String newStr = "0+" + strArray[0] + "+" + strArray[3] + "+" + strArray[2] + ",";
-                    switch (strArray[1]) {
-                        case "hostWin":
-                            wList.add(newStr);
-                            break;
-                        case "hostFail":
-                            fList.add(newStr);
-                            break;
-                        case "beat":
-                            bList.add(newStr);
-                            break;
-                        case "let":
-                            tList.add(newStr);
-                            break;
-                        case "size":
-                            sList.add(newStr);
-                            break;
-                    }
-                }
+//        if ("1".equals(cdBasketballFollowOrder.getBestType())) {
+        if (StringUtils.isNotEmpty(hostWin)) {
+            String[] winStr = hostWin.split("\\|");
+            for (String s : winStr) {
+                wList.add(s);
             }
         }
+        if (StringUtils.isNotEmpty(hostFail)) {
+            String[] failStr = hostFail.split("\\|");
+            for (String s : failStr) {
+                fList.add(s);
+            }
+        }
+        if (StringUtils.isNotEmpty(beat)) {
+            String[] beatStr = beat.split("\\|");
+            for (String s : beatStr) {
+                bList.add(s);
+            }
+        }
+        if (StringUtils.isNotEmpty(size)) {
+            String[] sizeStr = size.split("\\|");
+            for (String s : sizeStr) {
+                sList.add(s);
+            }
+        }
+        if (StringUtils.isNotEmpty(let)) {
+            String[] letStr = let.split("\\|");
+            for (String s : letStr) {
+                tList.add(s);
+            }
+        }
+//        } else {
+//            String orderNum = cdBasketballFollowOrder.getOrderNum();
+//            List<CdBasketballBestFollowOrder> list = cdBasketballBestFollowOrderService.findByOrderNum(orderNum);
+//            for (CdBasketballBestFollowOrder cbbfo : list) {
+//                String detail = cbbfo.getOrderDetail();//详情
+//                String[] detailArray = detail.split("\\|");//拆分详情
+//                for (String str : detailArray) {
+//                    String[] strArray = str.split("\\+");
+//                    String newStr = "0+" + strArray[0] + "+" + strArray[3] + "+" + strArray[2] + ",";
+//                    switch (strArray[1]) {
+//                        case "hostWin":
+//                            wList.add(newStr);
+//                            break;
+//                        case "hostFail":
+//                            fList.add(newStr);
+//                            break;
+//                        case "beat":
+//                            bList.add(newStr);
+//                            break;
+//                        case "let":
+//                            tList.add(newStr);
+//                            break;
+//                        case "size":
+//                            sList.add(newStr);
+//                            break;
+//                    }
+//                }
+//            }
+//        }
 
 
         //获取当前时间
@@ -242,8 +242,54 @@ public class CdBasketballFollowOrderController extends BaseController {
             }
             cdBasketballFollowOrder.setLetScore(letScore);
         }
+        if ("2".equals(cdBasketballFollowOrder.getBestType())) {
+            cdBasketballFollowOrder.getDanMatchIds();
+            String orderNum = cdBasketballFollowOrder.getOrderNum();
+            List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(orderNum);
+            for (CdBasketballBestFollowOrder cbb : bList) {
+                String detail = cbb.getOrderDetail();
+                String[] detailArray = detail.split("\\|");
+                //用户拼回新的|；最后set进去的
+                String newDeatail = "";
+                for (String d : detailArray) {
+                    String[] aDetail = d.split("\\+");
+                    //查询比赛
+                    CdBasketballMixed cfm = cdBasketballMixedService.findByMatchId(aDetail[0]);
+                    if (cfm == null) {
+                        //比赛不存在 无法出票
+                        addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+                        return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+                    }
+                    //
+                    String newAdetail = "";
+                    switch (aDetail[1]) {
+                        case "hostWin": {
+                            newAdetail = getNewBestHost(cfm, aDetail);
+                            break;
+                        }
+                        case "hostFail": {
+                            newAdetail = getNewBestHost(cfm, aDetail);
+                            break;
+                        }
+                        case "beat": {
+
+                        }
+                        case "let": {
+
+                        }
+                        case "size": {
+                        }
+                    }
+                    d = newAdetail + "|";
+                    newDeatail += d;
+                }
+                cbb.setOrderDetail(newDeatail);
+                cdBasketballBestFollowOrderService.save(cbb);
+            }
+        }
 
         cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+
         // addMessage(redirectAttributes, "保存成功");
         //return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
         //==================start   2018-04-11   yuhongwei 跳转打印页
@@ -317,6 +363,8 @@ public class CdBasketballFollowOrderController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
 
         //==================end   2018-04-11   yuhongwei 跳转打印页
+
+
     }
 
     @RequiresPermissions("cbasketballorder:cdBasketballFollowOrder:edit")
@@ -572,5 +620,18 @@ public class CdBasketballFollowOrderController extends BaseController {
         return newLetDetail;
     }
 
+    public String getNewBestHost(CdBasketballMixed cfm, String[] aDetail) {
+        String newAdetail = "";
+        String failOdds = cfm.getSurpassScoreGap();//获取比分赔率
+        String[] failOddsArray = failOdds.split(","); //根据,拆分成数组 取最新赔率
+        Map<String, Integer> winMap = BallGameCals.getFailWinScoreResults();//获取比分map
+        String failAndOdd = aDetail[2];//拿到比分字段 形式如 5:1/1.95,1:2/2.87
+        String[] fArray = failAndOdd.split("/");
+        int no = winMap.get(fArray[0]);
+        String newOdd = failOddsArray[no];
+        String newPlay = fArray[0] + "/" + newOdd;
+        newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + aDetail[3];
+        return newAdetail;
+    }
 
 }

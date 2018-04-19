@@ -326,6 +326,31 @@ public class BallGameCals {
     }
 
 
+    /**
+     * 胜分差 主负主胜 所有结果集
+     * 用于取对应赔率
+     *
+     * @return
+     */
+    public static Map<String, Integer> getFailWinScoreResults() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("客胜1-5", 0);
+        map.put("客胜6-10", 1);
+        map.put("客胜11-15", 2);
+        map.put("客胜16-20", 3);
+        map.put("客胜21-25", 4);
+        map.put("客胜26+", 5);
+        map.put("主胜1-5", 6);
+        map.put("主胜6-10", 7);
+        map.put("主胜11-15", 8);
+        map.put("主胜16-20", 9);
+        map.put("主胜21-25", 10);
+        map.put("主胜26+", 11);
+
+        return map;
+    }
+
+
     public static Map<String, String> getHalfWholeNames() {
         Map<String, String> map = new HashMap<>();
         map.put("33", "胜胜");

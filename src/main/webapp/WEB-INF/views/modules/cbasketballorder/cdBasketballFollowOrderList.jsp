@@ -114,7 +114,7 @@
                 <c:when test="${cdBasketballFollowOrder.status==4}">
                     中奖
                 </c:when>
-                <c:when test="${cdBasketballFollowOrder.status==3}">
+                <c:when test="${cdBasketballFollowOrder.status==5}">
                     未中奖
                 </c:when>
 

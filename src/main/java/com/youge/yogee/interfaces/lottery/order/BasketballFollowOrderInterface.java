@@ -411,14 +411,29 @@ public class BasketballFollowOrderInterface {
                     matchSet.add(matchId);
                 }
             }
+
+            //用于总订单的map
+            Map<String, Map<String, String>> detailMap = new HashMap<>();
+
             //保证比赛存在
             String danMatchIds = "";
+            String letScore = "";
+            String sizeCount = "";
             for (String s : matchSet) {
                 CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在！");
                 }
                 danMatchIds += "非+" + s + ",";
+                letScore += cbm.getClose() + ",";
+                sizeCount += cbm.getZclose() + ",";
+                Map<String, String> aDetailMap = new HashMap<>();
+                aDetailMap.put("hostWin", "");
+                aDetailMap.put("hostFail", "");
+                aDetailMap.put("beat", "");
+                aDetailMap.put("size", "");
+                aDetailMap.put("let", "");
+                detailMap.put(s, aDetailMap);
             }
             //遍历整体
             for (Map<String, Object> aDetail : detailList) {
@@ -449,6 +464,10 @@ public class BasketballFollowOrderInterface {
                     //场次  + 玩法 + 投注内容/赔率  + 队名/让分/大小分
                     String minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "+" + name + "/" + close + "/" + zclose + "|";
                     bestDetail += minDetail;//拼出一条优化详情
+                    //处理数据给订单总表-----------*-----贼------*------他------*------妈-------*精妙*-------------------
+                    String newSf = detailMap.get(matchId).get(buyWay);
+                    newSf += sf + "/" + odds + ",";
+                    detailMap.get(matchId).put(buyWay, newSf);
                 }
                 //保存优化订单一条
                 CdBasketballBestFollowOrder cbbfo = new CdBasketballBestFollowOrder();
@@ -459,7 +478,34 @@ public class BasketballFollowOrderInterface {
                 cbbfo.setPerTimes(perTimes);//倍数
                 cdBasketballBestFollowOrderService.save(cbbfo);
             }
-            //保存订单总表
+
+            //订单总表的字段
+            String hostWin = "";
+            String hostFail = "";
+            String beat = "";
+            String size = "";
+            String let = "";
+            for (String s : matchSet) {
+                Map<String, String> aMap = detailMap.get(s);
+                CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
+                String head = "0+" + s + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName() + "+";
+                if (StringUtils.isNotEmpty(aMap.get("hostWin"))) {
+                    hostWin += head + aMap.get("hostWin") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("hostFail"))) {
+                    hostFail += head + aMap.get("hostFail") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("beat"))) {
+                    beat += head + aMap.get("beat") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("size"))) {
+                    size += head + aMap.get("size") + "|";
+                }
+                if (StringUtils.isNotEmpty(aMap.get("let"))) {
+                    let += head + aMap.get("let") + "|";
+                }
+            }
+            //保存订单主表
             CdBasketballFollowOrder cbfo = new CdBasketballFollowOrder();
             cbfo.setOrderNum(orderNum); //订单号
             cbfo.setAcount(String.valueOf(acount));//注数
@@ -475,6 +521,15 @@ public class BasketballFollowOrderInterface {
             cbfo.setDanMatchIds(danMatchIds);//胆场次
             cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
             cbfo.setBestType("2");//1普通单 2优化单
+
+            cbfo.setHostWin(hostWin);//主胜
+            cbfo.setHostFail(hostFail);//主负
+            cbfo.setBeat(beat);//胜负
+            cbfo.setLet(let);//让球胜负
+            cbfo.setSize(size);//大小
+
+            cbfo.setSizeCount(sizeCount);//比大小的分
+            cbfo.setLetScore(letScore);//让分
             cdBasketballFollowOrderService.save(cbfo);
 
 
