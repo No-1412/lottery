@@ -95,10 +95,8 @@ public class QuartzListener {
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballBestFollowOrder() {
-//        System.out.println("足球优化串关开奖");
-
+        System.out.println("足球优化串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("2");
-
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();

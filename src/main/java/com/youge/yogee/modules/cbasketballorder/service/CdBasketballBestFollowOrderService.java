@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cbasketballorder.dao.CdBasketballBestFollowOrderDao;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -67,6 +68,13 @@ public class CdBasketballBestFollowOrderService extends BaseService {
         dc.add(Restrictions.like("orderNum", orderNum));
         dc.add(Restrictions.eq(CdBasketballBestFollowOrder.FIELD_DEL_FLAG, CdBasketballBestFollowOrder.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
+        return cdBasketballBestFollowOrderDao.find(dc);
+    }
+
+    public List<CdBasketballBestFollowOrder> findByNum(String num) {
+        DetachedCriteria dc = cdBasketballBestFollowOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("orderNum", num));
+        dc.add(Restrictions.eq(CdBasketballBestFollowOrder.FIELD_DEL_FLAG, CdBasketballBestFollowOrder.DEL_FLAG_NORMAL));
         return cdBasketballBestFollowOrderDao.find(dc);
     }
 

@@ -6,11 +6,14 @@ import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cbasketballawards.entity.CdBasketballAwards;
 import com.youge.yogee.modules.cbasketballawards.service.CdBasketballAwardsService;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
@@ -58,6 +61,8 @@ public class BasketBallQuartz {
     private CdMagicFollowOrderService cdMagicFollowOrderService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
     //    "0/10 * * * * ?" 每10秒触发
 //
 //    "0 0 12 * * ?" 每天中午12点触发
@@ -366,8 +371,158 @@ public class BasketBallQuartz {
 
     }
 
-
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    public void basketBallBestFollowOrder() {
+        System.out.println("篮球优化串关开奖");
+        List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusAndType("2");
+        //全部可以比赛完的场次
+        List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
+
+        for (CdBasketballFollowOrder cdBasketballFollowOrder : cdBasketballFollowOrderList) {
+            //获取订单中押的全部场次
+            String danMatchIds = cdBasketballFollowOrder.getDanMatchIds();
+            Set<String> matchIdList = new HashSet<>();
+            for (String finishMatchId : danMatchIds.split(",")) {
+                matchIdList.add(finishMatchId.substring(2, 7));
+            }
+
+            //判断订单所有赛事是否都已经比完
+            if (awardMatchIdList.containsAll(matchIdList)) {
+
+                //  **************************后加的-------------获取押注比赛结果并保存****************
+                String result = getResultStr(matchIdList);
+                cdBasketballFollowOrder.setResult(result);
+                cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                //**********************************************************************************
+
+                List<CdBasketballBestFollowOrder> basketballBestFollowOrderList = cdBasketballBestFollowOrderService.findByNum(cdBasketballFollowOrder.getOrderNum());
+                BigDecimal award = new BigDecimal(0);
+                for (CdBasketballBestFollowOrder cdBasketballBestFollowOrder : basketballBestFollowOrderList) {
+                    String orderDetail = cdBasketballBestFollowOrder.getOrderDetail();
+                    String[] detailArray = orderDetail.split("\\|");
+
+                    Boolean flag = true;//如果最终为true则中奖
+                    for (String detail : detailArray) {
+                        String[] aDetail = detail.split("\\+");
+                        String key = aDetail[1];
+                        CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(aDetail[0]);
+
+                        String orderFinish = StringUtils.split(aDetail[2],"/")[0];
+                        String finish = "";
+                        switch (key) {
+                            case "hostWin":
+                                finish = cdBasketballAwards.getWinGrap();
+                                break;
+                            case "hostFail":
+                                finish = cdBasketballAwards.getWinGrap();
+                                break;
+                            case "beat":
+                                finish = cdBasketballAwards.getWinning();
+                                break;
+                            case "size":
+                                //大小分分数
+                                Double sizeCount = Double.parseDouble(StringUtils.split(aDetail[3],"/")[2]);
+                                Double count = Double.parseDouble(cdBasketballAwards.getHs()) + Integer.valueOf(cdBasketballAwards.getVs());
+                                if (count > sizeCount) {
+                                    finish = "大分";
+                                } else {
+                                    finish = "小分";
+                                }
+                                break;
+                            case "let":
+                                //订单让球数
+                                int hs = Integer.valueOf(cdBasketballAwards.getHs());
+                                int vs = Integer.valueOf(cdBasketballAwards.getVs());
+
+                                Double letBall = Double.parseDouble(StringUtils.split(aDetail[3],"/")[1]);
+
+                                if (hs + letBall > vs) {
+                                    finish = "让主胜";
+                                } else {
+                                    finish = "让主负";
+                                }
+                                break;
+                        }
+                        if (!orderFinish.equals(finish)) {
+                            flag = false;
+                        }
+                    }
+
+                    //如果最终为true则中奖,计算单场奖金
+                    if (flag) {
+                        BigDecimal pertimes = new BigDecimal(cdBasketballBestFollowOrder.getPerTimes());
+                        BigDecimal perAward = new BigDecimal(cdBasketballBestFollowOrder.getPerAward());
+                        award = award.add(pertimes.multiply(perAward));
+                    }
+                }
+
+                //开奖结果为  未中奖
+                if (award.doubleValue() == 0) {
+                    cdBasketballFollowOrder.setStatus("5");
+                    cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//未中奖
+                        cdOrderService.save(co);
+                    }
+                }else {
+                    //所有中奖赔率
+                    cdBasketballFollowOrder.setAward(award.toString());
+                    cdBasketballFollowOrder.setStatus("4");
+                    cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+
+                    //---------------------------------计算跟单佣金-------------------------
+
+                    if (cdBasketballFollowOrder.getType().equals("2")) {
+                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+
+                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdBasketballFollowOrder.getOrderNum());
+                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
+
+                        if (new BigDecimal(cdBasketballFollowOrder.getPrice())
+                                .multiply(cdOrderFollowTimes.getTimes())
+                                .compareTo(award) == 1) {
+                            //全部佣金
+                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
+                                    .multiply(new BigDecimal(0.01))
+                                    .multiply(award);
+
+                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
+                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
+                            cdLotteryUserService.save(cdLotteryUser);
+                        }
+                    }
+                    //保存中奖纪录
+                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                    cdOrderWinners.setWinOrderNum(cdBasketballFollowOrder.getOrderNum());//中间单号
+                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
+                    cdOrderWinners.setUid(cdBasketballFollowOrder.getUid());//中间用户
+                    String repayPercent = Calculations.getRepayPercent(award.doubleValue(), Double.parseDouble(cdBasketballFollowOrder.getPrice()));
+                    cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinners.setType("4");
+                    cdOrderWinners.setWallType("1");
+                    cdOrderWinners.setResult(cdBasketballFollowOrder.getResult());
+                    cdOrderWinnersService.save(cdOrderWinners);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice(award.toString());//奖金
+                        co.setStatus("3");//中奖
+                        cdOrderService.save(co);
+                    }
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(cdBasketballFollowOrder.getAward(), cdBasketballFollowOrder.getUid());
+                    //中奖推送
+                    AppPush.push(cdBasketballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜篮球获得中奖金额" + award + "元");
+                }
+            }
+        }
+    }
+
+
+        @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballSingleOrder() {
 //        System.out.println("篮球单关开奖");
 
