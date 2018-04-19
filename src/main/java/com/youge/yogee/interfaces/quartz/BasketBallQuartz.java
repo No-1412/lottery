@@ -2,6 +2,7 @@ package com.youge.yogee.interfaces.quartz;
 
 import com.youge.yogee.common.push.AppPush;
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cbasketballawards.entity.CdBasketballAwards;
 import com.youge.yogee.modules.cbasketballawards.service.CdBasketballAwardsService;
@@ -94,7 +95,7 @@ public class BasketBallQuartz {
 
 
 //        System.out.println("篮球串关开奖");
-        List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatus();
+        List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusAndType("1");
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
@@ -450,6 +451,9 @@ public class BasketBallQuartz {
                             co.setStatus("3");//中奖
                             cdOrderService.save(co);
                         }
+                        //更新用户余额
+                        SelOrderUtil.addBalanceToUser(cdBasketballSingleOrder.getAward(), cdBasketballSingleOrder.getUid());
+                        //推送
                         AppPush.push(cdBasketballSingleOrder.getUid(), "凯旋彩票", "您购买的竞猜篮球获得中奖金额" + award + "元");
                     } else {
                         cdBasketballSingleOrder.setStatus("5");
