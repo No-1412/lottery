@@ -58,8 +58,7 @@ public class IphonePushUtil {
 
         String certificatePath;
         Boolean isTest;
-        String ipPath="ipPath";
-        if ("http://www.kaixuancaipiao.com".equals(Global.getConfig(ipPath))) {
+        if ("http://www.kaixuancaipiao.com".equals(Global.getConfig("ipPath"))) {
             certificatePath = "/alidata/server/apache-tomcat-7.0.47-lottery/webapps/Push.p12";
             isTest = true;
         } else {
