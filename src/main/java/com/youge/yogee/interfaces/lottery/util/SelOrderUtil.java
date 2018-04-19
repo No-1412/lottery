@@ -15,6 +15,8 @@ import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
+import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
@@ -47,6 +49,8 @@ public class SelOrderUtil {
     private static CdChooseNineOrderService cdChooseNineOrderService = SpringContextHolder.getBean(CdChooseNineOrderService.class);
 
     private static CdSuccessFailOrderService cdSuccessFailOrderService = SpringContextHolder.getBean(CdSuccessFailOrderService.class);
+
+    private static CdLotteryUserService cdLotteryUserService = SpringContextHolder.getBean(CdLotteryUserService.class);
 
     /**
      * 订单详情
@@ -608,6 +612,26 @@ public class SelOrderUtil {
             }
         }
         return percent + "%";
+    }
+
+    /**
+     * 中奖增加用户余额
+     *
+     * @param award
+     * @param uid
+     */
+    public static void addBalanceToUser(String award, String uid) {
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        BigDecimal awardBig = new BigDecimal(award);
+        BigDecimal balance = clu.getBalance();
+        BigDecimal newBalance = balance.add(awardBig);
+        clu.setBalance(newBalance);
+        try {
+            cdLotteryUserService.save(clu);
+        } catch (Exception c) {
+            System.out.println("中奖金额未添加");
+        }
+
     }
 
 }

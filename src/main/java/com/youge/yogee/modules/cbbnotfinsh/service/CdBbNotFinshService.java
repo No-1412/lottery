@@ -72,8 +72,9 @@ public class CdBbNotFinshService extends BaseService {
     public List<CdBbNotFinsh> getBbFinshed(String total, String count) {
         DetachedCriteria dc = cdBbNotFinshDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdBbNotFinsh.FIELD_DEL_FLAG, CdBbNotFinsh.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.asc("day"));
-        dc.addOrder(Order.asc("matchId"));
+//        dc.addOrder(Order.asc("day"));
+//        dc.addOrder(Order.asc("matchId"));
+        dc.addOrder(Order.asc("itemid"));
         // 限制条数|分页
         Criteria cri = dc.getExecutableCriteria(cdBbNotFinshDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));

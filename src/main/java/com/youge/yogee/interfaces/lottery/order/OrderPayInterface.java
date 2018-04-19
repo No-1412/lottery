@@ -354,7 +354,6 @@ public class OrderPayInterface {
     private void saveAllChange(String price, String balance, CdLotteryUser clu, String orderNum, String type) {
         //更新用户信息
         clu = getLeftMoney(price, balance, clu);
-
         cdLotteryUserService.save(clu);
         //保存返利
         saveRebate(price, clu.getId(), type, clu);

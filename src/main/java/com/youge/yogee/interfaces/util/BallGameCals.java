@@ -74,6 +74,9 @@ public class BallGameCals {
             }
             allSum += aResult;
         }
+        doubleSum = 0;
+        tmpDoubleArr.clear();
+        finalList.clear();
         return allSum;
     }
 

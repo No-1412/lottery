@@ -251,8 +251,11 @@ public class NotBallQuartz {
                         changeOrderStatus(c);
                         //cdLottoOrderService.save(c);
                         //推送
-                        pushMssage(c.getUid(), award);
-                        continue;
+                        try {
+                            pushMssage(c.getUid(), award);
+                        }catch (Exception e){
+                            continue;
+                        }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
                     } else if (result == 50 || result == 42) {
                         System.out.println(c.getOrderNum() + "三等奖");
@@ -274,8 +277,13 @@ public class NotBallQuartz {
                         changeOrderStatus(c);
                         //cdLottoOrderService.save(c);
                         //推送
-                        pushMssage(c.getUid(), award);
-                        continue;
+                        try {
+                            pushMssage(c.getUid(), award);
+                        }catch (Exception e){
+                            continue;
+                        }
+
+
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
                     } else if (result == 41 || result == 32) {
                         System.out.println(c.getOrderNum() + "四等奖");
@@ -297,8 +305,11 @@ public class NotBallQuartz {
                         changeOrderStatus(c);
                         //cdLottoOrderService.save(c);
                         //推送
-                        pushMssage(c.getUid(), award);
-                        continue;
+                        try {
+                            pushMssage(c.getUid(), award);
+                        }catch (Exception e){
+                            continue;
+                        }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
                     } else if (result == 40 || result == 31 || result == 22) {
                         System.out.println(c.getOrderNum() + "五等奖");
@@ -320,8 +331,11 @@ public class NotBallQuartz {
                         changeOrderStatus(c);
 
                         //推送
-                        pushMssage(c.getUid(), award);
-                        continue;
+                        try {
+                            pushMssage(c.getUid(), award);
+                        }catch (Exception e){
+                            continue;
+                        }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
                     } else if (result == 30 || result == 21 || result == 12 || result == 2) {
                         System.out.println(c.getOrderNum() + "六等奖");
@@ -338,8 +352,11 @@ public class NotBallQuartz {
                         changeOrderStatus(c);
 
                         //推送
-                        pushMssage(c.getUid(), award);
-                        continue;
+                        try {
+                            pushMssage(c.getUid(), award);
+                        }catch (Exception e){
+                            continue;
+                        }
 //                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
                     } else {
                         c.setResult(clr.getNumber());
