@@ -53,7 +53,7 @@ public class BonusOptimizationController extends BaseController {
             return HttpResultUtil.errorJson("json格式错误");
         }
         String paraDate = JSON.toJSONString(jsonData);
-        System.out.println(paraDate);
+       // System.out.println(paraDate);
         CaipiaoBean caipiaoBean = JSON.parseObject(paraDate,CaipiaoBean.class);
         Map<String,Object> map = new HashMap<>();
         map.put("data",madeBasketball(caipiaoBean));
@@ -73,7 +73,7 @@ public class BonusOptimizationController extends BaseController {
             return HttpResultUtil.errorJson("json格式错误");
         }
         String paraDate = JSON.toJSONString(jsonData);
-        System.out.println(paraDate);
+       // System.out.println(paraDate);
         CaipiaoFootballBean caipiaoBean = JSON.parseObject(paraDate,CaipiaoFootballBean.class);
         Map<String,Object> map = new HashMap<>();
         map.put("data",madeFootball(caipiaoBean));
@@ -93,7 +93,7 @@ public class BonusOptimizationController extends BaseController {
             return HttpResultUtil.errorJson("json格式错误");
         }
         String paraDate = JSON.toJSONString(jsonData);
-        System.out.println(paraDate);
+        //System.out.println(paraDate);
         ParamVO paramVO =JSON.parseObject(paraDate,ParamVO.class);
         List<PortfolioVO> portfolioVOList = paramVO.getPortfolioVOList();
         double[] arrBeishu = new double[portfolioVOList.size()];
@@ -129,7 +129,7 @@ public class BonusOptimizationController extends BaseController {
             return HttpResultUtil.errorJson("json格式错误");
         }
         String paraDate = JSON.toJSONString(jsonData);
-        System.out.println(paraDate);
+        //System.out.println(paraDate);
         ParamVO paramVO =JSON.parseObject(paraDate,ParamVO.class);
         List<PortfolioVO> portfolioVOList = paramVO.getPortfolioVOList();
         int tzje =paramVO.getAmountBets();
@@ -138,12 +138,17 @@ public class BonusOptimizationController extends BaseController {
             double dbjj = portfolioVOList.get(i).getDbjj();
             if(i==0){
                 int beishu = tzje/2-beishuCount;
+                if(beishu==0){
+                    beishu = 1;
+                }else if(beishu<0){
+                    beishu = -beishu;
+                }
                 portfolioVOList.get(i).setBeishu(beishu);
                 portfolioVOList.get(i).setJiangjin(Double.parseDouble(String.format("%.2f",dbjj*beishu)));
             }else{
-                int beishu = (int)Math.ceil(tzje/dbjj);//返回大于或等于指定数字的最小整数
+                int beishu = (int)Math.ceil(tzje / dbjj);//返回大于或等于指定数字的最小整数
                 portfolioVOList.get(i).setBeishu(beishu);
-                portfolioVOList.get(i).setJiangjin(Double.parseDouble(String.format("%.2f",dbjj*beishu)));
+                portfolioVOList.get(i).setJiangjin(Double.parseDouble(String.format("%.2f", dbjj * beishu)));
                 beishuCount +=beishu;
             }
         }
@@ -165,7 +170,7 @@ public class BonusOptimizationController extends BaseController {
             return HttpResultUtil.errorJson("json格式错误");
         }
         String paraDate = JSON.toJSONString(jsonData);
-        System.out.println(paraDate);
+        //System.out.println(paraDate);
         ParamVO paramVO =JSON.parseObject(paraDate,ParamVO.class);
         List<PortfolioVO> portfolioVOList = paramVO.getPortfolioVOList();
         int tzje =paramVO.getAmountBets();
@@ -174,6 +179,11 @@ public class BonusOptimizationController extends BaseController {
             double dbjj = portfolioVOList.get(i).getDbjj();
             if(i==portfolioVOList.size()-1){
                 int beishu = tzje/2-beishuCount;
+                if(beishu==0){
+                    beishu = 1;
+                }else if(beishu<0){
+                    beishu = -beishu;
+                }
                 portfolioVOList.get(i).setBeishu(beishu);
                 portfolioVOList.get(i).setJiangjin(Double.parseDouble(String.format("%.2f",dbjj*beishu)));
             }else{
@@ -444,7 +454,7 @@ public class BonusOptimizationController extends BaseController {
             portfolioVO.setJiangjin(Double.parseDouble(String.format("%.2f",portfolioVO.getDbjj() * portfolioVO.getBeishu())));
             List<PortfolioChilVO> portChilVOList = new ArrayList<PortfolioChilVO>();
             String portStr = arr[i][0];
-            String[] arrStr = portStr.split("\\+");
+            String[] arrStr = portStr.split("\\^");
             for (int j = 0; j < arrStr.length; j++) {
                 PortfolioChilVO portChilVO = new PortfolioChilVO();
                 String[] arrStr02 = arrStr[j].split("\\/");
@@ -490,7 +500,7 @@ public class BonusOptimizationController extends BaseController {
                             String[] list02Str02 = list02Str.split(",");
                             String[] arr01 = new String[2];
                             for (int m = 0; m < list01Str01.length; m++) {
-                                arr01[0] = list01Str01[m]+"+"+list02Str02[m];
+                                arr01[0] = list01Str01[m]+"^"+list02Str02[m];
                                 //保留小数点后两位，单倍奖金
                                 arr01[1] = String.format("%.2f",Double.parseDouble(list01Str01[m].split("\\/")[2])
                                         *Double.parseDouble(list02Str02[m].split("\\/")[2]));
@@ -527,7 +537,7 @@ public class BonusOptimizationController extends BaseController {
 
                                     String[] arr01 = new String[2];
                                     for (int m = 0; m < list01Str01.length; m++) {
-                                        arr01[0] = list01Str01[m] + "+" + list02Str02[m] + "+" + list03Str03[m];
+                                        arr01[0] = list01Str01[m] + "^" + list02Str02[m] + "^" + list03Str03[m];
                                         //保留小数点后两位，单倍奖金
                                         arr01[1] = String.format("%.2f", Double.parseDouble(list01Str01[m].split("\\/")[2])
                                                 * Double.parseDouble(list02Str02[m].split("\\/")[2])
@@ -572,8 +582,8 @@ public class BonusOptimizationController extends BaseController {
 
                                             String[] arr01 = new String[2];
                                             for (int m = 0; m < list01Str01.length; m++) {
-                                                arr01[0] = list01Str01[m] + "+" + list02Str02[m] +
-                                                        "+" + list03Str03[m] + "+" + list04Str04[m];
+                                                arr01[0] = list01Str01[m] + "^" + list02Str02[m] +
+                                                        "^" + list03Str03[m] + "^" + list04Str04[m];
                                                 //保留小数点后两位，单倍奖金
                                                 arr01[1] = String.format("%.2f", Double.parseDouble(list01Str01[m].split("\\/")[2])
                                                         * Double.parseDouble(list02Str02[m].split("\\/")[2])
@@ -627,9 +637,9 @@ public class BonusOptimizationController extends BaseController {
 
                                                     String[] arr01 = new String[2];
                                                     for (int m = 0; m < list01Str01.length; m++) {
-                                                        arr01[0] = list01Str01[m] + "+" + list02Str02[m] +
-                                                                "+" + list03Str03[m] + "+" + list04Str04[m]+
-                                                                "+" + list05Str05[m] ;
+                                                        arr01[0] = list01Str01[m] + "^" + list02Str02[m] +
+                                                                "^" + list03Str03[m] + "^" + list04Str04[m]+
+                                                                "^" + list05Str05[m] ;
                                                         //保留小数点后两位，单倍奖金
                                                         arr01[1] = String.format("%.2f", Double.parseDouble(list01Str01[m].split("\\/")[2])
                                                                 * Double.parseDouble(list02Str02[m].split("\\/")[2])
@@ -692,9 +702,9 @@ public class BonusOptimizationController extends BaseController {
 
                                                             String[] arr01 = new String[2];
                                                             for (int m = 0; m < list01Str01.length; m++) {
-                                                                arr01[0] = list01Str01[m] + "+" + list02Str02[m] +
-                                                                        "+" + list03Str03[m] + "+" + list04Str04[m]+
-                                                                        "+" + list05Str05[m] + "+" + list06Str06[m] ;
+                                                                arr01[0] = list01Str01[m] + "^" + list02Str02[m] +
+                                                                        "^" + list03Str03[m] + "^" + list04Str04[m]+
+                                                                        "^" + list05Str05[m] + "^" + list06Str06[m] ;
                                                                 //保留小数点后两位，单倍奖金
                                                                 arr01[1] = String.format("%.2f", Double.parseDouble(list01Str01[m].split("\\/")[2])
                                                                         * Double.parseDouble(list02Str02[m].split("\\/")[2])
@@ -766,10 +776,10 @@ public class BonusOptimizationController extends BaseController {
 
                                                                     String[] arr01 = new String[2];
                                                                     for (int m = 0; m < list01Str01.length; m++) {
-                                                                        arr01[0] = list01Str01[m] + "+" + list02Str02[m] +
-                                                                                "+" + list03Str03[m] + "+" + list04Str04[m]+
-                                                                                "+" + list05Str05[m] + "+" + list06Str06[m]+
-                                                                                "+" + list07Str07[m];
+                                                                        arr01[0] = list01Str01[m] + "^" + list02Str02[m] +
+                                                                                "^" + list03Str03[m] + "^" + list04Str04[m]+
+                                                                                "^" + list05Str05[m] + "^" + list06Str06[m]+
+                                                                                "^" + list07Str07[m];
                                                                         //保留小数点后两位，单倍奖金
                                                                         arr01[1] = String.format("%.2f", Double.parseDouble(list01Str01[m].split("\\/")[2])
                                                                                 * Double.parseDouble(list02Str02[m].split("\\/")[2])
@@ -850,10 +860,10 @@ public class BonusOptimizationController extends BaseController {
 
                                                                             String[] arr01 = new String[2];
                                                                             for (int m = 0; m < list01Str01.length; m++) {
-                                                                                arr01[0] = list01Str01[m] + "+" + list02Str02[m] +
-                                                                                        "+" + list03Str03[m] + "+" + list04Str04[m]+
-                                                                                        "+" + list05Str05[m] + "+" + list06Str06[m]+
-                                                                                        "+" + list07Str07[m]+ "+" + list08Str08[m];
+                                                                                arr01[0] = list01Str01[m] + "^" + list02Str02[m] +
+                                                                                        "^" + list03Str03[m] + "^" + list04Str04[m]+
+                                                                                        "^" + list05Str05[m] + "^" + list06Str06[m]+
+                                                                                        "^" + list07Str07[m]+ "^" + list08Str08[m];
                                                                                 //保留小数点后两位，单倍奖金
                                                                                 arr01[1] = String.format("%.2f", Double.parseDouble(list01Str01[m].split("\\/")[2])
                                                                                         * Double.parseDouble(list02Str02[m].split("\\/")[2])
@@ -913,7 +923,7 @@ public class BonusOptimizationController extends BaseController {
         average = sumOdds/noteNumber*(amountBets/2)/noteNumber;
         //计算倍数
         int calMultiple = calMultiple(oddsArr,multiple,average);
-        System.out.println(average);
+        //System.out.println(average);
         retBeishu[oddsArr.length-1] = calMultiple;
         if(oddsArr.length>2){
             double[] oddsArr2 = new double[oddsArr.length-1];
