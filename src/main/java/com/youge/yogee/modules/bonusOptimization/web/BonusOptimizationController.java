@@ -133,6 +133,13 @@ public class BonusOptimizationController extends BaseController {
         ParamVO paramVO =JSON.parseObject(paraDate,ParamVO.class);
         List<PortfolioVO> portfolioVOList = paramVO.getPortfolioVOList();
         int tzje =paramVO.getAmountBets();
+        for (int i = 0; i < portfolioVOList.size(); i++) {
+            if(tzje>portfolioVOList.get(i).getJiangjin()){
+                Map<String,Object> map = new HashMap<>();
+                map.put("data",portfolioVOList);
+                return HttpResultUtil.successJson(map);
+            }
+        }
         int beishuCount =0;
         for (int i = portfolioVOList.size()-1; i >=0; i--) {
             double dbjj = portfolioVOList.get(i).getDbjj();
@@ -150,6 +157,7 @@ public class BonusOptimizationController extends BaseController {
                 portfolioVOList.get(i).setBeishu(beishu);
                 portfolioVOList.get(i).setJiangjin(Double.parseDouble(String.format("%.2f", dbjj * beishu)));
                 beishuCount +=beishu;
+
             }
         }
         Map<String,Object> map = new HashMap<>();
@@ -174,6 +182,13 @@ public class BonusOptimizationController extends BaseController {
         ParamVO paramVO =JSON.parseObject(paraDate,ParamVO.class);
         List<PortfolioVO> portfolioVOList = paramVO.getPortfolioVOList();
         int tzje =paramVO.getAmountBets();
+        for (int i = 0; i < portfolioVOList.size(); i++) {
+            if(tzje>portfolioVOList.get(i).getJiangjin()){
+                Map<String,Object> map = new HashMap<>();
+                map.put("data",portfolioVOList);
+                return HttpResultUtil.successJson(map);
+            }
+        }
         int beishuCount =0;
         for (int i = 0; i <portfolioVOList.size(); i++) {
             double dbjj = portfolioVOList.get(i).getDbjj();
