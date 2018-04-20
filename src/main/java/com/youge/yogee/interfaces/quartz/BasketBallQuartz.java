@@ -31,10 +31,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 定时任务
@@ -522,7 +519,7 @@ public class BasketBallQuartz {
     }
 
 
-        @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballSingleOrder() {
 //        System.out.println("篮球单关开奖");
 
@@ -536,10 +533,7 @@ public class BasketBallQuartz {
 
             //获取订单中押的全部场次
             String matchIds = cdBasketballSingleOrder.getMatchIds();
-            Set<String> matchIdList = new HashSet<>();
-            for (String finishMatchId : matchIds.split(",")) {
-                matchIdList.add(finishMatchId.substring(2, 7));
-            }
+            Set<String> matchIdList = new HashSet<>(Arrays.asList(matchIds.split(",")));
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
 
