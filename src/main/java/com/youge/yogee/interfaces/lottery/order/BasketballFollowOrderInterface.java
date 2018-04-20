@@ -407,7 +407,7 @@ public class BasketballFollowOrderInterface {
                 JSONArray jsonaDetailMap = JSONArray.fromObject(portfolioChilVOList);
                 List<Map<String, Object>> aDetailMap = (List<Map<String, Object>>) jsonArray.toCollection(jsonaDetailMap, Map.class);
                 for (Map<String, Object> aBestDeatil : aDetailMap) {
-                    String matchId = (String) aBestDeatil.get("matchIds");//比赛matchids
+                    String matchId = (String) aBestDeatil.get("matchId");//比赛matchids
                     matchSet.add(matchId);
                 }
             }
@@ -438,9 +438,9 @@ public class BasketballFollowOrderInterface {
             //遍历整体
             for (Map<String, Object> aDetail : detailList) {
                 String matchIds = "";//分表里的所有比赛
-                String perTimes = (String) aDetail.get("beishu");//倍数
+                String perTimes = (String) aDetail.get("beishu").toString();//倍数
                 acount += Integer.parseInt(perTimes);//总注数
-                String perAward = (String) aDetail.get("jiangjin");//奖金
+                String perAward = (String) aDetail.get("jiangjin").toString();//奖金
                 String bestDetail = "";//优化的一条
                 //List<Map<String, Object>> aDetailMap = (List<Map<String, Object>>) aDetail.get("portfolioChilVOList");
                 //一条里的下单详情
@@ -449,7 +449,7 @@ public class BasketballFollowOrderInterface {
                 List<Map<String, Object>> aDetailMap = (List<Map<String, Object>>) jsonArray.toCollection(jsonaDetailMap, Map.class);
 
                 for (Map<String, Object> aBestDeatil : aDetailMap) {
-                    String matchId = (String) aBestDeatil.get("matchIds");//比赛matchids
+                    String matchId = (String) aBestDeatil.get("matchId");//比赛matchids
                     CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(matchId);
                     if (cbm == null) {
                         return HttpResultUtil.errorJson("比赛不存在！");
@@ -459,14 +459,24 @@ public class BasketballFollowOrderInterface {
                     matchIds += matchId + ",";
                     String odds = (String) aBestDeatil.get("odds");//赔率
                     String name = (String) aBestDeatil.get("name");//球队
-                    String sf = (String) aBestDeatil.get("sf");//具体投注
+                    String sf = (String) aBestDeatil.get("sf");//具体投注 副表
+                    String sm = BallGameCals.changeBasketballSf(sf);//主表字段统一
                     String buyWay = (String) aBestDeatil.get("buyWays");//玩法
                     //场次  + 玩法 + 投注内容/赔率  + 队名/让分/大小分
                     String minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "+" + name + "/" + close + "/" + zclose + "|";
                     bestDetail += minDetail;//拼出一条优化详情
                     //处理数据给订单总表-----------*-----贼------*------他------*------妈-------*精妙*-------------------
                     String newSf = detailMap.get(matchId).get(buyWay);
-                    newSf += sf + "/" + odds + ",";
+//                    String[] newSfArray = newSf.split(",");
+//                    for (String s : newSfArray) {
+//                        if (!s.split("/")[0].equals(sm)) {
+//                            newSf += sm + "/" + odds + ",";
+//                        }
+//                    }
+                    String str = sm + "/" + odds;
+                    if (!newSf.contains(str)) {
+                        newSf += str + ",";
+                    }
                     detailMap.get(matchId).put(buyWay, newSf);
                 }
                 //保存优化订单一条
@@ -524,6 +534,7 @@ public class BasketballFollowOrderInterface {
 
             cbfo.setHostWin(hostWin);//主胜
             cbfo.setHostFail(hostFail);//主负
+
             cbfo.setBeat(beat);//胜负
             cbfo.setLet(let);//让球胜负
             cbfo.setSize(size);//大小

@@ -301,7 +301,7 @@ public class BallGameCals {
         map.put("11-15", 2);
         map.put("16-20", 3);
         map.put("21-25", 4);
-        map.put("26+", 5);
+        map.put("26", 5);
 
         return map;
     }
@@ -320,7 +320,7 @@ public class BallGameCals {
         map.put("11-15", 8);
         map.put("16-20", 9);
         map.put("21-25", 10);
-        map.put("26+", 11);
+        map.put("26", 11);
 
         return map;
     }
@@ -339,13 +339,13 @@ public class BallGameCals {
         map.put("客胜11-15", 2);
         map.put("客胜16-20", 3);
         map.put("客胜21-25", 4);
-        map.put("客胜26+", 5);
+        map.put("客胜26", 5);
         map.put("主胜1-5", 6);
         map.put("主胜6-10", 7);
         map.put("主胜11-15", 8);
         map.put("主胜16-20", 9);
         map.put("主胜21-25", 10);
-        map.put("主胜26+", 11);
+        map.put("主胜26", 11);
 
         return map;
     }
@@ -374,6 +374,137 @@ public class BallGameCals {
 
         return map;
     }
+
+
+    /**
+     * 转化篮球优化订单的押注结果
+     *
+     * @return
+     */
+    public static String changeBasketballSf(String sf) {
+        String sm = "";
+        switch (sf) {
+            case "客胜1-5":
+                sm = "1-5";
+                break;
+            case "客胜6-10":
+                sm = "6-10";
+                break;
+            case "客胜11-15":
+                sm = "11-15";
+                break;
+            case "客胜16-20":
+                sm = "16-20";
+                break;
+            case "客胜21-25":
+                sm = "21-25";
+                break;
+            case "客胜26":
+                sm = "26";
+                break;
+            case "主胜1-5":
+                sm = "1-5";
+                break;
+            case "主胜6-10":
+                sm = "6-10";
+                break;
+            case "主胜11-15":
+                sm = "11-15";
+                break;
+            case "主胜16-20":
+                sm = "16-20";
+                break;
+            case "主胜21-25":
+                sm = "21-25";
+                break;
+            case "主胜26":
+                sm = "26";
+                break;
+            case "大分":
+                sm = "1";
+                break;
+            case "小分":
+                sm = "0";
+                break;
+            case "主胜":
+                sm = "1";
+                break;
+            case "主负":
+                sm = "0";
+                break;
+            case "让主胜":
+                sm = "1";
+                break;
+            case "让主负":
+                sm = "0";
+                break;
+            default:
+                sm = sf;
+                break;
+        }
+
+        return sm;
+    }
+
+
+    /**
+     * 转化篮球优化订单的押注结果
+     *
+     * @return
+     */
+    public static String changeFootballSf(String sf) {
+        String sm = "";
+        switch (sf) {
+            case "主胜":
+                sm = "3";
+                break;
+            case "平":
+                sm = "1";
+                break;
+            case "主负":
+                sm = "0";
+                break;
+            case "让主胜":
+                sm = "3";
+                break;
+            case "让主负":
+                sm = "0";
+                break;
+            case "胜胜":
+                sm = "33";
+                break;
+            case "胜平":
+                sm = "31";
+                break;
+            case "胜负":
+                sm = "30";
+                break;
+            case "平胜":
+                sm = "13";
+                break;
+            case "平平":
+                sm = "11";
+                break;
+            case "平负":
+                sm = "10";
+                break;
+            case "负胜":
+                sm = "03";
+                break;
+            case "负平":
+                sm = "01";
+                break;
+            case "负负":
+                sm = "00";
+                break;
+            default:
+                sm = sf;
+                break;
+        }
+
+        return sm;
+    }
+
 
 }
 /*

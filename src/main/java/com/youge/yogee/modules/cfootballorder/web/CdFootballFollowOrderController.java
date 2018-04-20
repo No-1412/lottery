@@ -10,7 +10,9 @@ import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballBestFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
@@ -27,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +52,8 @@ public class CdFootballFollowOrderController extends BaseController {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdFootballMixedService cdFootballMixedService;
+    @Autowired
+    private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
 
     @ModelAttribute
     public CdFootballFollowOrder get(@RequestParam(required = false) String id) {
@@ -188,79 +193,213 @@ public class CdFootballFollowOrderController extends BaseController {
 
 
         cdFootballFollowOrderService.save(cdFootballFollowOrder);
+
+        if ("2".equals(cdFootballFollowOrder.getBestType())) {
+            String orderNum = cdFootballFollowOrder.getOrderNum();
+            List<CdFootballBestFollowOrder> fList = cdFootballBestFollowOrderService.findByOrderNum(orderNum);
+            for (CdFootballBestFollowOrder cfb : fList) {
+                String detail = cfb.getOrderDetail();
+                String[] detailArray = detail.split("\\|");
+                //用户拼回新的|；最后set进去的
+                String newDeatail = "";
+                for (String d : detailArray) {
+                    String[] aDetail = d.split("\\+");
+                    //查询比赛
+                    CdFootballMixed cfm = cdFootballMixedService.findByMatchId(aDetail[0]);
+                    if (cfm == null) {
+                        //比赛不存在 无法出票
+                        addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+                        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+                    }
+                    //
+                    String newAdetail = "";
+                    switch (aDetail[1]) {
+                        case "score": {
+                            //获取比分赔率
+                            String scoreOdds = cfm.getScoreOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] scoreOddsArray = scoreOdds.split(",");
+                            //获取比分map
+                            Map<String, String> scoreMap = BallGameCals.getScoreResults();
+                            //拿到比分字段 形式如 5:1/1.95,1:2/2.87
+                            String scoreAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] sArray = scoreAndOdd.split("/");
+                            int no = Integer.parseInt(scoreMap.get(sArray[0]));
+                            String newOdd = scoreOddsArray[no];
+                            String newPlay = sArray[0] + "/" + newOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
+                        }
+                        case "goal": {
+                            //获取总进球赔率
+                            String goalOdds = cfm.getAllOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] goalOddsArray = goalOdds.split(",");
+
+                            //拿到比分字段 形式如 5:1/1.95,1:2/2.87
+                            String goalAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] goalAndOddArray = goalAndOdd.split("/");
+                            int no = Integer.parseInt(goalAndOddArray[0]);
+                            String newOdd = goalOddsArray[no];
+                            String newPlay = goalAndOddArray[0] + "/" + newOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
+                        }
+                        case "beat": {
+                            //获取总进球赔率
+                            String beatOdds = cfm.getNotConcedepointsOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] beatOddsArray = beatOdds.split(",");
+                            //获取半全场map
+                            Map<String, String> halfMap = BallGameCals.getBeatResults();
+                            //拿到比分字段 形式如 33/1.95,31/2.87
+                            String beatAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] beatAndOddArray = beatAndOdd.split("/");
+                            String sm = BallGameCals.changeFootballSf(beatAndOddArray[0]);
+                            String no = halfMap.get(sm);
+                            String newOdd = beatOddsArray[Integer.parseInt(no)];
+                            String newPlay = beatAndOddArray[0] + "/" + newOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
+                        }
+                        case "let": {
+                            //获取让球总进球赔率
+                            String letOdds = cfm.getConcedepointsOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] letOddsArray = letOdds.split(",");
+                            //获取半全场map
+                            Map<String, String> halfMap = BallGameCals.getBeatResults();
+                            //拿到比分字段 形式如 33/1.95,31/2.87
+                            String letAndOdd = aDetail[2];
+                            //根据，拆分
+                            String[] LetAndOddArray = letAndOdd.split("/");
+                            String sm = BallGameCals.changeFootballSf(LetAndOddArray[0]);
+                            String no = halfMap.get(sm);
+                            String newOdd = letOddsArray[Integer.parseInt(no)];
+                            String newPlay = LetAndOddArray[0] + "/" + newOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
+                        }
+                        case "half": {
+                            //获取半全场赔率
+                            String halfOdds = cfm.getHalfOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] halfOddsArray = halfOdds.split(",");
+                            //获取半全场map
+                            Map<String, String> halfMap = BallGameCals.getHalfWholeResults();
+                            //拿到比分字段 形式如 33/1.95,31/2.87
+                            String halfAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] halfAndOddArray = halfAndOdd.split("/");
+                            String sm = BallGameCals.changeFootballSf(halfAndOddArray[0]);
+                            //int no = Integer.parseInt(halfAndOddArray[0]);
+                            String no = halfMap.get(sm);
+                            String newOdd = halfOddsArray[Integer.parseInt(no)];
+                            String newPlay = halfAndOddArray[0] + "/" + newOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
+                        }
+                    }
+                    d = newAdetail + "|";
+                    newDeatail += d;
+                }
+                cfb.setOrderDetail(newDeatail);
+                String[] newDetailArray = newDeatail.split("\\|");
+                String perAwards = "1";
+                for (String s : newDetailArray) {
+                    String[] aArray = s.split("\\+");
+                    String odds = aArray[2].split("/")[1];
+                    BigDecimal oddBig = new BigDecimal(odds);
+                    perAwards = oddBig.multiply(new BigDecimal(perAwards)).setScale(2, 2).toString();
+                }
+                cfb.setPerAward(perAwards);
+                cdFootballBestFollowOrderService.save(cfb);
+
+            }
+        }
+
+
         //addMessage(redirectAttributes, "保存竞彩足球订单");
         //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
 //==================start   2018-04-11   yuhongwei 跳转打印页
         String buy_ways = cdFootballFollowOrder.getBuyWays();
-        String match_ids = cdFootballFollowOrder.getDanMatchIds().substring(0, cdFootballFollowOrder.getDanMatchIds().length()-1);
+        String match_ids = cdFootballFollowOrder.getDanMatchIds().substring(0, cdFootballFollowOrder.getDanMatchIds().length() - 1);
         String baseUrl = "modules/print/";
-        model.addAttribute("orderNumber",cdFootballFollowOrder.getOrderNum());
-        if("1".equals(buy_ways)){//混投
+        model.addAttribute("orderNumber", cdFootballFollowOrder.getOrderNum());
+        if ("1".equals(buy_ways)) {//混投
             /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
             return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";*/
-            if(match_ids.split(",").length<=3){//足彩_3关
-                return baseUrl+ "football3";
-            }else if(match_ids.split(",").length<=6){//足彩_6关
-                return baseUrl+  "football6";
-            }else if(match_ids.split(",").length<=8){//足彩_8关
-                return baseUrl+"football8";
+            if (match_ids.split(",").length <= 3) {//足彩_3关
+                return baseUrl + "football3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_6关
+                return baseUrl + "football6";
+            } else if (match_ids.split(",").length <= 8) {//足彩_8关
+                return baseUrl + "football8";
             }
-        }else if("2".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_胜负平3关
-                return baseUrl+ "footballSFP3";
-            }else if(match_ids.split(",").length<=6){//足彩_胜负平6关
+        } else if ("2".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_胜负平3关
+                return baseUrl + "footballSFP3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_胜负平6关
                 //return baseUrl+ "足球胜平负6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_胜负平8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_胜负平8关
                 //return baseUrl+ "足球胜平负8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
             }
-        }else if("3".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_让球胜负平3关
+        } else if ("3".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_让球胜负平3关
                 //return baseUrl+ "footballBQC3";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=6){//足彩_让球胜负平6关
+            } else if (match_ids.split(",").length <= 6) {//足彩_让球胜负平6关
                 //return baseUrl+ "100011001110"+paraHtml;
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_让球胜负平8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_让球胜负平8关
                 //return baseUrl+ "100011001110"+paraHtml;
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
             }
-        }else if("4".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_比分3关
-                return baseUrl+ "footballBF3";
-            }else if(match_ids.split(",").length<=6){//足彩_比分6关
+        } else if ("4".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_比分3关
+                return baseUrl + "footballBF3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_比分6关
                 //return baseUrl+ "足球比分6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_比分8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_比分8关
                 //return baseUrl+ "足球比分8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
             }
-        }else if("5".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足球_总进球3关
-                return baseUrl+ "footballZJQ3";
-            }else if(match_ids.split(",").length<=6){//足球_总进球6关
-                return baseUrl+ "footballZJQ6";
-            }else if(match_ids.split(",").length<=8){//足球_总进球8关
+        } else if ("5".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足球_总进球3关
+                return baseUrl + "footballZJQ3";
+            } else if (match_ids.split(",").length <= 6) {//足球_总进球6关
+                return baseUrl + "footballZJQ6";
+            } else if (match_ids.split(",").length <= 8) {//足球_总进球8关
                 //return baseUrl+ "footballZJQ6";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
             }
-        }else if("6".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_半全场3关
-                return baseUrl+ "footballBQC3";
-            }else if(match_ids.split(",").length<=6){//足彩_半全场6关
+        } else if ("6".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_半全场3关
+                return baseUrl + "footballBQC3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_半全场6关
                 //return baseUrl+ "足球半全场6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_半全场8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_半全场8关
                 //return baseUrl+ "足球半全场8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";

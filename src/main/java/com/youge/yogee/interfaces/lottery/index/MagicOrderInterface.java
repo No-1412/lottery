@@ -8,14 +8,18 @@ import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballBestFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
@@ -70,6 +74,10 @@ public class MagicOrderInterface {
     private CdMagicFollowOrderService cdMagicFollowOrderService;
     @Autowired
     private CdOrderService cdOrderService;
+    @Autowired
+    private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
+    @Autowired
+    private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
 
     /**
      * 神单提交订单
@@ -549,7 +557,22 @@ public class MagicOrderInterface {
 
             c.setDanMatchIds(cff.getDanMatchIds());//胆场次
             c.setType("2"); //0普通订单 1发起的 2跟单的
+            c.setBestType(cff.getBestType());
             cdFootballFollowOrderService.save(c);
+            if ("2".equals(cff.getBestType())) {
+                String oldOrderNum = cff.getOrderNum();
+                List<CdFootballBestFollowOrder> fList = cdFootballBestFollowOrderService.findByOrderNum(oldOrderNum);
+                for (CdFootballBestFollowOrder cfb : fList) {
+                    CdFootballBestFollowOrder cfbfo = new CdFootballBestFollowOrder();
+                    cfbfo.setOrderNum(orderNum);
+                    cfbfo.setPerAward(cfb.getPerAward());//奖金
+                    cfbfo.setMatchIds(cfb.getMatchIds());
+                    cfbfo.setOrderDetail(cfb.getOrderDetail());//详情
+                    cfbfo.setPerTimes(cfb.getPerTimes());//倍数
+                    cdFootballBestFollowOrderService.save(cfbfo);
+                }
+            }
+
         } else if ("3".equals(type)) {
             CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(magicOrderNum);
             if (cbs == null) {
@@ -606,7 +629,22 @@ public class MagicOrderInterface {
             c.setTimes(times); //倍数
             c.setDanMatchIds(cbf.getDanMatchIds());//胆场次
             c.setType("2"); // 0普通订单 1发起的 2跟单的
+            c.setBestType(cbf.getBestType());
             cdBasketballFollowOrderService.save(c);
+            if ("2".equals(cbf.getBestType())) {
+                String oldOrderNum = cbf.getOrderNum();
+                List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(oldOrderNum);
+                for (CdBasketballBestFollowOrder cbb : bList) {
+                    CdBasketballBestFollowOrder cbbfo = new CdBasketballBestFollowOrder();
+                    cbbfo.setOrderNum(orderNum);
+                    cbbfo.setPerAward(cbb.getPerAward());//奖金
+                    cbbfo.setMatchIds(cbb.getMatchIds());
+                    cbbfo.setOrderDetail(cbb.getOrderDetail());//详情
+                    cbbfo.setPerTimes(cbb.getPerTimes());//倍数
+                    cdBasketballBestFollowOrderService.save(cbbfo);
+
+                }
+            }
         }
         //添加跟单记录
         CdMagicFollowOrder cmfo = new CdMagicFollowOrder();

@@ -29,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -242,8 +243,10 @@ public class CdBasketballFollowOrderController extends BaseController {
             }
             cdBasketballFollowOrder.setLetScore(letScore);
         }
+        cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+
         if ("2".equals(cdBasketballFollowOrder.getBestType())) {
-            cdBasketballFollowOrder.getDanMatchIds();
+//            cdBasketballFollowOrder.getDanMatchIds();
             String orderNum = cdBasketballFollowOrder.getOrderNum();
             List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(orderNum);
             for (CdBasketballBestFollowOrder cbb : bList) {
@@ -272,23 +275,87 @@ public class CdBasketballFollowOrderController extends BaseController {
                             break;
                         }
                         case "beat": {
-
+                            //获取胜负赔率 主负主胜
+                            String beatOdds = cfm.getVictoryordefeatOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] beatOddsArray = beatOdds.split(",");
+                            //拿到比分字段 形式如 5:1/1.95,1:2/2.87
+                            String beatAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] beatAndOddArray = beatAndOdd.split("/");
+                            String sm = BallGameCals.changeBasketballSf(beatAndOddArray[0]);
+                            String newBeatOdd = "";
+                            if ("1".equals(sm)) {
+                                newBeatOdd = beatOddsArray[1];
+                            } else {
+                                newBeatOdd = beatOddsArray[0];
+                            }
+                            String newPlay = beatAndOddArray[0] + "/" + newBeatOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
                         }
                         case "let": {
+                            //获取胜负赔率 主负主胜
+                            String letOdds = cfm.getSpreadOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] letOddsArray = letOdds.split(",");
 
+                            //拿到比分字段 形式如 5:1/1.95,1:2/2.87
+                            String letAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] letAndOddArray = letAndOdd.split("/");
+                            String sm = BallGameCals.changeFootballSf(letAndOddArray[0]);
+                            String newLetOdd = "";
+                            if ("1".equals(sm)) {
+                                newLetOdd = letOddsArray[1];
+                            } else {
+                                newLetOdd = letOddsArray[0];
+                            }
+                            String newPlay = letAndOddArray[0] + "/" + newLetOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
                         }
                         case "size": {
+                            //获取大小分赔率 大于,小于
+                            String sizeOdds = cfm.getSizeOdds();
+                            //根据,拆分成数组 取最新赔率
+                            String[] sizeOddsArray = sizeOdds.split(",");
+                            //拿到比分字段 形式如 5:1/1.95,1:2/2.87
+                            String sizeAndOdd = aDetail[2];
+                            //根据/拆分
+                            String[] sizeAndOddArray = sizeAndOdd.split("/");
+                            String sm = BallGameCals.changeFootballSf(sizeAndOddArray[0]);
+                            String newOdd = "";
+                            if ("1".equals(sm)) {
+                                newOdd = sizeOddsArray[0];
+                            } else {
+                                newOdd = sizeOddsArray[1];
+                            }
+                            String newPlay = sizeAndOddArray[0] + "/" + newOdd;
+                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
+                            break;
                         }
                     }
                     d = newAdetail + "|";
                     newDeatail += d;
                 }
                 cbb.setOrderDetail(newDeatail);
+                String[] newDetailArray = newDeatail.split("\\|");
+                String perAwards = "1";
+                for (String s : newDetailArray) {
+                    String[] aArray = s.split("\\+");
+                    String odds = aArray[2].split("/")[1];
+                    BigDecimal oddBig = new BigDecimal(odds);
+                    perAwards = oddBig.multiply(new BigDecimal(perAwards)).setScale(2, 2).toString();
+                }
+                cbb.setPerAward(perAwards);
                 cdBasketballBestFollowOrderService.save(cbb);
             }
         }
 
-        cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
 
         // addMessage(redirectAttributes, "保存成功");
         //return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
@@ -630,7 +697,8 @@ public class CdBasketballFollowOrderController extends BaseController {
         int no = winMap.get(fArray[0]);
         String newOdd = failOddsArray[no];
         String newPlay = fArray[0] + "/" + newOdd;
-        newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + aDetail[3];
+        String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+        newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
         return newAdetail;
     }
 
