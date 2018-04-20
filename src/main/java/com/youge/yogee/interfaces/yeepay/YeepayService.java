@@ -52,7 +52,8 @@ public class YeepayService {
     public static final String[] CERTORDERORDER = {"merchantNo", "requestNo", "ybOrderId"};
 
     //支付方式
-    public static final String[] CASHIER = {"merchantNo", "token", "timestamp", "directPayType", "cardType", "userNo", "userType", "ext"};
+//    public static final String[] CASHIER = {"merchantNo", "token", "timestamp", "directPayType", "cardType", "userNo", "userType", "ext"};
+    public static final String[] CASHIER = {"merchantNo", "token", "timestamp", "directPayType", "cardType", "userNo", "userType"};
     public static final String[] APICASHIER = {"token", "payTool", "payType", "userNo", "userType", "appId", "openId", "payEmpowerNo", "merchantTerminalId", "merchantStoreNo", "userIp", "version"};
 
     //获取对账类型
@@ -89,13 +90,13 @@ public class YeepayService {
     //获取父商编
     public static String getParentMerchantNo() {
         //return Configuration.getInstance().getValue("parentMerchantNo");
-        return  Global.getConfig("parentMerchantNo");
+        return Global.getConfig("parentMerchantNo");
     }
 
     //获取子商编
     public static String getMerchantNo() {
         //return Configuration.getInstance().getValue("merchantNo");
-        return  Global.getConfig("merchantNo");
+        return Global.getConfig("merchantNo");
     }
 
     //获取密钥P12
@@ -136,31 +137,18 @@ public class YeepayService {
         String merchantNo = YeepayService.getMerchantNo();
         params.put("parentMerchantNo", parentMerchantNo);
         params.put("merchantNo", merchantNo);
-//        String secretKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDKLgI" +
-//                "+64mmJdNg1TwlCPBnNH3b3qfw2TdHVc2uDd4LTyQI8nRr0heFhhdj0OZi6agqekIyzAH/XmO9PdLrTi4YXJXOfiO/dYwKA6gSktRe6FKY4C2WzX1yA4fGfq" +
-//                "JMV7RYVoL6In50Hur6rGnavNSQZqbiDJOgy5yokJ14Mey1iMqqqWvADtKN9SqxtbyIxYD/jj/6qLWwmu88wSwSaGdO3wNFgzajsHgRJe9G9IhD0zr5d72HvJGoedq7" +
-//                "VaPn3jhIszcPQE6oqbXAddZRGKBehA4WSCjLEl87XH33zZPrxrQlBTHVVGzfxjbB4QvYz0hlEoWh1ntxeDHTfgyhdPQpAgMBAAECggEATmxMSLW6Xe08McpkmwT9ozq0Oy4" +
-//                "BvKW1EIGS15nfcEmRc7sAN7Z1k0BxIDGuu91gcqGbvfJuL+0gCQ7LGqTnsmFvZnp9SU3CNTw33ISBxhKdv1jtthodN7Vw3CjQsYYvmThtc7Mfk9FOWk+4e7VVSnHW98X" +
-//                "jGbMBIE2AF1heNgeZ40ubdgzuz9+4g4pphjWncPpwcaMfsDZm3JtFyvUp0+LME0CmUqrxvONZAkpFR/PyejGHnIh3ptHzhe/VjNcuIC4PphkCNBakCBCrtohTy0Yee" +
-//                "WfDAUTAO4tPXF/JUhlxjPuqR6rpQY/0uQdMAtTpiWHVJar7eGdK81QnuuOFRQKBgQDrklUPM0pkvGG/wREa0bgUI+ki+1/wv7O8X94/8onomJqPpkD8z4hv/Lev/wD5gDcgmgLC36u" +
-//                "/XDuhFfVNOmw4eUWenU6pzonroEjhi91AKcRRfzDfOfWg3wPm1J9WQOn5A033tNRydCpVcX/Ot4qDbKcAwLiPNPXXMTn4LUQE/wKBgQDbtmE0KS/kSfjscWJOqwv1Xbxckipkxncq" +
-//                "IbdiSdU+DzaLd+Vuaco7TLQJRFp7S7WJW4Tz6KBX2UiA7O7ezXY9PwlgXxXiZDDtneXNAqk7DNxmTTZHrF2C7qdU98klppCFiFx9bysGY6lFWofWmg3Pu5IiPqO3iLRPTvZgQOE+" +
-//                "1wKBgQC9SCgmfYzyIlfcjtIinY5uSGiEnjz5od9WpiVbdpOPHEdc0zZ2rH6xlPs3ZAuxbm9dN8KuOLC0ovSau50Nv7rDKdZh234gfP9fH7xP1mUhsC25Why30MdnyqpE6GVbFe+" +
-//                "qERitx1PI30RAwWDzhZC7hystNK1XDDPZBAnTOvPjmwKBgDFuujX7IkxRnFDOPdkHQNyGp2+Ib0NXJ85x4YmapQCeeZ4tbpBF+vsWidcf6t+crA5oaeRarWC2gUqIhEHapkSnXxuwqQL" +
-//                "TmfKMOPzEIYEoppnZu2Gq1Ss1OK60RSxUamWwxWZvUZXRbG8vLCrLZFodkIZl433SowbI9EO5tTPnAoGAJRsy1z95Q1GPkKrFtKivkxZy1k7zJXjM0VWDc7lT9fBnoeGUyt+vuq" +
-//                "+lC5i2aiWKJK7pe8MM9QFDGlWPnly+J8jbyMfm99k5oJtCWDfF0or1pAQ4mw0kjL9TvDVXdojgYA+rxSMQ09hwsYukQ4bblrwfBUmRjLN5WibcRzIW5ZA=";
-////        YopRequest request = new YopRequest("OPR:" + merchantNo, Global.getConfig("secret"), BASE_URL);
+//        String secretKey = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCaMBPzWzt5lCveEHL9CzSS9RkwKkMyxAjrt6WgnyVcqr+DXM9NVHvXUPC167SjMOCaCPdM61do7pfuOueQjFgfa4VyhosUhqGNnfImcWnU7FjXAubAGMUn5zfNywA7HuFbijDoHdHoG0cP6OORhNXS27krurvYd1JgE6ttV8ndDzMsxNGKXPpWxXN5l8a0olkH7iyJRID4m+55GaMjPSUMfdXzAZmsnPV48QM58SmqRprsZB1sLMsfEoGIGrJt3XGVqx8Mr65t93Jvr2bK5bBVZfNqXPtAmi+QyMmZUxjXxPWbyU4+6yXlemDOU7cx2bOrXtHjuDRmWfvTB7mVjpiDAgMBAAECggEARF3bCsXCKldz2AQNKHxGdH7vCzdCEolvtyz36K+IPn2La3DEjnJOcxt1kASSVOXAQSyGkvmrCWD5xu0hbit8i3n+ctiLZK+JhKSrETaqiXm+rp+ftz+Ec/wG913ynURFAnTU2KcYQsWNjdViykxPDy7T/TrQPdwyj11JXrNVU4nQhyBPWxmudEw6p9uXC7pzjaaOTFjMLMIPR9ZQ+c3KscmSHngl+7XaTFYwD/yv0Qwyus+Y2+WP2BBo07+FY+krYFGyhtD8SqrBeY9tI834WHf9/4NLgAgogGrR6DjYayaWYju2HUNMqZGMifcJrb/NS6/DlWNfluMbEVOmihoiwQKBgQDN6/ha4Rl1jRrm8mz/3kVMAJRCW5up5j9h/U63Ow2PLlomC1tFk68FJaPRuKTzEeZk4rHgIX+ldfPzFAy1JlYDirBfN+Pe5+OAITkH/4OaSmK35pk86ZYGYDppkAgDaAVGoeANCN9lVhjkNVHoJllIl76u6ilw3MG/7ZB5DPBZIwKBgQC/r1E9D1vNU6Ma7TdQTzFDrtbu4jHy+dDTwTCfNYBkXrSN1mpo9bx9dFwjzfPqbeC8uo5g0RTo3BA7n52IZdaQhQTj/8qllYDS6jWT7qx2+w4rgwxnzvr+gHT7mxPpd6+r8D8BQxJecHB9FiSr93taMWtWgpDg2o7jJx4wBImpIQKBgF2uR4tYstNmwWFl0q7I+O+tp8VUlcnChP1YVxJG3FFSPhLmwbwyhsIpsJB9lxU6BH3LIC8eLkshET151pom+aSc2MZIz/MdvcMR2jdISB/OTYDqeLZccjMuXgSeUPbzwMq0ZBCqA6+/bo2LsFqT77R1zHsY7od49vAQ7NQVTdbPAoGBAKyZrMkSf1NPsFqap2gFJxMO6DKKMvfawpMqLiHuBwJZ1LKzE3YXb/Z3RFBpLu00q1zFj1bWbcGQBn3pp+wd5yqS3GiA93RKPomsoznlfB5WydecVRtUYOWxvaShaziasPBdkB4OyweGr4Oy4KqIWeZJAaIQR2xw4KDhpGkQbPSBAoGAWryarRl1LEF2Fy/Cz3bSgBDx6pv9demShnTEEuUP9bi4YWlnWdLg3RBxF+IalPJRRXRGrrj9FhJv7f6Qe/TRCCmcNqh7bI8cUEORb8yrgpI4YTKRk2y9iMSPu9VGuQtc4eNNPZkXJiGXmVO2FL2pNV1bzMAVOPtXS2oH2Mq1+Gk=";
+
 //        YopRequest request = new YopRequest("OPR:" + merchantNo, secretKey, BASE_URL);
         YopRequest request = new YopRequest("OPR:" + merchantNo, "", BASE_URL);
+        //System.out.println("------" + request.getSecretKey());
         for (int i = 0; i < paramSign.length; i++) {
             String key = paramSign[i];
             request.addParam(key, params.get(key));
         }
-        System.out.println(request.getParams());
-
+        //System.out.println(request.getParams());
         YopResponse response = YopClient3.postRsa(uri, request);
-
-        System.out.println(response.toString());
+        //System.out.println(response.toString());
         if ("FAILURE".equals(response.getState())) {
             if (response.getError() != null)
                 result.put("code", response.getError().getCode());

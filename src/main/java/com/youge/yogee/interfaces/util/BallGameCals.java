@@ -86,10 +86,10 @@ public class BallGameCals {
 //        list.add("D|Y");
 //        list.add("D|O");
 //        list.add("D|N");
-        list.add("0;1;2;1");
-        list.add("0;3;5");
-        list.add("N;y;1;8");
-        list.add("N;y");
+        list.add("0");
+        list.add("0");
+        list.add("N");
+        list.add("N");
 //        list.add("N");
 //        list.add("N");
 //        list.add("N");
@@ -109,7 +109,7 @@ public class BallGameCals {
 //        Map<String,String> map=BallGameCals.getHalfWholeResults();
 //       String c=map.get(a);
 
-        int cr = countOfFootBall(list, 2, 1);
+        int cr = countOfFootBall(list, 1, 1);
         System.out.println(cr);
 //        List<String> wantList = new ArrayList<>();
 //        wantList.add("51");
@@ -180,7 +180,7 @@ public class BallGameCals {
         if (k == 1) {
             for (int i = index; i < arr.length; i++) {
                 tmpDoubleArr.add(arr[i]);
-                doubleSum += tmpDoubleArr.get(0) * tmpDoubleArr.get(1);
+                //doubleSum += tmpDoubleArr.get(0) * tmpDoubleArr.get(1);
                 finalList.add(tmpDoubleArr.toString());
                 //System.out.println(tmpDoubleArr.toString());
                 tmpDoubleArr.remove(arr[i]);
@@ -321,6 +321,31 @@ public class BallGameCals {
         map.put("16-20", 9);
         map.put("21-25", 10);
         map.put("26+", 11);
+
+        return map;
+    }
+
+
+    /**
+     * 胜分差 主负主胜 所有结果集
+     * 用于取对应赔率
+     *
+     * @return
+     */
+    public static Map<String, Integer> getFailWinScoreResults() {
+        Map<String, Integer> map = new HashMap<>();
+        map.put("客胜1-5", 0);
+        map.put("客胜6-10", 1);
+        map.put("客胜11-15", 2);
+        map.put("客胜16-20", 3);
+        map.put("客胜21-25", 4);
+        map.put("客胜26+", 5);
+        map.put("主胜1-5", 6);
+        map.put("主胜6-10", 7);
+        map.put("主胜11-15", 8);
+        map.put("主胜16-20", 9);
+        map.put("主胜21-25", 10);
+        map.put("主胜26+", 11);
 
         return map;
     }

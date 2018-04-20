@@ -165,4 +165,13 @@ public class CdFiveOrderService extends BaseService {
         return cdFiveOrderDao.update("delete from CdFiveOrder where id=:p1", new Parameter(id));
     }
 
+    public List<CdFiveOrder> findPerhapsIsNull() {
+        DetachedCriteria dc = cdFiveOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("allPerhaps", ""));
+        dc.add(Restrictions.eq(CdFiveOrder.FIELD_DEL_FLAG, CdFiveOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.asc("createDate"));
+        return cdFiveOrderDao.find(dc);
+    }
+
+
 }

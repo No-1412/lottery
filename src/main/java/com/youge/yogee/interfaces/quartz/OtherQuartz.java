@@ -29,6 +29,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
+
+import static com.youge.yogee.interfaces.util.ListThreeWays.resultOfRightChooseOfFive;
 
 //    "0/10 * * * * ?" 每10秒触发
 //
@@ -241,6 +244,30 @@ public class OtherQuartz {
         if (list.size() > 0) {
             for (CdBbNotFinishCollection c : list) {
                 cdBbNotFinishCollectionService.delById(c.getId());
+            }
+        }
+    }
+
+
+    /**
+     * 排列五订单计算详情
+     */
+    @Scheduled(cron = "0/10 * * * * ?")//每分钟
+    //0 30 19 * * ? *
+    public void addPerhapsToFive() {
+        List<CdFiveOrder> list = cdFiveOrderService.findPerhapsIsNull();
+        if (list.size() > 0) {
+            for (CdFiveOrder c : list) {
+                String nums = c.getNums();
+                String allPerhaps = "";
+                String[] numsStr = nums.split("\\|");
+                //所有情况
+                Set<String> set = resultOfRightChooseOfFive(numsStr[0], numsStr[1], numsStr[2], numsStr[3], numsStr[4]);
+                for (String s : set) {
+                    allPerhaps += s + "|";
+                }
+                c.setAllPerhaps(allPerhaps);
+                cdFiveOrderService.save(c);
             }
         }
     }

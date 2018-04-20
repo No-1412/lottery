@@ -74,22 +74,27 @@ public class ListFiveInterface {
         }
         //生成跟单方案
         String followCode = "";
-        //所有可能
-        Map<String, String> dataMap = ListThreeWays.listThree(nums, "7");
-        String allPerhaps = dataMap.get("allPerhaps");
+//        //所有可能
+//        Map<String, String> dataMap = ListThreeWays.listThree(nums, "7");
+//        String allPerhaps = dataMap.get("allPerhaps");
+//        //注数
+//        String acount = dataMap.get("count");
         //注数
-        String acount = dataMap.get("count");
+        String[] numsStr = nums.split("\\|");
+        int count = ListThreeWays.countOfRightChooseOfFive(numsStr[0], numsStr[1], numsStr[2], numsStr[3], numsStr[4]);
+        String countStr = String.valueOf(count);
         //生成订单号
         String orderNum = util.genOrderNo("PLW", util.getFourRandom());
         //计算金额
         double money = 2.00;
-        double acountDouble = Double.parseDouble(acount);
+        double acountDouble = Double.parseDouble(countStr);
         double timesDouble = Double.parseDouble(times);
         double continuityDouble = Double.parseDouble(continuity);
         String price = String.valueOf(money * acountDouble * timesDouble * continuityDouble);
+//        //奖金
+//        String award = dataMap.get("award");
         //奖金
-        String award = dataMap.get("award");
-
+        String award = "100000";
         //1自购 2追号
         String type = "";
         String weekContinue = "";
@@ -113,11 +118,11 @@ public class ListFiveInterface {
         cfo.setNums(nums);//订单详情
         cfo.setBuyWays("1");//玩法
         cfo.setWeekday(weekday);//期数
-        cfo.setAcount(acount);//注数
+        cfo.setAcount(countStr);//注数
         cfo.setPrice(price);//金额
         cfo.setAward(award);//奖金
         cfo.setUid(uid);//用户
-        cfo.setAllPerhaps(allPerhaps);//所有可能
+        cfo.setAllPerhaps("");//所有可能
         cfo.setStatus("1");//已提交
         cfo.setTimes(times);//倍数
         cfo.setContinuity(continuity);//连续期数
@@ -130,7 +135,7 @@ public class ListFiveInterface {
             map.put("orderName", "排列五订单支付");
             map.put("time", cfo.getCreateDate());
             map.put("price", price);
-            map.put("acountStr", acount);//注数
+            map.put("acountStr", countStr);//注数
             map.put("times", times);//倍数
             map.put("followNum", "");//串关
         } catch (Exception e) {

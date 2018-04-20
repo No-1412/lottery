@@ -5,6 +5,7 @@ package com.youge.yogee.interfaces.quartz;
  */
 
 import com.youge.yogee.common.push.AppPush;
+import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
@@ -73,8 +74,8 @@ public class ChooseNineQuartz {
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
-    @Scheduled(cron = "*/59 * * * * ?")//2小时
+    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+//    @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void chooseNineOrder() {
 //        System.out.println("任选九开奖");
         List<CdChooseNineOrder> cdBasketballFollowOrderList = cdChooseNineOrderService.findStatus();
@@ -124,6 +125,8 @@ public class ChooseNineQuartz {
                 cdChooseNineOrder.setStatus("4");
                 cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrderService.save(cdChooseNineOrder);
+                //更新用户余额
+                SelOrderUtil.addBalanceToUser(award.toString(), cdChooseNineOrder.getUid());
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
                 cdOrderWinners.setWinOrderNum(cdChooseNineOrder.getOrderNumber());//中间单号
@@ -135,7 +138,7 @@ public class ChooseNineQuartz {
                 cdOrderWinners.setWallType("1");
                 cdOrderWinners.setResult(cdChooseNineOrder.getResult());
                 cdOrderWinnersService.save(cdOrderWinners);
-//改变订单总表状态
+                //改变订单总表状态
                 CdOrder co = cdOrderService.getOrderByOrderNum(cdChooseNineOrder.getOrderNumber());
                 if (co != null) {
                     co.setWinPrice(award.toString());//奖金
@@ -160,8 +163,8 @@ public class ChooseNineQuartz {
     }
 
 
-    //    @Scheduled(cron = "0 0 */2 * * ?")//2小时
-    @Scheduled(cron = "*/59 * * * * ?")//2小时
+        @Scheduled(cron = "0 0 */2 * * ?")//2小时
+//    @Scheduled(cron = "*/59 * * * * ?")//2小时
     public void successFailOrder() {
 //        System.out.println("胜负彩开奖");
         List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatus();
@@ -173,7 +176,7 @@ public class ChooseNineQuartz {
             CdColorReward cdColorReward = cdColorRewardService.findByWeekday(weekday);
 
             //判断是否可以开奖
-            if (cdColorReward.getNotesNum().equals("")) {
+            if (cdColorReward == null) {
                 break;
             }
 
@@ -199,6 +202,8 @@ public class ChooseNineQuartz {
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                //更新用户余额
+                SelOrderUtil.addBalanceToUser(award.toString(), cdSuccessFailOrder.getUid());
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
                 cdOrderWinners.setWinOrderNum(cdSuccessFailOrder.getOrderNumber());//中间单号
@@ -223,6 +228,8 @@ public class ChooseNineQuartz {
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                //更新用户余额
+                SelOrderUtil.addBalanceToUser(award.toString(), cdSuccessFailOrder.getUid());
                 //保存中奖纪录
                 CdOrderWinners cdOrderWinners = new CdOrderWinners();
                 cdOrderWinners.setWinOrderNum(cdSuccessFailOrder.getOrderNumber());//中间单号

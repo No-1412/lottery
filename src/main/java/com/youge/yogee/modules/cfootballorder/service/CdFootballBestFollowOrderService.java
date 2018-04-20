@@ -18,6 +18,8 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.cfootballorder.dao.CdFootballBestFollowOrderDao;
 
+import java.util.List;
+
 /**
  * 足球优化Service
  * @author ZhaoYiFeng
@@ -59,5 +61,13 @@ public class CdFootballBestFollowOrderService extends BaseService {
 	public void delete(String id) {
 		cdFootballBestFollowOrderDao.deleteById(id);
 	}
+
+	public List<CdFootballBestFollowOrder> findByNum(String num) {
+		DetachedCriteria dc = cdFootballBestFollowOrderDao.createDetachedCriteria();
+		dc.add(Restrictions.eq("orderNum", num));
+		dc.add(Restrictions.eq(CdFootballBestFollowOrder.FIELD_DEL_FLAG, CdFootballBestFollowOrder.DEL_FLAG_NORMAL));
+		return cdFootballBestFollowOrderDao.find(dc);
+	}
+
 	
 }

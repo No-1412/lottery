@@ -10,7 +10,9 @@ import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
@@ -49,6 +51,8 @@ public class CdBasketballFollowOrderController extends BaseController {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdBasketballMixedService cdBasketballMixedService;
+    @Autowired
+    private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
 
     @ModelAttribute
     public CdBasketballFollowOrder get(@RequestParam(required = false) String id) {
@@ -94,21 +98,19 @@ public class CdBasketballFollowOrderController extends BaseController {
         String let = cdBasketballFollowOrder.getLet();
         List<String> tList = new ArrayList<>();
 
-
+//        if ("1".equals(cdBasketballFollowOrder.getBestType())) {
         if (StringUtils.isNotEmpty(hostWin)) {
             String[] winStr = hostWin.split("\\|");
             for (String s : winStr) {
                 wList.add(s);
             }
         }
-
         if (StringUtils.isNotEmpty(hostFail)) {
             String[] failStr = hostFail.split("\\|");
             for (String s : failStr) {
                 fList.add(s);
             }
         }
-
         if (StringUtils.isNotEmpty(beat)) {
             String[] beatStr = beat.split("\\|");
             for (String s : beatStr) {
@@ -127,6 +129,35 @@ public class CdBasketballFollowOrderController extends BaseController {
                 tList.add(s);
             }
         }
+//        } else {
+//            String orderNum = cdBasketballFollowOrder.getOrderNum();
+//            List<CdBasketballBestFollowOrder> list = cdBasketballBestFollowOrderService.findByOrderNum(orderNum);
+//            for (CdBasketballBestFollowOrder cbbfo : list) {
+//                String detail = cbbfo.getOrderDetail();//详情
+//                String[] detailArray = detail.split("\\|");//拆分详情
+//                for (String str : detailArray) {
+//                    String[] strArray = str.split("\\+");
+//                    String newStr = "0+" + strArray[0] + "+" + strArray[3] + "+" + strArray[2] + ",";
+//                    switch (strArray[1]) {
+//                        case "hostWin":
+//                            wList.add(newStr);
+//                            break;
+//                        case "hostFail":
+//                            fList.add(newStr);
+//                            break;
+//                        case "beat":
+//                            bList.add(newStr);
+//                            break;
+//                        case "let":
+//                            tList.add(newStr);
+//                            break;
+//                        case "size":
+//                            sList.add(newStr);
+//                            break;
+//                    }
+//                }
+//            }
+//        }
 
 
         //获取当前时间
@@ -149,7 +180,7 @@ public class CdBasketballFollowOrderController extends BaseController {
     @RequiresPermissions("cbasketballorder:cdBasketballFollowOrder:edit")
     @RequestMapping(value = "save")
     public String save(CdBasketballFollowOrder cdBasketballFollowOrder, Model model, RedirectAttributes redirectAttributes) {
-       if (!beanValidator(model, cdBasketballFollowOrder)) {
+        if (!beanValidator(model, cdBasketballFollowOrder)) {
             return form(cdBasketballFollowOrder, model);
         }
 
@@ -175,108 +206,154 @@ public class CdBasketballFollowOrderController extends BaseController {
 
         String size = cdBasketballFollowOrder.getSize();
         if (StringUtils.isNotEmpty(size)) {
-            String sizeCount="";
+            String sizeCount = "";
             String[] sizeArray = size.split("\\|");
             for (String aSize : sizeArray) {
-                String[] aSizeArray=aSize.split("\\+");
-                String matchId=aSizeArray[1];
+                String[] aSizeArray = aSize.split("\\+");
+                String matchId = aSizeArray[1];
                 //查询比赛
                 CdBasketballMixed cfm = cdBasketballMixedService.findByMatchId(matchId);
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
                     return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-                }else {
-                    sizeCount+=cfm.getZclose()+",";
+                } else {
+                    sizeCount += cfm.getZclose() + ",";
                 }
             }
             cdBasketballFollowOrder.setSizeCount(sizeCount);
         }
         String let = cdBasketballFollowOrder.getLet();
         if (StringUtils.isNotEmpty(let)) {
-            String letScore="";
+            String letScore = "";
             String[] letArray = let.split("\\|");
             for (String aLet : letArray) {
-                String[] aLetArray=aLet.split("\\+");
-                String matchId=aLetArray[1];
+                String[] aLetArray = aLet.split("\\+");
+                String matchId = aLetArray[1];
                 //查询比赛
                 CdBasketballMixed cfm = cdBasketballMixedService.findByMatchId(matchId);
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
                     return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-                }else {
-                    letScore+=cfm.getClose()+",";
+                } else {
+                    letScore += cfm.getClose() + ",";
                 }
             }
             cdBasketballFollowOrder.setLetScore(letScore);
         }
+        if ("2".equals(cdBasketballFollowOrder.getBestType())) {
+            cdBasketballFollowOrder.getDanMatchIds();
+            String orderNum = cdBasketballFollowOrder.getOrderNum();
+            List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(orderNum);
+            for (CdBasketballBestFollowOrder cbb : bList) {
+                String detail = cbb.getOrderDetail();
+                String[] detailArray = detail.split("\\|");
+                //用户拼回新的|；最后set进去的
+                String newDeatail = "";
+                for (String d : detailArray) {
+                    String[] aDetail = d.split("\\+");
+                    //查询比赛
+                    CdBasketballMixed cfm = cdBasketballMixedService.findByMatchId(aDetail[0]);
+                    if (cfm == null) {
+                        //比赛不存在 无法出票
+                        addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+                        return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+                    }
+                    //
+                    String newAdetail = "";
+                    switch (aDetail[1]) {
+                        case "hostWin": {
+                            newAdetail = getNewBestHost(cfm, aDetail);
+                            break;
+                        }
+                        case "hostFail": {
+                            newAdetail = getNewBestHost(cfm, aDetail);
+                            break;
+                        }
+                        case "beat": {
+
+                        }
+                        case "let": {
+
+                        }
+                        case "size": {
+                        }
+                    }
+                    d = newAdetail + "|";
+                    newDeatail += d;
+                }
+                cbb.setOrderDetail(newDeatail);
+                cdBasketballBestFollowOrderService.save(cbb);
+            }
+        }
 
         cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
-       // addMessage(redirectAttributes, "保存成功");
+
+        // addMessage(redirectAttributes, "保存成功");
         //return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
         //==================start   2018-04-11   yuhongwei 跳转打印页
         String buy_ways = cdBasketballFollowOrder.getBuyWays();
-        String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0, cdBasketballFollowOrder.getDanMatchIds().length()-1);
+        String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0, cdBasketballFollowOrder.getDanMatchIds().length() - 1);
         String baseUrl = "modules/print/";
-        model.addAttribute("orderNumber",cdBasketballFollowOrder.getOrderNum());
-        if("1".equals(buy_ways)){//混投
+        model.addAttribute("orderNumber", cdBasketballFollowOrder.getOrderNum());
+        if ("1".equals(buy_ways)) {//混投
            /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
             return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";*/
-            if(match_ids.split(",").length<=3){
+            if (match_ids.split(",").length <= 3) {
 
-                return baseUrl+ "basketball3";
-            }else if(match_ids.split(",").length<=6){
-                return baseUrl+  "basketball6";
-            }else if(match_ids.split(",").length<=8){
-                return baseUrl+"basketball8";
+                return baseUrl + "basketball3";
+            } else if (match_ids.split(",").length <= 6) {
+                return baseUrl + "basketball6";
+            } else if (match_ids.split(",").length <= 8) {
+                return baseUrl + "basketball8";
             }
-        }else if("2".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){
-                return baseUrl+ "basketballSF3";
-            }else if(match_ids.split(",").length<=6){
+        } else if ("2".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {
+                return baseUrl + "basketballSF3";
+            } else if (match_ids.split(",").length <= 6) {
                 //return baseUrl+  "篮球胜负6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){
+            } else if (match_ids.split(",").length <= 8) {
                 //return baseUrl+"篮球胜负8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
             }
-        }else if("3".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){
+        } else if ("3".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球让分胜负3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=6){
-               // return baseUrl+  "篮球让分胜负6关";
+            } else if (match_ids.split(",").length <= 6) {
+                // return baseUrl+  "篮球让分胜负6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){
-                return baseUrl+"basketballRFSF8";
+            } else if (match_ids.split(",").length <= 8) {
+                return baseUrl + "basketballRFSF8";
             }
-        }else if("4".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){
+        } else if ("4".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球大小分3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=6){
+            } else if (match_ids.split(",").length <= 6) {
                 //return baseUrl+  "篮球大小分6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){
-                return baseUrl+"basketballDXF8";
+            } else if (match_ids.split(",").length <= 8) {
+                return baseUrl + "basketballDXF8";
             }
-        }else if("5".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){
+        } else if ("5".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球胜负差3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=6){
+            } else if (match_ids.split(",").length <= 6) {
                 //return baseUrl+  "篮球胜负差6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-            }else if(match_ids.split(",").length<=8){
+            } else if (match_ids.split(",").length <= 8) {
                 //return baseUrl+"篮球胜负差8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
@@ -286,6 +363,8 @@ public class CdBasketballFollowOrderController extends BaseController {
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
 
         //==================end   2018-04-11   yuhongwei 跳转打印页
+
+
     }
 
     @RequiresPermissions("cbasketballorder:cdBasketballFollowOrder:edit")
@@ -541,5 +620,18 @@ public class CdBasketballFollowOrderController extends BaseController {
         return newLetDetail;
     }
 
+    public String getNewBestHost(CdBasketballMixed cfm, String[] aDetail) {
+        String newAdetail = "";
+        String failOdds = cfm.getSurpassScoreGap();//获取比分赔率
+        String[] failOddsArray = failOdds.split(","); //根据,拆分成数组 取最新赔率
+        Map<String, Integer> winMap = BallGameCals.getFailWinScoreResults();//获取比分map
+        String failAndOdd = aDetail[2];//拿到比分字段 形式如 5:1/1.95,1:2/2.87
+        String[] fArray = failAndOdd.split("/");
+        int no = winMap.get(fArray[0]);
+        String newOdd = failOddsArray[no];
+        String newPlay = fArray[0] + "/" + newOdd;
+        newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + aDetail[3];
+        return newAdetail;
+    }
 
 }

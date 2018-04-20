@@ -42,8 +42,8 @@ public class CdFootballSingleOrderService extends BaseService {
         if (StringUtils.isNotEmpty(cdFootballSingleOrder.getOrderNum())) {
             dc.add(Restrictions.eq("orderNum", cdFootballSingleOrder.getOrderNum()));
         }
-        dc.add(Restrictions.eq("orderNum", cdFootballSingleOrder.getOrderNum()));
         dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq(CdFootballSingleOrder.FIELD_DEL_FLAG, CdFootballSingleOrder.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
         return cdFootballSingleOrderDao.find(page, dc);
     }
