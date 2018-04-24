@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.lottery.user;
 
 import com.google.common.collect.Maps;
+import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -17,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -63,7 +67,7 @@ public class UserRechargeInterface {
         Date today = new Date();
         String todayStr = sdf.format(today);
         //回调地址
-        String notifyUrl = "http://104.224.186.152:8080/FengTools_war/ServiceNotice";
+        String notifyUrl = Global.getConfig("callback.url");
         //充值描述
         String goodsParamExt = "{\"goodsName\":\"" + "用户充值" + "\",\"goodsDesc\":\"" + "用户充值" + "\"}";
         //经营主体信息
@@ -129,4 +133,38 @@ public class UserRechargeInterface {
     }
 
 
+    @RequestMapping(value = "callBack")
+    @ResponseBody
+    public String getRechargeUrl(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("getRechargeUrl---------- Start--------");
+
+        String responseMsg = request.getParameter("response");
+        String customerId = request.getParameter("customerIdentification");
+
+        Map<String,String> result = YeepayService.callback(responseMsg);
+
+        String parentMerchantNo = formatString(result.get("parentMerchantNo"));
+        String merchantNo = formatString(result.get("merchantNo"));
+        String orderId = formatString(result.get("orderId"));
+        String uniqueOrderNo = formatString(result.get("uniqueOrderNo"));
+        String status = formatString(result.get("status"));
+        String orderAmount = formatString(result.get("orderAmount"));
+        String payAmount = formatString(result.get("payAmount"));
+        String requestDate = formatString(result.get("requestDate"));
+        String paySuccessDate = formatString(result.get("paySuccessDate"));
+
+//        PrintWriter out;
+//        try {
+//            out = response.getWriter();
+//            out.write("SUCCESS");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        return "SUCCESS";
+    }
+
+
+    private String formatString(String text){
+        return text==null ? "" : text.trim();
+    }
 }
