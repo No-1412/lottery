@@ -619,7 +619,7 @@ public class UserInformationInterface {
         List<Map> rList = new ArrayList<>();
         for (CdRecordRecharge c : list) {
             Map<String, Object> map = new HashMap<>();
-            map.put("price", c.getName());
+            map.put("name", c.getName());
             map.put("price", c.getPrice());
             map.put("createDate", c.getCreateDate());
             map.put("orderNum", c.getOrderNum());
