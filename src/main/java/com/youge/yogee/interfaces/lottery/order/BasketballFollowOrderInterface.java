@@ -218,59 +218,98 @@ public class BasketballFollowOrderInterface {
                 }
 
                 //主胜所有押注结果 5胜分差
+
                 String hostWin = (String) d.get("hostWin");
                 if (StringUtils.isNotEmpty(hostWin)) {
-                    String winArry[] = hostWin.split(",");
-                    //String[] sStr = goalArry[0].split("/");
-                    if ("0".equals(isMust)) {
-                        if ("1".equals(buyWays)) {
-                            for (String s : winArry) {
-                                results += s + ";";
-                            }
-                        } else {
-                            resultList.add(hostWin);
-                        }
-                    }
-                    if ("1".equals(isMust)) {
-                        if ("1".equals(buyWays)) {
-                            if (winArry.length > 0) {
-                                mixCount = mixCount + winArry.length;
-                            }
-                        } else {
-                            danCount++;
-                            danTimes = danTimes * winArry.length;
-                        }
-                    }
+//                    String winArry[] = hostWin.split(",");
+//                    //String[] sStr = goalArry[0].split("/");
+//                    if ("0".equals(isMust)) {
+//                        if ("1".equals(buyWays)) {
+//                            for (String s : winArry) {
+//                                results += s + ";";
+//                            }
+//                        } else {
+//                            resultList.add(hostWin);
+//                        }
+//                    }
+//                    if ("1".equals(isMust)) {
+//                        if ("1".equals(buyWays)) {
+//                            if (winArry.length > 0) {
+//                                mixCount = mixCount + winArry.length;
+//                            }
+//                        } else {
+//                            danCount++;
+//                            danTimes = danTimes * winArry.length;
+//                        }
+//                    }
                     winDetail += partDetail + "+" + hostWin + "|";
                 }
-
+//
                 //主负所有押注结果  5胜分差
                 String hostFail = (String) d.get("hostFail");
                 if (StringUtils.isNotEmpty(hostFail)) {
-                    String failArry[] = hostFail.split(",");
+//                    String failArry[] = hostFail.split(",");
+////                    String[] sStr = halfArry[0].split("/");
+//                    if ("0".equals(isMust)) {
+//                        if ("1".equals(buyWays)) {
+//                            for (String s : failArry) {
+//                                results += s + ";";
+//                            }
+//                        } else {
+//                            resultList.add(hostFail);
+//                        }
+//                    }
+//                    if ("1".equals(isMust)) {
+//                        if ("1".equals(buyWays)) {
+//                            if (failArry.length > 0) {
+//                                mixCount = mixCount + failArry.length;
+//                            }
+//                        } else {
+//                            danCount++;
+//                            danTimes = danTimes * failArry.length;
+//                        }
+//                    }
+                    failDetail += partDetail + "+" + hostFail + "|";
+                }
+
+//                if ("1".equals(buyWays)) {
+//                    if ("0".equals(isMust)) {
+//                        resultList.add(results);
+//                    }
+//                    if ("1".equals(isMust)) {
+//                        danTimes = danTimes * mixCount;
+//                    }
+//                }
+//                orderDetail += partDetail + "+" + isMust + "|";
+
+                //胜负所有押注结果  5胜分差
+//                String hostFailForAcount = (String) d.get("hostFail");
+//                String hostWinAcount = (String) d.get("hostWin");
+                String hostWinFail = hostFail + hostWin;
+                if (StringUtils.isNotEmpty(hostWinFail)) {
+                    String winFailArry[] = hostWinFail.split(",");
 //                    String[] sStr = halfArry[0].split("/");
                     if ("0".equals(isMust)) {
                         if ("1".equals(buyWays)) {
-                            for (String s : failArry) {
+                            for (String s : winFailArry) {
                                 results += s + ";";
                             }
                         } else {
-                            resultList.add(hostFail);
+                            resultList.add(hostWinFail);
                         }
                     }
                     if ("1".equals(isMust)) {
                         if ("1".equals(buyWays)) {
-                            if (failArry.length > 0) {
-                                mixCount = mixCount + failArry.length;
+                            if (winFailArry.length > 0) {
+                                mixCount = mixCount + winFailArry.length;
                             }
                         } else {
                             danCount++;
-                            danTimes = danTimes * failArry.length;
+                            danTimes = danTimes * winFailArry.length;
                         }
                     }
-                    failDetail += partDetail + "+" + hostFail + "|";
+                    //failDetail += partDetail + "+" + hostFail + "|";
                 }
-
 
                 if ("1".equals(buyWays)) {
                     if ("0".equals(isMust)) {
@@ -280,9 +319,9 @@ public class BasketballFollowOrderInterface {
                         danTimes = danTimes * mixCount;
                     }
                 }
-                //orderDetail += partDetail + "+" + isMust + "|";
 
             }
+
 
             String[] followStr = followNum.split(",");
             for (int i = 0; i < followStr.length; i++) {

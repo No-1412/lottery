@@ -9,6 +9,8 @@ import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.interfaces.yeepay.YeepayService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.crecord.entity.CdRecordRecharge;
+import com.youge.yogee.modules.crecord.service.CdRecordRechargeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ public class UserRechargeInterface {
     private static final Logger logger = LoggerFactory.getLogger(UserRechargeInterface.class);
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdRecordRechargeService cdRecordRechargeService;
 
     /**
      * 用户充值获取易宝支付地址
@@ -112,6 +115,7 @@ public class UserRechargeInterface {
         param.put("merchantNo", merchantNo);
         param.put("token", token);
         param.put("timestamp", timestamp);
+//        param.put("directPayType", "YJZF");
         param.put("directPayType", "");
         param.put("cardType", "");
         param.put("userNo", uid);
@@ -127,6 +131,15 @@ public class UserRechargeInterface {
             e.printStackTrace();
 
         }
+
+        CdRecordRecharge crr = new CdRecordRecharge();
+        crr.setName("用户充值");
+        crr.setUid(uid);//用户id
+        crr.setOrderNum(orderNum);//订单号
+        crr.setStatus("1");//发起支付
+        crr.setPrice(price);
+        cdRecordRechargeService.save(crr);
+
         //return url;
         return HttpResultUtil.successJson(dataMap);
         //return JsonMapper.nonDefaultMapper().toJson(dataMap);
@@ -141,7 +154,7 @@ public class UserRechargeInterface {
         String responseMsg = request.getParameter("response");
         String customerId = request.getParameter("customerIdentification");
 
-        Map<String,String> result = YeepayService.callback(responseMsg);
+        Map<String, String> result = YeepayService.callback(responseMsg);
 
         String parentMerchantNo = formatString(result.get("parentMerchantNo"));
         String merchantNo = formatString(result.get("merchantNo"));
@@ -152,19 +165,29 @@ public class UserRechargeInterface {
         String payAmount = formatString(result.get("payAmount"));
         String requestDate = formatString(result.get("requestDate"));
         String paySuccessDate = formatString(result.get("paySuccessDate"));
-
-//        PrintWriter out;
-//        try {
-//            out = response.getWriter();
-//            out.write("SUCCESS");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-        return "SUCCESS";
+        String backResult = "";
+        if ("SUCCESS".equals(status)) {
+            CdRecordRecharge crr = cdRecordRechargeService.findByOrderNum(orderId);
+            if (crr != null) {
+                if ("1".equals(crr.getStatus())) {
+                    crr.setPrice(payAmount);
+                    crr.setStatus("2");
+                    cdRecordRechargeService.save(crr);
+                    String uid = crr.getUid();
+                    CdLotteryUser clu = cdLotteryUserService.get(uid);
+                    BigDecimal balance = clu.getBalance();
+                    BigDecimal newBalance = balance.add(new BigDecimal(payAmount));
+                    clu.setBalance(newBalance);
+                    cdLotteryUserService.save(clu);
+                    backResult = "SUCCESS";
+                }
+            }
+        }
+        return backResult;
     }
 
 
-    private String formatString(String text){
-        return text==null ? "" : text.trim();
+    private String formatString(String text) {
+        return text == null ? "" : text.trim();
     }
 }
