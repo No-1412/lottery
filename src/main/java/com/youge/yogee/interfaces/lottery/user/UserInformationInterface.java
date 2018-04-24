@@ -587,7 +587,7 @@ public class UserInformationInterface {
 
 
     /***
-     * 返利记录
+     * 充值记录
      * @param request
      * @return
      */
