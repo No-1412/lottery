@@ -399,11 +399,11 @@ public class BonusOptimizationController extends BaseController {
                 for (int i = 0; i < beat.length; i++) {
                     //TODO
                     if(beat[i].startsWith("3")){//胜
-                        detailStr.add(beat[i].replaceFirst("3", heart +"胜")+"/"+matchId+"/beat");
+                        detailStr.add(beat[i].replaceFirst("3", heart +"主胜")+"/"+matchId+"/beat");
                     }else if(beat[i].startsWith("1")){
                         detailStr.add(beat[i].replaceFirst("1", heart +"平")+"/"+matchId+"/beat");
                     }else if(beat[i].startsWith("0")){
-                        detailStr.add(beat[i].replaceFirst("0", heart +"负")+"/"+matchId+"/beat");
+                        detailStr.add(beat[i].replaceFirst("0", heart +"主负")+"/"+matchId+"/beat");
                     }
                 }
             }
