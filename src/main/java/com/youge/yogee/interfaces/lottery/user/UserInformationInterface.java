@@ -18,8 +18,10 @@ import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.crecord.entity.CdRecordCash;
 import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
+import com.youge.yogee.modules.crecord.entity.CdRecordRecharge;
 import com.youge.yogee.modules.crecord.service.CdRecordCashService;
 import com.youge.yogee.modules.crecord.service.CdRecordRebateService;
+import com.youge.yogee.modules.crecord.service.CdRecordRechargeService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import org.slf4j.Logger;
@@ -63,6 +65,8 @@ public class UserInformationInterface {
     private CdThreeOrderService cdThreeOrderService;
     @Autowired
     private CdLottoOrderService cdLottoOrderService;
+    @Autowired
+    private CdRecordRechargeService cdRecordRechargeService;
 
     /**
      * 我的首页
@@ -581,5 +585,50 @@ public class UserInformationInterface {
         return HttpResultUtil.successJson(dataMap);
     }
 
+
+    /***
+     * 返利记录
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "getRecordRecharge", method = RequestMethod.POST)
+    @ResponseBody
+    public String getRecordRecharge(HttpServletRequest request) {
+        logger.info("getRecordRecharge---------- Start-----------");
+
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            return HttpResultUtil.errorJson("uid为空");
+        }
+        String total = (String) jsonData.get("total");
+        if (StringUtils.isEmpty(total)) {
+            return HttpResultUtil.errorJson("total为空");
+        }
+        String count = (String) jsonData.get("count");
+        if (StringUtils.isEmpty(count)) {
+            return HttpResultUtil.errorJson("count为空");
+        }
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在");
+        }
+
+        List<CdRecordRecharge> list = cdRecordRechargeService.findByUid(uid, total, count);
+        List<Map> rList = new ArrayList<>();
+        for (CdRecordRecharge c : list) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("price", c.getName());
+            map.put("price", c.getPrice());
+            map.put("createDate", c.getCreateDate());
+            map.put("orderNum", c.getOrderNum());
+            rList.add(map);
+        }
+
+        Map<String, Object> dataMap = new HashMap<>();
+        dataMap.put("rList", rList);
+        return HttpResultUtil.successJson(dataMap);
+    }
 
 }

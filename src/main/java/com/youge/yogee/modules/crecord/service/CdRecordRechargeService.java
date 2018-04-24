@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.crecord.dao.CdRecordRechargeDao;
 import com.youge.yogee.modules.crecord.entity.CdRecordRecharge;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -76,5 +77,19 @@ public class CdRecordRechargeService extends BaseService {
         }
 
     }
+
+    public List<CdRecordRecharge> findByUid(String uid, String total, String count) {
+        DetachedCriteria dc = cdRecordRechargeDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("uid", uid));
+        dc.add(Restrictions.ne("status", "1"));
+        dc.add(Restrictions.eq(CdRecordRecharge.FIELD_DEL_FLAG, CdRecordRecharge.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+
+        Criteria cri = dc.getExecutableCriteria(cdRecordRechargeDao.getSession());
+        cri.setFirstResult(Integer.parseInt(total));
+        cri.setMaxResults(Integer.parseInt(count));
+        return cdRecordRechargeDao.find(dc);
+    }
+
 
 }
