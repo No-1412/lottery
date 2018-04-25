@@ -3,10 +3,16 @@
  */
 package com.youge.yogee.modules.crecord.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.crypto.Data;
-
+import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.web.BaseController;
+import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
+import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.crecord.entity.CdRecordCash;
+import com.youge.yogee.modules.crecord.service.CdRecordCashService;
+import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,15 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.youge.yogee.common.config.Global;
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.web.BaseController;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.modules.sys.entity.User;
-import com.youge.yogee.modules.sys.utils.UserUtils;
-import com.youge.yogee.modules.crecord.entity.CdRecordCash;
-import com.youge.yogee.modules.crecord.service.CdRecordCashService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -40,6 +40,8 @@ public class CdRecordCashController extends BaseController {
 
     @Autowired
     private CdRecordCashService cdRecordCashService;
+    @Autowired
+    private CdLotteryUserService cdLotteryUserService;
 
     @ModelAttribute
     public CdRecordCash get(@RequestParam(required = false) String id) {
@@ -77,6 +79,13 @@ public class CdRecordCashController extends BaseController {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String today = df.format(day);
         cdRecordCash.setDealTime(today);
+        if ("3".equals(cdRecordCash.getStatus())) {
+            CdLotteryUser clu = cdLotteryUserService.get(cdRecordCash.getUid());
+            BigDecimal balance = clu.getBalance();
+            BigDecimal price = new BigDecimal(cdRecordCash.getPrice());
+            clu.setBalance(balance.subtract(price));
+            cdLotteryUserService.save(clu);
+        }
         cdRecordCashService.save(cdRecordCash);
         addMessage(redirectAttributes, "保存提现记录成功");
         return "redirect:" + Global.getAdminPath() + "/crecord/cdRecordCash/?repage";
