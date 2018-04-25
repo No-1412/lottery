@@ -24,8 +24,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 @Component("NotBallQuartz")
@@ -52,11 +50,11 @@ public class NotBallQuartz {
 //        System.out.println("排列三开奖");
         CdThreeAwards cta = cdThreeAwardsService.findFirst();
         if (cta != null) {
-            String awardDate = cta.getAtime().split(" ")[0]; //开奖时间截取日期
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
-            Date today = new Date();
-            String todayStr = sdf.format(today);//当天时间
-            if (awardDate.equals(todayStr)) {
+//            String awardDate = cta.getAtime().split(" ")[0]; //开奖时间截取日期
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+//            Date today = new Date();
+//            String todayStr = sdf.format(today);//当天时间
+//            if (awardDate.equals(todayStr)) {
                 String weekday = cta.getWeekday();
                 String aCode = cta.getAcode();//开奖号码
                 //获取当期所有付款订单
@@ -99,7 +97,7 @@ public class NotBallQuartz {
                     //更新用户余额
                     SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
                 }
-            }
+
         }
     }
 
@@ -113,11 +111,11 @@ public class NotBallQuartz {
             //获取当期所有付款订单
             List<CdFiveOrder> cList = cdFiveOrderService.findByStatus("3", weekday);
 
-            String awardDate = cfa.getAtime().split(" ")[0]; //开奖时间截取日期
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
-            Date today = new Date();
-            String todayStr = sdf.format(today);//当天时间
-            if (awardDate.equals(todayStr)) {
+//            String awardDate = cfa.getAtime().split(" ")[0]; //开奖时间截取日期
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+//            Date today = new Date();
+//            String todayStr = sdf.format(today);//当天时间
+//            if (awardDate.equals(todayStr)) {
                 String aCode = cfa.getAcode();//开奖号码
                 for (CdFiveOrder c : cList) {
 
@@ -161,7 +159,7 @@ public class NotBallQuartz {
                     //更新用户余额
                     SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
                 }
-            }
+//            }
         }
     }
 
@@ -170,11 +168,11 @@ public class NotBallQuartz {
 //        System.out.println("大乐透开奖");
         CdLottoReward clr = cdLottoRewardService.findFirst();
         if (clr != null) {
-            String awardDate = clr.getOpeningTime().split(" ")[0]; //开奖时间截取日期
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
-            Date today = new Date();
-            String todayStr = sdf.format(today);//当天时间
-            if (awardDate.equals(todayStr)) {
+//            String awardDate = clr.getOpeningTime().split(" ")[0]; //开奖时间截取日期
+//            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
+//            Date today = new Date();
+//            String todayStr = sdf.format(today);//当天时间
+//            if (awardDate.equals(todayStr)) {
                 String weekday = clr.getMatchId().substring(1, 8);
                 String aCode = clr.getNumber();//开奖号码 |分割
                 String[] aCodeArray = aCode.split("\\|");
@@ -378,7 +376,7 @@ public class NotBallQuartz {
                     //更新用户余额 已经看不懂了 直接加在最后
                     SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
                 }
-            }
+//            }
         }
     }
 
