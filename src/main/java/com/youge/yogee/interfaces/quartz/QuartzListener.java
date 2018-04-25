@@ -93,7 +93,7 @@ public class QuartzListener {
     //定时轮询
 //    @Scheduled(cron = "*/5 * * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0/10 * * * * ?")//2小时
     public void footballBestFollowOrder() {
         System.out.println("足球优化串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("2");
@@ -248,6 +248,7 @@ public class QuartzListener {
         }
     }
 
+    //    "0/10 * * * * ?" 每10秒触发
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
