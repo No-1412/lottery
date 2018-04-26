@@ -61,7 +61,7 @@ public class SystemService extends BaseService {
 
     public User findUserByCode(String code) {
         DetachedCriteria dc = userDao.createDetachedCriteria();
-        dc.add(Restrictions.ne("code", code));
+        dc.add(Restrictions.eq("code", code));
         List<User> list = userDao.find(dc);
         if (list.size() > 0) {
             return list.get(0);

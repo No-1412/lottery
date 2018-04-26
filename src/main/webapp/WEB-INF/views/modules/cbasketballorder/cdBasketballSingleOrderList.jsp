@@ -118,8 +118,8 @@
             <shiro:hasPermission name="cbasketballorder:cdBasketballSingleOrder:edit">
                 <td>
                     <a href="${ctx}/cbasketballorder/cdBasketballSingleOrder/form?id=${cdBasketballSingleOrder.id}">查看/出票</a>
-                    <a href="${ctx}/cbasketballorder/cdBasketballSingleOrder/delete?id=${cdBasketballSingleOrder.id}"
-                       onclick="return confirmx('确认要删除该竞彩篮球订单吗？', this.href)">删除</a>
+                    <%--<a href="${ctx}/cbasketballorder/cdBasketballSingleOrder/delete?id=${cdBasketballSingleOrder.id}"--%>
+                       <%--onclick="return confirmx('确认要删除该竞彩篮球订单吗？', this.href)">删除</a>--%>
                 </td>
             </shiro:hasPermission>
         </tr>

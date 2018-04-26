@@ -351,7 +351,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                     BigDecimal oddBig = new BigDecimal(odds);
                     perAwards = oddBig.multiply(new BigDecimal(perAwards)).setScale(2, 2).toString();
                 }
-                cbb.setPerAward(perAwards);
+                String finalAward = new BigDecimal(perAwards).multiply(new BigDecimal(2)).toString();
+                cbb.setPerAward(finalAward);
                 cdBasketballBestFollowOrderService.save(cbb);
             }
         }
