@@ -690,6 +690,11 @@ public class BasketBallQuartz {
                     break;
                 case "beat":
                     finish = cdBasketballAwards.getWinning();
+                    if(finish.equals("主胜")){
+                        finish = "1";
+                    }else {
+                        finish = "0";
+                    }
                     break;
                 case "size":
                     //订单数分
