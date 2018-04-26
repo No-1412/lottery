@@ -3,6 +3,13 @@
  */
 package com.youge.yogee.modules.cmagicorder.service;
 
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.service.BaseService;
+import com.youge.yogee.common.utils.DateUtils;
+import com.youge.yogee.common.utils.IdGen;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.modules.cmagicorder.dao.CdMagicOrderDao;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -11,14 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.service.BaseService;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.common.utils.DateUtils;
-import com.youge.yogee.common.utils.IdGen;
-import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
-import com.youge.yogee.modules.cmagicorder.dao.CdMagicOrderDao;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,9 +67,15 @@ public class CdMagicOrderService extends BaseService {
 
 
     public List<CdMagicOrder> getMagicOrder(String total, String count) {
+        Date day = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String today = df.format(day);
+
         DetachedCriteria dc = cdMagicOrderDao.createDetachedCriteria();
         dc.add(Restrictions.eq(CdMagicOrder.FIELD_DEL_FLAG, CdMagicOrder.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.gt("shutDownTime", today));
         dc.add(Restrictions.sqlRestriction("1=1 order by CAST(price as SIGNED) desc"));
+
         // 限制条数|分页
         Criteria cri = dc.getExecutableCriteria(cdMagicOrderDao.getSession());
         cri.setMaxResults(Integer.parseInt(count));
@@ -81,9 +88,9 @@ public class CdMagicOrderService extends BaseService {
         dc.add(Restrictions.eq(CdMagicOrder.FIELD_DEL_FLAG, CdMagicOrder.DEL_FLAG_NORMAL));
         dc.add(Restrictions.eq("orderNum", orderNumber));
         List<CdMagicOrder> list = cdMagicOrderDao.find(dc);
-        if(list.size() == 0){
+        if (list.size() == 0) {
             return null;
-        }else {
+        } else {
             return list.get(0);
         }
     }
