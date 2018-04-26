@@ -93,7 +93,7 @@ public class QuartzListener {
     //定时轮询
 //    @Scheduled(cron = "*/5 * * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0/10 * * * * ?")//2小时
     public void footballBestFollowOrder() {
         System.out.println("足球优化串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("2");
@@ -248,6 +248,7 @@ public class QuartzListener {
         }
     }
 
+    //    "0/10 * * * * ?" 每10秒触发
     @Scheduled(cron = "0 0 */2 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
@@ -561,7 +562,7 @@ public class QuartzListener {
     }
 
 
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0/10 * * * * ?")//2小时
     public void footballSingleOrder() {
 //        System.out.println("足球单关开奖");
 
@@ -633,7 +634,7 @@ public class QuartzListener {
             double oddsSum = scoreOdds + goalOdds + halfOdds + beatOdds + letOdds;
             if (oddsSum > 0) {
                 Double award = 2 * oddsSum;
-                cdFootballSingleOrder.setAward(award.toString());
+                cdFootballSingleOrder.setAward(new BigDecimal(award).setScale(2,2).toString());
                 cdFootballSingleOrder.setStatus("4");
                 cdFootballSingleOrderService.save(cdFootballSingleOrder);
 
@@ -720,20 +721,21 @@ public class QuartzListener {
                     finish = cdFootballAwards.getTotalNum();
                     break;
                 case "half":
-                    finish = cdFootballAwards.getWinGrap();
+                    finish = BallGameCals.changeFootballSf(cdFootballAwards.getWinGrap());
                     break;
                 case "beat":
-                    finish = cdFootballAwards.getWinning();
+                    finish = BallGameCals.changeFootballSf(cdFootballAwards.getWinning());
                     break;
                 case "let":
-                    finish = cdFootballAwards.getSpread();
+                    finish = BallGameCals.changeFootballSf(cdFootballAwards.getSpread());
                     break;
             }
-            String[] odds = aMethod.split(finish + "/");
-            if (odds.length > 1) {
-                String[] a = odds[1].split(",")[0].split("/");
-                ood += Double.parseDouble(a[0]) * Double.parseDouble(a[1]);
-//                ood += Double.parseDouble(odds[1].split(",")[0]);
+            String[] a = StringUtils.split(aMethodArray[2], ",");
+            for (String s : a) {
+                String[] split = StringUtils.split(s, "/");
+                if(split[0].equals(finish)){
+                    ood += Double.parseDouble(split[1]) * Double.parseDouble(split[2]);
+                }
             }
         }
         return ood;

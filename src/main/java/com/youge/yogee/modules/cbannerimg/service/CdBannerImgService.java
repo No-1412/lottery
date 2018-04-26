@@ -67,6 +67,7 @@ public class CdBannerImgService extends BaseService {
     public List<CdBannerImg> getBannerImg() {
         DetachedCriteria dc = cdBannerImgDao.createDetachedCriteria();
         dc.add(Restrictions.eq("isUse", "1"));
+        dc.add(Restrictions.eq(CdBannerImg.FIELD_DEL_FLAG, CdBannerImg.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
         return cdBannerImgDao.find(dc);
     }
