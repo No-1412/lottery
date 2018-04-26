@@ -91,8 +91,8 @@ public class BasketBallQuartz {
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
 
-    @Scheduled(cron = "0/10 * * * * ?")//10s
-//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+//    @Scheduled(cron = "0/10 * * * * ?")//10s
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void basketBallFollowOrder() {
 
 
@@ -368,7 +368,7 @@ public class BasketBallQuartz {
 
     }
 
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void basketBallBestFollowOrder() {
         System.out.println("篮球优化串关开奖");
         List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusAndType("2");
@@ -519,7 +519,7 @@ public class BasketBallQuartz {
     }
 
 //    @Scheduled(cron = "*/5 * * * * ?")
-    @Scheduled(cron = "0 0 */2 * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballSingleOrder() {
 //        System.out.println("篮球单关开奖");
 

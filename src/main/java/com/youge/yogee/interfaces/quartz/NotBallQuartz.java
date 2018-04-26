@@ -45,7 +45,7 @@ public class NotBallQuartz {
     @Autowired
     private CdOrderService cdOrderService;
 
-    @Scheduled(cron = "*/59 * * * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void listThreeOrder() {
 //        System.out.println("排列三开奖");
         CdThreeAwards cta = cdThreeAwardsService.findFirst();
@@ -102,7 +102,7 @@ public class NotBallQuartz {
     }
 
 
-    @Scheduled(cron = "*/59 * * * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void listFiveOrder() {
 //        System.out.println("排列五开奖");
         CdFiveAwards cfa = cdFiveAwardsService.findFirst();
@@ -163,7 +163,7 @@ public class NotBallQuartz {
         }
     }
 
-    @Scheduled(cron = "0/10 * * * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void lotteryOrder() {
 //        System.out.println("大乐透开奖");
         CdLottoReward clr = cdLottoRewardService.findFirst();

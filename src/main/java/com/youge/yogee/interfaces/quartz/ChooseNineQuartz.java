@@ -74,8 +74,7 @@ public class ChooseNineQuartz {
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-//    @Scheduled(cron = "0 0 */2 * * ?")//2小时
-    @Scheduled(cron = "*/59 * * * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void chooseNineOrder() {
 //        System.out.println("任选九开奖");
         List<CdChooseNineOrder> cdBasketballFollowOrderList = cdChooseNineOrderService.findStatus();
@@ -163,8 +162,7 @@ public class ChooseNineQuartz {
     }
 
 
-        @Scheduled(cron = "0 0 */2 * * ?")//2小时
-//    @Scheduled(cron = "*/59 * * * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void successFailOrder() {
 //        System.out.println("胜负彩开奖");
         List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatus();
