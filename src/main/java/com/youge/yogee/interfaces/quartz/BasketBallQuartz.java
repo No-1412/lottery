@@ -307,7 +307,7 @@ public class BasketBallQuartz {
 
                     //所有中奖赔率
                     Double award = Integer.valueOf(cdBasketballFollowOrder.getTimes()) * oodSum * 2;
-                    cdBasketballFollowOrder.setAward(award.toString());
+                    cdBasketballFollowOrder.setAward(new BigDecimal(award).setScale(2,2).toString());
                     cdBasketballFollowOrder.setStatus("4");
                     cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
 
@@ -558,7 +558,7 @@ public class BasketBallQuartz {
                 double oddsSum = hostWinOdds + hostFailOdds;
                 if (oddsSum > 0) {
                     Double award = 2 * oddsSum;
-                    cdBasketballSingleOrder.setAward(award.toString());
+                    cdBasketballSingleOrder.setAward(new BigDecimal(award).setScale(2,2).toString());
                     cdBasketballSingleOrder.setStatus("4");
                     cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
 
