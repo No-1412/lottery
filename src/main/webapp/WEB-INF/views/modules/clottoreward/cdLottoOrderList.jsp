@@ -95,7 +95,7 @@
 				<shiro:hasPermission name="clottoreward:cdLottoOrder:edit">
 					<td>
 	    				<a href="${ctx}/clottoreward/cdLottoOrder/form?id=${cdLottoOrder.id}">查看/出票</a>
-						<a href="${ctx}/clottoreward/cdLottoOrder/delete?id=${cdLottoOrder.id}" onclick="return confirmx('确认要删除该大乐透订单吗？', this.href)">删除</a>
+						<%--<a href="${ctx}/clottoreward/cdLottoOrder/delete?id=${cdLottoOrder.id}" onclick="return confirmx('确认要删除该大乐透订单吗？', this.href)">删除</a>--%>
 					</td>
 				</shiro:hasPermission>
 			</tr>

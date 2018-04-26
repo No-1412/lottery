@@ -77,7 +77,7 @@
 				<shiro:hasPermission name="csuccessfail:cdSuccessFailOrder:edit">
 					<td>
 	    				<a href="${ctx}/csuccessfail/cdSuccessFailOrder/form?id=${cdSuccessFailOrder.id}">查看/出票</a>
-						<a href="${ctx}/csuccessfail/cdSuccessFailOrder/delete?id=${cdSuccessFailOrder.id}" onclick="return confirmx('确认要删除该胜负彩订单吗？', this.href)">删除</a>
+						<%--<a href="${ctx}/csuccessfail/cdSuccessFailOrder/delete?id=${cdSuccessFailOrder.id}" onclick="return confirmx('确认要删除该胜负彩订单吗？', this.href)">删除</a>--%>
 					</td>
 				</shiro:hasPermission>
 			</tr>

@@ -78,7 +78,7 @@
 				<shiro:hasPermission name="cchoosenine:cdChooseNineOrder:edit">
 					<td>
 	    				<a href="${ctx}/cchoosenine/cdChooseNineOrder/form?id=${cdChooseNineOrder.id}">查看/出票</a>
-						<a href="${ctx}/cchoosenine/cdChooseNineOrder/delete?id=${cdChooseNineOrder.id}" onclick="return confirmx('确认要删除该任选九订单吗？', this.href)">删除</a>
+						<%--<a href="${ctx}/cchoosenine/cdChooseNineOrder/delete?id=${cdChooseNineOrder.id}" onclick="return confirmx('确认要删除该任选九订单吗？', this.href)">删除</a>--%>
 					</td>
 				</shiro:hasPermission>
 			</tr>

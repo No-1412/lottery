@@ -84,8 +84,8 @@
             <shiro:hasPermission name="cfiveawards:cdFiveOrder:edit">
                 <td>
                     <a href="${ctx}/cfiveawards/cdFiveOrder/form?id=${cdFiveOrder.id}">查看/出票</a>
-                    <a href="${ctx}/cfiveawards/cdFiveOrder/delete?id=${cdFiveOrder.id}"
-                       onclick="return confirmx('确认要删除该排列五订单吗？', this.href)">删除</a>
+                    <%--<a href="${ctx}/cfiveawards/cdFiveOrder/delete?id=${cdFiveOrder.id}"--%>
+                       <%--onclick="return confirmx('确认要删除该排列五订单吗？', this.href)">删除</a>--%>
                 </td>
             </shiro:hasPermission>
         </tr>

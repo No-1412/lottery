@@ -121,8 +121,8 @@
             <shiro:hasPermission name="cthreeawards:cdThreeOrder:edit">
                 <td>
                     <a href="${ctx}/cthreeawards/cdThreeOrder/form?id=${cdThreeOrder.id}">查看/出票</a>
-                    <a href="${ctx}/cthreeawards/cdThreeOrder/delete?id=${cdThreeOrder.id}"
-                       onclick="return confirmx('确认要删除该排列三订单吗？', this.href)">删除</a>
+                    <%--<a href="${ctx}/cthreeawards/cdThreeOrder/delete?id=${cdThreeOrder.id}"--%>
+                       <%--onclick="return confirmx('确认要删除该排列三订单吗？', this.href)">删除</a>--%>
                 </td>
             </shiro:hasPermission>
         </tr>

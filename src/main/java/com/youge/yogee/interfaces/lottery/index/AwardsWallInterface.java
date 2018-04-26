@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -115,7 +116,9 @@ public class AwardsWallInterface {
             CdLotteryUser clu = cdLotteryUserService.get(cow.getUid());
             map.put("name", clu.getName());
             map.put("img", clu.getImg());
-            map.put("winPrice", cow.getWinPrice());
+            BigDecimal winPrice = new BigDecimal(cow.getWinPrice());
+
+            map.put("winPrice", winPrice.setScale(2, 2).toString());
             map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
             orderNum = cow.getWinOrderNum();
         } else {
@@ -133,7 +136,7 @@ public class AwardsWallInterface {
             orderNum = co.getNumber();
             map.put("orderNum", orderNum);//订单号
             map.put("price", co.getTotalPrice());//价格
-            map.put("status",co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
+            map.put("status", co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
         }
         map = SelOrderUtil.getOrderDetailMap(orderNum, map);
         logger.info("大奖墙列表接口--------------End--------");

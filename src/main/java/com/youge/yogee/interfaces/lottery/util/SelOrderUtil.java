@@ -66,28 +66,28 @@ public class SelOrderUtil {
             map.put("buyWays", cfs.getBuyWays());
             map.put("followNums", "0");
             map.put("detail", detailList);
-
+            map.put("price", cfs.getPrice());
         } else if (orderNum.startsWith("ZCG")) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
             List detailList = getFbFollowList(cff);
             map.put("buyWays", cff.getBuyWays());
             map.put("followNums", cff.getFollowNum());
             map.put("detail", detailList);
-
+            map.put("price", cff.getPrice());
         } else if (orderNum.startsWith("LDG")) {
             CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
             List detailList = getBbSingleList(cbs);
             map.put("followNums", "0");
             map.put("buyWays", cbs.getBuyWays());
             map.put("detail", detailList);
-
+            map.put("price", cbs.getPrice());
         } else if (orderNum.startsWith("LCG")) {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
             List detailList = getBbFollowList(cbf);
             map.put("buyWays", cbf.getBuyWays());
             map.put("followNums", cbf.getFollowNums());
             map.put("detail", detailList);
-
+            map.put("price", cbf.getPrice());
         } else if (orderNum.startsWith("RXJ")) {
             CdChooseNineOrder ccno = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
             map.put("price", ccno.getPrice());//投注金额
