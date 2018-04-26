@@ -91,8 +91,8 @@ public class BasketBallQuartz {
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
 
-//    @Scheduled(cron = "0/10 * * * * ?")//10s
-    @Scheduled(cron = "0 0 */1 * * ?")//2小时
+    @Scheduled(cron = "0/10 * * * * ?")//10s
+//    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void basketBallFollowOrder() {
 
 
@@ -307,7 +307,7 @@ public class BasketBallQuartz {
 
                     //所有中奖赔率
                     Double award = Integer.valueOf(cdBasketballFollowOrder.getTimes()) * oodSum * 2;
-                    cdBasketballFollowOrder.setAward(new BigDecimal(award).setScale(2,2).toString());
+                    cdBasketballFollowOrder.setAward(new BigDecimal(award).setScale(2, 2).toString());
                     cdBasketballFollowOrder.setStatus("4");
                     cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
 
@@ -518,8 +518,9 @@ public class BasketBallQuartz {
         }
     }
 
-//    @Scheduled(cron = "*/5 * * * * ?")
-    @Scheduled(cron = "0 0 */1 * * ?")//2小时
+    //    @Scheduled(cron = "*/5 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")//10s
+//    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballSingleOrder() {
 //        System.out.println("篮球单关开奖");
 
@@ -545,12 +546,20 @@ public class BasketBallQuartz {
 
                 //***********************************判断押中场次************************************************
                 //判断主胜
+                double hostWinOdds = 0;
                 String hostWin = cdBasketballSingleOrder.getHostWin();
-                double hostWinOdds = judgeBasketballSingle(hostWin, "hostWin");
+                if (StringUtils.isNotEmpty(hostWin)) {
+                    hostWinOdds = judgeBasketballSingle(hostWin, "hostWin");
+                }
+
 
                 //判断主负
+                double hostFailOdds = 0;
                 String hostFail = cdBasketballSingleOrder.getHostFail();
-                double hostFailOdds = judgeBasketballSingle(hostFail, "hostFail");
+                if (StringUtils.isNotEmpty(hostFail)) {
+                    hostFailOdds = judgeBasketballSingle(hostFail, "hostFail");
+                }
+
 
                 //***************************************判断结束*******************************************************
 
@@ -558,7 +567,7 @@ public class BasketBallQuartz {
                 double oddsSum = hostWinOdds + hostFailOdds;
                 if (oddsSum > 0) {
                     Double award = 2 * oddsSum;
-                    cdBasketballSingleOrder.setAward(new BigDecimal(award).setScale(2,2).toString());
+                    cdBasketballSingleOrder.setAward(new BigDecimal(award).setScale(2, 2).toString());
                     cdBasketballSingleOrder.setStatus("4");
                     cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
 
@@ -629,7 +638,7 @@ public class BasketBallQuartz {
                 case "hostWin":
                     finish = cdBasketballAwards.getWinGrap();
                     if (finish.contains("主胜")) {
-                        finish = finish.substring(0, 2);
+                        finish = finish.substring(2);
                     } else {
                         return ood;
                     }
@@ -637,7 +646,7 @@ public class BasketBallQuartz {
                 case "hostFail":
                     finish = cdBasketballAwards.getWinGrap();
                     if (finish.contains("主负")) {
-                        finish = finish.substring(0, 2);
+                        finish = finish.substring(2);
                     } else {
                         return ood;
                     }
@@ -647,7 +656,7 @@ public class BasketBallQuartz {
             if (odds.length > 1) {
                 String[] a = odds[1].split(",")[0].split("/");
                 ood += Double.parseDouble(a[0]) * Double.parseDouble(a[1]);
-                ood += Double.parseDouble(odds[1].split(",")[0]);
+//                ood += Double.parseDouble(odds[1].split(",")[0]);
             }
         }
         return ood;
