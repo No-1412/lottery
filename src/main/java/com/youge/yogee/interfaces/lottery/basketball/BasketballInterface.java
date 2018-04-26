@@ -141,45 +141,48 @@ public class BasketballInterface {
         for (int i = 0; i < ListSize.size(); i++) {
             Map maps = new HashMap();
             List cdList = cdBasketballMixedService.findListByTime(ListSize.get(i).toString());//按时间进行查询数据
-            CdBasketballMixed cds = (CdBasketballMixed) cdList.get(0);//获取比赛日期
-            maps.put("addesc", cds.getMatchsDate());//时间日期
-            maps.put("allCount", cdList.size());//比赛总场次
-            dataList.add(maps);
-            List listbytime = new ArrayList();
-            for (int y = 0; y < cdList.size(); y++) {//当天比赛场次List
-                CdBasketballMixed cd = (CdBasketballMixed) cdList.get(y);
-                Map map = new HashMap();
-                map.put("name", cd.getMatchId());//赛事场次
-                map.put("mt", cd.getMatchDate());//比赛时间
-                map.put("itemid", cd.getItemid());//比赛时间ID
-                map.put("zid", cd.getZid());//比赛详细信息传的参数
-                map.put("mname", cd.getEventName());//赛事名称
-                map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
-                map.put("hn", cd.getWinningName());//主队名称
-                map.put("gn", cd.getDefeatedName());//客队名称
-                map.put("matchId", cd.getMatchId());//期次
-                //胜负:主负主胜赔率',
-                String sf = cd.getVictoryordefeatOdds();
-                if (",".equals(sf)) {
-                    sf = "-,-";
+            if (cdList.size() > 0) {
+                CdBasketballMixed cds = (CdBasketballMixed) cdList.get(0);//获取比赛日期
+                maps.put("addesc", cds.getMatchsDate());//时间日期
+                maps.put("allCount", cdList.size());//比赛总场次
+                dataList.add(maps);
+                List listbytime = new ArrayList();
+                for (int y = 0; y < cdList.size(); y++) {//当天比赛场次List
+                    CdBasketballMixed cd = (CdBasketballMixed) cdList.get(y);
+                    Map map = new HashMap();
+                    map.put("name", cd.getMatchId());//赛事场次
+                    map.put("mt", cd.getMatchDate());//比赛时间
+                    map.put("itemid", cd.getItemid());//比赛时间ID
+                    map.put("zid", cd.getZid());//比赛详细信息传的参数
+                    map.put("mname", cd.getEventName());//赛事名称
+                    map.put("et", cd.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
+                    map.put("hn", cd.getWinningName());//主队名称
+                    map.put("gn", cd.getDefeatedName());//客队名称
+                    map.put("matchId", cd.getMatchId());//期次
+                    //胜负:主负主胜赔率',
+                    String sf = cd.getVictoryordefeatOdds();
+                    if (",".equals(sf)) {
+                        sf = "-,-";
+                    }
+                    map.put("sf", sf);
+                    //map.put("sf", cd.getVictoryordefeatOdds());
+                    map.put("hm", cd.getWinningRank());//主队排名
+                    map.put("gm", cd.getDefeatedRank());//客队排名
+                    if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
+                        map.put("hrn", cd.getRecentWinningSurpass() + "胜" + cd.getRecentWinningDefeat() + "负");//主队近期战绩
+                        map.put("grn", cd.getRecentDefeatedSurpass() + "胜" + cd.getRecentDefeatedDefeat() + "负");//客队近期战绩
+                        map.put("history", "主队" + cd.getHistoryWinningSurpass() + "胜" + cd.getHistoryWinningDefeat() + "负");//历史交锋
+                    } else {
+                        map.put("hrn", "-");//主队近期战绩
+                        map.put("grn", "-");//客队近期战绩
+                        map.put("history", "-");//历史交锋
+                    }
+                    map.put("close", cd.getClose());//让球
+                    listbytime.add(map);
                 }
-                map.put("sf", sf);
-                //map.put("sf", cd.getVictoryordefeatOdds());
-                map.put("hm", cd.getWinningRank());//主队排名
-                map.put("gm", cd.getDefeatedRank());//客队排名
-                if (StringUtils.isNotEmpty(cd.getRecentWinningSurpass())) {
-                    map.put("hrn", cd.getRecentWinningSurpass() + "胜" + cd.getRecentWinningDefeat() + "负");//主队近期战绩
-                    map.put("grn", cd.getRecentDefeatedSurpass() + "胜" + cd.getRecentDefeatedDefeat() + "负");//客队近期战绩
-                    map.put("history", "主队" + cd.getHistoryWinningSurpass() + "胜" + cd.getHistoryWinningDefeat() + "负");//历史交锋
-                } else {
-                    map.put("hrn", "-");//主队近期战绩
-                    map.put("grn", "-");//客队近期战绩
-                    map.put("history", "-");//历史交锋
-                }
-                map.put("close", cd.getClose());//让球
-                listbytime.add(map);
+                list.add(listbytime);
             }
-            list.add(listbytime);
+
         }
         Map dataMap = new HashMap();
         dataMap.put("list", list);
