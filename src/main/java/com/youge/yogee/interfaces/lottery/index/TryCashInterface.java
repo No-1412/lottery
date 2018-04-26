@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -186,6 +187,40 @@ public class TryCashInterface {
         }
         return HttpResultUtil.successJson(map);
     }
+
+
+    /**
+     * 返利提现
+     */
+    @RequestMapping(value = "userCashToBalance", method = RequestMethod.POST)
+    @ResponseBody
+    public String userCashToBalance(HttpServletRequest request) throws ParseException {
+        logger.info("userCashToBalance--------Start-------------------");
+        Map map = new HashMap();
+        Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        if (jsonData == null) {
+            return HttpResultUtil.errorJson("json格式错误");
+        }
+
+        String uid = (String) jsonData.get("uid");
+        if (StringUtils.isEmpty(uid)) {
+            logger.error("uid为空");
+            return HttpResultUtil.errorJson("uid为空");
+        }
+
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        if (clu == null) {
+            return HttpResultUtil.errorJson("用户不存在");
+        }
+        BigDecimal balance = clu.getBalance();
+        String rebate = clu.getRebate();
+        BigDecimal newBalance = balance.add(new BigDecimal(rebate));
+        clu.setBalance(newBalance);//更新余额
+        clu.setRebate("0");
+        cdLotteryUserService.save(clu);
+        return HttpResultUtil.successJson(map);
+    }
+
 }
 
 

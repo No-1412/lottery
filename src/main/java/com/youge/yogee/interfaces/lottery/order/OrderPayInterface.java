@@ -297,17 +297,17 @@ public class OrderPayInterface {
         boolean flag = false;
         String rebate = "";
         if (priceDouble > 0.0 && priceDouble < 1000.0) {
-            flag=true;
-            BigDecimal result=priceBig.multiply(new BigDecimal(0.01));
-            rebate = String.valueOf(result.setScale(2, 2));
+            flag = true;
+            BigDecimal result = priceBig.multiply(new BigDecimal(0.01));
+            rebate = String.valueOf(result.setScale(2, 1));
         } else if (priceDouble >= 1000.0 && priceDouble < 10000.0) {
-            flag=true;
-            BigDecimal result=priceBig.multiply(new BigDecimal(0.02));
-            rebate = String.valueOf(result.setScale(2, 2));
+            flag = true;
+            BigDecimal result = priceBig.multiply(new BigDecimal(0.02));
+            rebate = String.valueOf(result.setScale(2, 1));
         } else if (priceDouble >= 10000.0) {
-            flag=true;
-            BigDecimal result=priceBig.multiply(new BigDecimal(0.03));
-            rebate = String.valueOf(result.setScale(2, 2));
+            flag = true;
+            BigDecimal result = priceBig.multiply(new BigDecimal(0.03));
+            rebate = String.valueOf(result.setScale(2, 1));
         }
         if (flag) {
             CdRecordRebate crr = new CdRecordRebate();
@@ -318,9 +318,9 @@ public class OrderPayInterface {
             //保存用户表返利字段
             String userRebate = cdLotteryUser.getRebate();
             BigDecimal newRebate = new BigDecimal(userRebate).add(new BigDecimal(rebate));
-            BigDecimal balance = cdLotteryUser.getBalance();
-            BigDecimal newBalance = balance.add(new BigDecimal(rebate));
-            cdLotteryUser.setBalance(newBalance);//更新余额
+//            BigDecimal balance = cdLotteryUser.getBalance();
+//            BigDecimal newBalance = balance.add(new BigDecimal(rebate));
+//            cdLotteryUser.setBalance(newBalance);//更新余额
             cdLotteryUser.setRebate(String.valueOf(newRebate));//更新返利
             cdLotteryUserService.save(cdLotteryUser);
         }
