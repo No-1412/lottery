@@ -55,48 +55,48 @@ public class NotBallQuartz {
 //            Date today = new Date();
 //            String todayStr = sdf.format(today);//当天时间
 //            if (awardDate.equals(todayStr)) {
-                String weekday = cta.getWeekday();
-                String aCode = cta.getAcode();//开奖号码
-                //获取当期所有付款订单
-                List<CdThreeOrder> cList = cdThreeOrderService.findByStatus("3", weekday);
-                for (CdThreeOrder c : cList) {
-                    //System.out.println(c.getOrderNum() + "中奖");
-                    String orderPerhaps = c.getAllPerhaps();
-                    if ("2".equals(c.getBuyWays())) {
-                        int sum = 0;
-                        String[] aCodeArray = aCode.split(",");
-                        for (String s : aCodeArray) {
-                            sum += Integer.parseInt(s);
-                        }
-                        String wantSum = c.getNums();
-                        String[] wantSumArray = wantSum.split("\\|");
-                        for (String want : wantSumArray) {
-                            if (sum == Integer.parseInt(want)) {
-                                c.setResult(cta.getAcode());
-                                c = threeWinner(c);
+            String weekday = cta.getWeekday();
+            String aCode = cta.getAcode();//开奖号码
+            //获取当期所有付款订单
+            List<CdThreeOrder> cList = cdThreeOrderService.findByStatus("3", weekday);
+            for (CdThreeOrder c : cList) {
+                //System.out.println(c.getOrderNum() + "中奖");
+                String orderPerhaps = c.getAllPerhaps();
+                if ("2".equals(c.getBuyWays())) {
+                    int sum = 0;
+                    String[] aCodeArray = aCode.split(",");
+                    for (String s : aCodeArray) {
+                        sum += Integer.parseInt(s);
+                    }
+                    String wantSum = c.getNums();
+                    String[] wantSumArray = wantSum.split("\\|");
+                    for (String want : wantSumArray) {
+                        if (sum == Integer.parseInt(want)) {
+                            c.setResult(cta.getAcode());
+                            c = threeWinner(c);
 
-                            }
-                        }
-                    } else if (orderPerhaps.contains(aCode)) {
-                        c.setResult(cta.getAcode());
-                        c = threeWinner(c);
-
-                    } else {
-                        c.setResult(cta.getAcode());
-                        c.setStatus("5"); //未中奖
-                        c.setAward("0");//奖金为0
-                        //改变订单总表状态
-                        CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
-                        if (co != null) {
-                            co.setWinPrice("0");//奖金
-                            co.setStatus("2");//中奖
-                            cdOrderService.save(co);
                         }
                     }
-                    cdThreeOrderService.save(c);
-                    //更新用户余额
-                    SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
+                } else if (orderPerhaps.contains(aCode)) {
+                    c.setResult(cta.getAcode());
+                    c = threeWinner(c);
+
+                } else {
+                    c.setResult(cta.getAcode());
+                    c.setStatus("5"); //未中奖
+                    c.setAward("0");//奖金为0
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//中奖
+                        cdOrderService.save(co);
+                    }
                 }
+                cdThreeOrderService.save(c);
+                //更新用户余额
+                SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
+            }
 
         }
     }
@@ -116,49 +116,49 @@ public class NotBallQuartz {
 //            Date today = new Date();
 //            String todayStr = sdf.format(today);//当天时间
 //            if (awardDate.equals(todayStr)) {
-                String aCode = cfa.getAcode();//开奖号码
-                for (CdFiveOrder c : cList) {
+            String aCode = cfa.getAcode();//开奖号码
+            for (CdFiveOrder c : cList) {
 
-                    String orderPerhaps = c.getAllPerhaps();
-                    if (orderPerhaps.contains(aCode)) {
-                        c.setResult(aCode);
-                        c.setStatus("4");//中奖
-                        //保存中奖纪录
-                        CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                        cdOrderWinners.setWinOrderNum(c.getOrderNum());//中间单号
-                        cdOrderWinners.setWinPrice(c.getAward());//中奖金额
-                        cdOrderWinners.setUid(c.getUid());//中间用户
-                        double awardDouble = Double.parseDouble(c.getAward());
-                        String repayPercent = Calculations.getRepayPercent(awardDouble, Double.parseDouble(c.getPrice()));
-                        cdOrderWinners.setRepayPercent(repayPercent);
-                        cdOrderWinners.setType("8");
-                        cdOrderWinners.setWallType("1");
-                        cdOrderWinners.setResult(c.getResult());
-                        cdOrderWinnersService.save(cdOrderWinners);
-                        //改变订单总表状态
-                        CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
-                        if (co != null) {
-                            co.setWinPrice(c.getAward());//奖金
-                            co.setStatus("3");//中奖
-                            cdOrderService.save(co);
-                        }
-                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的排列五获得中奖金额" + c.getAward() + "元");
-                    } else {
-                        c.setResult(aCode);
-                        c.setStatus("5"); //未中奖
-                        c.setAward("0");//奖金为0
-                        //改变订单总表状态
-                        CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
-                        if (co != null) {
-                            co.setWinPrice("0");//奖金
-                            co.setStatus("2");//开奖
-                            cdOrderService.save(co);
-                        }
+                String orderPerhaps = c.getAllPerhaps();
+                if (orderPerhaps.contains(aCode)) {
+                    c.setResult(aCode);
+                    c.setStatus("4");//中奖
+                    //保存中奖纪录
+                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
+                    cdOrderWinners.setWinOrderNum(c.getOrderNum());//中间单号
+                    cdOrderWinners.setWinPrice(c.getAward());//中奖金额
+                    cdOrderWinners.setUid(c.getUid());//中间用户
+                    double awardDouble = Double.parseDouble(c.getAward());
+                    String repayPercent = Calculations.getRepayPercent(awardDouble, Double.parseDouble(c.getPrice()));
+                    cdOrderWinners.setRepayPercent(repayPercent);
+                    cdOrderWinners.setType("8");
+                    cdOrderWinners.setWallType("1");
+                    cdOrderWinners.setResult(c.getResult());
+                    cdOrderWinnersService.save(cdOrderWinners);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice(c.getAward());//奖金
+                        co.setStatus("3");//中奖
+                        cdOrderService.save(co);
                     }
-                    cdFiveOrderService.save(c);
-                    //更新用户余额
-                    SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
+                    AppPush.push(c.getUid(), "凯旋彩票", "您购买的排列五获得中奖金额" + c.getAward() + "元");
+                } else {
+                    c.setResult(aCode);
+                    c.setStatus("5"); //未中奖
+                    c.setAward("0");//奖金为0
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//开奖
+                        cdOrderService.save(co);
+                    }
                 }
+                cdFiveOrderService.save(c);
+                //更新用户余额
+                SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
+            }
 //            }
         }
     }
@@ -173,209 +173,209 @@ public class NotBallQuartz {
 //            Date today = new Date();
 //            String todayStr = sdf.format(today);//当天时间
 //            if (awardDate.equals(todayStr)) {
-                String weekday = clr.getMatchId().substring(1, 8);
-                String aCode = clr.getNumber();//开奖号码 |分割
-                String[] aCodeArray = aCode.split("\\|");
-                String redAwardNums = aCodeArray[0]; //开奖红球
-                String[] redAwardArray = redAwardNums.split(",");
-                String blueAwardNums = aCodeArray[1]; //开奖蓝球
-                String[] blueAwardArray = blueAwardNums.split(",");
-                //没注金额
-                String allAward = clr.getPerNoteMoney().replaceAll("--,", "");
-                String finalAward = allAward.replaceAll(",--", "");
+            String weekday = clr.getMatchId().substring(1, 8);
+            String aCode = clr.getNumber();//开奖号码 |分割
+            String[] aCodeArray = aCode.split("\\|");
+            String redAwardNums = aCodeArray[0]; //开奖红球
+            String[] redAwardArray = redAwardNums.split(",");
+            String blueAwardNums = aCodeArray[1]; //开奖蓝球
+            String[] blueAwardArray = blueAwardNums.split(",");
+            //没注金额
+            String allAward = clr.getPerNoteMoney().replaceAll("--,", "");
+            String finalAward = allAward.replaceAll(",--", "");
 
-                String[] perNoteMoneyArray = finalAward.split(",");
-                //获取当期所有付款订单
-                List<CdLottoOrder> cList = cdLottoOrderService.findByStatus("3", weekday);
-                for (CdLottoOrder c : cList) {
-                    String redNums = c.getRedNums().replaceAll("\\|", ",");
-                    String blueNums = c.getBlueNums().replaceAll("\\|", ",");
-                    String[] redArray = redNums.split(",");
-                    String[] blueArray = blueNums.split(",");
-                    int redCounts = 0, blueCounts = 0;
-                    for (String red : redArray) {
-                        for (String redReward : redAwardArray) {
-                            if (red.equals(redReward)) {
-                                redCounts++;
-                            }
+            String[] perNoteMoneyArray = finalAward.split(",");
+            //获取当期所有付款订单
+            List<CdLottoOrder> cList = cdLottoOrderService.findByStatus("3", weekday);
+            for (CdLottoOrder c : cList) {
+                String redNums = c.getRedNums().replaceAll("\\|", ",");
+                String blueNums = c.getBlueNums().replaceAll("\\|", ",");
+                String[] redArray = redNums.split(",");
+                String[] blueArray = blueNums.split(",");
+                int redCounts = 0, blueCounts = 0;
+                for (String red : redArray) {
+                    for (String redReward : redAwardArray) {
+                        if (red.equals(redReward)) {
+                            redCounts++;
                         }
                     }
-                    for (String blue : blueArray) {
-                        for (String blueReward : blueAwardArray) {
-                            if (blue.equals(blueReward)) {
-                                blueCounts++;
-                            }
+                }
+                for (String blue : blueArray) {
+                    for (String blueReward : blueAwardArray) {
+                        if (blue.equals(blueReward)) {
+                            blueCounts++;
                         }
                     }
-                    int result = redCounts * 10 + blueCounts;
-                    if (result == 52) {
-                        System.out.println(c.getOrderNum() + "一等奖");
+                }
+                int result = redCounts * 10 + blueCounts;
+                if (result == 52) {
+                    System.out.println(c.getOrderNum() + "一等奖");
 //                        double winCount = Double.parseDouble(c.getAcount());//注数
 //                        BigDecimal firstAward = BigDecimal.parseDouble(perNoteMoneyArray[0]);//每注金额
-                        BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[0]);
-                        BigDecimal winCount = new BigDecimal(c.getAcount());
-                        BigDecimal award = winCount.multiply(firstAward); //奖金
-                        if ("1".equals(c.getIsPlus())) {
-                            BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[6]);//追加每注金额
-                            BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
-                            award = award.add(awardPlus);
-                        }
-                        c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2, 2)));//奖金
-                        c.setResult(clr.getNumber());
-                        cdLottoOrderService.save(c);
-                        //保存中奖纪录
-                        saveWinnerRecord(c);
-                        //更改订单状态
-                        changeOrderStatus(c);
-//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
-                        //推送
-                        pushMssage(c.getUid(), award);
-                        continue;
-                    } else if (result == 51) {
-                        System.out.println(c.getOrderNum() + "二等奖");
-                        BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[1]);
-                        BigDecimal winCount = new BigDecimal(c.getAcount());
-                        BigDecimal award = winCount.multiply(firstAward); //奖金
-                        if ("1".equals(c.getIsPlus())) {
-                            BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[7]);//追加每注金额
-                            BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
-                            award = award.add(awardPlus);
-                        }
-                        c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2)));//奖金
-                        c.setResult(clr.getNumber());
-                        cdLottoOrderService.save(c);
-                        //保存中奖纪录
-                        saveWinnerRecord(c);
-                        //更改订单状态
-                        changeOrderStatus(c);
-                        //cdLottoOrderService.save(c);
-                        //推送
-                        try {
-                            pushMssage(c.getUid(), award);
-                        } catch (Exception e) {
-                            continue;
-                        }
-//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
-                    } else if (result == 50 || result == 42) {
-                        System.out.println(c.getOrderNum() + "三等奖");
-                        BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[2]);
-                        BigDecimal winCount = new BigDecimal(c.getAcount());
-                        BigDecimal award = winCount.multiply(firstAward); //奖金
-                        if ("1".equals(c.getIsPlus())) {
-                            BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[8]);//追加每注金额
-                            BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
-                            award = award.add(awardPlus);
-                        }
-                        c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2)));//奖金
-                        c.setResult(clr.getNumber());
-                        //cdLottoOrderService.save(c);
-                        //保存中奖纪录
-                        saveWinnerRecord(c);
-                        //更改订单状态
-                        changeOrderStatus(c);
-                        //cdLottoOrderService.save(c);
-                        //推送
-                        try {
-                            pushMssage(c.getUid(), award);
-                        } catch (Exception e) {
-                            continue;
-                        }
-
-
-//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
-                    } else if (result == 41 || result == 32) {
-                        System.out.println(c.getOrderNum() + "四等奖");
-                        BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[3]);
-                        BigDecimal winCount = new BigDecimal(c.getAcount());
-                        BigDecimal award = winCount.multiply(firstAward); //奖金
-                        if ("1".equals(c.getIsPlus())) {
-                            BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[9]);//追加每注金额
-                            BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
-                            award = award.add(awardPlus);
-                        }
-                        c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2)));//奖金
-                        c.setResult(clr.getNumber());
-                        //cdLottoOrderService.save(c);
-                        //保存中奖纪录
-                        saveWinnerRecord(c);
-                        //更改订单状态
-                        changeOrderStatus(c);
-                        //cdLottoOrderService.save(c);
-                        //推送
-                        try {
-                            pushMssage(c.getUid(), award);
-                        } catch (Exception e) {
-                            continue;
-                        }
-//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
-                    } else if (result == 40 || result == 31 || result == 22) {
-                        System.out.println(c.getOrderNum() + "五等奖");
-                        BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[4]);
-                        BigDecimal winCount = new BigDecimal(c.getAcount());
-                        BigDecimal award = winCount.multiply(firstAward); //奖金
-                        if ("1".equals(c.getIsPlus())) {
-                            BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[10]);//追加每注金额
-                            BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
-                            award = award.add(awardPlus);
-                        }
-                        c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2)));//奖金
-                        c.setResult(clr.getNumber());
-                        cdLottoOrderService.save(c);
-                        //保存中奖纪录
-                        saveWinnerRecord(c);
-                        //更改订单状态
-                        changeOrderStatus(c);
-
-                        //推送
-                        try {
-                            pushMssage(c.getUid(), award);
-                        } catch (Exception e) {
-                            continue;
-                        }
-//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
-                    } else if (result == 30 || result == 21 || result == 12 || result == 2) {
-                        System.out.println(c.getOrderNum() + "六等奖");
-                        BigDecimal firstAward = new BigDecimal(perNoteMoneyArray[5]);
-                        BigDecimal winCount = new BigDecimal(c.getAcount());
-                        BigDecimal award = winCount.multiply(firstAward); //奖金
-                        c.setStatus("4");//中奖
-                        c.setAward(String.valueOf(award.setScale(2)));//奖金
-                        c.setResult(clr.getNumber());
-                        cdLottoOrderService.save(c);
-                        //保存中奖纪录
-                        saveWinnerRecord(c);
-                        //更改订单状态
-                        changeOrderStatus(c);
-
-                        //推送
-                        try {
-                            pushMssage(c.getUid(), award);
-                        } catch (Exception e) {
-                            continue;
-                        }
-//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
-                    } else {
-                        c.setResult(clr.getNumber());
-                        c.setStatus("5");//未中奖
-                        c.setAward("0");//奖金0
-                        c.setResult(clr.getNumber());
-                        cdLottoOrderService.save(c);
-                        //改变订单总表状态
-                        CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
-                        if (co != null) {
-                            co.setWinPrice("0");//奖金
-                            co.setStatus("2");//中奖
-                            cdOrderService.save(co);
-                        }
+                    BigDecimal award = new BigDecimal(perNoteMoneyArray[0]);
+                    //BigDecimal winCount = new BigDecimal(c.getAcount());
+                    //BigDecimal award = winCount.multiply(firstAward); //奖金
+                    if ("1".equals(c.getIsPlus())) {
+                        BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[6]);//追加每注金额
+                        //BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
+                        award = award.add(firstAwardPlus);
                     }
-                    //更新用户余额 已经看不懂了 直接加在最后
-                    SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
+                    c.setStatus("4");//中奖
+                    c.setAward(String.valueOf(award.setScale(2, 2)));//奖金
+                    c.setResult(clr.getNumber());
+                    cdLottoOrderService.save(c);
+                    //保存中奖纪录
+                    saveWinnerRecord(c);
+                    //更改订单状态
+                    changeOrderStatus(c);
+//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
+                    //推送
+                    pushMssage(c.getUid(), award);
+                    continue;
+                } else if (result == 51) {
+                    System.out.println(c.getOrderNum() + "二等奖");
+                    BigDecimal award = new BigDecimal(perNoteMoneyArray[1]);
+//                    BigDecimal winCount = new BigDecimal(c.getAcount());
+//                    BigDecimal award = winCount.multiply(firstAward); //奖金
+                    if ("1".equals(c.getIsPlus())) {
+                        BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[7]);//追加每注金额
+//                        BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
+                        award = award.add(firstAwardPlus);
+                    }
+                    c.setStatus("4");//中奖
+                    c.setAward(String.valueOf(award.setScale(2)));//奖金
+                    c.setResult(clr.getNumber());
+                    cdLottoOrderService.save(c);
+                    //保存中奖纪录
+                    saveWinnerRecord(c);
+                    //更改订单状态
+                    changeOrderStatus(c);
+                    //cdLottoOrderService.save(c);
+                    //推送
+                    try {
+                        pushMssage(c.getUid(), award);
+                    } catch (Exception e) {
+                        continue;
+                    }
+//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
+                } else if (result == 50 || result == 42) {
+                    System.out.println(c.getOrderNum() + "三等奖");
+                    BigDecimal award = new BigDecimal(perNoteMoneyArray[2]);
+//                    BigDecimal winCount = new BigDecimal(c.getAcount());
+//                    BigDecimal award = winCount.multiply(firstAward); //奖金
+                    if ("1".equals(c.getIsPlus())) {
+                        BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[8]);//追加每注金额
+                        //BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
+                        award = award.add(firstAwardPlus);
+                    }
+                    c.setStatus("4");//中奖
+                    c.setAward(String.valueOf(award.setScale(2)));//奖金
+                    c.setResult(clr.getNumber());
+                    //cdLottoOrderService.save(c);
+                    //保存中奖纪录
+                    saveWinnerRecord(c);
+                    //更改订单状态
+                    changeOrderStatus(c);
+                    //cdLottoOrderService.save(c);
+                    //推送
+                    try {
+                        pushMssage(c.getUid(), award);
+                    } catch (Exception e) {
+                        continue;
+                    }
+
+
+//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
+                } else if (result == 41 || result == 32) {
+                    System.out.println(c.getOrderNum() + "四等奖");
+                    BigDecimal award = new BigDecimal(perNoteMoneyArray[3]);
+//                    BigDecimal winCount = new BigDecimal(c.getAcount());
+//                    BigDecimal award = winCount.multiply(firstAward); //奖金
+                    if ("1".equals(c.getIsPlus())) {
+                        BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[9]);//追加每注金额
+//                        BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
+                        award = award.add(firstAwardPlus);
+                    }
+                    c.setStatus("4");//中奖
+                    c.setAward(String.valueOf(award.setScale(2)));//奖金
+                    c.setResult(clr.getNumber());
+                    //cdLottoOrderService.save(c);
+                    //保存中奖纪录
+                    saveWinnerRecord(c);
+                    //更改订单状态
+                    changeOrderStatus(c);
+                    //cdLottoOrderService.save(c);
+                    //推送
+                    try {
+                        pushMssage(c.getUid(), award);
+                    } catch (Exception e) {
+                        continue;
+                    }
+//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
+                } else if (result == 40 || result == 31 || result == 22) {
+                    System.out.println(c.getOrderNum() + "五等奖");
+                    BigDecimal award = new BigDecimal(perNoteMoneyArray[4]);
+//                    BigDecimal winCount = new BigDecimal(c.getAcount());
+//                    BigDecimal award = winCount.multiply(firstAward); //奖金
+                    if ("1".equals(c.getIsPlus())) {
+                        BigDecimal firstAwardPlus = new BigDecimal(perNoteMoneyArray[10]);//追加每注金额
+//                        BigDecimal awardPlus = winCount.multiply(firstAwardPlus);
+                        award = award.add(firstAwardPlus);
+                    }
+                    c.setStatus("4");//中奖
+                    c.setAward(String.valueOf(award.setScale(2)));//奖金
+                    c.setResult(clr.getNumber());
+                    cdLottoOrderService.save(c);
+                    //保存中奖纪录
+                    saveWinnerRecord(c);
+                    //更改订单状态
+                    changeOrderStatus(c);
+
+                    //推送
+                    try {
+                        pushMssage(c.getUid(), award);
+                    } catch (Exception e) {
+                        continue;
+                    }
+//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
+                } else if (result == 30 || result == 21 || result == 12 || result == 2) {
+                    System.out.println(c.getOrderNum() + "六等奖");
+                    BigDecimal award = new BigDecimal(perNoteMoneyArray[5]);
+//                    BigDecimal winCount = new BigDecimal(c.getAcount());
+//                    BigDecimal award = winCount.multiply(firstAward); //奖金
+                    c.setStatus("4");//中奖
+                    c.setAward(String.valueOf(award.setScale(2)));//奖金
+                    c.setResult(clr.getNumber());
+                    cdLottoOrderService.save(c);
+                    //保存中奖纪录
+                    saveWinnerRecord(c);
+                    //更改订单状态
+                    changeOrderStatus(c);
+
+                    //推送
+                    try {
+                        pushMssage(c.getUid(), award);
+                    } catch (Exception e) {
+                        continue;
+                    }
+//                        AppPush.push(c.getUid(), "凯旋彩票", "您购买的大乐透获得中奖金额" + award + "元");
+                } else {
+                    c.setResult(clr.getNumber());
+                    c.setStatus("5");//未中奖
+                    c.setAward("0");//奖金0
+                    c.setResult(clr.getNumber());
+                    cdLottoOrderService.save(c);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(c.getOrderNum());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//中奖
+                        cdOrderService.save(co);
+                    }
                 }
+                //更新用户余额 已经看不懂了 直接加在最后
+                SelOrderUtil.addBalanceToUser(c.getAward(), c.getUid());
+            }
 //            }
         }
     }
