@@ -500,7 +500,7 @@ public class SelOrderUtil {
         String beat = cbf.getBeat();
         String[] beatArray = beat.split("\\|");
         //让球胜负
-        String let = cbf.getBeat();
+        String let = cbf.getLet();
         String[] letArray = let.split("\\|");
         //大小分
         String size = cbf.getSize();

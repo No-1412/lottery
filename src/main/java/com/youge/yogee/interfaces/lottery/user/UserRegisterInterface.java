@@ -11,7 +11,6 @@ import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.SMSUtil;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
-import com.youge.yogee.modules.cmessage.service.CdMessageService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.service.SystemService;
 import org.slf4j.Logger;
@@ -40,9 +39,6 @@ public class UserRegisterInterface {
 
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
-
-    @Autowired
-    private CdMessageService cdMessageService;
     @Autowired
     private SystemService systemService;
 

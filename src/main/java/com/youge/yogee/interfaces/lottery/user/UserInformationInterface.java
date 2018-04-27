@@ -112,7 +112,7 @@ public class UserInformationInterface {
                     europe += 1;
                 } else if (str.equals("美洲")) {
                     america += 1;
-                } else {
+                } else if (str.equals("非洲")) {
                     africa += 1;
                 }
             }
