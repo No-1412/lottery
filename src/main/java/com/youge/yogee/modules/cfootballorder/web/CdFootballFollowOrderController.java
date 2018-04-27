@@ -313,7 +313,7 @@ public class CdFootballFollowOrderController extends BaseController {
                 }
                 cfb.setOrderDetail(newDeatail);
                 String[] newDetailArray = newDeatail.split("\\|");
-                String perAwards = "1";
+                String perAwards = "2";
                 for (String s : newDetailArray) {
                     String[] aArray = s.split("\\+");
                     String odds = aArray[2].split("/")[1];

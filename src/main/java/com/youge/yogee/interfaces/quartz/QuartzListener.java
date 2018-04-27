@@ -248,8 +248,9 @@ public class QuartzListener {
         }
     }
 
-    //    "0/10 * * * * ?" 每10秒触发
-    @Scheduled(cron = "0 0 */1 * * ?")//2小时
+    //    "0/10 * * * * ?"
+    @Scheduled(cron = "0/10 * * * * ?")//每10秒触发
+//    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
 
@@ -292,17 +293,17 @@ public class QuartzListener {
                 }
                 //判断总进球
                 String goal = cdFootballFollowOrder.getGoal();
-                if (StringUtils.isNotEmpty(score)) {
+                if (StringUtils.isNotEmpty(goal)) {
                     judgeFootballFollow(goal, "goal", winList, danWinList);
                 }
                 //判断半全场
                 String half = cdFootballFollowOrder.getHalf();
-                if (StringUtils.isNotEmpty(score)) {
+                if (StringUtils.isNotEmpty(half)) {
                     judgeFootballFollow(half, "half", winList, danWinList);
                 }
                 //判断胜负平
                 String beat = cdFootballFollowOrder.getBeat();
-                if (StringUtils.isNotEmpty(score)) {
+                if (StringUtils.isNotEmpty(beat)) {
                     judgeFootballFollow(beat, "beat", winList, danWinList);
                 }
 
