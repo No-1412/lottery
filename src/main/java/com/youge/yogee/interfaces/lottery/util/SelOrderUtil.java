@@ -302,13 +302,17 @@ public class SelOrderUtil {
             if (scoreMap.size() > 0) {
                 vs = scoreMap.get("vs");
             }
+
             orderMap.put("score", scoreMap.get("result"));
+
             //进球
             Map<String, String> goalMap = getFollowMap(match, goalArray);
             if (goalMap.size() > 0) {
                 vs = goalMap.get("vs");
             }
             orderMap.put("goal", goalMap.get("result"));
+
+
             //半全场
             String halfName = "";
             Map<String, String> halfMap = getFollowMap(match, halfArray);
@@ -325,18 +329,37 @@ public class SelOrderUtil {
                 }
             }
             orderMap.put("half", halfName); //半全场
+
             //胜负平
             Map<String, String> beatMap = getFollowMap(match, beatArray);
             if (beatMap.size() > 0) {
                 vs = beatMap.get("vs");
             }
-            orderMap.put("beat", beatMap.get("result"));
+
+            String trueBeat = beatMap.get("result");
+            String realBeat = "";
+            if (StringUtils.isNotEmpty(trueBeat)) {
+                String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
+                String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
+                String finalBeat3 = finalBeat2.replaceAll("0/", "客胜/");
+                realBeat = finalBeat3;
+            }
+
+            orderMap.put("beat", realBeat);
             //让球
             Map<String, String> letMap = getFollowMap(match, letArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
-            orderMap.put("let", letMap.get("result"));
+            String trueLet = letMap.get("result");
+            String realLet = "";
+            if (StringUtils.isNotEmpty(trueLet)) {
+                String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
+                String finalLet2 = finalLet1.replaceAll("1/", "平/");
+                String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
+                realLet = finalLet3;
+            }
+            orderMap.put("let", realLet);
             orderMap.put("vs", vs);
 
             detailList.add(orderMap);
@@ -390,7 +413,8 @@ public class SelOrderUtil {
             if (scoreMap.size() > 0) {
                 vs = scoreMap.get("vs"); //队伍
             }
-            orderMap.put("score", scoreMap.get("result")); //比分
+            String trueScore = scoreMap.get("result");
+            orderMap.put("score", trueScore); //比分
             //进球
             Map<String, String> goalMap = getSingleMap(s, goalArray);
             if (goalMap.size() > 0) {
@@ -418,13 +442,31 @@ public class SelOrderUtil {
             if (beatMap.size() > 0) {
                 vs = beatMap.get("vs");
             }
-            orderMap.put("beat", beatMap.get("result")); //胜负
+            String realBeat = "";
+            String trueBeat = beatMap.get("result");
+            if (StringUtils.isNotEmpty(trueBeat)) {
+                String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
+                String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
+                String finalBeat3 = finalBeat2.replaceAll("0/", "客胜/");
+                realBeat = finalBeat3;
+            }
+
+            orderMap.put("beat", realBeat); //胜负
             //让球
             Map<String, String> letMap = getSingleMap(s, letArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
-            orderMap.put("let", letMap.get("result")); //让球
+            String realLet = "";
+            String trueLet = letMap.get("result");
+            if (StringUtils.isNotEmpty(trueLet)) {
+                String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
+                String finalLet2 = finalLet1.replaceAll("1/", "平/");
+                String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
+                realLet = finalLet3;
+            }
+            orderMap.put("let", realLet);
+            //orderMap.put("let", letMap.get("result")); //让球
             orderMap.put("vs", vs);
             detailList.add(orderMap);
         }
@@ -547,14 +589,32 @@ public class SelOrderUtil {
             if (beatMap.size() > 0) {
                 vs = beatMap.get("vs");
             }
-            orderMap.put("beat", beatMap.get("result"));
+            String realBeat="";
+            String trueBeat = beatMap.get("result");
+            if(StringUtils.isNotEmpty(trueBeat)){
+                String finalBeat1 = trueBeat.replaceAll("1/", "主胜/");
+                String finalBeat2 = finalBeat1.replaceAll("0/", "主负/");
+                realBeat=finalBeat2;
+            }
+
+            orderMap.put("beat", realBeat);
+            //orderMap.put("beat", beatMap.get("result"));
             //让球胜负
             Map<String, String> letMap = getFollowMap(match, letArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
-            orderMap.put("let", letMap.get("result"));
+            String trueLet = letMap.get("result");
+            String realLet="";
+            if(StringUtils.isNotEmpty(trueBeat)){
+                String finalLet1 = trueLet.replaceAll("1/", "让主胜/");
+                String finalLet2 = finalLet1.replaceAll("0/", "让主负/");
+                realLet=finalLet2;
+            }
+
+            orderMap.put("let", realLet);
             orderMap.put("vs", vs);
+
             //大小分
             String finalSize = "";
             if (StringUtils.isNotEmpty(sizeArray[0])) {
