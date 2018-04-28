@@ -606,7 +606,7 @@ public class SelOrderUtil {
             }
             String trueLet = letMap.get("result");
             String realLet="";
-            if(StringUtils.isNotEmpty(trueBeat)){
+            if(StringUtils.isNotEmpty(trueLet)){
                 String finalLet1 = trueLet.replaceAll("1/", "让主胜/");
                 String finalLet2 = finalLet1.replaceAll("0/", "让主负/");
                 realLet=finalLet2;

@@ -115,19 +115,27 @@ public class CdBasketballFollowOrderController extends BaseController {
         if (StringUtils.isNotEmpty(beat)) {
             String[] beatStr = beat.split("\\|");
             for (String s : beatStr) {
-                bList.add(s);
+                String newBeat = s.replaceAll("1/", "主胜/");
+                String finalBeat = newBeat.replaceAll("0/", "主负/");
+                bList.add(finalBeat);
             }
         }
         if (StringUtils.isNotEmpty(size)) {
             String[] sizeStr = size.split("\\|");
             for (String s : sizeStr) {
-                sList.add(s);
+                String newSize = s.replaceAll("1/", "大于/");
+                String finalSize = newSize.replaceAll("0/", "小于/");
+                //bList.add(finalSize);
+                sList.add(finalSize);
             }
         }
         if (StringUtils.isNotEmpty(let)) {
             String[] letStr = let.split("\\|");
             for (String s : letStr) {
-                tList.add(s);
+                String newLet = s.replaceAll("1/", "让主胜/");
+                String finalLet = newLet.replaceAll("0/", "让主负/");
+                //bList.add(finalBeat);
+                tList.add(finalLet);
             }
         }
 //        } else {

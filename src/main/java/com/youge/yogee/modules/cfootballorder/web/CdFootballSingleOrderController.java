@@ -105,21 +105,39 @@ public class CdFootballSingleOrderController extends BaseController {
         if (StringUtils.isNotEmpty(half)) {
             String[] halfStr = half.split("\\|");
             for (String s : halfStr) {
-                hList.add(s);
+                Map<String, String> map = BallGameCals.getHalfWholeNames();
+                String[] sArray = s.split("\\+");
+                String aHalf = sArray[2];
+                String[] aHalfArray = aHalf.split(",");
+                String newAhalfArray = "";
+                for (String str : aHalfArray) {
+                    String[] strArray = str.split("/");
+                    String newStr = map.get(strArray[0]);
+                    str = newStr + "/" + strArray[1];
+                    newAhalfArray += str + ",";
+                }
+                String newAsArray = sArray[0] + "+" + sArray[1] + "+" + sArray[2] + "+" + newAhalfArray;
+                hList.add(newAsArray);
             }
         }
 
         if (StringUtils.isNotEmpty(beat)) {
             String[] beatStr = beat.split("\\|");
             for (String s : beatStr) {
-                bList.add(s);
+                String beat1 = s.replaceAll("3/", "主胜/");
+                String beat2 = beat1.replaceAll("1/", "平/");
+                String beat3 = beat2.replaceAll("0/", "客胜/");
+                bList.add(beat3);
             }
         }
 
         if (StringUtils.isNotEmpty(let)) {
             String[] letStr = let.split("\\|");
             for (String s : letStr) {
-                tList.add(s);
+                String let1 = s.replaceAll("3/", "让主胜/");
+                String let2 = let1.replaceAll("1/", "平/");
+                String let3 = let2.replaceAll("0/", "让客胜/");
+                tList.add(let3);
             }
         }
         //获取当前时间
@@ -169,19 +187,19 @@ public class CdFootballSingleOrderController extends BaseController {
         //更新让球
         String let = cdFootballSingleOrder.getLet();
         if (StringUtils.isNotEmpty(let)) {
-            String letScore="";
+            String letScore = "";
             String[] letArray = let.split("\\|");
             for (String aLet : letArray) {
-                String[] aLetArray=aLet.split("\\+");
-                String matchId=aLetArray[0];
+                String[] aLetArray = aLet.split("\\+");
+                String matchId = aLetArray[0];
                 //查询比赛
                 CdFootballMixed cfm = cdFootballMixedService.findByMatchId(matchId);
                 if (cfm == null) {
                     //比赛不存在 无法出票
                     addMessage(redirectAttributes, "出票失败,比赛可能不存在");
                     return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-                }else {
-                    letScore+=cfm.getClose()+",";
+                } else {
+                    letScore += cfm.getClose() + ",";
                 }
             }
             cdFootballSingleOrder.setLetBalls(letScore);
@@ -193,75 +211,75 @@ public class CdFootballSingleOrderController extends BaseController {
 
         //==================start   2018-04-11   yuhongwei 跳转打印页
         String buy_ways = cdFootballSingleOrder.getBuyWays();
-        String match_ids = cdFootballSingleOrder.getMatchIds().substring(0,cdFootballSingleOrder.getMatchIds().length()-1);
+        String match_ids = cdFootballSingleOrder.getMatchIds().substring(0, cdFootballSingleOrder.getMatchIds().length() - 1);
         String baseUrl = "modules/print/";
-        model.addAttribute("orderNumber",cdFootballSingleOrder.getOrderNum());
-        if("1".equals(buy_ways)){//混投
+        model.addAttribute("orderNumber", cdFootballSingleOrder.getOrderNum());
+        if ("1".equals(buy_ways)) {//混投
            /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
             return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";*/
-            if(match_ids.split(",").length<=3){//足彩_3关
-                return baseUrl+ "football3";
-            }else if(match_ids.split(",").length<=6){//足彩_6关
-                return baseUrl+  "football6";
-            }else if(match_ids.split(",").length<=8){//足彩_8关
-                return baseUrl+"football8";
+            if (match_ids.split(",").length <= 3) {//足彩_3关
+                return baseUrl + "football3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_6关
+                return baseUrl + "football6";
+            } else if (match_ids.split(",").length <= 8) {//足彩_8关
+                return baseUrl + "football8";
             }
-        }else if("2".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_胜负平3关
-                return baseUrl+ "footballSFP3";
-            }else if(match_ids.split(",").length<=6){//足彩_胜负平6关
+        } else if ("2".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_胜负平3关
+                return baseUrl + "footballSFP3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_胜负平6关
                 //return baseUrl+ "足球胜平负6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_胜负平8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_胜负平8关
                 //return baseUrl+ "足球胜平负8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
-        }else if("3".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_比分3关
-                return baseUrl+ "footballBF3";
-            }else if(match_ids.split(",").length<=6){//足彩_比分6关
+        } else if ("3".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_比分3关
+                return baseUrl + "footballBF3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_比分6关
                 //return baseUrl+ "足球比分6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_比分8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_比分8关
                 //return baseUrl+ "足球比分8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
-        }else if("4".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足球_总进球3关
-                return baseUrl+ "footballZJQ3";
-            }else if(match_ids.split(",").length<=6){//足球_总进球6关
-                return baseUrl+ "footballZJQ6";
-            }else if(match_ids.split(",").length<=8){//足球_总进球8关
+        } else if ("4".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足球_总进球3关
+                return baseUrl + "footballZJQ3";
+            } else if (match_ids.split(",").length <= 6) {//足球_总进球6关
+                return baseUrl + "footballZJQ6";
+            } else if (match_ids.split(",").length <= 8) {//足球_总进球8关
                 //return baseUrl+ "足球总进球6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
-        }else if("5".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_半全场3关
-                return baseUrl+ "footballBQC3";
-            }else if(match_ids.split(",").length<=6){//足彩_半全场6关
+        } else if ("5".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_半全场3关
+                return baseUrl + "footballBQC3";
+            } else if (match_ids.split(",").length <= 6) {//足彩_半全场6关
                 //return baseUrl+ "足球半全场6关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_半全场8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_半全场8关
                 //return baseUrl+ "足球半全场8关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
-        }else if("6".equals(buy_ways)){
-            if(match_ids.split(",").length<=3){//足彩_让球胜负平3关
+        } else if ("6".equals(buy_ways)) {
+            if (match_ids.split(",").length <= 3) {//足彩_让球胜负平3关
                 //return baseUrl+ "足球半全场3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-            }else if(match_ids.split(",").length<=6){//足彩_让球胜负平6关
+            } else if (match_ids.split(",").length <= 6) {//足彩_让球胜负平6关
                 //return baseUrl+ "100011001110";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-            }else if(match_ids.split(",").length<=8){//足彩_让球胜负平8关
+            } else if (match_ids.split(",").length <= 8) {//足彩_让球胜负平8关
                 //return baseUrl+ "100011001110";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";

@@ -52,7 +52,7 @@ public class ErpOrderService extends BaseService {
 			dc.add(Restrictions.like("userId.name", "%"+erpOrder.getName()+"%"));
 		}
 		dc.add(Restrictions.eq(ErpOrder.FIELD_DEL_FLAG, ErpOrder.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.desc("id"));
+		dc.addOrder(Order.desc("createDate"));
 		return erpOrderDao.find(page, dc);
 	}
 	

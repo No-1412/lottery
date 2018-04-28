@@ -111,21 +111,39 @@ public class CdFootballFollowOrderController extends BaseController {
         if (StringUtils.isNotEmpty(half)) {
             String[] halfStr = half.split("\\|");
             for (String s : halfStr) {
-                hList.add(s);
+                Map<String, String> map = BallGameCals.getHalfWholeNames();
+                String[] sArray = s.split("\\+");
+                String aHalf = sArray[3];
+                String[] aHalfArray = aHalf.split(",");
+                String newAhalfArray = "";
+                for (String str : aHalfArray) {
+                    String[] strArray = str.split("/");
+                    String newStr = map.get(strArray[0]);
+                    str = newStr + "/" + strArray[1];
+                    newAhalfArray += str + ",";
+                }
+                String newAsArray = sArray[0] + "+" + sArray[1] + "+" + sArray[2] + "+" + newAhalfArray;
+                hList.add(newAsArray);
             }
         }
 
         if (StringUtils.isNotEmpty(beat)) {
             String[] beatStr = beat.split("\\|");
             for (String s : beatStr) {
-                bList.add(s);
+                String beat1 = s.replaceAll("3/", "主胜/");
+                String beat2 = beat1.replaceAll("1/", "平/");
+                String beat3 = beat2.replaceAll("0/", "客胜/");
+                bList.add(beat3);
             }
         }
 
         if (StringUtils.isNotEmpty(let)) {
             String[] letStr = let.split("\\|");
             for (String s : letStr) {
-                tList.add(s);
+                String let1 = s.replaceAll("3/", "让主胜/");
+                String let2 = let1.replaceAll("1/", "平/");
+                String let3 = let2.replaceAll("0/", "让客胜/");
+                tList.add(let3);
             }
         }
         //获取当前时间

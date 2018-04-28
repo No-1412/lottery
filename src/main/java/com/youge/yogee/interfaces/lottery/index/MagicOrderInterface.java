@@ -534,9 +534,10 @@ public class MagicOrderInterface {
             c.setAcount(acount);
             c.setUid(uid); //用户id
             c.setType("2");//跟买
-            c.setStatus("1");//已提交
+            c.setStatus("2");//已付款
             c.setAward("0");//奖金
             cdFootballSingleOrderService.save(c);
+            changeUserBalance(uid,price);//更改用户余额
 
         } else if ("2".equals(type)) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(magicOrderNum);
@@ -560,7 +561,7 @@ public class MagicOrderInterface {
             double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
             price = String.valueOf(timesDouble * startPriceDouble);
             c.setPrice(price);//金额
-            c.setStatus("1");//已提交
+            c.setStatus("2");//已付款
             c.setUid(uid);//用户
             c.setBuyWays(cff.getBuyWays());//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
             c.setFollowNum(cff.getFollowNum());//串关数
@@ -570,6 +571,7 @@ public class MagicOrderInterface {
             c.setType("2"); //0普通订单 1发起的 2跟单的
             c.setBestType(cff.getBestType());
             cdFootballFollowOrderService.save(c);
+            changeUserBalance(uid,price);//更改用户余额
             if ("2".equals(cff.getBestType())) {
                 String oldOrderNum = cff.getOrderNum();
                 List<CdFootballBestFollowOrder> fList = cdFootballBestFollowOrderService.findByOrderNum(oldOrderNum);
@@ -602,12 +604,13 @@ public class MagicOrderInterface {
             double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
             price = String.valueOf(timesDouble * startPriceDouble);
             c.setPrice(price);//金额
-            c.setStatus("1");//已提交
+            c.setStatus("2");//已购买
             c.setUid(uid);//用户
             c.setBuyWays("1"); //玩法 1混投
             c.setType("2"); // 0普通订单 1发起的 2跟单的
             c.setMatchIds(cbs.getMatchIds());//所有场次
             cdBasketballSingleOrderService.save(c);
+            changeUserBalance(uid,price);//更改用户余额
         } else {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(magicOrderNum);
             if (cbf == null) {
@@ -633,7 +636,7 @@ public class MagicOrderInterface {
             double startPriceDouble = Double.parseDouble(cmo.getStartPrice());
             price = String.valueOf(timesDouble * startPriceDouble);
             c.setPrice(price);//金额
-            c.setStatus("1");//已提交
+            c.setStatus("2");//已购买
             c.setUid(uid);//用户
             c.setBuyWays(cbf.getBuyWays());//玩法 1混投 2胜负平 3猜比分 4总进球 5半全场 6让球
             c.setFollowNums(cbf.getFollowNums());//串关数
@@ -642,6 +645,7 @@ public class MagicOrderInterface {
             c.setType("2"); // 0普通订单 1发起的 2跟单的
             c.setBestType(cbf.getBestType());
             cdBasketballFollowOrderService.save(c);
+            changeUserBalance(uid,price);//更改用户余额
             if ("2".equals(cbf.getBestType())) {
                 String oldOrderNum = cbf.getOrderNum();
                 List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(oldOrderNum);
@@ -737,5 +741,13 @@ public class MagicOrderInterface {
         return HttpResultUtil.successJson(map);
     }
 
+
+    private void changeUserBalance(String uid, String price) {
+        CdLotteryUser clu = cdLotteryUserService.get(uid);
+        BigDecimal balance = clu.getBalance();
+        BigDecimal newBalance = balance.subtract(new BigDecimal(price));
+        clu.setBalance(newBalance);
+        cdLotteryUserService.save(clu);
+    }
 
 }
