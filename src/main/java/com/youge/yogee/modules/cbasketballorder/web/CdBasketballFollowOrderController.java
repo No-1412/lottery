@@ -373,11 +373,11 @@ public class CdBasketballFollowOrderController extends BaseController {
         String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0, cdBasketballFollowOrder.getDanMatchIds().length() - 1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber", cdBasketballFollowOrder.getOrderNum());
+        String returnStr=cdBasketballFollowOrder.getPrice()+"元,"+cdBasketballFollowOrder.getFollowNums()+"串1,";//打印在头部显示
         if ("1".equals(buy_ways)) {//混投
-           /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
-            return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";*/
+            returnStr = "竟篮混合,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
-
                 return baseUrl + "basketball3";
             } else if (match_ids.split(",").length <= 6) {
                 return baseUrl + "basketball6";
@@ -385,6 +385,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return baseUrl + "basketball8";
             }
         } else if ("2".equals(buy_ways)) {
+            returnStr = "竟篮胜负,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 return baseUrl + "basketballSF3";
             } else if (match_ids.split(",").length <= 6) {
@@ -397,6 +399,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
             }
         } else if ("3".equals(buy_ways)) {
+            returnStr = "竟篮让分胜负,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球让分胜负3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
@@ -409,6 +413,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return baseUrl + "basketballRFSF8";
             }
         } else if ("4".equals(buy_ways)) {
+            returnStr = "竟篮大小分,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球大小分3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
@@ -421,6 +427,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return baseUrl + "basketballDXF8";
             }
         } else if ("5".equals(buy_ways)) {
+            returnStr = "竟篮胜负差,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球胜负差3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");

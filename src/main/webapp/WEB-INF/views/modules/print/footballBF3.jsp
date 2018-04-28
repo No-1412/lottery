@@ -114,7 +114,7 @@
 <body>
 <div id="print" >打印</div>
 <!--startprint-->
-<div style="height:20.7mm"></div>
+<div style="height:20.7mm"><p>${orderNumber}</p><p>${returnStr}</p></div>
 <div class="content" style="overflow:hidden;margin-left:2mm;">
   <ul class="lBox">
 

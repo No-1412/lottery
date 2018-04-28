@@ -146,9 +146,10 @@ public class CdBasketballSingleOrderController extends BaseController {
         String match_ids = cdBasketballSingleOrder.getMatchIds().substring(0,cdBasketballSingleOrder.getMatchIds().length()-1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber",cdBasketballSingleOrder.getOrderNum());
+        String returnStr=cdBasketballSingleOrder.getPrice()+"元,";//打印在头部显示
         if("1".equals(buy_ways)){//混投
-           /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
-            return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballSingleOrder/?repage";*/
+          returnStr = "竟篮混合,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if(match_ids.split(",").length<=3){//足彩_3关
                 return baseUrl+ "basketball3";
             }else if(match_ids.split(",").length<=6){//足彩_6关
@@ -157,6 +158,7 @@ public class CdBasketballSingleOrderController extends BaseController {
                 return baseUrl+"basketball8";
             }
         }
+
         addMessage(redirectAttributes, "保存成功,没有模板不能打印");
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballSingleOrder/?repage";
 

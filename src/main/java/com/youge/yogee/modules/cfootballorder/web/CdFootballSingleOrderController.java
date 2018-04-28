@@ -214,9 +214,10 @@ public class CdFootballSingleOrderController extends BaseController {
         String match_ids = cdFootballSingleOrder.getMatchIds().substring(0, cdFootballSingleOrder.getMatchIds().length() - 1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber", cdFootballSingleOrder.getOrderNum());
+        String returnStr=cdFootballSingleOrder.getPrice()+"元,";//打印在头部显示
         if ("1".equals(buy_ways)) {//混投
-           /* addMessage(redirectAttributes, "保存成功,没有模板不能打印");
-            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";*/
+            returnStr = "竟足混合,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {//足彩_3关
                 return baseUrl + "football3";
             } else if (match_ids.split(",").length <= 6) {//足彩_6关
@@ -225,6 +226,8 @@ public class CdFootballSingleOrderController extends BaseController {
                 return baseUrl + "football8";
             }
         } else if ("2".equals(buy_ways)) {
+            returnStr = "竟足胜负平,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {//足彩_胜负平3关
                 return baseUrl + "footballSFP3";
             } else if (match_ids.split(",").length <= 6) {//足彩_胜负平6关
@@ -237,6 +240,8 @@ public class CdFootballSingleOrderController extends BaseController {
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
         } else if ("3".equals(buy_ways)) {
+            returnStr = "竟足比分,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {//足彩_比分3关
                 return baseUrl + "footballBF3";
             } else if (match_ids.split(",").length <= 6) {//足彩_比分6关
@@ -249,6 +254,8 @@ public class CdFootballSingleOrderController extends BaseController {
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
         } else if ("4".equals(buy_ways)) {
+            returnStr = "竟足总进球,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {//足球_总进球3关
                 return baseUrl + "footballZJQ3";
             } else if (match_ids.split(",").length <= 6) {//足球_总进球6关
@@ -259,6 +266,8 @@ public class CdFootballSingleOrderController extends BaseController {
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
         } else if ("5".equals(buy_ways)) {
+            returnStr = "竟足半全场,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {//足彩_半全场3关
                 return baseUrl + "footballBQC3";
             } else if (match_ids.split(",").length <= 6) {//足彩_半全场6关
@@ -271,6 +280,8 @@ public class CdFootballSingleOrderController extends BaseController {
                 return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
             }
         } else if ("6".equals(buy_ways)) {
+            returnStr = "竟足让球胜负平,"+returnStr;
+            model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {//足彩_让球胜负平3关
                 //return baseUrl+ "足球半全场3关";
                 addMessage(redirectAttributes, "保存成功,没有模板不能打印");
