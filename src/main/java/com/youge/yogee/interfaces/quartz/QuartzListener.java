@@ -253,14 +253,13 @@ public class QuartzListener {
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
-
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("1");
 
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
 
-
+        out:
         for (CdFootballFollowOrder cdFootballFollowOrder : cdFootballFollowOrderList) {
 
             //获取订单中押的全部场次
@@ -468,9 +467,11 @@ public class QuartzListener {
                                         co.setWinPrice("0");//奖金
                                         co.setStatus("2");//中奖
                                         cdOrderService.save(co);
+                                       break out;
                                     }
                                 }
                             }
+
                         }
                         //根据串关计算奖金
 
