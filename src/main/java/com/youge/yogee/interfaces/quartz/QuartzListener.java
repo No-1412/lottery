@@ -249,8 +249,8 @@ public class QuartzListener {
     }
 
     //    "0/10 * * * * ?"
-    @Scheduled(cron = "0/10 * * * * ?")//每10秒触发
-//    @Scheduled(cron = "0 0 */1 * * ?")//2小时
+//    @Scheduled(cron = "0/10 * * * * ?")//每10秒触发
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("1");
