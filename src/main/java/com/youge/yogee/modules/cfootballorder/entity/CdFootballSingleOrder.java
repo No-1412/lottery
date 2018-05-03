@@ -52,6 +52,9 @@ public class CdFootballSingleOrder extends BaseEntity<T> implements Serializable
     private String letBalls;     //让球数 ，分割
     private String type;     // 0普通订单 1发起的 2跟单的
     private String matchIds; //购买的所有场次
+
+    private String allMatchTimes;//所有比赛时间
+
     private String result;       //开奖结果
     private String continent; //大洲
 
@@ -251,6 +254,14 @@ public class CdFootballSingleOrder extends BaseEntity<T> implements Serializable
 
     public void setContinent(String continent) {
         this.continent = continent;
+    }
+
+    public String getAllMatchTimes() {
+        return allMatchTimes;
+    }
+
+    public void setAllMatchTimes(String allMatchTimes) {
+        this.allMatchTimes = allMatchTimes;
     }
 }
 

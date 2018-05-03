@@ -6,6 +6,8 @@ import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.modules.bm.entity.BmEventBelong;
 import com.youge.yogee.modules.bm.service.BmEventBelongService;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinish;
+import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
@@ -20,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +43,15 @@ public class FootballSingleOrderInterface {
     private CdFootballMixedService cdFootballMixedService;
     @Autowired
     private BmEventBelongService bmEventBelongService;
+    @Autowired
+    private CdFbNotFinishService cdFbNotFinishService;
 
     /**
      * 足球单关 提交订单
      */
     @RequestMapping(value = "footballSingleOrderCommit", method = RequestMethod.POST)
     @ResponseBody
-    public String footballSingleOrderCommit(HttpServletRequest request) {
+    public String footballSingleOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface footballSingleOrderCommit--------Start-------------------");
         logger.debug("interface 请求--footballSingleOrderCommit-------- Start--------");
         Map map = new HashMap();
@@ -81,6 +88,7 @@ public class FootballSingleOrderInterface {
         String continent = "";
         int acount = 0;//注数
         String matchIds = "";
+        String allMatchTimes = "";
         if (detail.size() != 0) {
             for (Map<String, Object> d : detail) {
                 int partCount = 0;
@@ -89,9 +97,23 @@ public class FootballSingleOrderInterface {
                 if (sfm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
+                String shutDownTime = sfm.getTimeEndsale();
+                Date day = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if (df.parse(shutDownTime).getTime() < day.getTime()) {
+                    return HttpResultUtil.errorJson("超过比赛截止时间");
+                }
+
                 matchIds += matchId + ",";
                 //比赛详情
                 String partDetail = matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
+                //记录所有比赛时间
+                CdFbNotFinish cfnf = cdFbNotFinishService.findByJn(matchId);
+                if (cfnf != null) {
+                    allMatchTimes += cfnf.getTime() + ",";
+                } else {
+                    allMatchTimes += "2000-01-01 00:00:00" + ",";
+                }
                 //查询赛事名称 获取大洲
                 BmEventBelong beb = bmEventBelongService.findByEventName(sfm.getEventName());
                 if (beb != null) {
@@ -206,6 +228,7 @@ public class FootballSingleOrderInterface {
         cfso.setType("0");//0普通订单 1发起的 2跟单的
         cfso.setMatchIds(matchIds);//所有场次
         cfso.setContinent(continent);//大洲
+        cfso.setAllMatchTimes(allMatchTimes);
         try {
             cdFootballSingleOrderService.save(cfso);
             map.put("orderNum", orderNum);

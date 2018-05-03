@@ -16,6 +16,8 @@ import com.youge.yogee.modules.cfootballorder.service.CdFootballBestFollowOrderS
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -54,6 +56,8 @@ public class CdFootballFollowOrderController extends BaseController {
     private CdFootballMixedService cdFootballMixedService;
     @Autowired
     private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public CdFootballFollowOrder get(@RequestParam(required = false) String id) {
@@ -209,6 +213,15 @@ public class CdFootballFollowOrderController extends BaseController {
             cdFootballFollowOrder.setLetBalls(letScore);
         }
 
+        //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
+        }
 
         cdFootballFollowOrderService.save(cdFootballFollowOrder);
 

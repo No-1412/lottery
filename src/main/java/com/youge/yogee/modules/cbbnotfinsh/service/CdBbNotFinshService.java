@@ -96,4 +96,21 @@ public class CdBbNotFinshService extends BaseService {
 
     }
 
+
+
+    @Transactional(readOnly = false)
+    public CdBbNotFinsh getMatchByMatchId(String matchId) {
+        DetachedCriteria dc = cdBbNotFinshDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdBbNotFinsh.FIELD_DEL_FLAG, CdBbNotFinsh.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("matchId", matchId));
+        List<CdBbNotFinsh> list = cdBbNotFinshDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
+
 }

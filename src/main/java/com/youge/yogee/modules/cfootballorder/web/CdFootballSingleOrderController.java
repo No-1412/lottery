@@ -14,6 +14,8 @@ import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -49,6 +51,8 @@ public class CdFootballSingleOrderController extends BaseController {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdFootballMixedService cdFootballMixedService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public CdFootballSingleOrder get(@RequestParam(required = false) String id) {
@@ -203,6 +207,16 @@ public class CdFootballSingleOrderController extends BaseController {
                 }
             }
             cdFootballSingleOrder.setLetBalls(letScore);
+        }
+
+        //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
         }
 
         cdFootballSingleOrderService.save(cdFootballSingleOrder);

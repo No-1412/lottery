@@ -49,7 +49,7 @@ public class CdBasketballSingleOrder extends BaseEntity<T> implements Serializab
     private String result;       //开奖结果
     private String type;     // 0普通订单 1发起的 2跟单的
     private String matchIds; //购买的所有场次
-
+    private String allMatchTimes;//所有场次比赛时间
 
     public CdBasketballSingleOrder() {
         super();
@@ -207,6 +207,14 @@ public class CdBasketballSingleOrder extends BaseEntity<T> implements Serializab
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getAllMatchTimes() {
+        return allMatchTimes;
+    }
+
+    public void setAllMatchTimes(String allMatchTimes) {
+        this.allMatchTimes = allMatchTimes;
     }
 }
 

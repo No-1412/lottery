@@ -9,6 +9,8 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import com.youge.yogee.modules.sys.entity.User;
@@ -24,7 +26,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +45,8 @@ public class CdSuccessFailOrderController extends BaseController {
     private CdSuccessFailOrderService cdSuccessFailOrderService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public CdSuccessFailOrder get(@RequestParam(required = false) String id) {
@@ -111,6 +117,15 @@ public class CdSuccessFailOrderController extends BaseController {
     public String save(CdSuccessFailOrder cdSuccessFailOrder, Model model, RedirectAttributes redirectAttributes) {
         if (!beanValidator(model, cdSuccessFailOrder)) {
             return form(cdSuccessFailOrder, model);
+        }
+        //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdSuccessFailOrder.getOrderNumber());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
         }
         cdSuccessFailOrderService.save(cdSuccessFailOrder);
         addMessage(redirectAttributes, "保存胜负彩订单成功");

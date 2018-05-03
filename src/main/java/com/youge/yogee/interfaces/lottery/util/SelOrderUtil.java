@@ -25,10 +25,9 @@ import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class SelOrderUtil {
 
@@ -58,7 +57,7 @@ public class SelOrderUtil {
      * @param orderNum
      * @return
      */
-    public static Map getOrderDetailMap(String orderNum, Map map) {
+    public static Map getOrderDetailMap(String orderNum, Map map) throws ParseException {
         //Map<String, Object> map = new HashMap();
         if (orderNum.startsWith("ZDG")) {
             CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
@@ -254,7 +253,7 @@ public class SelOrderUtil {
         return map;
     }
 
-    public static List getFbFollowList(CdFootballFollowOrder cff) {
+    public static List getFbFollowList(CdFootballFollowOrder cff) throws ParseException {
         List detailList = new ArrayList();
         //比分
         String score = cff.getScore();
@@ -277,12 +276,26 @@ public class SelOrderUtil {
         String vs = "";
         String matchResult = cff.getResult();//比赛结果
         int i = 0;
+        String matchTimes = cff.getAllMatchTimes();//所有比赛时间
+        String[] matchTimesArray = matchTimes.split(",");
+        int j = 0;
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
             if (StringUtils.isNotEmpty(matchResult)) {
                 String[] mathchResultArray = matchResult.split(",");
                 for (String rs : mathchResultArray) {
                     resultList.add(rs);
+                }
+            }
+//           ------------------------又一次贼他妈精妙-------------------------
+            //跟单订单 未开赛直接跳出循环
+            if (!"0".equals(cff.getType())) {
+                Date day = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String aTime = matchTimesArray[j];
+                j++;
+                if (df.parse(aTime).getTime() > day.getTime()) {
+                    continue;
                 }
             }
 
@@ -367,7 +380,7 @@ public class SelOrderUtil {
         return detailList;
     }
 
-    public static List getFbSingleList(CdFootballSingleOrder cfs) {
+    public static List getFbSingleList(CdFootballSingleOrder cfs) throws ParseException {
         List detailList = new ArrayList();
         //比分
         String score = cfs.getScore();
@@ -390,6 +403,9 @@ public class SelOrderUtil {
         String vs = "";
         String matchResult = cfs.getResult();//比赛结果
         int i = 0;
+        String allMatchTimes = cfs.getAllMatchTimes();
+        String[] matchTimesArray = allMatchTimes.split(",");
+        int j = 0;
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
             if (StringUtils.isNotEmpty(matchResult)) {
@@ -398,6 +414,19 @@ public class SelOrderUtil {
                     resultList.add(rs);
                 }
             }
+
+            //           ------------------------又一次贼他妈精妙-------------------------
+            //跟单订单 未开赛直接跳出循环
+            if (!"0".equals(cfs.getType())) {
+                Date day = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String aTime = matchTimesArray[j];
+                j++;
+                if (df.parse(aTime).getTime() > day.getTime()) {
+                    continue;
+                }
+            }
+
 
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", s); //期次
@@ -473,7 +502,7 @@ public class SelOrderUtil {
         return detailList;
     }
 
-    public static List getBbSingleList(CdBasketballSingleOrder cbs) {
+    public static List getBbSingleList(CdBasketballSingleOrder cbs) throws ParseException {
         List detailList = new ArrayList();
         //主胜
         String hostWin = cbs.getHostWin();
@@ -488,6 +517,9 @@ public class SelOrderUtil {
         String vs = "";
         String matchResult = cbs.getResult();//比赛结果
         int i = 0;
+        String allMatchTimes = cbs.getAllMatchTimes();
+        String[] matchTimesArray = allMatchTimes.split(",");
+        int k = 0;
         for (String s : matchIdsArray) {
 
             List<String> resultList = new ArrayList<>();
@@ -497,6 +529,19 @@ public class SelOrderUtil {
                     resultList.add(rs);
                 }
             }
+
+            //           ------------------------又一次贼他妈精妙-------------------------
+            //跟单订单 未开赛直接跳出循环
+            if (!"0".equals(cbs.getType())) {
+                Date day = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String aTime = matchTimesArray[k];
+                k++;
+                if (df.parse(aTime).getTime() > day.getTime()) {
+                    continue;
+                }
+            }
+
 
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", s); //期次
@@ -530,7 +575,7 @@ public class SelOrderUtil {
         return detailList;
     }
 
-    public static List getBbFollowList(CdBasketballFollowOrder cbf) {
+    public static List getBbFollowList(CdBasketballFollowOrder cbf) throws ParseException {
         List detailList = new ArrayList();
         //主胜
         String hostWin = cbf.getHostWin();
@@ -553,12 +598,29 @@ public class SelOrderUtil {
         String vs = "";
         String matchResult = cbf.getResult();//比赛结果
         int j = 0;
+
+        String matchTimes = cbf.getAllMatchTimes();//所有比赛时间
+        String[] matchTimesArray = matchTimes.split(",");
+        int k = 0;
+
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
             if (StringUtils.isNotEmpty(matchResult)) {
                 String[] mathchResultArray = matchResult.split(",");
                 for (String rs : mathchResultArray) {
                     resultList.add(rs);
+                }
+            }
+
+            //           ------------------------又一次贼他妈精妙-------------------------
+            //跟单订单 未开赛直接跳出循环
+            if (!"0".equals(cbf.getType())) {
+                Date day = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                String aTime = matchTimesArray[k];
+                k++;
+                if (df.parse(aTime).getTime() > day.getTime()) {
+                    continue;
                 }
             }
 
@@ -589,12 +651,12 @@ public class SelOrderUtil {
             if (beatMap.size() > 0) {
                 vs = beatMap.get("vs");
             }
-            String realBeat="";
+            String realBeat = "";
             String trueBeat = beatMap.get("result");
-            if(StringUtils.isNotEmpty(trueBeat)){
+            if (StringUtils.isNotEmpty(trueBeat)) {
                 String finalBeat1 = trueBeat.replaceAll("1/", "主胜/");
                 String finalBeat2 = finalBeat1.replaceAll("0/", "主负/");
-                realBeat=finalBeat2;
+                realBeat = finalBeat2;
             }
 
             orderMap.put("beat", realBeat);
@@ -605,11 +667,11 @@ public class SelOrderUtil {
                 vs = letMap.get("vs");
             }
             String trueLet = letMap.get("result");
-            String realLet="";
-            if(StringUtils.isNotEmpty(trueLet)){
+            String realLet = "";
+            if (StringUtils.isNotEmpty(trueLet)) {
                 String finalLet1 = trueLet.replaceAll("1/", "让主胜/");
                 String finalLet2 = finalLet1.replaceAll("0/", "让主负/");
-                realLet=finalLet2;
+                realLet = finalLet2;
             }
 
             orderMap.put("let", realLet);

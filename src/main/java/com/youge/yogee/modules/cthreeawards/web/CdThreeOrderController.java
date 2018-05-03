@@ -9,6 +9,8 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import com.youge.yogee.modules.sys.entity.User;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 排列三订单Controller
@@ -39,6 +43,8 @@ public class CdThreeOrderController extends BaseController {
     private CdThreeOrderService cdThreeOrderService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public CdThreeOrder get(@RequestParam(required = false) String id) {
@@ -95,6 +101,15 @@ public class CdThreeOrderController extends BaseController {
     public String save(CdThreeOrder cdThreeOrder, Model model, RedirectAttributes redirectAttributes) {
         if (!beanValidator(model, cdThreeOrder)) {
             return form(cdThreeOrder, model);
+        }
+        //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdThreeOrder.getOrderNum());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
         }
         cdThreeOrderService.save(cdThreeOrder);
         addMessage(redirectAttributes, "保存排列三订单成功");

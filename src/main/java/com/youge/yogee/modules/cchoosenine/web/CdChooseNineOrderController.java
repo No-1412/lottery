@@ -11,6 +11,8 @@ import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -24,7 +26,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +45,8 @@ public class CdChooseNineOrderController extends BaseController {
     private CdChooseNineOrderService cdChooseNineOrderService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public CdChooseNineOrder get(@RequestParam(required = false) String id) {
@@ -111,6 +117,15 @@ public class CdChooseNineOrderController extends BaseController {
     public String save(CdChooseNineOrder cdChooseNineOrder, Model model, RedirectAttributes redirectAttributes) {
         if (!beanValidator(model, cdChooseNineOrder)) {
             return form(cdChooseNineOrder, model);
+        }
+        //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdChooseNineOrder.getOrderNumber());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
         }
         cdChooseNineOrderService.save(cdChooseNineOrder);
         addMessage(redirectAttributes, "保存任选九订单'" + cdChooseNineOrder.getName() + "'成功");

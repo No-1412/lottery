@@ -14,6 +14,8 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -49,6 +51,8 @@ public class CdBasketballSingleOrderController extends BaseController {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdBasketballMixedService cdBasketballMixedService;
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public CdBasketballSingleOrder get(@RequestParam(required = false) String id) {
@@ -137,6 +141,15 @@ public class CdBasketballSingleOrderController extends BaseController {
         cdBasketballSingleOrder.setHostWin(newWinDetail);
         cdBasketballSingleOrder.setHostFail(newFailDetail);
 
+       //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdBasketballSingleOrder.getOrderNum());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
+        }
 
         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
         //addMessage(redirectAttributes, "保存竞彩篮球订单成功");

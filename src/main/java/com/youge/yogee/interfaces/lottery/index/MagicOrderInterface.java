@@ -537,7 +537,10 @@ public class MagicOrderInterface {
             c.setStatus("2");//已付款
             c.setAward("0");//奖金
             cdFootballSingleOrderService.save(c);
-            changeUserBalance(uid,price);//更改用户余额
+            //更改用户余额
+            if (!changeUserBalance(uid, price)) {
+                return HttpResultUtil.errorJson("余额不足");
+            }
 
         } else if ("2".equals(type)) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(magicOrderNum);
@@ -571,7 +574,10 @@ public class MagicOrderInterface {
             c.setType("2"); //0普通订单 1发起的 2跟单的
             c.setBestType(cff.getBestType());
             cdFootballFollowOrderService.save(c);
-            changeUserBalance(uid,price);//更改用户余额
+            //更改用户余额
+            if (!changeUserBalance(uid, price)) {
+                return HttpResultUtil.errorJson("余额不足");
+            }
             if ("2".equals(cff.getBestType())) {
                 String oldOrderNum = cff.getOrderNum();
                 List<CdFootballBestFollowOrder> fList = cdFootballBestFollowOrderService.findByOrderNum(oldOrderNum);
@@ -610,7 +616,10 @@ public class MagicOrderInterface {
             c.setType("2"); // 0普通订单 1发起的 2跟单的
             c.setMatchIds(cbs.getMatchIds());//所有场次
             cdBasketballSingleOrderService.save(c);
-            changeUserBalance(uid,price);//更改用户余额
+            //更改用户余额
+            if (!changeUserBalance(uid, price)) {
+                return HttpResultUtil.errorJson("余额不足");
+            }
         } else {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(magicOrderNum);
             if (cbf == null) {
@@ -645,7 +654,10 @@ public class MagicOrderInterface {
             c.setType("2"); // 0普通订单 1发起的 2跟单的
             c.setBestType(cbf.getBestType());
             cdBasketballFollowOrderService.save(c);
-            changeUserBalance(uid,price);//更改用户余额
+            //更改用户余额
+            if (!changeUserBalance(uid, price)) {
+                return HttpResultUtil.errorJson("余额不足");
+            }
             if ("2".equals(cbf.getBestType())) {
                 String oldOrderNum = cbf.getOrderNum();
                 List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(oldOrderNum);
@@ -742,12 +754,18 @@ public class MagicOrderInterface {
     }
 
 
-    private void changeUserBalance(String uid, String price) {
+    private boolean changeUserBalance(String uid, String price) {
+        boolean flag = false;
         CdLotteryUser clu = cdLotteryUserService.get(uid);
         BigDecimal balance = clu.getBalance();
-        BigDecimal newBalance = balance.subtract(new BigDecimal(price));
-        clu.setBalance(newBalance);
-        cdLotteryUserService.save(clu);
+        int compare = balance.compareTo(new BigDecimal(price));
+        if (compare >= 0) {
+            BigDecimal newBalance = balance.subtract(new BigDecimal(price));
+            clu.setBalance(newBalance);
+            cdLotteryUserService.save(clu);
+            flag = true;
+        }
+        return flag;
     }
 
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,7 +92,7 @@ public class AwardsWallInterface {
      */
     @RequestMapping(value = "awardsWallDetail")
     @ResponseBody
-    public String awardsWallDetail(HttpServletRequest request) {
+    public String awardsWallDetail(HttpServletRequest request) throws ParseException {
         logger.info("大奖墙详情--------------Start-----");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         Map<String, Object> map = new HashMap();
@@ -132,12 +133,13 @@ public class AwardsWallInterface {
             map.put("winPrice", co.getWinPrice());
             map.put("type", co.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
             map.put("startTime", co.getCreateDate());//发起时间
-            map.put("orderTime", co.getCreateDate());//约单时间
+            map.put("orderTime", co.getOutTime());//约单时间
             orderNum = co.getNumber();
             map.put("orderNum", orderNum);//订单号
             map.put("price", co.getTotalPrice());//价格
             map.put("status", co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
         }
+
         map = SelOrderUtil.getOrderDetailMap(orderNum, map);
         logger.info("大奖墙列表接口--------------End--------");
         return HttpResultUtil.successJson(map);

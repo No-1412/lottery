@@ -8,6 +8,8 @@ import com.youge.yogee.modules.cbasketballmixed.entity.CdBasketballMixed;
 import com.youge.yogee.modules.cbasketballmixed.service.CdBasketballMixedService;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
+import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
+import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinshService;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,13 +39,15 @@ public class BasketballSingleOrderInterface {
     private CdBasketballMixedService cdBasketballMixedService;
     @Autowired
     private CdBasketballSingleOrderService cdBasketballSingleOrderService;
+    @Autowired
+    private CdBbNotFinshService cdBbNotFinshService;
 
     /**
      * 篮球单关 提交订单
      */
     @RequestMapping(value = "basketballSingleOrderCommit", method = RequestMethod.POST)
     @ResponseBody
-    public String basketballSingleOrderCommit(HttpServletRequest request) {
+    public String basketballSingleOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface basketballSingleOrderCommit--------Start-------------------");
         logger.debug("interface 请求--basketballSingleOrderCommit-------- Start--------");
         Map map = new HashMap();
@@ -70,6 +77,7 @@ public class BasketballSingleOrderInterface {
         String winDetail = "";//主胜详情
         String failDetail = "";//主负详情
         String matchIds = "";
+        String allMatchTimes = "";
         if (detail.size() != 0) {
 
             for (Map<String, Object> d : detail) {
@@ -80,8 +88,27 @@ public class BasketballSingleOrderInterface {
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
+
+                String shutDownTime = cbm.getTimeEndsale();
+                Date day = new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if (df.parse(shutDownTime).getTime() < day.getTime()) {
+                    return HttpResultUtil.errorJson("超过比赛截止时间");
+                }
+
+
                 String partDetail = matchId + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName();
                 matchIds += matchId + ",";
+
+                //记录所有比赛时间
+                CdBbNotFinsh cbnf = cdBbNotFinshService.getMatchByMatchId(matchId);
+                if (cbnf != null) {
+                    String time = cbnf.getDay();
+                    allMatchTimes += time + ",";
+                } else {
+                    allMatchTimes += "2000-01-01 00:00:00" + ",";
+                }
+
                 //主胜分差
                 String hostWin = (String) d.get("hostWin");
                 if (StringUtils.isNotEmpty(hostWin)) {
@@ -141,6 +168,7 @@ public class BasketballSingleOrderInterface {
         cbso.setBuyWays("1"); //玩法 1混投
         cbso.setType("0"); // 0普通订单 1发起的 2跟单的
         cbso.setMatchIds(matchIds);//所有场次
+        cbso.setAllMatchTimes(allMatchTimes);//所有比赛时间
 
         try {
             cdBasketballSingleOrderService.save(cbso);

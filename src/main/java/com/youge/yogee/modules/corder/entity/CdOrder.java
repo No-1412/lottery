@@ -45,7 +45,7 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     private String status; //1待开奖 2已开奖 3中奖
     private String saleId; //销售id
     private String followNum;//跟单单号
-
+    private String outTime;//出票时间
 
     public CdOrder() {
         super();
@@ -203,6 +203,14 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
 
     public void setFollowNum(String followNum) {
         this.followNum = followNum;
+    }
+
+    public String getOutTime() {
+        return outTime;
+    }
+
+    public void setOutTime(String outTime) {
+        this.outTime = outTime;
     }
 }
 

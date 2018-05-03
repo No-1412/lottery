@@ -7,6 +7,8 @@ import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
 import com.youge.yogee.modules.bm.entity.BmEventBelong;
 import com.youge.yogee.modules.bm.service.BmEventBelongService;
+import com.youge.yogee.modules.cfbnotfinish.entity.CdFbNotFinish;
+import com.youge.yogee.modules.cfbnotfinish.service.CdFbNotFinishService;
 import com.youge.yogee.modules.cfootballmixed.entity.CdFootballMixed;
 import com.youge.yogee.modules.cfootballmixed.service.CdFootballMixedService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -42,13 +46,15 @@ public class FootballFollowOrderInterface {
     private CdFootballMixedService cdFootballMixedService;
     @Autowired
     private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
+    @Autowired
+    private CdFbNotFinishService cdFbNotFinishService;
 
     /**
      * 足球串关 提交订单
      */
     @RequestMapping(value = "footballFollowOrderCommit", method = RequestMethod.POST)
     @ResponseBody
-    public String footballFollowOrderCommit(HttpServletRequest request) {
+    public String footballFollowOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface footballFollowOrderCommit--------Start-------------------");
         logger.debug("interface 请求--footballFollowOrderCommit-------- Start--------");
         Map map = new HashMap();
@@ -104,6 +110,7 @@ public class FootballFollowOrderInterface {
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
         String danMatchIds = "";//胆场次
+        String matchTimes="";//所有比赛时间
         if (detail.size() != 0) {
 
             for (Map<String, Object> d : detail) {
@@ -113,6 +120,12 @@ public class FootballFollowOrderInterface {
                 CdFootballMixed sfm = cdFootballMixedService.findByMatchId(matchId);
                 if (sfm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
+                }
+               String shutDownTime=sfm.getTimeEndsale();
+                Date day=new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if(df.parse(shutDownTime).getTime()<day.getTime()){
+                    return HttpResultUtil.errorJson("超过比赛截止时间");
                 }
 
                 //是不是胆 0不是 1是
@@ -127,6 +140,13 @@ public class FootballFollowOrderInterface {
                     danMatchIds += "胆" + "+" + matchId + ",";
                 } else {
                     danMatchIds += "非" + "+" + matchId + ",";
+                }
+                //记录所有比赛时间
+                CdFbNotFinish cfnf=cdFbNotFinishService.findByJn(matchId);
+                if(cfnf!=null){
+                    matchTimes+=cfnf.getTime()+",";
+                }else {
+                    matchTimes+="2000-01-01 00:00:00"+",";
                 }
                 //比赛详情
                 String partDetail = isMust + "+" + matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
@@ -344,6 +364,7 @@ public class FootballFollowOrderInterface {
         cffo.setDanMatchIds(danMatchIds);//胆场次
         cffo.setType("0"); //0普通订单 1发起的 2跟单的
         cffo.setBestType("1");//1普通单 2优化的
+        cffo.setAllMatchTimes(matchTimes);//所有比赛时间
         try {
             cdFootballFollowOrderService.save(cffo);
             map.put("orderNum", orderNum);
@@ -424,6 +445,7 @@ public class FootballFollowOrderInterface {
             //保证比赛存在
             String danMatchIds = "";
             String letBalls = "";
+            String matchTimes="";//所有比赛时间
             for (String s : matchSet) {
                 CdFootballMixed cbm = cdFootballMixedService.findByMatchId(s);
                 if (cbm == null) {
@@ -431,6 +453,13 @@ public class FootballFollowOrderInterface {
                 }
                 danMatchIds += "非+" + s + ",";
                 letBalls += cbm.getClose() + ",";
+                //记录所有比赛时间
+                CdFbNotFinish cfnf=cdFbNotFinishService.findByJn(s);
+                if(cfnf!=null){
+                    matchTimes+=cfnf.getTime()+",";
+                }else {
+                    matchTimes+="2000-01-01 00:00:00"+",";
+                }
 
                 Map<String, String> aDetailMap = new HashMap<>();
                 aDetailMap.put("score", "");
@@ -535,6 +564,7 @@ public class FootballFollowOrderInterface {
             cffo.setGoal(goal);//总进球
             cffo.setLet(let);//让球胜负平
             cffo.setBeat(beat);//胜负平
+            cffo.setAllMatchTimes(matchTimes);//所有比赛时间
 
             cffo.setLetBalls(letBalls);
             cdFootballFollowOrderService.save(cffo);

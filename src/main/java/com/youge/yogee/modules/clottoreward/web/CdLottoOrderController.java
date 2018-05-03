@@ -3,11 +3,18 @@
  */
 package com.youge.yogee.modules.clottoreward.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.youge.yogee.common.config.Global;
+import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
+import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.sys.entity.User;
+import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,14 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.youge.yogee.common.config.Global;
-import com.youge.yogee.common.persistence.Page;
-import com.youge.yogee.common.web.BaseController;
-import com.youge.yogee.common.utils.StringUtils;
-import com.youge.yogee.modules.sys.entity.User;
-import com.youge.yogee.modules.sys.utils.UserUtils;
-import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
-import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 大乐透订单Controller
@@ -39,6 +42,8 @@ public class CdLottoOrderController extends BaseController {
 	private CdLottoOrderService cdLottoOrderService;
 	@Autowired
 	private CdLotteryUserService cdLotteryUserService;
+	@Autowired
+	private CdOrderService cdOrderService;
 	@ModelAttribute
 	public CdLottoOrder get(@RequestParam(required=false) String id) {
 		if (StringUtils.isNotBlank(id)){
@@ -81,6 +86,15 @@ public class CdLottoOrderController extends BaseController {
 	public String save(CdLottoOrder cdLottoOrder, Model model, RedirectAttributes redirectAttributes) {
 		if (!beanValidator(model, cdLottoOrder)){
 			return form(cdLottoOrder, model);
+		}
+		//保存出票时间
+		Date day=new Date();
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String outTime=df.format(day);
+		CdOrder co=cdOrderService.getOrderByOrderNum(cdLottoOrder.getOrderNum());
+		if(co!=null){
+			co.setOutTime(outTime);
+			cdOrderService.save(co);
 		}
 		cdLottoOrderService.save(cdLottoOrder);
 		addMessage(redirectAttributes, "保存大乐透订单'" + cdLottoOrder.getName() + "'成功");

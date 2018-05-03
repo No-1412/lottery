@@ -112,4 +112,18 @@ public class CdFbNotFinishService extends BaseService {
     }
 
 
+    @Transactional(readOnly = false)
+    public CdFbNotFinish findByJn(String matchId) {
+        DetachedCriteria dc = cdFbNotFinishDao.createDetachedCriteria();
+        dc.add(Restrictions.eq(CdFbNotFinish.FIELD_DEL_FLAG, CdFbNotFinish.DEL_FLAG_NORMAL));
+        dc.add(Restrictions.eq("jn", matchId));
+        List<CdFbNotFinish> list = cdFbNotFinishDao.find(dc);
+        if (list.size() > 0) {
+            return list.get(0);
+        } else {
+            return null;
+        }
+
+    }
+
 }

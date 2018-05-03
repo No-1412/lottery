@@ -56,6 +56,7 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
     private String sizeCount;    //大小分
 
     private String danMatchIds; //胆场次
+    private String allMatchTimes;//所有场次比赛时间
 
     private String type;     // 0普通订单 1发起的 2跟单的
     private String result;       //开奖结果
@@ -273,6 +274,14 @@ public class CdBasketballFollowOrder extends BaseEntity<T> implements Serializab
 
     public void setBestType(String bestType) {
         this.bestType = bestType;
+    }
+
+    public String getAllMatchTimes() {
+        return allMatchTimes;
+    }
+
+    public void setAllMatchTimes(String allMatchTimes) {
+        this.allMatchTimes = allMatchTimes;
     }
 }
 

@@ -11,6 +11,8 @@ import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
 import com.youge.yogee.modules.cfiveawards.service.CdFiveOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -24,6 +26,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 排列五订单Controller
@@ -39,7 +43,8 @@ public class CdFiveOrderController extends BaseController {
     private CdFiveOrderService cdFiveOrderService;
     @Autowired
     private CdLotteryUserService cdLotteryUserService;
-
+    @Autowired
+    private CdOrderService cdOrderService;
     @ModelAttribute
     public CdFiveOrder get(@RequestParam(required = false) String id) {
         if (StringUtils.isNotBlank(id)) {
@@ -74,6 +79,15 @@ public class CdFiveOrderController extends BaseController {
     public String save(CdFiveOrder cdFiveOrder, Model model, RedirectAttributes redirectAttributes) {
         if (!beanValidator(model, cdFiveOrder)) {
             return form(cdFiveOrder, model);
+        }
+        //保存出票时间
+        Date day=new Date();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String outTime=df.format(day);
+        CdOrder co=cdOrderService.getOrderByOrderNum(cdFiveOrder.getOrderNum());
+        if(co!=null){
+            co.setOutTime(outTime);
+            cdOrderService.save(co);
         }
         cdFiveOrderService.save(cdFiveOrder);
         addMessage(redirectAttributes, "保存排列五订单'" + cdFiveOrder.getName() + "'成功");

@@ -11,6 +11,8 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrd
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
+import com.youge.yogee.modules.cbbnotfinsh.entity.CdBbNotFinsh;
+import com.youge.yogee.modules.cbbnotfinsh.service.CdBbNotFinshService;
 import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -37,13 +41,16 @@ public class BasketballFollowOrderInterface {
     private CdBasketballFollowOrderService cdBasketballFollowOrderService;
     @Autowired
     private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
+    @Autowired
+    private CdBbNotFinshService cdBbNotFinshService;
+
 
     /**
      * 篮球串关 非奖金优化 订单提交
      */
     @RequestMapping(value = "basketballFollowOrderCommit", method = RequestMethod.POST)
     @ResponseBody
-    public String basketballFollowOrderCommit(HttpServletRequest request) {
+    public String basketballFollowOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface basketballFollowOrderCommit--------Start-------------------");
         logger.debug("interface 请求--basketballFollowOrderCommit-------- Start--------");
         Map map = new HashMap();
@@ -99,6 +106,7 @@ public class BasketballFollowOrderInterface {
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
         String danMatchIds = "";//胆场次
+        String allMatchTimes = "";//所有比赛时间
         if (detail.size() != 0) {
 
             for (Map<String, Object> d : detail) {
@@ -108,6 +116,13 @@ public class BasketballFollowOrderInterface {
                 CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(matchId);
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
+                }
+
+                String shutDownTime=cbm.getTimeEndsale();
+                Date day=new Date();
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                if(df.parse(shutDownTime).getTime()<day.getTime()){
+                    return HttpResultUtil.errorJson("超过比赛截止时间");
                 }
 
                 //是不是胆 0不是 1是
@@ -123,6 +138,17 @@ public class BasketballFollowOrderInterface {
                 } else {
                     danMatchIds += "非" + "+" + matchId + ",";
                 }
+
+
+                //记录所有比赛时间
+                CdBbNotFinsh cbnf = cdBbNotFinshService.getMatchByMatchId(matchId);
+                if (cbnf != null) {
+                    String time = cbnf.getDay();
+                    allMatchTimes += time + ",";
+                } else {
+                    allMatchTimes += "2000-01-01 00:00:00" + ",";
+                }
+
                 String partDetail = isMust + "+" + matchId + "+" + cbm.getWinningName() + "vs" + cbm.getDefeatedName();
 
                 //胜负平所有押注结果 2胜负平
@@ -376,6 +402,7 @@ public class BasketballFollowOrderInterface {
         cbfo.setDanMatchIds(danMatchIds);//胆场次
         cbfo.setType("0"); // 0普通订单 1发起的 2跟单的
         cbfo.setBestType("1");//1普通单 2优化单
+        cbfo.setAllMatchTimes(allMatchTimes);//所有比赛时间
         try {
             cdBasketballFollowOrderService.save(cbfo);
             map.put("orderNum", orderNum);
@@ -458,12 +485,23 @@ public class BasketballFollowOrderInterface {
             String danMatchIds = "";
             String letScore = "";
             String sizeCount = "";
+            String allMatchTimes = "";//所有比赛时间
             for (String s : matchSet) {
                 CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
                 if (cbm == null) {
                     return HttpResultUtil.errorJson("比赛不存在！");
                 }
                 danMatchIds += "非+" + s + ",";
+                //记录所有比赛时间
+                CdBbNotFinsh cbnf = cdBbNotFinshService.getMatchByMatchId(s);
+                if (cbnf != null) {
+                    String time = cbnf.getDay();
+                    allMatchTimes += time + ",";
+                } else {
+                    allMatchTimes += "2000-01-01 00:00:00" + ",";
+                }
+
+
                 letScore += cbm.getClose() + ",";
                 sizeCount += cbm.getZclose() + ",";
                 Map<String, String> aDetailMap = new HashMap<>();
@@ -580,6 +618,8 @@ public class BasketballFollowOrderInterface {
 
             cbfo.setSizeCount(sizeCount);//比大小的分
             cbfo.setLetScore(letScore);//让分
+
+            cbfo.setAllMatchTimes(allMatchTimes);
             cdBasketballFollowOrderService.save(cbfo);
 
 
