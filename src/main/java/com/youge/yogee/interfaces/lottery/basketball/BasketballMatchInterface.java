@@ -33,10 +33,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Liyuan on 2018-1-23 0023.
@@ -121,7 +120,7 @@ public class BasketballMatchInterface {
      */
     @RequestMapping(value = "bbNotFinsh", method = RequestMethod.POST)
     @ResponseBody
-    public String bbNotFinsh(HttpServletRequest request) {
+    public String bbNotFinsh(HttpServletRequest request) throws ParseException {
         logger.info("bbNotFinsh  篮球未完赛---------start---------");
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -151,7 +150,20 @@ public class BasketballMatchInterface {
             map.put("ln", str.getLn());//赛事类型
             map.put("hn", str.getHn());//主队
             map.put("gn", str.getGn());//客队
-            map.put("day", str.getDay());//日期
+
+            String time = str.getDay();
+            Date today = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date timeDate = sdf.parse(time);
+            if (today.getTime() < timeDate.getTime()) {
+                map.put("startTime", "");//比赛开始时间
+            } else {
+                long between = timeDate.getTime() - today.getTime();
+                String startTime = String.valueOf(between / (1000 * 60));
+                map.put("startTime", startTime);//比赛开始时间
+            }
+
+            map.put("day", str.getDay().substring(10, 16));//日期
             map.put("matchId", str.getMatchId());//场次id
             map.put("hnImg", cdBbLogoService.findLogo(str.getHn()));//主队LOGO
             map.put("gnImg", cdBbLogoService.findLogo(str.getGn()));//客队LOGO

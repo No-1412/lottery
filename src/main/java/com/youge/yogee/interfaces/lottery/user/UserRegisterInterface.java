@@ -193,6 +193,7 @@ public class UserRegisterInterface {
         cdLotteryUser.setTotalPay("0.00");
         cdLotteryUser.setRebate("0.00");
         cdLotteryUser.setCatchTimes("3");
+        cdLotteryUser.setTotalMoney(new BigDecimal(0.00));
         cdLotteryUserService.save(cdLotteryUser);
 
         dataMap.put("uid", cdLotteryUser.getId());

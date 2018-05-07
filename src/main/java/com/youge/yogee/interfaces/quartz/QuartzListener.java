@@ -236,7 +236,8 @@ public class QuartzListener {
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
                     if (co != null) {
-                        co.setWinPrice(award.toString());//奖金
+                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+                        co.setWinPrice(finalAward.toString());//奖金
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }
@@ -467,7 +468,7 @@ public class QuartzListener {
                                         co.setWinPrice("0");//奖金
                                         co.setStatus("2");//中奖
                                         cdOrderService.save(co);
-                                       break out;
+                                        break out;
                                     }
                                 }
                             }
@@ -540,7 +541,8 @@ public class QuartzListener {
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
                     if (co != null) {
-                        co.setWinPrice(award.toString());//奖金
+                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+                        co.setWinPrice(finalAward.toString());//奖金
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }
@@ -636,7 +638,7 @@ public class QuartzListener {
             double oddsSum = scoreOdds + goalOdds + halfOdds + beatOdds + letOdds;
             if (oddsSum > 0) {
                 Double award = 2 * oddsSum;
-                cdFootballSingleOrder.setAward(new BigDecimal(award).setScale(2,2).toString());
+                cdFootballSingleOrder.setAward(new BigDecimal(award).setScale(2, 2).toString());
                 cdFootballSingleOrder.setStatus("4");
                 cdFootballSingleOrderService.save(cdFootballSingleOrder);
 
@@ -682,7 +684,8 @@ public class QuartzListener {
                 //改变订单总表状态
                 CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
                 if (co != null) {
-                    co.setWinPrice(award.toString());//奖金
+                    BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+                    co.setWinPrice(finalAward.toString());//奖金
                     co.setStatus("3");//中奖
                     cdOrderService.save(co);
                 }
@@ -735,7 +738,7 @@ public class QuartzListener {
             String[] a = StringUtils.split(aMethodArray[2], ",");
             for (String s : a) {
                 String[] split = StringUtils.split(s, "/");
-                if(split[0].equals(finish)){
+                if (split[0].equals(finish)) {
                     ood += Double.parseDouble(split[1]) * Double.parseDouble(split[2]);
                 }
             }

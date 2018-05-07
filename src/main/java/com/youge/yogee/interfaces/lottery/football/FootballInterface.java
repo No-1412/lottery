@@ -4,14 +4,6 @@ import com.youge.yogee.common.utils.FundModel;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
-import com.youge.yogee.modules.cfbfuture.entity.CdFbFuture;
-import com.youge.yogee.modules.cfbfuture.service.CdFbFutureService;
-import com.youge.yogee.modules.cfboutcome.entity.CdFbOutcome;
-import com.youge.yogee.modules.cfboutcome.service.CdFbOutcomeService;
-import com.youge.yogee.modules.cfbscoer.entity.CdFbScoer;
-import com.youge.yogee.modules.cfbscoer.service.CdFbScoerService;
-import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
-import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
 import com.youge.yogee.modules.cfootballdouble.entity.CdFootBallDouble;
 import com.youge.yogee.modules.cfootballdouble.service.CdFootBallDoubleService;
 import com.youge.yogee.modules.cfootballgoal.entity.CdFootBallGoal;
@@ -86,8 +78,19 @@ public class FootballInterface {
                 map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
                 map.put("matchId", cdFootballMixed.getMatchId());//期次
 
-                map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
-                map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率
+                //让球赔率
+                if (StringUtils.isEmpty(cdFootballMixed.getNotConcedepointsOdds())) {
+                    map.put("spf", "-,-,-");//让球赔率
+                }else {
+                    map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                }
+                //让球赔率
+                if (StringUtils.isEmpty(cdFootballMixed.getConcedepointsOdds())) {
+                    map.put("rpf", "-,-,-");//让球赔率
+                } else {
+                    map.put("rpf", cdFootballMixed.getConcedepointsOdds());
+                }
+
                 map.put("sod", cdFootballMixed.getScoreOdds());//比分赔率
                 map.put("aod", cdFootballMixed.getAllOdds());//总进球赔率
                 map.put("hod", cdFootballMixed.getHalfOdds());//半全场赔率

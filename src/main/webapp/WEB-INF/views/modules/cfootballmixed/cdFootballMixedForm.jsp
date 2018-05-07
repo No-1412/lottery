@@ -80,7 +80,7 @@
     <div class="control-group">
         <label class="control-label">截止时间:</label>
         <div class="controls">
-            <form:input path="timeEndsale" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+            <form:input path="timeEndsale" htmlEscape="false" maxlength="200" class="required"/>
         </div>
     </div>
     <div class="control-group">

@@ -177,7 +177,14 @@ public class UserRechargeInterface {
                     CdLotteryUser clu = cdLotteryUserService.get(uid);
                     BigDecimal balance = clu.getBalance();
                     BigDecimal newBalance = balance.add(new BigDecimal(payAmount));
+                    BigDecimal totalMoney = clu.getTotalMoney();
+                    BigDecimal newTotalMoney = totalMoney.add(new BigDecimal(payAmount));
                     clu.setBalance(newBalance);
+                    clu.setTotalMoney(newTotalMoney);
+                    String memberLevel = getMemberLevel(newTotalMoney);
+                    if (StringUtils.isNotEmpty(memberLevel)) {
+                        clu.setMemberLevel(memberLevel);
+                    }
                     cdLotteryUserService.save(clu);
                     backResult = "SUCCESS";
                 }
@@ -190,4 +197,41 @@ public class UserRechargeInterface {
     private String formatString(String text) {
         return text == null ? "" : text.trim();
     }
+
+    private String getMemberLevel(BigDecimal totalMoney) {
+        String memLevel = "";
+        if (totalMoney.compareTo(new BigDecimal("2.00")) >= 0) {
+            memLevel = "1";
+        }
+        if (totalMoney.compareTo(new BigDecimal("100.00")) >= 0) {
+            memLevel = "2";
+        }
+        if (totalMoney.compareTo(new BigDecimal("500.00")) >= 0) {
+            memLevel = "3";
+        }
+        if (totalMoney.compareTo(new BigDecimal("1000.00")) >= 0) {
+            memLevel = "4";
+        }
+        if (totalMoney.compareTo(new BigDecimal("5000.00")) >= 0) {
+            memLevel = "5";
+        }
+        if (totalMoney.compareTo(new BigDecimal("10000.00")) >= 0) {
+            memLevel = "6";
+        }
+        if (totalMoney.compareTo(new BigDecimal("100000.00")) >= 0) {
+            memLevel = "7";
+        }
+        if (totalMoney.compareTo(new BigDecimal("200000.00")) >= 0) {
+            memLevel = "8";
+        }
+        if (totalMoney.compareTo(new BigDecimal("500000.00")) >= 0) {
+            memLevel = "9";
+        }
+        if (totalMoney.compareTo(new BigDecimal("1000000.00")) >= 0) {
+            memLevel = "10";
+        }
+        return memLevel;
+
+    }
+
 }

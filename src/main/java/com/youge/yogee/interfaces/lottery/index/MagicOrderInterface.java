@@ -31,6 +31,8 @@ import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
+import com.youge.yogee.modules.crecord.service.CdRecordRebateService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,6 +80,8 @@ public class MagicOrderInterface {
     private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
     @Autowired
     private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
+    @Autowired
+    private CdRecordRebateService cdRecordRebateService;
 
     /**
      * 神单提交订单
@@ -536,12 +540,13 @@ public class MagicOrderInterface {
             c.setType("2");//跟买
             c.setStatus("2");//已付款
             c.setAward("0");//奖金
-            cdFootballSingleOrderService.save(c);
+            c.setAllMatchTimes(cfs.getAllMatchTimes());//比赛时间
+
             //更改用户余额
-            if (!changeUserBalance(uid, price)) {
+            if (!changeUserBalance(uid, price, type)) {
                 return HttpResultUtil.errorJson("余额不足");
             }
-
+            cdFootballSingleOrderService.save(c);
         } else if ("2".equals(type)) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(magicOrderNum);
             if (cff == null) {
@@ -573,11 +578,12 @@ public class MagicOrderInterface {
             c.setDanMatchIds(cff.getDanMatchIds());//胆场次
             c.setType("2"); //0普通订单 1发起的 2跟单的
             c.setBestType(cff.getBestType());
-            cdFootballFollowOrderService.save(c);
+            c.setAllMatchTimes(cff.getAllMatchTimes());
             //更改用户余额
-            if (!changeUserBalance(uid, price)) {
+            if (!changeUserBalance(uid, price, type)) {
                 return HttpResultUtil.errorJson("余额不足");
             }
+            cdFootballFollowOrderService.save(c);
             if ("2".equals(cff.getBestType())) {
                 String oldOrderNum = cff.getOrderNum();
                 List<CdFootballBestFollowOrder> fList = cdFootballBestFollowOrderService.findByOrderNum(oldOrderNum);
@@ -615,11 +621,12 @@ public class MagicOrderInterface {
             c.setBuyWays("1"); //玩法 1混投
             c.setType("2"); // 0普通订单 1发起的 2跟单的
             c.setMatchIds(cbs.getMatchIds());//所有场次
-            cdBasketballSingleOrderService.save(c);
+            c.setAllMatchTimes(cbs.getAllMatchTimes());//所有场次时间
             //更改用户余额
-            if (!changeUserBalance(uid, price)) {
+            if (!changeUserBalance(uid, price, type)) {
                 return HttpResultUtil.errorJson("余额不足");
             }
+            cdBasketballSingleOrderService.save(c);
         } else {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(magicOrderNum);
             if (cbf == null) {
@@ -653,11 +660,12 @@ public class MagicOrderInterface {
             c.setDanMatchIds(cbf.getDanMatchIds());//胆场次
             c.setType("2"); // 0普通订单 1发起的 2跟单的
             c.setBestType(cbf.getBestType());
-            cdBasketballFollowOrderService.save(c);
+            c.setAllMatchTimes(cbf.getAllMatchTimes());
             //更改用户余额
-            if (!changeUserBalance(uid, price)) {
+            if (!changeUserBalance(uid, price, type)) {
                 return HttpResultUtil.errorJson("余额不足");
             }
+            cdBasketballFollowOrderService.save(c);
             if ("2".equals(cbf.getBestType())) {
                 String oldOrderNum = cbf.getOrderNum();
                 List<CdBasketballBestFollowOrder> bList = cdBasketballBestFollowOrderService.findByOrderNum(oldOrderNum);
@@ -754,7 +762,7 @@ public class MagicOrderInterface {
     }
 
 
-    private boolean changeUserBalance(String uid, String price) {
+    private boolean changeUserBalance(String uid, String price, String type) {
         boolean flag = false;
         CdLotteryUser clu = cdLotteryUserService.get(uid);
         BigDecimal balance = clu.getBalance();
@@ -763,9 +771,44 @@ public class MagicOrderInterface {
             BigDecimal newBalance = balance.subtract(new BigDecimal(price));
             clu.setBalance(newBalance);
             cdLotteryUserService.save(clu);
+            saveRebate(price, clu, type);
             flag = true;
         }
         return flag;
+    }
+
+
+    //保存返利
+    public void saveRebate(String price, CdLotteryUser cdLotteryUser, String type) {
+        double priceDouble = Double.parseDouble(price);
+        BigDecimal priceBig = new BigDecimal(price);
+        boolean flag = false;
+        String rebate = "";
+        if (priceDouble > 0.0 && priceDouble < 1000.0) {
+            flag = true;
+            BigDecimal result = priceBig.multiply(new BigDecimal(0.01));
+            rebate = String.valueOf(result.setScale(2, 1));
+        } else if (priceDouble >= 1000.0 && priceDouble < 10000.0) {
+            flag = true;
+            BigDecimal result = priceBig.multiply(new BigDecimal(0.02));
+            rebate = String.valueOf(result.setScale(2, 1));
+        } else if (priceDouble >= 10000.0) {
+            flag = true;
+            BigDecimal result = priceBig.multiply(new BigDecimal(0.03));
+            rebate = String.valueOf(result.setScale(2, 1));
+        }
+        if (flag) {
+            CdRecordRebate crr = new CdRecordRebate();
+            crr.setRebate(rebate);
+            crr.setUid(cdLotteryUser.getId());
+            crr.setType(type);
+            cdRecordRebateService.save(crr);
+            //保存用户表返利字段
+            String userRebate = cdLotteryUser.getRebate();
+            BigDecimal newRebate = new BigDecimal(userRebate).add(new BigDecimal(rebate));
+            cdLotteryUser.setRebate(String.valueOf(newRebate));//更新返利
+            cdLotteryUserService.save(cdLotteryUser);
+        }
     }
 
 }

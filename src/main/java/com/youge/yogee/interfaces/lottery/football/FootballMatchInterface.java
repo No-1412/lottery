@@ -29,10 +29,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author liyuan
@@ -70,7 +69,7 @@ public class FootballMatchInterface {
      */
     @RequestMapping(value = "notFinshedData", method = RequestMethod.POST)
     @ResponseBody
-    public String notFinshedData(HttpServletRequest request) {
+    public String notFinshedData(HttpServletRequest request) throws ParseException {
         logger.info("notFinshedData  未完赛数据---------Start---------");
 
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
@@ -116,6 +115,17 @@ public class FootballMatchInterface {
             map.put("hnLogo", cdFtLogoService.findLogo(str.getHn())); //主队图标
             map.put("gnLogo", cdFtLogoService.findLogo(str.getGn())); //客队图标
             map.put("jn", str.getJn());//平赔率
+            String time = str.getTime();
+            Date today = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date timeDate = sdf.parse(time);
+            if (today.getTime() < timeDate.getTime()) {
+                map.put("startTime", "");//比赛开始时间
+            } else {
+                long between = timeDate.getTime() - today.getTime();
+                String startTime = String.valueOf(between / (1000 * 60));
+                map.put("startTime", startTime);//比赛开始时间
+            }
             map.put("time", str.getTime().substring(10, 16));//比赛时间
             list.add(map);
         }

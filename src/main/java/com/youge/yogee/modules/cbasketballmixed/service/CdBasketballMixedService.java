@@ -127,7 +127,7 @@ public class CdBasketballMixedService extends BaseService {
 		DetachedCriteria dc = cdBasketballMixedDao.createDetachedCriteria();
 		dc.add(Restrictions.eq("remarks", remarks));
 		dc.add(Restrictions.eq(CdBasketballMixed.FIELD_DEL_FLAG, CdBasketballMixed.DEL_FLAG_NORMAL));
-		dc.addOrder(Order.asc("matchDate"));
+		dc.addOrder(Order.asc("matchId"));
 		return cdBasketballMixedDao.find(dc);
 	}
 

@@ -12,8 +12,6 @@ import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
-import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
-import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
@@ -346,10 +344,14 @@ public class BasketBallQuartz {
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
                     if (co != null) {
-                        co.setWinPrice(award.toString());//奖金
+                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+                        co.setWinPrice(finalAward.toString());//奖金
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }
+
+                    //更新用户余额
+                    SelOrderUtil.addBalanceToUser(cdBasketballFollowOrder.getAward(), cdBasketballFollowOrder.getUid());
                     AppPush.push(cdBasketballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜篮球获得中奖金额" + award + "元");
 
                 } else {
@@ -505,7 +507,8 @@ public class BasketBallQuartz {
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
                     if (co != null) {
-                        co.setWinPrice(award.toString());//奖金
+                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+                        co.setWinPrice(finalAward.toString());//奖金
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }
@@ -604,7 +607,8 @@ public class BasketBallQuartz {
                     //改变订单总表状态
                     CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballSingleOrder.getOrderNum());
                     if (co != null) {
-                        co.setWinPrice(award.toString());//奖金
+                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+                        co.setWinPrice(finalAward.toString());//奖金
                         co.setStatus("3");//中奖
                         cdOrderService.save(co);
                     }

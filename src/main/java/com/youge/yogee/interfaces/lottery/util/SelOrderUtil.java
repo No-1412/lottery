@@ -289,7 +289,7 @@ public class SelOrderUtil {
             }
 //           ------------------------又一次贼他妈精妙-------------------------
             //跟单订单 未开赛直接跳出循环
-            if (!"0".equals(cff.getType())) {
+            if ("2".equals(cff.getType())) {
                 Date day = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String aTime = matchTimesArray[j];
@@ -417,7 +417,7 @@ public class SelOrderUtil {
 
             //           ------------------------又一次贼他妈精妙-------------------------
             //跟单订单 未开赛直接跳出循环
-            if (!"0".equals(cfs.getType())) {
+            if ("2".equals(cfs.getType())) {
                 Date day = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String aTime = matchTimesArray[j];
@@ -532,7 +532,7 @@ public class SelOrderUtil {
 
             //           ------------------------又一次贼他妈精妙-------------------------
             //跟单订单 未开赛直接跳出循环
-            if (!"0".equals(cbs.getType())) {
+            if ("2".equals(cbs.getType())) {
                 Date day = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String aTime = matchTimesArray[k];
@@ -614,7 +614,7 @@ public class SelOrderUtil {
 
             //           ------------------------又一次贼他妈精妙-------------------------
             //跟单订单 未开赛直接跳出循环
-            if (!"0".equals(cbf.getType())) {
+            if ("2".equals(cbf.getType())) {
                 Date day = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String aTime = matchTimesArray[k];
