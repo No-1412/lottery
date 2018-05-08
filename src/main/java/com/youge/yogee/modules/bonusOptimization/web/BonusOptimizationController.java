@@ -106,7 +106,8 @@ public class BonusOptimizationController extends BaseController {
         int tzje =paramVO.getAmountBets();
         int[] beishu = new int[arrBeishu.length];
         //构建倍数数组
-        createBeishu(arrBeishu,tzje,zhushu,beishu);
+        //createBeishu(arrBeishu,tzje,zhushu,beishu);
+        createBeishuNew(arrBeishu, tzje, zhushu, beishu);
         for (int i = 0; i < portfolioVOList.size(); i++) {
             portfolioVOList.get(i).setBeishu(beishu[i]);
             portfolioVOList.get(i).setJiangjin(Double.parseDouble(String.format("%.2f",portfolioVOList.get(i).getDbjj()*beishu[i])));
@@ -234,7 +235,8 @@ public class BonusOptimizationController extends BaseController {
         int tzje =zhushu*Integer.parseInt(caipiaoBean.getTimes())*2;
         int[] beishu = new int[arrBeishu.length];
         //构建倍数数组
-        createBeishu(arrBeishu,tzje,zhushu,beishu);
+        //createBeishu(arrBeishu,tzje,zhushu,beishu);
+        createBeishuNew(arrBeishu,tzje,zhushu,beishu);
         //构建返回数据格式
         List<PortfolioVO> portVOList =createRetList(arr,beishu);
         return  portVOList;
@@ -330,7 +332,8 @@ public class BonusOptimizationController extends BaseController {
         int tzje =zhushu*Integer.parseInt(caipiaoFootballBean.getTimes())*2;
         int[] beishu = new int[arrBeishu.length];
         //构建倍数数组
-        createBeishu(arrBeishu,tzje,zhushu,beishu);
+        //createBeishu(arrBeishu,tzje,zhushu,beishu);
+        createBeishuNew(arrBeishu,tzje,zhushu,beishu);
         //构建返回数据格式
         List<PortfolioVO> portVOList =createRetList(arr,beishu);
         return  portVOList;
@@ -950,7 +953,46 @@ public class BonusOptimizationController extends BaseController {
             retBeishu[0] = amountBets/2-calMultiple;
         }
     }
+//========================2018-05-08yhw 计算倍数新实现方法 start======================================
+    /**
+     * 计算各赔率的倍数
+     * @param oddsArr 各赔率数组
+     * @param amountBets 投注金额
+     * @param noteNumber  投注数
+     * @param retBeishu  结果倍数数组
+     */
+    private void createBeishuNew(double[] oddsArr,int amountBets,int noteNumber,int[] retBeishu){
+        int baseMultCalc = 100;
+        if ( amountBets >= 10000 ) {
+            baseMultCalc = 1000;
+        } else if ( amountBets >= 100000 ) {
+            baseMultCalc = 10000;
+        } else if ( amountBets >= 1000000 ) {
+            baseMultCalc = 100000;
+        }
+        double[] mult = new double[oddsArr.length];
+        double baseDiv = 0;
+        for ( int i = 0; i < oddsArr.length; i++ ) {
+            mult[i] = oddsArr[oddsArr.length-1]/(oddsArr[i]*baseMultCalc);
+            baseDiv += mult[i];
+        }
 
+        double base = amountBets/(baseDiv*2);
+        int initialNum = amountBets/2;
+        for(int i=0;i<oddsArr.length;i++){
+            retBeishu[i] = (int)Math.round(mult[i]*base)==0?1:(int)Math.round(mult[i]*base);
+            initialNum+=retBeishu[i];
+        }
+        //
+        if(initialNum>base){
+            retBeishu[0]=retBeishu[0]-1;
+        }else if(initialNum<base){
+            retBeishu[0]=retBeishu[0]+1;
+        }
+    }
+
+
+    //========================2018-05-08yhw 计算倍数新实现方法 end======================================
     /**
      *计算倍数
      * @param oddsArr  //单倍奖金数组

@@ -61,7 +61,7 @@ public class CdOptionPassController extends BaseController{
 
             String buy_ways = cdFootballSingleOrder.getBuyWays();
             String match_ids = cdFootballSingleOrder.getMatchIds().substring(0,cdFootballSingleOrder.getMatchIds().length()-1);
-            System.out.println(buy_ways);
+            //System.out.println(buy_ways);
             if("1".equals(buy_ways)){//混投
 
             }else if("2".equals(buy_ways)){
@@ -109,7 +109,7 @@ public class CdOptionPassController extends BaseController{
             CdFootballFollowOrder cdFootballFollowOrder = cdFootballFollowOrderService.findOrderByOrderNum(orderNumber);
             String buy_ways = cdFootballFollowOrder.getBuyWays();
             String match_ids = cdFootballFollowOrder.getDanMatchIds().substring(0, cdFootballFollowOrder.getDanMatchIds().length()-1);
-            System.out.println(buy_ways);
+            //System.out.println(buy_ways);
             if("1".equals(buy_ways)){//混投
 
             }else if("2".equals(buy_ways)){
@@ -208,7 +208,7 @@ public class CdOptionPassController extends BaseController{
         //String optionNumber = null;
         String buy_ways = cdFootballFollowOrder.getBuyWays();
         //String match_ids = cdFootballFollowOrder.getDanMatchIds().substring(0, cdFootballFollowOrder.getDanMatchIds().length()-1);
-        System.out.println(buy_ways);
+       // System.out.println(buy_ways);
 
         if(StringUtils.isNotEmpty(optionNumber)){
             CdOptionPassVo cdOptionPassVo = cdOptionPassService.findByNumber(optionNumber);
@@ -240,7 +240,7 @@ public class CdOptionPassController extends BaseController{
                     }
                 }
             }
-            System.out.println(JSON.toJSONString(caipiao));
+           // System.out.println(JSON.toJSONString(caipiao));
             return JSON.toJSONString(caipiao);
         }else{
             return null;
@@ -253,10 +253,8 @@ public class CdOptionPassController extends BaseController{
      */
     private String ZDGPrint(String orderNumber,String optionNumber){
         CdFootballSingleOrder cdFootballSingleOrder = cdFootballSingleOrderService.findOrderByOrderNum(orderNumber);
-        //String optionNumber = null;
         String buy_ways = cdFootballSingleOrder.getBuyWays();
-        //String match_ids = cdFootballSingleOrder.getMatchIds().substring(0,cdFootballSingleOrder.getMatchIds().length()-1);
-        System.out.println(buy_ways);
+        //System.out.println(buy_ways);
 
         if(StringUtils.isNotEmpty(optionNumber)){
             CdOptionPassVo cdOptionPassVo = cdOptionPassService.findByNumber(optionNumber);
@@ -284,7 +282,7 @@ public class CdOptionPassController extends BaseController{
                     }
                 }
             }
-            System.out.println(JSON.toJSONString(caipiao));
+            //System.out.println(JSON.toJSONString(caipiao));
             return JSON.toJSONString(caipiao);
         }else{
             return null;
@@ -302,7 +300,7 @@ public class CdOptionPassController extends BaseController{
        // String optionNumber = "1010101011010010";//默认篮球_胜负3关
         String buy_ways = cdBasketballSingleOrder.getBuyWays();
         String match_ids = cdBasketballSingleOrder.getMatchIds().substring(0,cdBasketballSingleOrder.getMatchIds().length()-1);
-        System.out.println(buy_ways);
+       // System.out.println(buy_ways);
         if(StringUtils.isNotEmpty(optionNumber)){
             CdOptionPassVo cdOptionPassVo = cdOptionPassService.findByNumber(optionNumber);
             String paraStr = "";
@@ -345,7 +343,7 @@ public class CdOptionPassController extends BaseController{
                     }
                 }
             }
-            System.out.println(JSON.toJSONString(caipiao));
+            //System.out.println(JSON.toJSONString(caipiao));
             return JSON.toJSONString(caipiao);
         }else{
             return null;
@@ -363,7 +361,7 @@ public class CdOptionPassController extends BaseController{
         //String optionNumber = "1010101011010010";//默认篮球_胜负3关
         String buy_ways = cdBasketballFollowOrder.getBuyWays();
         String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0,cdBasketballFollowOrder.getDanMatchIds().length()-1);
-        System.out.println(buy_ways);
+       // System.out.println(buy_ways);
         if(StringUtils.isNotEmpty(optionNumber)){
             CdOptionPassVo cdOptionPassVo = cdOptionPassService.findByNumber(optionNumber);
             String paraStr = "";
@@ -409,7 +407,7 @@ public class CdOptionPassController extends BaseController{
                     }
                 }
             }
-            System.out.println(JSON.toJSONString(caipiao));
+            //System.out.println(JSON.toJSONString(caipiao));
             return JSON.toJSONString(caipiao);
         }else{
             return null;
