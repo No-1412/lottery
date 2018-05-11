@@ -28,6 +28,7 @@ import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
+import com.youge.yogee.modules.erp.entity.ErpBasketBallDto;
 import com.youge.yogee.modules.erp.entity.ErpFootBallDto;
 import com.youge.yogee.modules.erp.entity.ErpOrder;
 import com.youge.yogee.modules.erp.service.ErpOrderService;
@@ -171,55 +172,55 @@ public class ErpOrderController extends BaseController {
         String orderNum = erpOrder.getNumber();
         if (orderNum.startsWith("LCG")) {//篮球串关
             CdBasketballFollowOrder cdBasketballFollowOrder = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
-            String uid = cdBasketballFollowOrder.getUid();
-            if (StringUtils.isNotEmpty(uid)) {
-//            CdLotteryUser clu = cdLotteryUserService.get(uid);
-//            uName = clu.getReality();
-            }
-            String hostWin = cdBasketballFollowOrder.getHostWin();
-            List<String> wList = new ArrayList<>();
-
-            String hostFail = cdBasketballFollowOrder.getHostFail();
-            List<String> fList = new ArrayList<>();
-
-            String beat = cdBasketballFollowOrder.getBeat();
-            List<String> bList = new ArrayList<>();
-
-            String size = cdBasketballFollowOrder.getSize();
-            List<String> sList = new ArrayList<>();
-
-            String let = cdBasketballFollowOrder.getLet();
-            List<String> tList = new ArrayList<>();
-            if (StringUtils.isNotEmpty(hostWin)) {
-                String[] winStr = hostWin.split("\\|");
-                for (String s : winStr) {
-                    wList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(hostFail)) {
-                String[] failStr = hostFail.split("\\|");
-                for (String s : failStr) {
-                    fList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(beat)) {
-                String[] beatStr = beat.split("\\|");
-                for (String s : beatStr) {
-                    bList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(size)) {
-                String[] sizeStr = size.split("\\|");
-                for (String s : sizeStr) {
-                    sList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(let)) {
-                String[] letStr = let.split("\\|");
-                for (String s : letStr) {
-                    tList.add(s);
-                }
-            }
+//            String uid = cdBasketballFollowOrder.getUid();
+//            if (StringUtils.isNotEmpty(uid)) {
+////            CdLotteryUser clu = cdLotteryUserService.get(uid);
+////            uName = clu.getReality();
+//            }
+//            String hostWin = cdBasketballFollowOrder.getHostWin();
+//            List<String> wList = new ArrayList<>();
+//
+//            String hostFail = cdBasketballFollowOrder.getHostFail();
+//            List<String> fList = new ArrayList<>();
+//
+//            String beat = cdBasketballFollowOrder.getBeat();
+//            List<String> bList = new ArrayList<>();
+//
+//            String size = cdBasketballFollowOrder.getSize();
+//            List<String> sList = new ArrayList<>();
+//
+//            String let = cdBasketballFollowOrder.getLet();
+//            List<String> tList = new ArrayList<>();
+//            if (StringUtils.isNotEmpty(hostWin)) {
+//                String[] winStr = hostWin.split("\\|");
+//                for (String s : winStr) {
+//                    wList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(hostFail)) {
+//                String[] failStr = hostFail.split("\\|");
+//                for (String s : failStr) {
+//                    fList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(beat)) {
+//                String[] beatStr = beat.split("\\|");
+//                for (String s : beatStr) {
+//                    bList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(size)) {
+//                String[] sizeStr = size.split("\\|");
+//                for (String s : sizeStr) {
+//                    sList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(let)) {
+//                String[] letStr = let.split("\\|");
+//                for (String s : letStr) {
+//                    tList.add(s);
+//                }
+//            }
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -227,112 +228,217 @@ public class ErpOrderController extends BaseController {
 
             model.addAttribute("today", today);
             model.addAttribute("uName", uName);
-            model.addAttribute("wList", wList);
-            model.addAttribute("fList", fList);
-            model.addAttribute("bList", bList);
-            model.addAttribute("sList", sList);
-            model.addAttribute("tList", tList);
+//            model.addAttribute("wList", wList);
+//            model.addAttribute("fList", fList);
+//            model.addAttribute("bList", bList);
+//            model.addAttribute("sList", sList);
+//            model.addAttribute("tList", tList);
+
+            List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
+            List detailList = SelOrderUtil.getBbFollowList2(cdBasketballFollowOrder);
+            for (int i = 0; i < detailList.size(); i++) {
+                //String detail = "";
+                Map map = (Map) detailList.get(i);
+                ErpBasketBallDto ebbd = new ErpBasketBallDto();
+                String matchId = (String) map.get("matchId");
+                String vs = (String) map.get("vs");
+                String win = (String) map.get("win");
+                String fail = (String) map.get("fail");
+                String size = (String) map.get("size");
+                String beat = (String) map.get("beat");
+                String let = (String) map.get("let");
+
+                ebbd.setMatId(matchId);
+                ebbd.setVs(vs);
+                ebbd.setBeat(beat);
+                ebbd.setSize(size);
+                ebbd.setLet(let);
+                ebbd.setWin(win);
+                ebbd.setFail(fail);
+                finalDetailList.add(ebbd);
+            }
+            model.addAttribute("detailList", finalDetailList);
+
 
             model.addAttribute("cdBasketballFollowOrder", cdBasketballFollowOrder);
-            return "modules/cbasketballorder/cdBasketballFollowOrderForm";
+            return "modules/erp/erpBasketballFollowOrderForm";
         }
         if (orderNum.startsWith("ZDG")) {//足球单关
             CdFootballSingleOrder cdFootballSingleOrder = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
-            String uid = cdFootballSingleOrder.getUid();
-            if (StringUtils.isNotEmpty(uid)) {
-            }
-            String score = cdFootballSingleOrder.getScore();
-            List<String> sList = new ArrayList<>();
-            String goal = cdFootballSingleOrder.getGoal();
-            List<String> gList = new ArrayList<>();
-            String half = cdFootballSingleOrder.getHalf();
-            List<String> hList = new ArrayList<>();
-            String beat = cdFootballSingleOrder.getBeat();
-            List<String> bList = new ArrayList<>();
-            String let = cdFootballSingleOrder.getLet();
-            List<String> tList = new ArrayList<>();
-            if (StringUtils.isNotEmpty(score)) {
-                String[] scoreStr = score.split("\\|");
-                for (String s : scoreStr) {
-                    sList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(goal)) {
-                String[] goalStr = goal.split("\\|");
-                for (String s : goalStr) {
-                    gList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(half)) {
-                String[] halfStr = half.split("\\|");
-                for (String s : halfStr) {
-                    hList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(beat)) {
-                String[] beatStr = beat.split("\\|");
-                for (String s : beatStr) {
-                    bList.add(s);
-                }
-            }
-            if (StringUtils.isNotEmpty(let)) {
-                String[] letStr = let.split("\\|");
-                for (String s : letStr) {
-                    tList.add(s);
-                }
-            }
+//            String uid = cdFootballSingleOrder.getUid();
+//            if (StringUtils.isNotEmpty(uid)) {
+//            }
+//            String score = cdFootballSingleOrder.getScore();
+//            List<String> sList = new ArrayList<>();
+//            String goal = cdFootballSingleOrder.getGoal();
+//            List<String> gList = new ArrayList<>();
+//            String half = cdFootballSingleOrder.getHalf();
+//            List<String> hList = new ArrayList<>();
+//            String beat = cdFootballSingleOrder.getBeat();
+//            List<String> bList = new ArrayList<>();
+//            String let = cdFootballSingleOrder.getLet();
+//            List<String> tList = new ArrayList<>();
+//            if (StringUtils.isNotEmpty(score)) {
+//                String[] scoreStr = score.split("\\|");
+//                for (String s : scoreStr) {
+//                    sList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(goal)) {
+//                String[] goalStr = goal.split("\\|");
+//                for (String s : goalStr) {
+//                    gList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(half)) {
+//                String[] halfStr = half.split("\\|");
+//                for (String s : halfStr) {
+//                    hList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(beat)) {
+//                String[] beatStr = beat.split("\\|");
+//                for (String s : beatStr) {
+//                    bList.add(s);
+//                }
+//            }
+//            if (StringUtils.isNotEmpty(let)) {
+//                String[] letStr = let.split("\\|");
+//                for (String s : letStr) {
+//                    tList.add(s);
+//                }
+//            }
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String today = df.format(day);
             model.addAttribute("today", today);
-            model.addAttribute("sList", sList);
-            model.addAttribute("gList", gList);
-            model.addAttribute("hList", hList);
-            model.addAttribute("bList", bList);
-            model.addAttribute("tList", tList);
+//            model.addAttribute("sList", sList);
+//            model.addAttribute("gList", gList);
+//            model.addAttribute("hList", hList);
+//            model.addAttribute("bList", bList);
+//            model.addAttribute("tList", tList);
             model.addAttribute("uName", uName);
             model.addAttribute("cdFootballSingleOrder", cdFootballSingleOrder);
+
+            List<ErpFootBallDto> finalDetailList = new ArrayList<>();
+            List detailList = SelOrderUtil.getFbSingleList2(cdFootballSingleOrder);
+            for (int i = 0; i < detailList.size(); i++) {
+                //String detail = "";
+                Map map = (Map) detailList.get(i);
+                ErpFootBallDto efbd = new ErpFootBallDto();
+                String matchId = (String) map.get("matchId");
+                String vs = (String) map.get("vs");
+                String score = (String) map.get("score");
+                String goal = (String) map.get("goal");
+                String half = (String) map.get("half");
+                String beat = (String) map.get("beat");
+                String let = (String) map.get("let");
+//                detail += matchId + "   " + vs + "   ";
+//                if (StringUtils.isNotEmpty(score)) {
+//                    detail += score + "   ";
+//                }
+//                if (StringUtils.isNotEmpty(goal)) {
+//                    detail += goal + "   ";
+//                }
+//                if (StringUtils.isNotEmpty(half)) {
+//                    detail += half + "   ";
+//                }
+//                if (StringUtils.isNotEmpty(beat)) {
+//                    detail += beat + "   ";
+//                }
+//                if (StringUtils.isNotEmpty(let)) {
+//                    detail += let + "   ";
+//                }
+//                finalDetailList.add(detail);
+                efbd.setMatId(matchId);
+                efbd.setVs(vs);
+                efbd.setBeat(beat);
+                efbd.setScore(score);
+                efbd.setGoal(goal);
+                efbd.setHalf(half);
+                efbd.setLet(let);
+                finalDetailList.add(efbd);
+            }
+            model.addAttribute("detailList", finalDetailList);
             return "modules/erp/erpFootballSingleOrderForm";
         }
         if (orderNum.startsWith("LDG")) {//篮球单关
             CdBasketballSingleOrder cdBasketballSingleOrder = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
-            String uid = cdBasketballSingleOrder.getUid();
-            if (StringUtils.isNotEmpty(uid)) {
-            }
-            String hostWin = cdBasketballSingleOrder.getHostWin();
-            List<String> wList = new ArrayList<>();
-
-            String hostFail = cdBasketballSingleOrder.getHostFail();
-            List<String> fList = new ArrayList<>();
-
-
-            if (StringUtils.isNotEmpty(hostWin)) {
-                String[] winStr = hostWin.split("\\|");
-                for (String s : winStr) {
-                    wList.add(s);
-                }
-            }
-
-            if (StringUtils.isNotEmpty(hostFail)) {
-                String[] failStr = hostFail.split("\\|");
-                for (String s : failStr) {
-                    fList.add(s);
-                }
-            }
+//            String uid = cdBasketballSingleOrder.getUid();
+//            if (StringUtils.isNotEmpty(uid)) {
+//            }
+//            String hostWin = cdBasketballSingleOrder.getHostWin();
+//            List<String> wList = new ArrayList<>();
+//
+//            String hostFail = cdBasketballSingleOrder.getHostFail();
+//            List<String> fList = new ArrayList<>();
+//
+//
+//            if (StringUtils.isNotEmpty(hostWin)) {
+//                String[] winStr = hostWin.split("\\|");
+//                for (String s : winStr) {
+//                    wList.add(s);
+//                }
+//            }
+//
+//            if (StringUtils.isNotEmpty(hostFail)) {
+//                String[] failStr = hostFail.split("\\|");
+//                for (String s : failStr) {
+//                    fList.add(s);
+//                }
+//            }
 
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String today = df.format(day);
 
+
+//            Date day1 = new Date();
+//            SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//            String today = df.format(day);
+
             model.addAttribute("today", today);
-            model.addAttribute("wList", wList);
-            model.addAttribute("fList", fList);
+            model.addAttribute("uName", uName);
+//            model.addAttribute("wList", wList);
+//            model.addAttribute("fList", fList);
+//            model.addAttribute("bList", bList);
+//            model.addAttribute("sList", sList);
+//            model.addAttribute("tList", tList);
+
+            List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
+            List detailList = SelOrderUtil.getBbSingleList2(cdBasketballSingleOrder);
+            for (int i = 0; i < detailList.size(); i++) {
+                //String detail = "";
+                Map map = (Map) detailList.get(i);
+                ErpBasketBallDto ebbd = new ErpBasketBallDto();
+                String matchId = (String) map.get("matchId");
+                String vs = (String) map.get("vs");
+                String win = (String) map.get("win");
+                String fail = (String) map.get("fail");
+//                String size = (String) map.get("size");
+//                String beat = (String) map.get("beat");
+//                String let = (String) map.get("let");
+
+                ebbd.setMatId(matchId);
+                ebbd.setVs(vs);
+//                ebbd.setBeat(beat);
+//                ebbd.setSize(size);
+//                ebbd.setLet(let);
+                ebbd.setWin(win);
+                ebbd.setFail(fail);
+                finalDetailList.add(ebbd);
+            }
+            model.addAttribute("detailList", finalDetailList);
+
+            model.addAttribute("today", today);
+//            model.addAttribute("wList", wList);
+//            model.addAttribute("fList", fList);
             model.addAttribute("uName", uName);
 
             model.addAttribute("cdBasketballSingleOrder", cdBasketballSingleOrder);
-            return "modules/cbasketballorder/cdBasketballSingleOrderForm";
+            return "modules/erp/erpBasketballSingleOrderForm";
         }
         if (orderNum.startsWith("ZCG")) {//足球串关
             CdFootballFollowOrder cdFootballFollowOrder = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
