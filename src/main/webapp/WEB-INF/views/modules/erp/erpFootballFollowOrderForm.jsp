@@ -134,14 +134,41 @@
         </tbody>
     </table>
 
-    <c:forEach items="${bestDetail}" var="bestDetail">
-    <c:forEach items="${bestDetail.detail}" var="hah">
-        ${hah}<br>
-    </c:forEach>
-        <br>
-
-    </c:forEach>
-
+    <c:if test="${not empty bestDetail}">
+        <table id="contentTable" class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr><td colspan="6">选号详情</td></tr>
+            <tr>
+                <th>序</th>
+                <th>场次和出票赔率</th>
+                <th>票号</th>
+                <th>过关方式</th>
+                <th>注数</th>
+                <th>倍数</th>
+                <th>投注金额</th>
+                <th>中奖金额</th>
+                <th>补打</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${bestDetail}" var="bestDetail" varStatus="status">
+                <tr>
+                    <td>${ status.index + 1}</td>
+                    <td> <c:forEach items="${bestDetail.detail}" var="hah">
+                        ${hah}<br>
+                    </c:forEach></td>
+                    <td></td>
+                    <td>${bestDetail.followNums}</td>
+                    <td>1</td>
+                    <td style="color:red;">${bestDetail.perTimes}</td>
+                    <td></td>
+                    <td>未出票</td>
+                    <td><input type="checkbox"></td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
 
     <div class="form-actions">
         <shiro:hasPermission name="cfootballorder:cdFootballFollowOrder:edit">
