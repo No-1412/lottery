@@ -445,7 +445,16 @@ public class FootballInterface {
                         map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
-                        map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+                       // map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+
+                        //让球赔率
+                        if (StringUtils.isEmpty(cdFootballMixed.getNotConcedepointsOdds())) {
+                            map.put("spfscale", "-,-,-");//让球赔率
+                        }else {
+                            map.put("spfscale", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                        }
+
+
                         if (rqs > 1) {
                             map.put("isSingleLet", "1");//是否单关让球 1是 0不是
                         } else {
@@ -509,7 +518,15 @@ public class FootballInterface {
                         map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
-                        map.put("rqspfscale", cdFootballMixed.getConcedepointsRatio());//让球投注比例
+                        //map.put("rqspfscale", cdFootballMixed.getConcedepointsRatio());//让球投注比例
+
+                        //让球赔率
+                        if (StringUtils.isEmpty(cdFootballMixed.getConcedepointsRatio())) {
+                            map.put("rqspfscale", "-,-,-");//让球赔率
+                        }else {
+                            map.put("rqspfscale", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                        }
+
                         map.put("close", cdFootballMixed.getClose());//加分
                         listbytime.add(map);
                     }

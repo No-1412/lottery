@@ -118,19 +118,22 @@ public class ErpRechargeLogService extends BaseService {
         ErpUser erpUser = erpUserService.get(userId);
         BigDecimal money2 = erpRechargeLog.getMoney();//充值钱数
         BigDecimal money1 = erpUser.getBalance();//余额
+        CdLotteryUser clu = cdLotteryUserService.get(userId);
         if (type.equals("0")) {//充值
-            erpUser.setBalance(money1.add(money2));
-            CdLotteryUser clu = cdLotteryUserService.get(userId);
+            //erpUser.setBalance(money1.add(money2));
+            //CdLotteryUser clu = cdLotteryUserService.get(userId);
             BigDecimal totalMoney = clu.getTotalMoney();
             BigDecimal newTotalMoney = totalMoney.add(money2);
             clu.setTotalMoney(newTotalMoney);
+            clu.setBalance(money1.add(money2));
             String memberLevel = getMemberLevel(newTotalMoney);
             clu.setMemberLevel(memberLevel);
             cdLotteryUserService.save(clu);
         } else {//扣款
-            erpUser.setBalance(money1.subtract(money2));
+            clu.setBalance(money1.subtract(money2));
+            cdLotteryUserService.save(clu);
         }
-        erpUserService.save(erpUser);
+        //erpUserService.save(erpUser);
         erpRechargeLogDao.save(erpRechargeLog);
     }
 

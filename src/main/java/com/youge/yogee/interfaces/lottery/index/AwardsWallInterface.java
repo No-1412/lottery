@@ -55,6 +55,9 @@ public class AwardsWallInterface {
         List<Map<String, String>> textStr = new ArrayList<>();
         if (list.size() > 0) {
             for (CdOrderWinners awards : list) {
+                if ("0.0".equals(awards.getWinPrice())) {
+                    continue;
+                }
                 Map<String, String> map = new HashMap<>();
                 CdLotteryUser clu = cdLotteryUserService.get(awards.getUid());
                 String name = clu.getName();
@@ -69,7 +72,8 @@ public class AwardsWallInterface {
                 map.put("id", awards.getId()); //用户名
                 map.put("name", name); //用户名
                 map.put("text1", text1); //前半句
-                map.put("winPrice", winPrice); //奖金
+                BigDecimal newWinPrcie=new BigDecimal(winPrice).setScale(2,2);
+                map.put("winPrice", newWinPrcie.toString()); //奖金
                 map.put("text2", text2); //中间句
                 map.put("repayPercent", repayPercent); //回报率
                 map.put("text3", text3); //后半句

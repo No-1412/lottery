@@ -1,7 +1,6 @@
 package com.youge.yogee.interfaces.lottery.user;
 
 import com.google.common.collect.Maps;
-import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -30,6 +29,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("${frontPath}")
+
 public class UserRechargeInterface {
     private static final Logger logger = LoggerFactory.getLogger(UserRechargeInterface.class);
     @Autowired
@@ -70,7 +70,8 @@ public class UserRechargeInterface {
         Date today = new Date();
         String todayStr = sdf.format(today);
         //回调地址
-        String notifyUrl = Global.getConfig("callback.url");
+        //String notifyUrl = Global.getConfig("callback.url");
+        String notifyUrl = "https://www.kaixuancaipiao.com/f/callBack";
         //充值描述
         String goodsParamExt = "{\"goodsName\":\"" + "用户充值" + "\",\"goodsDesc\":\"" + "用户充值" + "\"}";
         //经营主体信息
@@ -148,8 +149,8 @@ public class UserRechargeInterface {
 
     @RequestMapping(value = "callBack")
     @ResponseBody
-    public String getRechargeUrl(HttpServletRequest request, HttpServletResponse response) {
-        logger.info("getRechargeUrl---------- Start--------");
+    public String callBack(HttpServletRequest request, HttpServletResponse response) {
+        logger.info("callBack---------- Start--------");
 
         String responseMsg = request.getParameter("response");
         String customerId = request.getParameter("customerIdentification");
@@ -189,6 +190,8 @@ public class UserRechargeInterface {
                     backResult = "SUCCESS";
                 }
             }
+        } else {
+            backResult = "ERROR";
         }
         return backResult;
     }

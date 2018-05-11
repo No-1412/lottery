@@ -45,7 +45,7 @@ public class Generate {
 		/**
 		 * 单个生成
 		 * **/
-		createOne("cbbnotfinsh","CdBbNotFinishCollection","cd_bb_notfinish_collection","篮球比赛收藏");
+		createOne("cfootballorder","CdFootballBestFollowOrder","cd_football_best_follow_order","足球优化");
 
 		/**
 		 * 批量生成
