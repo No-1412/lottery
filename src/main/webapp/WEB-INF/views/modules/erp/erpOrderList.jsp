@@ -113,7 +113,8 @@
     </thead>
     <tbody>
     <c:forEach items="${page.list}" var="erpOrder">
-        <tr>
+
+        <tr <c:if test="${erpOrder.bestType=='2'}">style="color: #c66d12;" </c:if>>
             <td><a href="${ctx}/erp/erpOrder/form?id=${erpOrder.id}">${erpOrder.userId.name}</a></td>
             <%--<td><a href="javaScript:;" onclick="showDis('${erpOrder.number}',0)">${erpOrder.number}查看详情</a></td>--%>
             <td><a href="${ctx}/erp/erpOrder/orderForm?id=${erpOrder.id}">${erpOrder.number}查看详情</a></td>

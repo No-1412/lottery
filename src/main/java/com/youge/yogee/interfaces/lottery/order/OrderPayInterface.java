@@ -112,19 +112,20 @@ public class OrderPayInterface {
                 cfs.setStatus("2");//已付款
                 cfs.setUid(uid);//预约单是写死的 支付后更新
                 cdFootballSingleOrderService.save(cfs);
-                saveAllChange(price, balance, clu, orderNum, "1");
+                saveAllChange(price, balance, clu, orderNum, "1","1");
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("ZCG")) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
             price = cff.getPrice();
+            String bestType = cff.getBestType();
             if (canPay(price, balance)) {
                 //更该订单信息
                 cff.setStatus("2");//已付款
                 cff.setUid(uid);//预约单是写死的 支付后更新
                 cdFootballFollowOrderService.save(cff);
-                saveAllChange(price, balance, clu, orderNum, "2");
+                saveAllChange(price, balance, clu, orderNum, "2",bestType);
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
@@ -136,19 +137,20 @@ public class OrderPayInterface {
                 cbs.setStatus("2");//已付款
                 cbs.setUid(uid);//预约单是写死的 支付后更新
                 cdBasketballSingleOrderService.save(cbs);
-                saveAllChange(price, balance, clu, orderNum, "3");
+                saveAllChange(price, balance, clu, orderNum, "3","1");
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
         } else if (orderNum.startsWith("LCG")) {
             CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
             price = cbf.getPrice();
+            String bestType = cbf.getBestType();
             if (canPay(price, balance)) {
                 //更该订单信息
                 cbf.setStatus("2");//已付款
                 cbf.setUid(uid);//预约单是写死的 支付后更新
                 cdBasketballFollowOrderService.save(cbf);
-                saveAllChange(price, balance, clu, orderNum, "4");
+                saveAllChange(price, balance, clu, orderNum, "4",bestType);
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
@@ -160,7 +162,7 @@ public class OrderPayInterface {
                 ccno.setStatus("2");//已付款
                 ccno.setUid(uid);//预约单是写死的 支付后更新
                 cdChooseNineOrderService.save(ccno);
-                saveAllChange(price, balance, clu, orderNum, "5");
+                saveAllChange(price, balance, clu, orderNum, "5","1");
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
@@ -172,7 +174,7 @@ public class OrderPayInterface {
                 csfo.setStatus("2");//已付款
                 csfo.setUid(uid);//预约单是写死的 支付后更新
                 cdSuccessFailOrderService.save(csfo);
-                saveAllChange(price, balance, clu, orderNum, "6");
+                saveAllChange(price, balance, clu, orderNum, "6","1");
             } else {
                 return HttpResultUtil.errorJson("余额不足");
             }
@@ -184,7 +186,7 @@ public class OrderPayInterface {
                 dto.setStatus("2");//已付款
                 dto.setUid(uid);//预约单是写死的 支付后更新
                 cdThreeOrderService.save(dto);
-                saveAllChange(price, balance, clu, orderNum, "7");
+                saveAllChange(price, balance, clu, orderNum, "7","1");
                 if ("2".equals(dto.getType())) {
                     //保存追号信息
                     CdOrderCatch coc = new CdOrderCatch();
@@ -208,7 +210,7 @@ public class OrderPayInterface {
                 cfo.setStatus("2");//已付款
                 cfo.setUid(uid);//预约单是写死的 支付后更新
                 cdFiveOrderService.save(cfo);
-                saveAllChange(price, balance, clu, orderNum, "8");
+                saveAllChange(price, balance, clu, orderNum, "8","1");
                 if ("2".equals(cfo.getType())) {
                     //保存追号信息
                     CdOrderCatch coc = new CdOrderCatch();
@@ -233,7 +235,7 @@ public class OrderPayInterface {
                 clo.setStatus("2");//已付款
                 clo.setUid(uid);//预约单是写死的 支付后更新
                 cdLottoOrderService.save(clo);
-                saveAllChange(price, balance, clu, orderNum, "9");
+                saveAllChange(price, balance, clu, orderNum, "9","1");
                 if ("2".equals(clo.getConType())) {
                     //保存追号信息
                     CdOrderCatch coc = new CdOrderCatch();
@@ -336,7 +338,7 @@ public class OrderPayInterface {
     }
 
     //保存到订单总表
-    private void saveOrder(CdLotteryUser clu, String number, String price, String type) {
+    private void saveOrder(CdLotteryUser clu, String number, String price, String type,String bestType) {
         CdOrder co = new CdOrder();
         co.setIssue("0");//自购
         co.setSaleId(clu.getSaleId());//销售id
@@ -348,17 +350,18 @@ public class OrderPayInterface {
         co.setWinPrice("0");//中奖金额
         co.setUserId(clu.getId());
         co.setFollowNum("");
+        co.setBestType(bestType);
         cdOrderService.save(co);
     }
 
-    private void saveAllChange(String price, String balance, CdLotteryUser clu, String orderNum, String type) {
+    private void saveAllChange(String price, String balance, CdLotteryUser clu, String orderNum, String type,String bestType) {
         //更新用户信息
         clu = getLeftMoney(price, balance, clu);
         cdLotteryUserService.save(clu);
         //保存返利
         saveRebate(price, clu.getId(), type, clu);
         //保存订单总表
-        saveOrder(clu, orderNum, price, type);
+        saveOrder(clu, orderNum, price, type,bestType);
 
     }
 }

@@ -39,6 +39,15 @@ public class ErpOrder extends BaseEntity<T> implements Serializable {
 	private String win; 	// 发起跟单id，本表id
 	//add  2018-05-11 yhw
 	private String outTime;//出票时间
+	private String bestType;//奖金优化的单子：1普通 2优化
+
+	public String getBestType() {
+		return bestType;
+	}
+
+	public void setBestType(String bestType) {
+		this.bestType = bestType;
+	}
 
 	public String getOutTime() {
 		return outTime;
