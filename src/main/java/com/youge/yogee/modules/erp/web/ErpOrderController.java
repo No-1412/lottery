@@ -12,14 +12,17 @@ import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
+import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballFollowOrderService;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballSingleOrderService;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
 import com.youge.yogee.modules.cfiveawards.service.CdFiveOrderService;
+import com.youge.yogee.modules.cfootballorder.entity.CdFootballBestFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
+import com.youge.yogee.modules.cfootballorder.service.CdFootballBestFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
@@ -29,6 +32,7 @@ import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import com.youge.yogee.modules.erp.entity.ErpBasketBallDto;
+import com.youge.yogee.modules.erp.entity.ErpBestOrderDto;
 import com.youge.yogee.modules.erp.entity.ErpFootBallDto;
 import com.youge.yogee.modules.erp.entity.ErpOrder;
 import com.youge.yogee.modules.erp.service.ErpOrderService;
@@ -87,6 +91,10 @@ public class ErpOrderController extends BaseController {
     private CdThreeOrderService cdThreeOrderService;
     @Autowired
     private CdLottoOrderService cdLottoOrderService;
+    @Autowired
+    private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
+    @Autowired
+    private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
 
     @ModelAttribute
     public ErpOrder get(@RequestParam(required = false) String id) {
@@ -249,11 +257,11 @@ public class ErpOrderController extends BaseController {
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
 //yhw  修改让问题
-                if (StringUtils.isNotEmpty(win)){
-                    win = "让主胜"+win;
+                if (StringUtils.isNotEmpty(win)) {
+                    win = "让主胜" + win;
                 }
-                if (StringUtils.isNotEmpty(fail)){
-                    fail = "让主负"+fail;
+                if (StringUtils.isNotEmpty(fail)) {
+                    fail = "让主负" + fail;
                 }
                 ebbd.setMatId(matchId);
                 ebbd.setVs(vs);
@@ -341,9 +349,9 @@ public class ErpOrderController extends BaseController {
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
-                if(StringUtils.isNotEmpty(let)){
-                    if (let.startsWith("平")){
-                        let = "让"+let;
+                if (StringUtils.isNotEmpty(let)) {
+                    if (let.startsWith("平")) {
+                        let = "让" + let;
                     }
                 }
 //                detail += matchId + "   " + vs + "   ";
@@ -433,11 +441,11 @@ public class ErpOrderController extends BaseController {
 //                String beat = (String) map.get("beat");
 //                String let = (String) map.get("let");
 //yhw  修改让问题
-                if (StringUtils.isNotEmpty(win)){
-                    win = "让主胜"+win;
+                if (StringUtils.isNotEmpty(win)) {
+                    win = "让主胜" + win;
                 }
-                if (StringUtils.isNotEmpty(fail)){
-                    fail = "让主负"+fail;
+                if (StringUtils.isNotEmpty(fail)) {
+                    fail = "让主负" + fail;
                 }
                 ebbd.setMatId(matchId);
                 ebbd.setVs(vs);
@@ -533,9 +541,9 @@ public class ErpOrderController extends BaseController {
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
-                if(StringUtils.isNotEmpty(let)){
-                    if (let.startsWith("平")){
-                        let = "让"+let;
+                if (StringUtils.isNotEmpty(let)) {
+                    if (let.startsWith("平")) {
+                        let = "让" + let;
                     }
                 }
 //                detail += matchId + "   " + vs + "   ";
@@ -565,6 +573,30 @@ public class ErpOrderController extends BaseController {
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);
+
+            if ("2".equals(cdFootballFollowOrder.getBestType())) {
+                List<ErpBestOrderDto> list = new ArrayList<>();
+                List<CdFootballBestFollowOrder> bestList = cdFootballBestFollowOrderService.findByOrderNum(cdFootballFollowOrder.getOrderNum());
+                for (CdFootballBestFollowOrder cfbf : bestList) {
+                    ErpBestOrderDto ebod = new ErpBestOrderDto();
+                    String detail = cfbf.getOrderDetail();
+                    String[] detailArray = detail.split("\\|");
+                    //String[] finalDetailArray = new String[detailArray.length];
+                    String aDetailArrayDetail = "";
+                    for (String str : detailArray) {
+                        String[] aDetailArray = str.split("\\+");
+                        String lastDetail = aDetailArray[0] + "[" + aDetailArray[3] + "]" + "(" + aDetailArray[2] + ")" + changeType(aDetailArray[1]);
+                        aDetailArrayDetail += lastDetail + "|";
+                    }
+                    String[] lastDetailArray = aDetailArrayDetail.split("\\|");
+                    ebod.setDetail(lastDetailArray);
+                    ebod.setFollowNums(String.valueOf(lastDetailArray.length));
+                    ebod.setPerTimes(cfbf.getPerTimes());
+                    list.add(ebod);
+                }
+                model.addAttribute("bestDetail", list);
+            }
+
             return "modules/erp/erpFootballFollowOrderForm";
         }
         if (orderNum.startsWith("RXJ")) {//任选九
@@ -1074,4 +1106,27 @@ public class ErpOrderController extends BaseController {
         }
         return detailList;
     }
+
+    private String changeType(String buyWays) {
+        String type = "";
+        switch (buyWays) {
+            case "score":
+                type = "_比分";
+                break;
+            case "half":
+                type = "_半全场";
+                break;
+            case "goal":
+                type = "_总进球";
+                break;
+            case "beat":
+                type = "_胜平负";
+                break;
+            case "let":
+                type = "_让分胜平负";
+                break;
+        }
+        return type;
+    }
+
 }

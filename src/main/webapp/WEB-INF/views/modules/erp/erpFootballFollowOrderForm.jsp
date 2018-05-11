@@ -134,7 +134,13 @@
         </tbody>
     </table>
 
+    <c:forEach items="${bestDetail}" var="bestDetail">
+    <c:forEach items="${bestDetail.detail}" var="hah">
+        ${hah}<br>
+    </c:forEach>
+        <br>
 
+    </c:forEach>
 
 
     <div class="form-actions">
