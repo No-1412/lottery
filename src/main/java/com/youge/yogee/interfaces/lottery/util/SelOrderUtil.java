@@ -756,4 +756,124 @@ public class SelOrderUtil {
 
     }
 
+
+
+
+    public static List getFbFollowList2(CdFootballFollowOrder cff) {
+        List detailList = new ArrayList();
+        //比分
+        String score = cff.getScore();
+        String[] scoreArray = score.split("\\|");
+        //进球
+        String goal = cff.getGoal();
+        String[] goalArray = goal.split("\\|");
+        //半全场
+        String half = cff.getHalf();
+        String[] halfArray = half.split("\\|");
+        //胜负
+        String beat = cff.getBeat();
+        String[] beatArray = beat.split("\\|");
+        //让球
+        String let = cff.getLet();
+        String[] letArray = let.split("\\|");
+        //所有比赛
+        String matchIds = cff.getDanMatchIds();
+        String[] matchIdsArray = matchIds.split(",");
+        String vs = "";
+        String matchResult = cff.getResult();//比赛结果
+        int i = 0;
+        String matchTimes = cff.getAllMatchTimes();//所有比赛时间
+        String[] matchTimesArray = matchTimes.split(",");
+        int j = 0;
+        for (String s : matchIdsArray) {
+            List<String> resultList = new ArrayList<>();
+            if (StringUtils.isNotEmpty(matchResult)) {
+                String[] mathchResultArray = matchResult.split(",");
+                for (String rs : mathchResultArray) {
+                    resultList.add(rs);
+                }
+            }
+
+
+            String match = s.split("\\+")[1];
+            Map<String, Object> orderMap = new HashMap<>();
+            orderMap.put("matchId", match);
+            //比赛结果
+            if (resultList.size() > 0) {
+                orderMap.put("result", resultList.get(i));
+                i++;
+            } else {
+                orderMap.put("result", "");
+            }
+
+            //比分
+            Map<String, String> scoreMap = getFollowMap(match, scoreArray);
+            if (scoreMap.size() > 0) {
+                vs = scoreMap.get("vs");
+            }
+
+            orderMap.put("score", scoreMap.get("result"));
+
+            //进球
+            Map<String, String> goalMap = getFollowMap(match, goalArray);
+            if (goalMap.size() > 0) {
+                vs = goalMap.get("vs");
+            }
+            orderMap.put("goal", goalMap.get("result"));
+
+
+            //半全场
+            String halfName = "";
+            Map<String, String> halfMap = getFollowMap(match, halfArray);
+            if (halfMap.size() > 0) {
+                vs = halfMap.get("vs");
+                Map<String, String> nameMap = BallGameCals.getHalfWholeNames();
+                String result = halfMap.get("result");
+                String resultArray[] = result.split(",");
+                for (String r : resultArray) {
+                    String wholeResult = "";
+                    String[] rArray = r.split("/");
+                    wholeResult = nameMap.get(rArray[0]) + "/" + rArray[1];
+                    halfName += wholeResult + ",";
+                }
+            }
+            orderMap.put("half", halfName); //半全场
+
+            //胜负平
+            Map<String, String> beatMap = getFollowMap(match, beatArray);
+            if (beatMap.size() > 0) {
+                vs = beatMap.get("vs");
+            }
+
+            String trueBeat = beatMap.get("result");
+            String realBeat = "";
+            if (StringUtils.isNotEmpty(trueBeat)) {
+                String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
+                String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
+                String finalBeat3 = finalBeat2.replaceAll("0/", "客胜/");
+                realBeat = finalBeat3;
+            }
+
+            orderMap.put("beat", realBeat);
+            //让球
+            Map<String, String> letMap = getFollowMap(match, letArray);
+            if (letMap.size() > 0) {
+                vs = letMap.get("vs");
+            }
+            String trueLet = letMap.get("result");
+            String realLet = "";
+            if (StringUtils.isNotEmpty(trueLet)) {
+                String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
+                String finalLet2 = finalLet1.replaceAll("1/", "平/");
+                String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
+                realLet = finalLet3;
+            }
+            orderMap.put("let", realLet);
+            orderMap.put("vs", vs);
+
+            detailList.add(orderMap);
+        }
+        return detailList;
+    }
+
 }
