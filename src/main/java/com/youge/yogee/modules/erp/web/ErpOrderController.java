@@ -35,6 +35,7 @@ import com.youge.yogee.modules.erp.service.ErpOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.service.SystemService;
 import com.youge.yogee.modules.sys.utils.UserUtils;
+import org.apache.poi.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -247,7 +248,13 @@ public class ErpOrderController extends BaseController {
                 String size = (String) map.get("size");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
-
+//yhw  修改让问题
+                if (StringUtils.isNotEmpty(win)){
+                    win = "让主胜"+win;
+                }
+                if (StringUtils.isNotEmpty(fail)){
+                    fail = "让主负"+fail;
+                }
                 ebbd.setMatId(matchId);
                 ebbd.setVs(vs);
                 ebbd.setBeat(beat);
@@ -334,6 +341,11 @@ public class ErpOrderController extends BaseController {
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
+                if(StringUtils.isNotEmpty(let)){
+                    if (let.startsWith("平")){
+                        let = "让"+let;
+                    }
+                }
 //                detail += matchId + "   " + vs + "   ";
 //                if (StringUtils.isNotEmpty(score)) {
 //                    detail += score + "   ";
@@ -420,7 +432,13 @@ public class ErpOrderController extends BaseController {
 //                String size = (String) map.get("size");
 //                String beat = (String) map.get("beat");
 //                String let = (String) map.get("let");
-
+//yhw  修改让问题
+                if (StringUtils.isNotEmpty(win)){
+                    win = "让主胜"+win;
+                }
+                if (StringUtils.isNotEmpty(fail)){
+                    fail = "让主负"+fail;
+                }
                 ebbd.setMatId(matchId);
                 ebbd.setVs(vs);
 //                ebbd.setBeat(beat);
@@ -515,6 +533,11 @@ public class ErpOrderController extends BaseController {
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
+                if(StringUtils.isNotEmpty(let)){
+                    if (let.startsWith("平")){
+                        let = "让"+let;
+                    }
+                }
 //                detail += matchId + "   " + vs + "   ";
 //                if (StringUtils.isNotEmpty(score)) {
 //                    detail += score + "   ";

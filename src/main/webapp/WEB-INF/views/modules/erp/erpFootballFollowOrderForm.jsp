@@ -41,7 +41,7 @@
            action="${ctx}/cfootballorder/cdFootballFollowOrder/save" method="post" class="form-horizontal">
     <form:hidden path="id"/>
     <tags:message content="${message}"/>
-    <div class="control-group">
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">订单号号:</label>
         <div class="controls">
             <form:input path="orderNum" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
@@ -53,32 +53,32 @@
             <form:input path="weekday" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>--%>
-    <div class="control-group">
+    <%--<div class="control-group">
         <label class="control-label">注数:</label>
         <div class="controls">
             <form:input path="acount" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
-    </div>
-    <div class="control-group">
+    </div>--%>
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">金额:</label>
         <div class="controls">
             <form:input path="price" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-    <div class="control-group">
+    <%--<div class="control-group">
         <label class="control-label">用户:</label>
         <div class="controls">
-                <%--<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>--%>
+                &lt;%&ndash;<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>&ndash;%&gt;
             <input type="text" readonly="readonly" value="${uName}">
         </div>
-    </div>
-    <div class="control-group">
+    </div>--%>
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">下单时间:</label>
         <div class="controls">
             <form:input path="createDate" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-    <div class="control-group">
+    <%--<div class="control-group">
         <label class="control-label">相关让球数:</label>
         <div class="controls">
             <form:input path="letBalls" htmlEscape="false" maxlength="200" class="" readonly="true"/>
@@ -89,216 +89,8 @@
         <div class="controls">
             <form:input path="followNum" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
-    </div>
-    <div>
-        <c:forEach items="${detailList}" var="detailList">
-            ${detailList.matId}<br>
-        </c:forEach>
-    </div>
-    <%--<div class="control-group">
-        <label class="control-label">比分详情: </label>
-        <div class="controls">
-                &lt;%&ndash;<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>&ndash;%&gt;
-            <p><font size="3"> <b>胆是(1)/否(0)+场次+主客队+比分/赔率</b></font></p>
-            <font size="3">
-                <c:forEach items="${sList}" var="sList">
-                    <p>
-                        <c:forTokens items=" ${sList}" delims="+" var="alist" varStatus="j">
-                            <c:if test="${j.count==4}">
-                                <c:forTokens items=" ${alist}" delims="," var="detail">
-                                    <c:forTokens items=" ${detail}" delims="/" var="score" varStatus="i">
-                                        <c:if test="${i.count==1 }">
-                                            <font color="red"> <b> ${score}</b></font>/
-                                        </c:if>
-                                        <c:if test="${i.count!=1}">
-                                            ${score},
-                                        </c:if>
-
-                                    </c:forTokens>
-                                </c:forTokens>
-                            </c:if>
-                            <c:if test="${j.count==1}">
-                                <font color="red"> <b> ${alist}</b></font>+
-                            </c:if>
-                            <c:if test="${j.count!=4 && j.count!=1}">
-                                ${alist}+
-                            </c:if>
-                        </c:forTokens>
-                        <br>
-                    </p>
-                </c:forEach>
-            </font>
-        </div>
-    </div>
-
-
-    <div class="control-group">
-        <label class="control-label">总进球详情: </label>
-        <div class="controls">
-                &lt;%&ndash;<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>&ndash;%&gt;
-            <p><font size="3"> <b>胆是(1)/否(0)+场次+主客队+进球数/赔率</b></font></p>
-                &lt;%&ndash; <c:forEach items="${gList}" var="gList">
-                     <p><font size="2"> ${gList}</font></p>
-                 </c:forEach>&ndash;%&gt;
-            <font size="3">
-                <c:forEach items="${gList}" var="gList">
-                    <p>
-                        <c:forTokens items=" ${gList}" delims="+" var="alist" varStatus="j">
-                            <c:if test="${j.count==4}">
-                                <c:forTokens items=" ${alist}" delims="," var="detail">
-                                    <c:forTokens items=" ${detail}" delims="/" var="score" varStatus="i">
-                                        <c:if test="${i.count==1 }">
-                                            <font color="red"> <b> ${score}</b></font>/
-                                        </c:if>
-                                        <c:if test="${i.count!=1}">
-                                            ${score},
-                                        </c:if>
-
-                                    </c:forTokens>
-                                </c:forTokens>
-                            </c:if>
-                            <c:if test="${j.count==1}">
-                                <font color="red"> <b> ${alist}</b></font>+
-                            </c:if>
-                            <c:if test="${j.count!=4 && j.count!=1}">
-                                ${alist}+
-                            </c:if>
-                        </c:forTokens>
-                        <br>
-                    </p>
-                </c:forEach>
-            </font>
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label">半全场详情: </label>
-        <div class="controls">
-                &lt;%&ndash;<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>&ndash;%&gt;
-            <p><font size="3"> <b>胆是(1)/否(0)+场次+主客队+胜负平/赔率</b></font></p>
-                &lt;%&ndash;<c:forEach items="${hList}" var="hList">
-                    <p><font size="2"> ${hList}</font></p>
-                </c:forEach>&ndash;%&gt;
-            <font size="3">
-                <c:forEach items="${hList}" var="hList">
-                    <p>
-                        <c:forTokens items=" ${hList}" delims="+" var="alist" varStatus="j">
-                            <c:if test="${j.count==4}">
-                                <c:forTokens items=" ${alist}" delims="," var="detail">
-                                    <c:forTokens items=" ${detail}" delims="/" var="score" varStatus="i">
-                                        <c:if test="${i.count==1 }">
-                                            <font color="red"> <b> ${score}</b></font>/
-                                        </c:if>
-                                        <c:if test="${i.count!=1}">
-                                            ${score},
-                                        </c:if>
-
-                                    </c:forTokens>
-                                </c:forTokens>
-                            </c:if>
-                            <c:if test="${j.count==1}">
-                                <font color="red"> <b> ${alist}</b></font>+
-                            </c:if>
-                            <c:if test="${j.count!=4 && j.count!=1}">
-                                ${alist}+
-                            </c:if>
-                        </c:forTokens>
-                        <br>
-                    </p>
-                </c:forEach>
-            </font>
-        </div>
-    </div>
-
-
-    <div class="control-group">
-        <label class="control-label">胜负平详情: </label>
-        <div class="controls">
-                &lt;%&ndash;<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>&ndash;%&gt;
-            <p><font size="3"> <b>胆是(1)/否(0)+场次+主客队+胜负平/赔率</b></font></p>
-                &lt;%&ndash;<c:forEach items="${bList}" var="bList">
-                    <p><font size="2"> ${bList}</font></p>
-                </c:forEach>&ndash;%&gt;
-            <font size="3">
-                <c:forEach items="${bList}" var="bList">
-                    <p>
-                        <c:forTokens items=" ${bList}" delims="+" var="alist" varStatus="j">
-                            <c:if test="${j.count==4}">
-                                <c:forTokens items=" ${alist}" delims="," var="detail">
-                                    <c:forTokens items=" ${detail}" delims="/" var="score" varStatus="i">
-                                        <c:if test="${i.count==1 }">
-                                            <font color="red"> <b> ${score}</b></font>/
-                                        </c:if>
-                                        <c:if test="${i.count!=1}">
-                                            ${score},
-                                        </c:if>
-
-                                    </c:forTokens>
-                                </c:forTokens>
-                            </c:if>
-                            <c:if test="${j.count==1}">
-                                <font color="red"> <b> ${alist}</b></font>+
-                            </c:if>
-                            <c:if test="${j.count!=4 && j.count!=1}">
-                                ${alist}+
-                            </c:if>
-                        </c:forTokens>
-                        <br>
-                    </p>
-                </c:forEach>
-            </font>
-        </div>
-    </div>
-
-    <div class="control-group">
-        <label class="control-label">让球胜负平详情: </label>
-        <div class="controls">
-                &lt;%&ndash;<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>&ndash;%&gt;
-            <p><font size="3"> <b>胆是(1)/否(0)+场次+主客队+胜负平/赔率</b></font></p>
-                &lt;%&ndash; <c:forEach items="${tList}" var="tList">
-                     <c:forTokens items=" ${tList}" delims="+" var="ceshi">
-                         &lt;%&ndash;<p><font size="2"> ${ceshi}</font></p>&ndash;%&gt;
-                         <c:out value="${ceshi}"></c:out>
-                     </c:forTokens>
-                 </c:forEach>&ndash;%&gt;
-            <font size="3">
-                <c:forEach items="${tList}" var="tList">
-                    <p>
-                        <c:forTokens items=" ${tList}" delims="+" var="alist" varStatus="j">
-                            <c:if test="${j.count==4}">
-                                <c:forTokens items=" ${alist}" delims="," var="detail">
-                                    <c:forTokens items=" ${detail}" delims="/" var="score" varStatus="i">
-                                        <c:if test="${i.count==1 }">
-                                            <font color="red"> <b> ${score}</b></font>/
-                                        </c:if>
-                                        <c:if test="${i.count!=1}">
-                                            ${score},
-                                        </c:if>
-
-                                    </c:forTokens>
-                                </c:forTokens>
-                            </c:if>
-                            <c:if test="${j.count==1}">
-                                <font color="red"> <b> ${alist}</b></font>+
-                            </c:if>
-                            <c:if test="${j.count!=4 && j.count!=1}">
-                                ${alist}+
-                            </c:if>
-                        </c:forTokens>
-                        <br>
-                    </p>
-                </c:forEach>
-            </font>
-        </div>
     </div>--%>
-
-    <%--<div class="control-group">--%>
-    <%--<label class="control-label">备注:</label>--%>
-    <%--<div class="controls">--%>
-    <%--<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>--%>
-    <%--</div>--%>
-    <%--</div>--%>
-    <div class="control-group">
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">状态:</label>
         <div class="controls">
             <div><p><font color="red" size="1">将以当前时间(${today})赔率出票 </font></p></div>
@@ -309,6 +101,42 @@
 
         </div>
     </div>
+    <table id="contentTable" class="table table-striped table-bordered table-condensed">
+        <thead>
+        <tr><td colspan="6">选号方案</td></tr>
+        <tr><td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：${cdFootballFollowOrder.followNum}</td></tr>
+        <tr>
+            <th>场次</th>
+            <%--<th>主队</th>--%>
+            <th>对阵</th>
+            <%--<th>客队</th>--%>
+            <th>全场比分</th>
+            <th>半场比分</th>
+            <th>投注方案</th>
+            <th>胆码</th>
+        </tr>
+        </thead>
+        <tbody>
+        <c:forEach items="${detailList}" var="detailList">
+            <tr>
+                <td> ${detailList.matId}</td>
+                <%--<td>${detailList.matId}</td>--%>
+                <td>${detailList.vs}</td>
+                <%--<td>${detailList.matId}</td>--%>
+                <td>${detailList.score}</td>
+                <td>${detailList.half}</td>
+                <td style="color:red;">
+                        ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
+                </td>
+                <td></td>
+            </tr>
+        </c:forEach>
+        </tbody>
+    </table>
+
+
+
+
     <div class="form-actions">
         <shiro:hasPermission name="cfootballorder:cdFootballFollowOrder:edit">
             <input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
