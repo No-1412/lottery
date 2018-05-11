@@ -120,7 +120,10 @@
             <td>${erpOrder.totalPrice}</td>
             <td>${erpOrder.userId.saleId.name}</td>
             <td>${erpOrder.createDate}</td>
-            <td>${erpOrder.remarks}</td>
+            <td>
+                <c:if test="${empty erpOrder.outTime}">  未出票</c:if>
+                <%--<c:if test="${not empty erpOrder.createDate}">  ${erpOrder.remarks}</c:if>--%>
+                    </td>
             <shiro:hasPermission name="erp:erpOrder:edit">
                 <td>
                     <a href="${ctx}/erp/erpOrder/form?id=${erpOrder.id}">修改备注</a>

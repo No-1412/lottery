@@ -37,6 +37,17 @@ public class ErpOrder extends BaseEntity<T> implements Serializable {
 	private String number; 	// 彩种订单号
 	private String issue="0"; 	// 是否跟单
 	private String win; 	// 发起跟单id，本表id
+	//add  2018-05-11 yhw
+	private String outTime;//出票时间
+
+	public String getOutTime() {
+		return outTime;
+	}
+
+	public void setOutTime(String outTime) {
+		this.outTime = outTime;
+	}
+
 	public ErpOrder() {
 		super();
 	}
