@@ -130,7 +130,7 @@
                     <%--<td>${detailList.matId}</td>--%>
                 <td>${detailList.vs}</td>
                     <%--<td>${detailList.matId}</td>--%>
-                <td>${detailList.size}</td>
+                <td></td>
                 <td></td>
                 <td style="color:red;">
                         ${detailList.size}${detailList.win}${detailList.fail}${detailList.beat}${detailList.let}

@@ -123,8 +123,8 @@
                 <%--<td>${detailList.matId}</td>--%>
                 <td>${detailList.vs}</td>
                 <%--<td>${detailList.matId}</td>--%>
-                <td>${detailList.score}</td>
-                <td>${detailList.half}</td>
+                <td></td>
+                <td></td>
                 <td style="color:red;">
                         ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
                 </td>
