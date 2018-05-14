@@ -375,6 +375,15 @@ public class BallGameCals {
         return map;
     }
 
+    public static Map<String, String> getAnotherSizeNames() {
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "大");
+        map.put("0", "小");
+
+
+        return map;
+    }
+
 
     /**
      * 转化篮球优化订单的押注结果

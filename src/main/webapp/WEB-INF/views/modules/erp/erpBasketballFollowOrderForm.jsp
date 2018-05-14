@@ -1,21 +1,21 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ include file="/WEB-INF/views/include/taglib.jsp"%>
+<%@ include file="/WEB-INF/views/include/taglib.jsp" %>
 <html>
 <head>
     <title>竞彩篮球订单管理</title>
     <meta name="decorator" content="default"/>
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
             $("#name").focus();
             $("#inputForm").validate({
-                submitHandler: function(form){
+                submitHandler: function (form) {
                     //loading('正在提交，请稍等...');
                     form.submit();
                 },
                 errorContainer: "#messageBox",
-                errorPlacement: function(error, element) {
+                errorPlacement: function (error, element) {
                     $("#messageBox").text("输入有误，请先更正。");
-                    if (element.is(":checkbox")||element.is(":radio")||element.parent().is(".input-append")){
+                    if (element.is(":checkbox") || element.is(":radio") || element.parent().is(".input-append")) {
                         error.appendTo(element.parent().parent());
                     } else {
                         error.insertAfter(element);
@@ -31,10 +31,14 @@
         <a href="${ctx}/cbasketballorder/cdBasketballFollowOrder/">竞彩篮球订单列表</a>
     </li>
     <li class="active">
-        <a href="${ctx}/cbasketballorder/cdBasketballFollowOrder/form?id=${cdBasketballFollowOrder.id}">竞彩篮球订单<shiro:hasPermission name="cbasketballorder:cdBasketballFollowOrder:edit">${not empty cdBasketballFollowOrder.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission name="cbasketballorder:cdBasketballFollowOrder:edit">查看</shiro:lacksPermission></a>
+        <a href="${ctx}/cbasketballorder/cdBasketballFollowOrder/form?id=${cdBasketballFollowOrder.id}">竞彩篮球订单<shiro:hasPermission
+                name="cbasketballorder:cdBasketballFollowOrder:edit">${not empty cdBasketballFollowOrder.id?'修改':'添加'}</shiro:hasPermission><shiro:lacksPermission
+                name="cbasketballorder:cdBasketballFollowOrder:edit">查看</shiro:lacksPermission></a>
     </li>
-</ul><br/>
-<form:form id="inputForm" modelAttribute="cdBasketballFollowOrder" action="${ctx}/cbasketballorder/cdBasketballFollowOrder/save" method="post" class="form-horizontal">
+</ul>
+<br/>
+<form:form id="inputForm" modelAttribute="cdBasketballFollowOrder"
+           action="${ctx}/cbasketballorder/cdBasketballFollowOrder/save" method="post" class="form-horizontal">
     <form:hidden path="id"/>
     <tags:message content="${message}"/>
     <div class="control-group" style="display: inline-block;">
@@ -43,31 +47,31 @@
             <form:input path="orderNum" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-   <%-- <div class="control-group">
-        <label class="control-label">投注方式:</label>
-        <div class="controls">
-            <form:input path="buyWays" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label">注数:</label>
-        <div class="controls">
-            <form:input path="acount" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
-        </div>
-    </div>--%>
+    <%-- <div class="control-group">
+         <label class="control-label">投注方式:</label>
+         <div class="controls">
+             <form:input path="buyWays" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+         </div>
+     </div>
+     <div class="control-group">
+         <label class="control-label">注数:</label>
+         <div class="controls">
+             <form:input path="acount" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+         </div>
+     </div>--%>
     <div class="control-group" style="display: inline-block;">
         <label class="control-label">金额:</label>
         <div class="controls">
             <form:input path="price" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-   <%-- <div class="control-group">
-        <label class="control-label">用户:</label>
-        <div class="controls">
-                &lt;%&ndash;<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>&ndash;%&gt;
-            <input type="text" readonly="readonly" value="${uName}">
-        </div>
-    </div>--%>
+    <%-- <div class="control-group">
+         <label class="control-label">用户:</label>
+         <div class="controls">
+                 &lt;%&ndash;<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>&ndash;%&gt;
+             <input type="text" readonly="readonly" value="${uName}">
+         </div>
+     </div>--%>
     <div class="control-group" style="display: inline-block;">
         <label class="control-label">下单时间:</label>
         <div class="controls">
@@ -95,7 +99,6 @@
 --%>
 
 
-
     <div class="control-group" style="display: inline-block;">
         <label class="control-label">状态:</label>
         <div class="controls">
@@ -110,8 +113,12 @@
 
     <table id="contentTable" class="table table-striped table-bordered table-condensed">
         <thead>
-        <tr><td colspan="6">选号方案</td></tr>
-        <tr><td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：${cdBasketballSingleOrder.followNums}</td></tr>
+        <tr>
+            <td colspan="6">选号方案</td>
+        </tr>
+        <tr>
+            <td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：${cdBasketballSingleOrder.followNums}</td>
+        </tr>
         <tr>
             <th>场次</th>
                 <%--<th>主队</th>--%>
@@ -140,6 +147,44 @@
         </c:forEach>
         </tbody>
     </table>
+
+
+    <c:if test="${not empty bestDetail}">
+        <table id="contentTable" class="table table-striped table-bordered table-condensed">
+            <thead>
+            <tr><td colspan="6">选号详情</td></tr>
+            <tr>
+                <th>序</th>
+                <th>场次和出票赔率</th>
+                <th>票号</th>
+                <th>过关方式</th>
+                <th>注数</th>
+                <th>倍数</th>
+                <th>投注金额</th>
+                <th>中奖金额</th>
+                <th>补打</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:forEach items="${bestDetail}" var="bestDetail" varStatus="status">
+                <tr>
+                    <td>${ status.index + 1}</td>
+                    <td> <c:forEach items="${bestDetail.detail}" var="hah">
+                        ${hah}<br>
+                    </c:forEach></td>
+                    <td></td>
+                    <td>${bestDetail.followNums}</td>
+                    <td>1</td>
+                    <td style="color:red;">${bestDetail.perTimes}</td>
+                    <td></td>
+                    <td>未出票</td>
+                    <td><input type="checkbox"></td>
+                </tr>
+            </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
+
     <div class="form-actions">
         <shiro:hasPermission name="cbasketballorder:cdBasketballFollowOrder:edit">
             <input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;

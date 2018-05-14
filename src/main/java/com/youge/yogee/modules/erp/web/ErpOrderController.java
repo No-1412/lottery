@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
+import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballSingleOrder;
 import com.youge.yogee.modules.cbasketballorder.service.CdBasketballBestFollowOrderService;
@@ -274,6 +275,39 @@ public class ErpOrderController extends BaseController {
             }
             model.addAttribute("detailList", finalDetailList);
 
+
+            //优化订单
+            if ("2".equals(cdBasketballFollowOrder.getBestType())) {
+                List<ErpBestOrderDto> list = new ArrayList<>();
+                List<CdBasketballBestFollowOrder> bestList = cdBasketballBestFollowOrderService.findByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                for (CdBasketballBestFollowOrder cbbf : bestList) {
+                    ErpBestOrderDto ebod = new ErpBestOrderDto();
+                    String detail = cbbf.getOrderDetail();
+                    String[] detailArray = detail.split("\\|");
+                    //String[] finalDetailArray = new String[detailArray.length];
+                    String aDetailArrayDetail = "";
+                    String lastDetail="";
+                    for (String str : detailArray) {
+                        String[] aDetailArray = str.split("\\+");
+                        String[] detailThree = aDetailArray[3].split("/");
+                        if("let".equals(aDetailArray[1])){
+                            lastDetail = aDetailArray[0] + "[" + detailThree[1] + "]" + "(" + aDetailArray[2] + ")" + changeBasketballType(aDetailArray[1]);
+                        }else if("size".equals(aDetailArray[1])){
+                            lastDetail = aDetailArray[0] + "[" + detailThree[2] + "]" + "(" + aDetailArray[2] + ")" + changeBasketballType(aDetailArray[1]);
+                        }else {
+                            lastDetail = aDetailArray[0] + "(" + aDetailArray[2] + ")" + changeBasketballType(aDetailArray[1]);
+
+                        }
+                         aDetailArrayDetail += lastDetail + "|";
+                    }
+                    String[] lastDetailArray = aDetailArrayDetail.split("\\|");
+                    ebod.setDetail(lastDetailArray);
+                    ebod.setFollowNums(String.valueOf(lastDetailArray.length));
+                    ebod.setPerTimes(cbbf.getPerTimes());
+                    list.add(ebod);
+                }
+                model.addAttribute("bestDetail", list);
+            }
 
             model.addAttribute("cdBasketballFollowOrder", cdBasketballFollowOrder);
             return "modules/erp/erpBasketballFollowOrderForm";
@@ -573,7 +607,7 @@ public class ErpOrderController extends BaseController {
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);
-
+            //优化订单
             if ("2".equals(cdFootballFollowOrder.getBestType())) {
                 List<ErpBestOrderDto> list = new ArrayList<>();
                 List<CdFootballBestFollowOrder> bestList = cdFootballBestFollowOrderService.findByOrderNum(cdFootballFollowOrder.getOrderNum());
@@ -585,7 +619,13 @@ public class ErpOrderController extends BaseController {
                     String aDetailArrayDetail = "";
                     for (String str : detailArray) {
                         String[] aDetailArray = str.split("\\+");
-                        String lastDetail = aDetailArray[0] + "[" + aDetailArray[3] + "]" + "(" + aDetailArray[2] + ")" + changeType(aDetailArray[1]);
+                        String lastDetail = "";
+                        if ("let".equals(aDetailArray[1])) {
+                            lastDetail = aDetailArray[0] + "[" + aDetailArray[3].split("/")[1] + "]" + "(" + aDetailArray[2] + ")" + changeType(aDetailArray[1]);
+                        } else {
+                            lastDetail = aDetailArray[0] + "(" + aDetailArray[2] + ")" + changeType(aDetailArray[1]);
+                        }
+
                         aDetailArrayDetail += lastDetail + "|";
                     }
                     String[] lastDetailArray = aDetailArrayDetail.split("\\|");
@@ -1128,5 +1168,29 @@ public class ErpOrderController extends BaseController {
         }
         return type;
     }
+
+
+    private String changeBasketballType(String buyWays) {
+        String type = "";
+        switch (buyWays) {
+            case "size":
+                type = "_大小分";
+                break;
+            case "hostWin":
+                type = "_主胜分差";
+                break;
+            case "hostFail":
+                type = "_主负分差";
+                break;
+            case "beat":
+                type = "_胜负";
+                break;
+            case "let":
+                type = "_让分胜负";
+                break;
+        }
+        return type;
+    }
+
 
 }

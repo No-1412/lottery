@@ -118,10 +118,10 @@ public class BasketballFollowOrderInterface {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
 
-                String shutDownTime=cbm.getTimeEndsale();
-                Date day=new Date();
+                String shutDownTime = cbm.getTimeEndsale();
+                Date day = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                if(df.parse(shutDownTime).getTime()<day.getTime()){
+                if (df.parse(shutDownTime).getTime() < day.getTime()) {
                     return HttpResultUtil.errorJson("超过比赛截止时间");
                 }
 
@@ -484,7 +484,7 @@ public class BasketballFollowOrderInterface {
             //保证比赛存在
             String danMatchIds = "";
             String letScore = "";
-            String sizeCount = "";
+
             String allMatchTimes = "";//所有比赛时间
             for (String s : matchSet) {
                 CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
@@ -503,7 +503,7 @@ public class BasketballFollowOrderInterface {
 
 
                 letScore += cbm.getClose() + ",";
-                sizeCount += cbm.getZclose() + ",";
+
                 Map<String, String> aDetailMap = new HashMap<>();
                 aDetailMap.put("hostWin", "");
                 aDetailMap.put("hostFail", "");
@@ -531,7 +531,7 @@ public class BasketballFollowOrderInterface {
                     if (cbm == null) {
                         return HttpResultUtil.errorJson("比赛不存在！");
                     }
-                    String close = cbm.getClose();//让分
+                    String close = cbm.getClose().replaceAll("\\+","");//让分
                     String zclose = cbm.getZclose();//大小分分数
                     matchIds += matchId + ",";
                     String odds = (String) aBestDeatil.get("odds");//赔率
@@ -572,6 +572,7 @@ public class BasketballFollowOrderInterface {
             String beat = "";
             String size = "";
             String let = "";
+            String sizeCount = "";
             for (String s : matchSet) {
                 Map<String, String> aMap = detailMap.get(s);
                 CdBasketballMixed cbm = cdBasketballMixedService.findByMatchId(s);
@@ -586,6 +587,7 @@ public class BasketballFollowOrderInterface {
                     beat += head + aMap.get("beat") + "|";
                 }
                 if (StringUtils.isNotEmpty(aMap.get("size"))) {
+                    sizeCount += cbm.getZclose() + ",";
                     size += head + aMap.get("size") + "|";
                 }
                 if (StringUtils.isNotEmpty(aMap.get("let"))) {
@@ -615,6 +617,15 @@ public class BasketballFollowOrderInterface {
             cbfo.setBeat(beat);//胜负
             cbfo.setLet(let);//让球胜负
             cbfo.setSize(size);//大小
+
+//            String letScore = "";//大小让分
+//            String[] sizeArray=size.split("\\|");
+//            for(String s:sizeArray){
+//                String[] sArray=s.split("\\+");
+//                String matchId=sArray[1];
+//                CdBasketballMixed cbm=cdBasketballMixedService.findByMatchId(matchId);
+//                letScore+=cbm.getClose();
+//            }
 
             cbfo.setSizeCount(sizeCount);//比大小的分
             cbfo.setLetScore(letScore);//让分

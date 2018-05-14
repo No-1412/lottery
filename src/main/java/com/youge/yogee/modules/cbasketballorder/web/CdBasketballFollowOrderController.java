@@ -256,11 +256,11 @@ public class CdBasketballFollowOrderController extends BaseController {
             cdBasketballFollowOrder.setLetScore(letScore);
         }
         //保存出票时间
-        Date day=new Date();
+        Date day = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String outTime=df.format(day);
-        CdOrder co=cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
-        if(co!=null){
+        String outTime = df.format(day);
+        CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+        if (co != null) {
             co.setOutTime(outTime);
             cdOrderService.save(co);
         }
@@ -312,7 +312,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                                 newBeatOdd = beatOddsArray[0];
                             }
                             String newPlay = beatAndOddArray[0] + "/" + newBeatOdd;
-                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+                            String close = cfm.getClose().replaceAll("\\+", "");
+                            String letSorce = aDetail[3].split("/")[0] + "/" + close + "/" + cfm.getZclose();
                             newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
                             break;
                         }
@@ -326,7 +327,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                             String letAndOdd = aDetail[2];
                             //根据/拆分
                             String[] letAndOddArray = letAndOdd.split("/");
-                            String sm = BallGameCals.changeFootballSf(letAndOddArray[0]);
+                            String sm = BallGameCals.changeBasketballSf(letAndOddArray[0]);
                             String newLetOdd = "";
                             if ("1".equals(sm)) {
                                 newLetOdd = letOddsArray[1];
@@ -334,7 +335,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                                 newLetOdd = letOddsArray[0];
                             }
                             String newPlay = letAndOddArray[0] + "/" + newLetOdd;
-                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+                            String close = cfm.getClose().replaceAll("\\+", "");
+                            String letSorce = aDetail[3].split("/")[0] + "/" + close + "/" + cfm.getZclose();
                             newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
                             break;
                         }
@@ -347,7 +349,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                             String sizeAndOdd = aDetail[2];
                             //根据/拆分
                             String[] sizeAndOddArray = sizeAndOdd.split("/");
-                            String sm = BallGameCals.changeFootballSf(sizeAndOddArray[0]);
+                            String sm = BallGameCals.changeBasketballSf(sizeAndOddArray[0]);
                             String newOdd = "";
                             if ("1".equals(sm)) {
                                 newOdd = sizeOddsArray[0];
@@ -355,7 +357,8 @@ public class CdBasketballFollowOrderController extends BaseController {
                                 newOdd = sizeOddsArray[1];
                             }
                             String newPlay = sizeAndOddArray[0] + "/" + newOdd;
-                            String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+                            String close = cfm.getClose().replaceAll("\\+", "");
+                            String letSorce = aDetail[3].split("/")[0] + "/" + close + "/" + cfm.getZclose();
                             newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
                             break;
                         }
@@ -386,9 +389,9 @@ public class CdBasketballFollowOrderController extends BaseController {
         String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0, cdBasketballFollowOrder.getDanMatchIds().length() - 1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber", cdBasketballFollowOrder.getOrderNum());
-        String returnStr=cdBasketballFollowOrder.getPrice()+"元,"+cdBasketballFollowOrder.getFollowNums()+"串1,";//打印在头部显示
+        String returnStr = cdBasketballFollowOrder.getPrice() + "元," + cdBasketballFollowOrder.getFollowNums() + "串1,";//打印在头部显示
         if ("1".equals(buy_ways)) {//混投
-            returnStr = "竟篮混合,"+returnStr;
+            returnStr = "竟篮混合," + returnStr;
             model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 return baseUrl + "basketball3";
@@ -398,7 +401,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return baseUrl + "basketball8";
             }
         } else if ("2".equals(buy_ways)) {
-            returnStr = "竟篮胜负,"+returnStr;
+            returnStr = "竟篮胜负," + returnStr;
             model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 return baseUrl + "basketballSF3";
@@ -412,7 +415,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
             }
         } else if ("3".equals(buy_ways)) {
-            returnStr = "竟篮让分胜负,"+returnStr;
+            returnStr = "竟篮让分胜负," + returnStr;
             model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球让分胜负3关";
@@ -426,7 +429,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return baseUrl + "basketballRFSF8";
             }
         } else if ("4".equals(buy_ways)) {
-            returnStr = "竟篮大小分,"+returnStr;
+            returnStr = "竟篮大小分," + returnStr;
             model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球大小分3关";
@@ -440,7 +443,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                 return baseUrl + "basketballDXF8";
             }
         } else if ("5".equals(buy_ways)) {
-            returnStr = "竟篮胜负差,"+returnStr;
+            returnStr = "竟篮胜负差," + returnStr;
             model.addAttribute("returnStr", returnStr);
             if (match_ids.split(",").length <= 3) {
                 //return baseUrl+ "篮球胜负差3关";
@@ -727,7 +730,8 @@ public class CdBasketballFollowOrderController extends BaseController {
         int no = winMap.get(fArray[0]);
         String newOdd = failOddsArray[no];
         String newPlay = fArray[0] + "/" + newOdd;
-        String letSorce = aDetail[3].split("/")[0] + "/" + cfm.getClose() + "/" + cfm.getZclose();
+        String close = cfm.getClose().replaceAll("\\+", "");
+        String letSorce = aDetail[3].split("/")[0] + "/" + close + "/" + cfm.getZclose();
         newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce;
         return newAdetail;
     }

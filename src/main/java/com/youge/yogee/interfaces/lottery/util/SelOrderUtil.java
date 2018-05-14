@@ -1090,7 +1090,7 @@ public class SelOrderUtil {
                         String sizeResult = aSizeArray[3];
                         String[] sizeResultArray = sizeResult.split(",");
                         for (String r : sizeResultArray) {
-                            Map<String, String> sizeName = BallGameCals.getSizeNames();
+                            Map<String, String> sizeName = BallGameCals.getAnotherSizeNames();
                             String wholeResult = "";
                             String[] rArray = r.split("/");
                             wholeResult = sizeName.get(rArray[0]) + sizeCountArray[i] + "/" + rArray[1];
@@ -1119,6 +1119,7 @@ public class SelOrderUtil {
         //所有比赛
         String matchIds = cbs.getMatchIds();
         String[] matchIdsArray = matchIds.split(",");
+
         String vs = "";
         String matchResult = cbs.getResult();//比赛结果
         int i = 0;
