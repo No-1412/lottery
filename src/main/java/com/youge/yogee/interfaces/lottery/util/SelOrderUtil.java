@@ -239,6 +239,26 @@ public class SelOrderUtil {
         return map;
     }
 
+
+    private static Map<String, String> getSingleMap2(String s, String[] strArray, String[] letBalls) {
+        Map<String, String> map = new HashMap<>();
+        if (StringUtils.isNotEmpty(strArray[0])) {
+            int i = 0;
+            for (String aStr : strArray) {
+                String[] aStrArray = aStr.split("\\+");
+                if (s.equals(aStrArray[0])) {
+                    map.put("vs", aStrArray[1]);
+                    map.put("result", aStrArray[2]);
+                    if (!"".equals(letBalls[0])) {
+                        map.put("letBall", letBalls[i]);
+                        i++;
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
     private static Map<String, String> getFollowMap(String s, String[] strArray) {
         Map<String, String> map = new HashMap<>();
         if (!"".equals(strArray[0])) {
@@ -247,11 +267,49 @@ public class SelOrderUtil {
                 if (s.equals(aStrArray[1])) {
                     map.put("vs", aStrArray[2]);
                     map.put("result", aStrArray[3]);
+
                 }
             }
         }
         return map;
     }
+
+
+//    private static Map<String, String> getFollowMap2(String s, String[] strArray,String[] letBall) {
+//        Map<String, String> map = new HashMap<>();
+//        if (!"".equals(strArray[0])) {
+//            for (String aStr : strArray) {
+//                String[] aStrArray = aStr.split("\\+");
+//                if (s.equals(aStrArray[1])) {
+//                    map.put("vs", aStrArray[2]);
+//                    map.put("result", aStrArray[3]);
+//
+//                }
+//            }
+//        }
+//        return map;
+//    }
+
+
+    private static Map<String, String> getFollowMap2(String s, String[] strArray, String[] letScore) {
+        Map<String, String> map = new HashMap<>();
+        if (!"".equals(strArray[0])) {
+            int i = 0;
+            for (String aStr : strArray) {
+                String[] aStrArray = aStr.split("\\+");
+                if (s.equals(aStrArray[1])) {
+                    map.put("vs", aStrArray[2]);
+                    map.put("result", aStrArray[3]);
+                    if (!"".equals(letScore[0])) {
+                        map.put("letScore", letScore[i]);
+                        i++;
+                    }
+                }
+            }
+        }
+        return map;
+    }
+
 
     public static List getFbFollowList(CdFootballFollowOrder cff) throws ParseException {
         List detailList = new ArrayList();
@@ -782,6 +840,8 @@ public class SelOrderUtil {
         int i = 0;
         String matchTimes = cff.getAllMatchTimes();//所有比赛时间
         String[] matchTimesArray = matchTimes.split(",");
+        String letBall = cff.getLetBalls();
+        String[] letBallArray = letBall.split(",");
         int j = 0;
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
@@ -855,7 +915,7 @@ public class SelOrderUtil {
 
             orderMap.put("beat", realBeat);
             //让球
-            Map<String, String> letMap = getFollowMap(match, letArray);
+            Map<String, String> letMap = getFollowMap2(match, letArray, letBallArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
@@ -869,6 +929,7 @@ public class SelOrderUtil {
             }
             orderMap.put("let", realLet);
             orderMap.put("vs", vs);
+            orderMap.put("letBall", letMap.get("letScore"));
 
             detailList.add(orderMap);
         }
@@ -901,6 +962,8 @@ public class SelOrderUtil {
         String allMatchTimes = cfs.getAllMatchTimes();
         String[] matchTimesArray = allMatchTimes.split(",");
         int j = 0;
+        String letBall = cfs.getLetBalls();
+        String[] letBallArray = letBall.split(",");
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
             if (StringUtils.isNotEmpty(matchResult)) {
@@ -966,7 +1029,7 @@ public class SelOrderUtil {
 
             orderMap.put("beat", realBeat); //胜负
             //让球
-            Map<String, String> letMap = getSingleMap(s, letArray);
+            Map<String, String> letMap = getSingleMap2(s, letArray, letBallArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
@@ -978,6 +1041,7 @@ public class SelOrderUtil {
                 String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
                 realLet = finalLet3;
             }
+            orderMap.put("letBall", letMap.get("letBall"));
             orderMap.put("let", realLet);
             //orderMap.put("let", letMap.get("result")); //让球
             orderMap.put("vs", vs);
@@ -1014,7 +1078,8 @@ public class SelOrderUtil {
         String matchTimes = cbf.getAllMatchTimes();//所有比赛时间
         String[] matchTimesArray = matchTimes.split(",");
         int k = 0;
-
+        String letScore = cbf.getLetScore();
+        String[] letScoreArray = letScore.split(",");
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
             if (StringUtils.isNotEmpty(matchResult)) {
@@ -1027,6 +1092,8 @@ public class SelOrderUtil {
             String[] aMatchArray = s.split("\\+");
             String match = aMatchArray[1];
             Map<String, Object> orderMap = new HashMap<>();
+
+
             orderMap.put("matchId", match);
             orderMap.put("dan", aMatchArray[0]);
             //比赛结果
@@ -1064,7 +1131,7 @@ public class SelOrderUtil {
             orderMap.put("beat", realBeat);
             //orderMap.put("beat", beatMap.get("result"));
             //让球胜负
-            Map<String, String> letMap = getFollowMap(match, letArray);
+            Map<String, String> letMap = getFollowMap2(match, letArray, letScoreArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
@@ -1075,7 +1142,7 @@ public class SelOrderUtil {
                 String finalLet2 = finalLet1.replaceAll("0/", "让主负/");
                 realLet = finalLet2;
             }
-
+            orderMap.put("letScore", letMap.get("letScore"));
             orderMap.put("let", realLet);
             orderMap.put("vs", vs);
 

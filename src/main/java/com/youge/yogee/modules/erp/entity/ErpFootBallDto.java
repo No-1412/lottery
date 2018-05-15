@@ -11,6 +11,7 @@ public class ErpFootBallDto {
     private String let;
     private String dan;
     private String result;
+    private String letBall;
 
     public String getMatId() {
         return matId;
@@ -82,5 +83,13 @@ public class ErpFootBallDto {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getLetBall() {
+        return letBall;
+    }
+
+    public void setLetBall(String letBall) {
+        this.letBall = letBall;
     }
 }

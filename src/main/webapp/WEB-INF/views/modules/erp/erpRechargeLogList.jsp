@@ -41,6 +41,7 @@
 				<th>充值用户</th>
 				<th>充值金额（元）</th>
 				<th>充值时间</th>
+				<th>备注</th>
 				<%--<shiro:hasPermission name="erp:erpRechargeLog:edit"><th>操作</th></shiro:hasPermission>--%>
 			</tr>
 		</thead>
@@ -51,6 +52,7 @@
 				<td>${erpRechargeLog.userId.name}</td>
 				<td>${erpRechargeLog.money}</td>
 				<td>${erpRechargeLog.createDate}</td>
+				<td>${erpRechargeLog.remark}</td>
 			</tr>
 		</c:forEach>
 		</tbody>

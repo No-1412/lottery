@@ -205,6 +205,7 @@ public class ErpOrderController extends BaseController {
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
                 String dan = (String) map.get("dan");
+                String letScore = (String) map.get("letScore");
                 if ("非".equals(dan)) {
                     dan = "";
                 }
@@ -225,6 +226,7 @@ public class ErpOrderController extends BaseController {
                 ebbd.setFail(fail);
                 ebbd.setResult(result);
                 ebbd.setDan(dan);
+                ebbd.setLetScore(letScore);
                 finalDetailList.add(ebbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -291,20 +293,19 @@ public class ErpOrderController extends BaseController {
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
                 String result = (String) map.get("result");
-                //String result = (String) map.get("result");
-                if (StringUtils.isNotEmpty(let)) {
-                    if (let.startsWith("平")) {
-                        let = "让" + let;
-                    }
-                }
+                String letBall = (String) map.get("letBall");
+
+                String newLet = let.replaceAll("平", "让平");
                 efbd.setMatId(matchId);
                 efbd.setVs(vs);
                 efbd.setBeat(beat);
                 efbd.setScore(score);
                 efbd.setGoal(goal);
                 efbd.setHalf(half);
-                efbd.setLet(let);
+                efbd.setLet(newLet);
                 efbd.setResult(result);
+                efbd.setLetBall(letBall);
+
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -389,14 +390,12 @@ public class ErpOrderController extends BaseController {
                 String let = (String) map.get("let");
                 String dan = (String) map.get("dan");
                 String result = (String) map.get("result");
+                String letBall = (String) map.get("letBall");
+
                 if ("非".equals(dan)) {
                     dan = "";
                 }
-                if (StringUtils.isNotEmpty(let)) {
-                    if (let.startsWith("平")) {
-                        let = "让" + let;
-                    }
-                }
+                String newLet = let.replaceAll("平", "让平");
 
                 efbd.setMatId(matchId);
                 efbd.setVs(vs);
@@ -404,9 +403,10 @@ public class ErpOrderController extends BaseController {
                 efbd.setScore(score);
                 efbd.setGoal(goal);
                 efbd.setHalf(half);
-                efbd.setLet(let);
+                efbd.setLet(newLet);
                 efbd.setDan(dan);
                 efbd.setResult(result);
+                efbd.setLetBall(letBall);
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);

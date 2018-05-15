@@ -141,6 +141,10 @@
                     <%--  <td></td>--%>
                 <td style="color:red;">
                         ${detailList.size}${detailList.win}${detailList.fail}${detailList.beat}${detailList.let}
+                    <c:if test="${detailList.letScore !=null}">
+                        [${detailList.letScore}]
+                    </c:if>
+
                 </td>
                 <td>${detailList.dan}</td>
             </tr>

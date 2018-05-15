@@ -11,6 +11,7 @@ public class ErpBasketBallDto {
     private String let;
     private String dan;
     private String result;
+    private String letScore;
 
     public String getMatId() {
         return matId;
@@ -82,5 +83,13 @@ public class ErpBasketBallDto {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getLetScore() {
+        return letScore;
+    }
+
+    public void setLetScore(String letScore) {
+        this.letScore = letScore;
     }
 }
