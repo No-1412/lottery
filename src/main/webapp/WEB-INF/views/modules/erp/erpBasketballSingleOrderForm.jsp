@@ -94,8 +94,8 @@
                 <%--<th>主队</th>--%>
             <th>对阵</th>
                 <%--<th>客队</th>--%>
-            <th>全场比分</th>
-            <th>半场比分</th>
+           <th>全场比分</th>
+                <%-- <th>半场比分</th>--%>
             <th>投注方案</th>
             <th>胆码</th>
         </tr>
@@ -107,8 +107,8 @@
                     <%--<td>${detailList.matId}</td>--%>
                 <td>${detailList.vs}</td>
                     <%--<td>${detailList.matId}</td>--%>
-                <td></td>
-                <td></td>
+                <td>${detailList.result}</td>
+               <%--  <td></td>--%>
                 <td style="color:red;">
                         ${detailList.size}${detailList.win}${detailList.fail}${detailList.beat}${detailList.let}
                 </td>

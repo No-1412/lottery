@@ -403,6 +403,7 @@ public class UserRegisterInterface {
         String name = (String) jsonData.get("name");
         if (StringUtils.isNotEmpty(name)) {
             cdLotteryUser.setName(name);
+            cdLotteryUser.setAccount(name);
         }
         //头像
         String img = (String) jsonData.get("img");

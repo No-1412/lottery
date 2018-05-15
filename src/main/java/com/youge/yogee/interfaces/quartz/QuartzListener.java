@@ -115,7 +115,14 @@ public class QuartzListener {
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
                 //  **************************后加的-------------获取押注比赛结果并保存****************
-                String result = getResultStr(matchIdList);
+                String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();
+                String[] danMatchIdArray = manyMatchIds.split(",");
+                List<String> list = new ArrayList<>();
+                for (String str : danMatchIdArray) {
+                    String matchId = str.split("\\+")[1];
+                    list.add(matchId);
+                }
+                String result = getResultStr(list);
                 cdFootballFollowOrder.setResult(result);
                 cdFootballFollowOrderService.save(cdFootballFollowOrder);
                 //**********************************************************************************
@@ -275,7 +282,14 @@ public class QuartzListener {
             if (awardMatchIdList.containsAll(matchIdList)) {
 
                 //  **************************后加的-------------获取押注比赛结果并保存****************
-                String result = getResultStr(matchIdList);
+                String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();
+                String[] danMatchIdArray = manyMatchIds.split(",");
+                List<String> list = new ArrayList<>();
+                for (String str : danMatchIdArray) {
+                    String matchId = str.split("\\+")[1];
+                    list.add(matchId);
+                }
+                String result = getResultStr(list);
                 cdFootballFollowOrder.setResult(result);
                 cdFootballFollowOrderService.save(cdFootballFollowOrder);
                 //**********************************************************************************
@@ -590,7 +604,13 @@ public class QuartzListener {
                 continue;
             }
             //  **********************后加的-------------获取押注比赛结果并保存****************************
-            String result = getResultStr(matchIdList);
+            String manyMatchIds = cdFootballSingleOrder.getMatchIds();
+            String[] danMatchIdArray = manyMatchIds.split(",");
+            List<String> list = new ArrayList<>();
+            for (String str : danMatchIdArray) {
+                list.add(str);
+            }
+            String result = getResultStr(list);
             cdFootballSingleOrder.setResult(result);
             cdFootballSingleOrderService.save(cdFootballSingleOrder);
             //******************************************************************************************
@@ -801,10 +821,10 @@ public class QuartzListener {
         }
     }
 
-    public String getResultStr(Set<String> matchIdList) {
+    public String getResultStr(List<String> matchIds) {
         String result = "";
-        if (matchIdList.size() > 0) {
-            for (String str : matchIdList) {
+        if (matchIds.size() > 0) {
+            for (String str : matchIds) {
                 CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(str);
                 if (cdFootballAwards != null) {
                     String scoreResult = cdFootballAwards.getHs() + ":" + cdFootballAwards.getVs();

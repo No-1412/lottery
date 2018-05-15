@@ -103,15 +103,19 @@
     </div>
     <table id="contentTable" class="table table-striped table-bordered table-condensed">
         <thead>
-        <tr><td colspan="6">选号方案</td></tr>
-        <tr><td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：${cdFootballFollowOrder.followNum}</td></tr>
+        <tr>
+            <td colspan="6">选号方案</td>
+        </tr>
+        <tr>
+            <td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：${cdFootballFollowOrder.followNum}</td>
+        </tr>
         <tr>
             <th>场次</th>
-            <%--<th>主队</th>--%>
+                <%--<th>主队</th>--%>
             <th>对阵</th>
-            <%--<th>客队</th>--%>
+                <%--<th>客队</th>--%>
             <th>全场比分</th>
-            <th>半场比分</th>
+                <%-- <th>半场比分</th>--%>
             <th>投注方案</th>
             <th>胆码</th>
         </tr>
@@ -120,15 +124,15 @@
         <c:forEach items="${detailList}" var="detailList">
             <tr>
                 <td> ${detailList.matId}</td>
-                <%--<td>${detailList.matId}</td>--%>
+                    <%--<td>${detailList.matId}</td>--%>
                 <td>${detailList.vs}</td>
-                <%--<td>${detailList.matId}</td>--%>
-                <td></td>
-                <td></td>
+                    <%--<td>${detailList.matId}</td>--%>
+                <td>${detailList.result}</td>
+                    <%-- <td></td>--%>
                 <td style="color:red;">
                         ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
                 </td>
-                <td></td>
+                <td>${detailList.dan}</td>
             </tr>
         </c:forEach>
         </tbody>
@@ -137,7 +141,9 @@
     <c:if test="${not empty bestDetail}">
         <table id="contentTable" class="table table-striped table-bordered table-condensed">
             <thead>
-            <tr><td colspan="6">选号详情</td></tr>
+            <tr>
+                <td colspan="6">选号详情</td>
+            </tr>
             <tr>
                 <th>序</th>
                 <th>场次和出票赔率</th>
@@ -154,7 +160,7 @@
             <c:forEach items="${bestDetail}" var="bestDetail" varStatus="status">
                 <tr>
                     <td>${ status.index + 1}</td>
-                    <td> <c:forEach items="${bestDetail.detail}" var="hah">
+                    <td><c:forEach items="${bestDetail.detail}" var="hah">
                         ${hah}<br>
                     </c:forEach></td>
                     <td></td>

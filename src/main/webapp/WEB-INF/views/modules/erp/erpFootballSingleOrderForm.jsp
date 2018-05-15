@@ -41,7 +41,7 @@
            action="${ctx}/cfootballorder/cdFootballSingleOrder/save" method="post" class="form-horizontal">
     <form:hidden path="id"/>
     <tags:message content="${message}"/>
-    <div class="control-group"style="display: inline-block;">
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">订单号号:</label>
         <div class="controls">
             <form:input path="orderNum" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
@@ -78,12 +78,12 @@
             <form:input path="createDate" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-   <%-- <div class="control-group">
-        <label class="control-label">相关让球数:</label>
-        <div class="controls">
-            <form:input path="letBalls" htmlEscape="false" maxlength="200" class="" readonly="true"/>
-        </div>
-    </div>--%>
+    <%-- <div class="control-group">
+         <label class="control-label">相关让球数:</label>
+         <div class="controls">
+             <form:input path="letBalls" htmlEscape="false" maxlength="200" class="" readonly="true"/>
+         </div>
+     </div>--%>
 
     <div class="control-group" style="display: inline-block;">
         <label class="control-label">状态:</label>
@@ -99,15 +99,19 @@
 
     <table id="contentTable" class="table table-striped table-bordered table-condensed">
         <thead>
-        <tr><td colspan="6">选号方案</td></tr>
-        <tr><td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：单关</td></tr>
+        <tr>
+            <td colspan="6">选号方案</td>
+        </tr>
+        <tr>
+            <td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：单关</td>
+        </tr>
         <tr>
             <th>场次</th>
                 <%--<th>主队</th>--%>
             <th>对阵</th>
                 <%--<th>客队</th>--%>
             <th>全场比分</th>
-            <th>半场比分</th>
+                <%-- <th>半场比分</th>--%>
             <th>投注方案</th>
             <th>胆码</th>
         </tr>
@@ -119,8 +123,8 @@
                     <%--<td>${detailList.matId}</td>--%>
                 <td>${detailList.vs}</td>
                     <%--<td>${detailList.matId}</td>--%>
-                <td></td>
-                <td></td>
+                <td>${detailList.result}</td>
+                    <%--<td></td>--%>
                 <td style="color:red;">
                         ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
                 </td>

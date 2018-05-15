@@ -40,7 +40,6 @@ import com.youge.yogee.modules.erp.service.ErpOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.service.SystemService;
 import com.youge.yogee.modules.sys.utils.UserUtils;
-import org.apache.poi.util.StringUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -182,55 +181,7 @@ public class ErpOrderController extends BaseController {
         String orderNum = erpOrder.getNumber();
         if (orderNum.startsWith("LCG")) {//篮球串关
             CdBasketballFollowOrder cdBasketballFollowOrder = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
-//            String uid = cdBasketballFollowOrder.getUid();
-//            if (StringUtils.isNotEmpty(uid)) {
-////            CdLotteryUser clu = cdLotteryUserService.get(uid);
-////            uName = clu.getReality();
-//            }
-//            String hostWin = cdBasketballFollowOrder.getHostWin();
-//            List<String> wList = new ArrayList<>();
-//
-//            String hostFail = cdBasketballFollowOrder.getHostFail();
-//            List<String> fList = new ArrayList<>();
-//
-//            String beat = cdBasketballFollowOrder.getBeat();
-//            List<String> bList = new ArrayList<>();
-//
-//            String size = cdBasketballFollowOrder.getSize();
-//            List<String> sList = new ArrayList<>();
-//
-//            String let = cdBasketballFollowOrder.getLet();
-//            List<String> tList = new ArrayList<>();
-//            if (StringUtils.isNotEmpty(hostWin)) {
-//                String[] winStr = hostWin.split("\\|");
-//                for (String s : winStr) {
-//                    wList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(hostFail)) {
-//                String[] failStr = hostFail.split("\\|");
-//                for (String s : failStr) {
-//                    fList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(beat)) {
-//                String[] beatStr = beat.split("\\|");
-//                for (String s : beatStr) {
-//                    bList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(size)) {
-//                String[] sizeStr = size.split("\\|");
-//                for (String s : sizeStr) {
-//                    sList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(let)) {
-//                String[] letStr = let.split("\\|");
-//                for (String s : letStr) {
-//                    tList.add(s);
-//                }
-//            }
+
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -238,11 +189,7 @@ public class ErpOrderController extends BaseController {
 
             model.addAttribute("today", today);
             model.addAttribute("uName", uName);
-//            model.addAttribute("wList", wList);
-//            model.addAttribute("fList", fList);
-//            model.addAttribute("bList", bList);
-//            model.addAttribute("sList", sList);
-//            model.addAttribute("tList", tList);
+
 
             List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
             List detailList = SelOrderUtil.getBbFollowList2(cdBasketballFollowOrder);
@@ -257,6 +204,11 @@ public class ErpOrderController extends BaseController {
                 String size = (String) map.get("size");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
+                String dan = (String) map.get("dan");
+                if ("非".equals(dan)) {
+                    dan = "";
+                }
+                String result = (String) map.get("result");
 //yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
                     win = "让主胜" + win;
@@ -271,6 +223,8 @@ public class ErpOrderController extends BaseController {
                 ebbd.setLet(let);
                 ebbd.setWin(win);
                 ebbd.setFail(fail);
+                ebbd.setResult(result);
+                ebbd.setDan(dan);
                 finalDetailList.add(ebbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -286,19 +240,19 @@ public class ErpOrderController extends BaseController {
                     String[] detailArray = detail.split("\\|");
                     //String[] finalDetailArray = new String[detailArray.length];
                     String aDetailArrayDetail = "";
-                    String lastDetail="";
+                    String lastDetail = "";
                     for (String str : detailArray) {
                         String[] aDetailArray = str.split("\\+");
                         String[] detailThree = aDetailArray[3].split("/");
-                        if("let".equals(aDetailArray[1])){
+                        if ("let".equals(aDetailArray[1])) {
                             lastDetail = aDetailArray[0] + "[" + detailThree[1] + "]" + "(" + aDetailArray[2] + ")" + changeBasketballType(aDetailArray[1]);
-                        }else if("size".equals(aDetailArray[1])){
+                        } else if ("size".equals(aDetailArray[1])) {
                             lastDetail = aDetailArray[0] + "[" + detailThree[2] + "]" + "(" + aDetailArray[2] + ")" + changeBasketballType(aDetailArray[1]);
-                        }else {
+                        } else {
                             lastDetail = aDetailArray[0] + "(" + aDetailArray[2] + ")" + changeBasketballType(aDetailArray[1]);
 
                         }
-                         aDetailArrayDetail += lastDetail + "|";
+                        aDetailArrayDetail += lastDetail + "|";
                     }
                     String[] lastDetailArray = aDetailArrayDetail.split("\\|");
                     ebod.setDetail(lastDetailArray);
@@ -314,59 +268,12 @@ public class ErpOrderController extends BaseController {
         }
         if (orderNum.startsWith("ZDG")) {//足球单关
             CdFootballSingleOrder cdFootballSingleOrder = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
-//            String uid = cdFootballSingleOrder.getUid();
-//            if (StringUtils.isNotEmpty(uid)) {
-//            }
-//            String score = cdFootballSingleOrder.getScore();
-//            List<String> sList = new ArrayList<>();
-//            String goal = cdFootballSingleOrder.getGoal();
-//            List<String> gList = new ArrayList<>();
-//            String half = cdFootballSingleOrder.getHalf();
-//            List<String> hList = new ArrayList<>();
-//            String beat = cdFootballSingleOrder.getBeat();
-//            List<String> bList = new ArrayList<>();
-//            String let = cdFootballSingleOrder.getLet();
-//            List<String> tList = new ArrayList<>();
-//            if (StringUtils.isNotEmpty(score)) {
-//                String[] scoreStr = score.split("\\|");
-//                for (String s : scoreStr) {
-//                    sList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(goal)) {
-//                String[] goalStr = goal.split("\\|");
-//                for (String s : goalStr) {
-//                    gList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(half)) {
-//                String[] halfStr = half.split("\\|");
-//                for (String s : halfStr) {
-//                    hList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(beat)) {
-//                String[] beatStr = beat.split("\\|");
-//                for (String s : beatStr) {
-//                    bList.add(s);
-//                }
-//            }
-//            if (StringUtils.isNotEmpty(let)) {
-//                String[] letStr = let.split("\\|");
-//                for (String s : letStr) {
-//                    tList.add(s);
-//                }
-//            }
+
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String today = df.format(day);
             model.addAttribute("today", today);
-//            model.addAttribute("sList", sList);
-//            model.addAttribute("gList", gList);
-//            model.addAttribute("hList", hList);
-//            model.addAttribute("bList", bList);
-//            model.addAttribute("tList", tList);
             model.addAttribute("uName", uName);
             model.addAttribute("cdFootballSingleOrder", cdFootballSingleOrder);
 
@@ -383,28 +290,13 @@ public class ErpOrderController extends BaseController {
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
+                String result = (String) map.get("result");
+                //String result = (String) map.get("result");
                 if (StringUtils.isNotEmpty(let)) {
                     if (let.startsWith("平")) {
                         let = "让" + let;
                     }
                 }
-//                detail += matchId + "   " + vs + "   ";
-//                if (StringUtils.isNotEmpty(score)) {
-//                    detail += score + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(goal)) {
-//                    detail += goal + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(half)) {
-//                    detail += half + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(beat)) {
-//                    detail += beat + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(let)) {
-//                    detail += let + "   ";
-//                }
-//                finalDetailList.add(detail);
                 efbd.setMatId(matchId);
                 efbd.setVs(vs);
                 efbd.setBeat(beat);
@@ -412,6 +304,7 @@ public class ErpOrderController extends BaseController {
                 efbd.setGoal(goal);
                 efbd.setHalf(half);
                 efbd.setLet(let);
+                efbd.setResult(result);
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -419,29 +312,7 @@ public class ErpOrderController extends BaseController {
         }
         if (orderNum.startsWith("LDG")) {//篮球单关
             CdBasketballSingleOrder cdBasketballSingleOrder = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
-//            String uid = cdBasketballSingleOrder.getUid();
-//            if (StringUtils.isNotEmpty(uid)) {
-//            }
-//            String hostWin = cdBasketballSingleOrder.getHostWin();
-//            List<String> wList = new ArrayList<>();
-//
-//            String hostFail = cdBasketballSingleOrder.getHostFail();
-//            List<String> fList = new ArrayList<>();
-//
-//
-//            if (StringUtils.isNotEmpty(hostWin)) {
-//                String[] winStr = hostWin.split("\\|");
-//                for (String s : winStr) {
-//                    wList.add(s);
-//                }
-//            }
-//
-//            if (StringUtils.isNotEmpty(hostFail)) {
-//                String[] failStr = hostFail.split("\\|");
-//                for (String s : failStr) {
-//                    fList.add(s);
-//                }
-//            }
+
 
             //获取当前时间
             Date day = new Date();
@@ -449,17 +320,9 @@ public class ErpOrderController extends BaseController {
             String today = df.format(day);
 
 
-//            Date day1 = new Date();
-//            SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-//            String today = df.format(day);
-
             model.addAttribute("today", today);
             model.addAttribute("uName", uName);
-//            model.addAttribute("wList", wList);
-//            model.addAttribute("fList", fList);
-//            model.addAttribute("bList", bList);
-//            model.addAttribute("sList", sList);
-//            model.addAttribute("tList", tList);
+
 
             List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
             List detailList = SelOrderUtil.getBbSingleList2(cdBasketballSingleOrder);
@@ -471,9 +334,7 @@ public class ErpOrderController extends BaseController {
                 String vs = (String) map.get("vs");
                 String win = (String) map.get("win");
                 String fail = (String) map.get("fail");
-//                String size = (String) map.get("size");
-//                String beat = (String) map.get("beat");
-//                String let = (String) map.get("let");
+                String result = (String) map.get("result");
 //yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
                     win = "让主胜" + win;
@@ -488,6 +349,7 @@ public class ErpOrderController extends BaseController {
 //                ebbd.setLet(let);
                 ebbd.setWin(win);
                 ebbd.setFail(fail);
+                ebbd.setResult(result);
                 finalDetailList.add(ebbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -502,64 +364,14 @@ public class ErpOrderController extends BaseController {
         }
         if (orderNum.startsWith("ZCG")) {//足球串关
             CdFootballFollowOrder cdFootballFollowOrder = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
-//			String uid = cdFootballFollowOrder.getUid();
-//			if (StringUtils.isNotEmpty(uid)) {
-//			}
-//			String score = cdFootballFollowOrder.getScore();
-//			List<String> sList = new ArrayList<>();
-//			String goal = cdFootballFollowOrder.getGoal();
-//			List<String> gList = new ArrayList<>();
-//			String half = cdFootballFollowOrder.getHalf();
-//			List<String> hList = new ArrayList<>();
-//			String beat = cdFootballFollowOrder.getBeat();
-//			List<String> bList = new ArrayList<>();
-//			String let = cdFootballFollowOrder.getLet();
-//			List<String> tList = new ArrayList<>();
-//			if (StringUtils.isNotEmpty(score)) {
-//				String[] scoreStr = score.split("\\|");
-//				for (String s : scoreStr) {
-//					sList.add(s);
-//				}
-//			}
 //
-//			if (StringUtils.isNotEmpty(goal)) {
-//				String[] goalStr = goal.split("\\|");
-//				for (String s : goalStr) {
-//					gList.add(s);
-//				}
-//			}
-//
-//			if (StringUtils.isNotEmpty(half)) {
-//				String[] halfStr = half.split("\\|");
-//				for (String s : halfStr) {
-//					hList.add(s);
-//				}
-//			}
-//
-//			if (StringUtils.isNotEmpty(beat)) {
-//				String[] beatStr = beat.split("\\|");
-//				for (String s : beatStr) {
-//					bList.add(s);
-//				}
-//			}
-//
-//			if (StringUtils.isNotEmpty(let)) {
-//				String[] letStr = let.split("\\|");
-//				for (String s : letStr) {
-//					tList.add(s);
-//				}
-//			}
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String today = df.format(day);
 //
             model.addAttribute("today", today);
-//			model.addAttribute("sList", sList);
-//			model.addAttribute("gList", gList);
-//			model.addAttribute("hList", hList);
-//			model.addAttribute("bList", bList);
-//			model.addAttribute("tList", tList);
+
             model.addAttribute("uName", uName);
             model.addAttribute("cdFootballFollowOrder", cdFootballFollowOrder);
             List<ErpFootBallDto> finalDetailList = new ArrayList<>();
@@ -575,28 +387,17 @@ public class ErpOrderController extends BaseController {
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
                 String let = (String) map.get("let");
+                String dan = (String) map.get("dan");
+                String result = (String) map.get("result");
+                if ("非".equals(dan)) {
+                    dan = "";
+                }
                 if (StringUtils.isNotEmpty(let)) {
                     if (let.startsWith("平")) {
                         let = "让" + let;
                     }
                 }
-//                detail += matchId + "   " + vs + "   ";
-//                if (StringUtils.isNotEmpty(score)) {
-//                    detail += score + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(goal)) {
-//                    detail += goal + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(half)) {
-//                    detail += half + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(beat)) {
-//                    detail += beat + "   ";
-//                }
-//                if (StringUtils.isNotEmpty(let)) {
-//                    detail += let + "   ";
-//                }
-//                finalDetailList.add(detail);
+
                 efbd.setMatId(matchId);
                 efbd.setVs(vs);
                 efbd.setBeat(beat);
@@ -604,6 +405,8 @@ public class ErpOrderController extends BaseController {
                 efbd.setGoal(goal);
                 efbd.setHalf(half);
                 efbd.setLet(let);
+                efbd.setDan(dan);
+                efbd.setResult(result);
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);

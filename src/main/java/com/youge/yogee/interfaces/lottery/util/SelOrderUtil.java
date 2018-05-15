@@ -792,10 +792,11 @@ public class SelOrderUtil {
                 }
             }
 
-
-            String match = s.split("\\+")[1];
+            String[] aMatchArray = s.split("\\+");
+            String match = aMatchArray[1];
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", match);
+            orderMap.put("dan", aMatchArray[0]);
             //比赛结果
             if (resultList.size() > 0) {
                 orderMap.put("result", resultList.get(i));
@@ -912,6 +913,7 @@ public class SelOrderUtil {
 
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", s); //期次
+            orderMap.put("dan", "非");
             //比赛结果
             if (resultList.size() > 0) {
                 orderMap.put("result", resultList.get(i));
@@ -1022,10 +1024,11 @@ public class SelOrderUtil {
                 }
             }
 
-
-            String match = s.split("\\+")[1];
+            String[] aMatchArray = s.split("\\+");
+            String match = aMatchArray[1];
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", match);
+            orderMap.put("dan", aMatchArray[0]);
             //比赛结果
             if (resultList.size() > 0) {
                 orderMap.put("result", resultList.get(j));
@@ -1138,6 +1141,7 @@ public class SelOrderUtil {
 
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", s); //期次
+            orderMap.put("dan", "非");
             //比赛结果
             if (resultList.size() > 0) {
                 orderMap.put("result", resultList.get(i));

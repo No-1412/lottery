@@ -122,9 +122,9 @@ public class FootballMatchInterface {
             if (today.getTime() < timeDate.getTime()) {
                 map.put("startTime", "");//比赛开始时间
             } else {
-                long between = timeDate.getTime() - today.getTime();
+                long between = today.getTime() - timeDate.getTime();
                 String startTime = String.valueOf(between / (1000 * 60));
-                map.put("startTime", startTime);//比赛开始时间
+                map.put("startTime", startTime+"’");//比赛开始时间
             }
             map.put("time", str.getTime().substring(10, 16));//比赛时间
             list.add(map);

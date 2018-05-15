@@ -112,7 +112,14 @@ public class BasketBallQuartz {
             if (awardMatchIdList.containsAll(matchIdList)) {
 
                 //  **************************后加的-------------获取押注比赛结果并保存****************
-                String result = getResultStr(matchIdList);
+                String manyMatchIds = cdBasketballFollowOrder.getDanMatchIds();
+                String[] danMatchIdArray = manyMatchIds.split(",");
+                List<String> list = new ArrayList<>();
+                for (String str : danMatchIdArray) {
+                    String matchId = str.split("\\+")[1];
+                    list.add(matchId);
+                }
+                String result = getResultStr(list);
                 cdBasketballFollowOrder.setResult(result);
                 cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
                 //**********************************************************************************
@@ -389,7 +396,14 @@ public class BasketBallQuartz {
             if (awardMatchIdList.containsAll(matchIdList)) {
 
                 //  **************************后加的-------------获取押注比赛结果并保存****************
-                String result = getResultStr(matchIdList);
+                String manyMatchIds = cdBasketballFollowOrder.getDanMatchIds();
+                String[] danMatchIdArray = manyMatchIds.split(",");
+                List<String> list = new ArrayList<>();
+                for (String str : danMatchIdArray) {
+                    String matchId = str.split("\\+")[1];
+                    list.add(matchId);
+                }
+                String result = getResultStr(list);
                 cdBasketballFollowOrder.setResult(result);
                 cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
                 //**********************************************************************************
@@ -542,7 +556,14 @@ public class BasketBallQuartz {
             if (awardMatchIdList.containsAll(matchIdList)) {
 
                 //  **********************后加的-------------获取押注比赛结果并保存****************************
-                String result = getResultStr(matchIdList);
+                String manyMatchIds = cdBasketballSingleOrder.getMatchIds();
+                String[] danMatchIdArray = manyMatchIds.split(",");
+                List<String> list = new ArrayList<>();
+                for (String str : danMatchIdArray) {
+                    //String matchId = str.split("\\+")[1];
+                    list.add(str);
+                }
+                String result = getResultStr(list);
                 cdBasketballSingleOrder.setResult(result);
                 cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
                 //******************************************************************************************
@@ -694,9 +715,9 @@ public class BasketBallQuartz {
                     break;
                 case "beat":
                     finish = cdBasketballAwards.getWinning();
-                    if(finish.equals("主胜")){
+                    if (finish.equals("主胜")) {
                         finish = "1";
-                    }else {
+                    } else {
                         finish = "0";
                     }
                     break;
@@ -758,7 +779,7 @@ public class BasketBallQuartz {
         }
     }
 
-    public String getResultStr(Set<String> matchIdList) {
+    public String getResultStr(List<String> matchIdList) {
         String result = "";
         if (matchIdList.size() > 0) {
             for (String str : matchIdList) {

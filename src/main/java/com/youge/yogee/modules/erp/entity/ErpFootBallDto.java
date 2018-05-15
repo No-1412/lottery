@@ -9,6 +9,8 @@ public class ErpFootBallDto {
     private String half;
     private String beat;
     private String let;
+    private String dan;
+    private String result;
 
     public String getMatId() {
         return matId;
@@ -64,5 +66,21 @@ public class ErpFootBallDto {
 
     public void setLet(String let) {
         this.let = let;
+    }
+
+    public String getDan() {
+        return dan;
+    }
+
+    public void setDan(String dan) {
+        this.dan = dan;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }
