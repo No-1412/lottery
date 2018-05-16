@@ -19,7 +19,6 @@ import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicFollowOrderService;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
-import com.youge.yogee.modules.corder.entity.CdOrderFollowTimes;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
@@ -203,14 +202,16 @@ public class QuartzListener {
                     //---------------------------------计算跟单佣金-------------------------
 
                     if (cdFootballFollowOrder.getType().equals("2")) {
-                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+                        //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
 
                         CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballFollowOrder.getOrderNum());
                         CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-
-                        if (new BigDecimal(cdFootballFollowOrder.getPrice())
-                                .multiply(cdOrderFollowTimes.getTimes())
-                                .compareTo(award) == 1) {
+                        BigDecimal mulResult = new BigDecimal(cdFootballFollowOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
+                        int compare = mulResult.compareTo(award);
+                        if (compare == -1) {
+//                        if (new BigDecimal(cdFootballFollowOrder.getPrice())
+//                                .multiply(cdOrderFollowTimes.getTimes())
+//                                .compareTo(award) == 1) {
                             //全部佣金
                             BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
                                     .multiply(new BigDecimal(0.01))
@@ -257,7 +258,7 @@ public class QuartzListener {
     }
 
     //    "0/10 * * * * ?"
-//    @Scheduled(cron = "0/10 * * * * ?")//每10秒触发
+    //@Scheduled(cron = "0/10 * * * * ?")//每10秒触发
     @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballFollowOrder() {
 //        System.out.println("足球串关开奖");
@@ -509,14 +510,13 @@ public class QuartzListener {
                     //---------------------------------计算跟单佣金-------------------------
 
                     if (cdFootballFollowOrder.getType().equals("2")) {
-                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+                        //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
 
                         CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballFollowOrder.getOrderNum());
                         CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-
-                        if (new BigDecimal(cdFootballFollowOrder.getPrice())
-                                .multiply(cdOrderFollowTimes.getTimes())
-                                .compareTo(new BigDecimal(award)) == 1) {
+                        BigDecimal mulResult = new BigDecimal(cdFootballFollowOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
+                        int compare = mulResult.compareTo(new BigDecimal(award));
+                        if (compare == -1) {
                             //全部佣金
                             BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
                                     .multiply(new BigDecimal(0.01))
@@ -665,14 +665,13 @@ public class QuartzListener {
                 //---------------------------------计算跟单佣金-------------------------
 
                 if (cdFootballSingleOrder.getType().equals("2")) {
-                    CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+                    //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
 
                     CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballSingleOrder.getOrderNum());
                     CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-
-                    if (new BigDecimal(cdFootballSingleOrder.getPrice())
-                            .multiply(cdOrderFollowTimes.getTimes())
-                            .compareTo(new BigDecimal(award)) == 1) {
+                    BigDecimal mulResult = new BigDecimal(cdFootballSingleOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
+                    int compare = mulResult.compareTo(new BigDecimal(award));
+                    if (compare == -1) {
                         //全部佣金
                         BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
                                 .multiply(new BigDecimal(0.01))
@@ -790,7 +789,7 @@ public class QuartzListener {
                     finish = cdFootballAwards.getSpread();
                     break;*/
                 //***************************************** start 2018-05-16   yhw  修改开奖时系统数据（3、1、0），爬虫数据（胜、平、负）对应不上问题******************
-               case "half":
+                case "half":
                     finish = BallGameCals.changeFootballSf(cdFootballAwards.getWinGrap());
                     break;
                 case "beat":

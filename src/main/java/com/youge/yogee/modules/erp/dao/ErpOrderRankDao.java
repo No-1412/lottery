@@ -13,6 +13,7 @@ import java.util.Map;
 
 /**
  * 排行DAO接口
+ *
  * @author RenHaipeng
  * @version 2018-03-08
  */
@@ -20,7 +21,7 @@ import java.util.Map;
 public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
 
     public void deleteAll() {
-        this.updateBySql("DELETE * FROM ErpOrderRank",null);
+        this.updateBySql("DELETE * FROM ErpOrderRank", null);
     }
 
     public List<Object> rank(Page<ErpOrderRank> page) {
@@ -29,14 +30,16 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
     }
 
     public Page findRank(Page<Map<String, String>> page, String beginDate, String endDate) {
-        String tiaojian = " and cdorder.create_date BETWEEN '"+beginDate+"' and'"+endDate+"' ";
+        String tiaojian = " and cdorder.create_date BETWEEN '" + beginDate + "' and'" + endDate + "' ";
         String sql = " SELECT  t.asaleid as saleid,t.username as salename,c.moneywithoutgendan,d.moneygendan,a.moneytotal,b.num,t.createdate from " +
                 //所有销售员
                 " (SELECT su.id as asaleid,su.name as username,su.create_date as createdate from sys_role sr  LEFT JOIN sys_user_role sur on  sr.id = sur.role_id " +
-                " LEFT JOIN sys_user su on su.id = sur.user_id where sr.name ='销售员' or sr.name ='系统管理员' ) t LEFT JOIN " +
+                " LEFT JOIN sys_user su on su.id = sur.user_id where sr.name ='销售员' " +
+                //"or sr.name ='系统管理员' " +
+                ") t LEFT JOIN " +
                 //总业绩
                 " (SELECT cdorder.sale_id as asaleid, sum(cdorder.total_price) as moneytotal,su.`name` as username,su.create_date as createdate FROM cd_order cdorder " +
-                " LEFT JOIN sys_user su on cdorder.sale_id = su.id where 1=1 "+tiaojian+" GROUP BY sale_id) a on a.asaleid = t.asaleid LEFT JOIN " +
+                " LEFT JOIN sys_user su on cdorder.sale_id = su.id where 1=1 " + tiaojian + " GROUP BY sale_id) a on a.asaleid = t.asaleid LEFT JOIN " +
                 //被跟单量
                 "(SELECT sss.userid as bsaleid, sss.username,sss.createdate,SUM(sss.counts) as num FROM ( SELECT orderlist.userid,orderlist.username,orderlist.createdate,count(o.win) AS counts  " +
                 " FROM(SELECT cdorder.id AS orderid, alluser.userid AS userid, alluser.username AS username,alluser.createdate AS createdate FROM cd_order cdorder  INNER JOIN  " +
@@ -45,10 +48,10 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
                 "  GROUP BY o.win ) sss GROUP BY sss.userid) b on a.asaleid = b.bsaleid LEFT JOIN " +
                 //-- 自己客户购买总额不含跟单
                 " (SELECT sum(cdorder.total_price) as moneywithoutgendan,cdorder.sale_id as csaleid FROM cd_order cdorder  LEFT JOIN" +
-                " sys_user su on cdorder.sale_id = su.id where cdorder.issue <> '1' "+tiaojian+"  GROUP BY su.id) c on c.csaleid = a.asaleid LEFT JOIN" +
+                " sys_user su on cdorder.sale_id = su.id where cdorder.issue <> '1' " + tiaojian + "  GROUP BY su.id) c on c.csaleid = a.asaleid LEFT JOIN" +
                 //跟单业绩
                 " (SELECT cdorder.sale_id as dsaleid, sum(cdorder.total_price) as moneygendan FROM cd_order cdorder " +
-                " WHERE issue = '1' "+tiaojian+" GROUP BY sale_id) d on d.dsaleid = a.asaleid ORDER BY a.moneytotal DESC" ;
+                " WHERE issue = '1' " + tiaojian + " GROUP BY sale_id) d on d.dsaleid = a.asaleid GROUP BY a.asaleid ORDER BY a.moneytotal DESC";
 
 //        String sql=" SELECT d.dsaleid as saleid,d.username as salename,a.moneywithoutgendan,b.moneygendan,c.moneytotal,d.num,d.createdate from  " +
 //                "(SELECT su.name,sum(cdorder.total_price) as moneywithoutgendan,cdorder.user_name,cdorder.sale_id as asaleid " +
@@ -78,6 +81,6 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
 //                "INNER JOIN cd_order o ON orderlist.orderid = o.win " +
 //                "GROUP BY o.win " +
 //                ") sss GROUP BY sss.userid) d on d.dsaleid = c.csaleid order by c.moneytotal desc";
-        return findBySql(page,sql);
+        return findBySql(page, sql);
     }
 }

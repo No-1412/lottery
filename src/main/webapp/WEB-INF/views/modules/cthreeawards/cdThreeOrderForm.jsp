@@ -97,6 +97,20 @@
     </div>
 
     <div class="control-group">
+        <label class="control-label">倍数:</label>
+        <div class="controls">
+            <form:input path="times" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label">追号期数:</label>
+        <div class="controls">
+            <form:input path="continuity" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+        </div>
+    </div>
+
+    <div class="control-group">
         <label class="control-label">状态:</label>
         <div class="controls">
             <form:select id="status" path="status">

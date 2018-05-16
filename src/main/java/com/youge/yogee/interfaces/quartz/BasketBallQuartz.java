@@ -323,10 +323,12 @@ public class BasketBallQuartz {
 
                         CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdBasketballFollowOrder.getOrderNum());
                         CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-
-                        if (new BigDecimal(cdBasketballFollowOrder.getPrice())
-                                .multiply(cdOrderFollowTimes.getTimes())
-                                .compareTo(new BigDecimal(award)) == 1) {
+                        BigDecimal mulResult = new BigDecimal(cdBasketballFollowOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
+                        int compare = mulResult.compareTo(new BigDecimal(award));
+                        if (compare == -1) {
+//                        if (new BigDecimal(cdBasketballFollowOrder.getPrice())
+//                                .multiply(cdOrderFollowTimes.getTimes())
+//                                .compareTo(new BigDecimal(award)) == 1) {
                             //全部佣金
                             BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
                                     .multiply(new BigDecimal(0.01))
@@ -489,14 +491,16 @@ public class BasketBallQuartz {
                     //---------------------------------计算跟单佣金-------------------------
 
                     if (cdBasketballFollowOrder.getType().equals("2")) {
-                        CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
+                        //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
 
                         CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdBasketballFollowOrder.getOrderNum());
                         CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-
-                        if (new BigDecimal(cdBasketballFollowOrder.getPrice())
-                                .multiply(cdOrderFollowTimes.getTimes())
-                                .compareTo(award) == 1) {
+                        BigDecimal mulResult = new BigDecimal(cdBasketballFollowOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
+                        int compare = mulResult.compareTo(award);
+                        if (compare == -1) {
+//                        if (new BigDecimal(cdBasketballFollowOrder.getPrice())
+//                                .multiply(cdOrderFollowTimes.getTimes())
+//                                .compareTo(award) == -1) {
                             //全部佣金
                             BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
                                     .multiply(new BigDecimal(0.01))
@@ -594,16 +598,19 @@ public class BasketBallQuartz {
                     cdBasketballSingleOrder.setAward(new BigDecimal(award).setScale(2, 2).toString());
                     cdBasketballSingleOrder.setStatus("4");
                     cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
-
+                    //---------------------------------计算跟单佣金-------------------------
                     if (cdBasketballSingleOrder.getType().equals("2")) {
                         CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
 
                         CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdBasketballSingleOrder.getOrderNum());
                         CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
 
-                        if (new BigDecimal(cdBasketballSingleOrder.getPrice())
-                                .multiply(cdOrderFollowTimes.getTimes())
-                                .compareTo(new BigDecimal(award)) == 1) {
+//                        if (new BigDecimal(cdBasketballSingleOrder.getPrice())
+//                                .multiply(cdOrderFollowTimes.getTimes())
+//                                .compareTo(new BigDecimal(award)) == 1) {
+                        BigDecimal mulResult = new BigDecimal(cdBasketballSingleOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
+                        int compare = mulResult.compareTo(new BigDecimal(award));
+                        if (compare == -1) {
                             //全部佣金
                             BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
                                     .multiply(new BigDecimal(0.01))

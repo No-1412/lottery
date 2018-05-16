@@ -107,7 +107,7 @@
             <td colspan="6">选号方案</td>
         </tr>
         <tr>
-            <td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：${cdFootballFollowOrder.followNum}</td>
+            <td colspan="6">选择场次：${fn:length(detailList)}场,&nbsp;过关方案：${newFollowNums}</td>
         </tr>
         <tr>
             <th>场次</th>
@@ -125,15 +125,16 @@
             <tr>
                 <td> ${detailList.matId}</td>
                     <%--<td>${detailList.matId}</td>--%>
-                <td>${detailList.vs}</td>
+                <td>
+                        ${detailList.vs}
+
+                </td>
                     <%--<td>${detailList.matId}</td>--%>
                 <td>${detailList.result}</td>
                     <%-- <td></td>--%>
                 <td style="color:red;">
                         ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
-                            <c:if test="${detailList.letBall !=null}">
-                                [${detailList.letBall}]
-                            </c:if>
+
                 </td>
                 <td>${detailList.dan}</td>
             </tr>

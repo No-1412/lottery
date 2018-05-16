@@ -37,8 +37,7 @@
     </li>
 </ul>
 <br/>
-<form:form id="inputForm" modelAttribute="cdFootballSingleOrder"
-           action="${ctx}/cfootballorder/cdFootballSingleOrder/save" method="post" class="form-horizontal">
+<form:form id="inputForm" modelAttribute="cdFootballSingleOrder" action="${ctx}/cfootballorder/cdFootballSingleOrder/save" method="post" class="form-horizontal">
     <form:hidden path="id"/>
     <tags:message content="${message}"/>
     <div class="control-group" style="display: inline-block;">
@@ -103,7 +102,7 @@
             <td colspan="6">选号方案</td>
         </tr>
         <tr>
-            <td colspan="6">选择场次：${fn:length(detailList)}场,过关方案：单关</td>
+            <td colspan="6">选择场次：${fn:length(detailList)}场,&nbsp;过关方案：单关</td>
         </tr>
         <tr>
             <th>场次</th>
@@ -127,9 +126,9 @@
                     <%--<td></td>--%>
                 <td style="color:red;">
                         ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
-                            <c:if test="${detailList.letBall !=null}">
-                                [${detailList.letBall}]
-                            </c:if>
+                            <%--<c:if test="${detailList.letBall !=null}">--%>
+                                <%--[${detailList.letBall}]--%>
+                            <%--</c:if>--%>
                 </td>
                 <td></td>
             </tr>

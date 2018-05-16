@@ -706,12 +706,12 @@ public class MagicOrderInterface {
         co.setTotalPrice(price);//价格
         co.setFollowNum(magicOrderNum);//神单订单号
         //本单销售id
-        CdOrder cdOrder = cdOrderService.getOrderByOrderNum(cmo.getOrderNum());
-        String saleId = "";
-        if (cdOrder != null) {
-            saleId = cdOrder.getSaleId();
-        }
-        co.setSaleId(saleId);
+//        CdOrder cdOrder = cdOrderService.getOrderByOrderNum(cmo.getOrderNum());
+//        String saleId = "";
+//        if (cdOrder != null) {
+//            saleId = cdOrder.getSaleId();
+//        }
+        co.setSaleId(clu.getSaleId());
         cdOrderService.save(co);
         logger.info("跟买神单 followMagicOrder---------End---------------------");
         return HttpResultUtil.successJson(map);

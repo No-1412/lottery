@@ -177,11 +177,20 @@ public class ErpOrderController extends BaseController {
     @RequestMapping(value = "orderForm")
     public String orderForm(ErpOrder erpOrder, Model model) throws ParseException {
         model.addAttribute("erpOrder", erpOrder);
-        String uName = erpOrder.getUserId().getReality();
+        String uName = erpOrder.getUserId().getName();
         String orderNum = erpOrder.getNumber();
         if (orderNum.startsWith("LCG")) {//篮球串关
             CdBasketballFollowOrder cdBasketballFollowOrder = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
-
+            String followNums = cdBasketballFollowOrder.getFollowNums();
+            String[] followArray = followNums.split(",");
+            String newFollowNums = "";
+            for (String str : followArray) {
+                if ("1".equals(str)) {
+                    newFollowNums += "单关";
+                } else {
+                    newFollowNums += str + "串1,";
+                }
+            }
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -189,7 +198,7 @@ public class ErpOrderController extends BaseController {
 
             model.addAttribute("today", today);
             model.addAttribute("uName", uName);
-
+            model.addAttribute("newFollowNums", newFollowNums);
 
             List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
             List detailList = SelOrderUtil.getBbFollowList2(cdBasketballFollowOrder);
@@ -198,25 +207,36 @@ public class ErpOrderController extends BaseController {
                 Map map = (Map) detailList.get(i);
                 ErpBasketBallDto ebbd = new ErpBasketBallDto();
                 String matchId = (String) map.get("matchId");
+
                 String vs = (String) map.get("vs");
+                String[] vsArray = vs.split("vs");
+                vs = vsArray[1] + "vs" + vsArray[0];
+                String letScore = (String) map.get("letScore");
+
+
                 String win = (String) map.get("win");
                 String fail = (String) map.get("fail");
                 String size = (String) map.get("size");
                 String beat = (String) map.get("beat");
+
                 String let = (String) map.get("let");
+                if (StringUtils.isNotEmpty(let)) {
+                    vs = vsArray[1] + "vs" + vsArray[0] + "(" + letScore + ")";
+                }
                 String dan = (String) map.get("dan");
-                String letScore = (String) map.get("letScore");
+
                 if ("非".equals(dan)) {
                     dan = "";
                 }
                 String result = (String) map.get("result");
-//yhw  修改让问题
+////yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
-                    win = "让主胜" + win;
+                    win = "主胜分差" + win;
                 }
                 if (StringUtils.isNotEmpty(fail)) {
-                    fail = "让主负" + fail;
+                    fail = "主负分差" + fail;
                 }
+
                 ebbd.setMatId(matchId);
                 ebbd.setVs(vs);
                 ebbd.setBeat(beat);
@@ -226,7 +246,7 @@ public class ErpOrderController extends BaseController {
                 ebbd.setFail(fail);
                 ebbd.setResult(result);
                 ebbd.setDan(dan);
-                ebbd.setLetScore(letScore);
+                //ebbd.setLetScore(letScore);
                 finalDetailList.add(ebbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -291,9 +311,17 @@ public class ErpOrderController extends BaseController {
                 String goal = (String) map.get("goal");
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
-                String let = (String) map.get("let");
-                String result = (String) map.get("result");
+
                 String letBall = (String) map.get("letBall");
+                String let = (String) map.get("let");
+
+                if (StringUtils.isNotEmpty(let)) {
+                    String[] vsArray = vs.split("vs");
+                    vs = vsArray[0] + "(" + letBall + ")" + "vs" + vsArray[1];
+                }
+
+                String result = (String) map.get("result");
+
 
                 String newLet = let.replaceAll("平", "让平");
                 efbd.setMatId(matchId);
@@ -304,7 +332,7 @@ public class ErpOrderController extends BaseController {
                 efbd.setHalf(half);
                 efbd.setLet(newLet);
                 efbd.setResult(result);
-                efbd.setLetBall(letBall);
+                //efbd.setLetBall(letBall);
 
                 finalDetailList.add(efbd);
             }
@@ -365,14 +393,23 @@ public class ErpOrderController extends BaseController {
         }
         if (orderNum.startsWith("ZCG")) {//足球串关
             CdFootballFollowOrder cdFootballFollowOrder = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
-//
+            String followNums = cdFootballFollowOrder.getFollowNum();
+            String[] followArray = followNums.split(",");
+            String newFollowNums = "";
+            for (String str : followArray) {
+                if ("1".equals(str)) {
+                    newFollowNums += "单关";
+                } else {
+                    newFollowNums += str + "串1,";
+                }
+            }
             //获取当前时间
             Date day = new Date();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String today = df.format(day);
 //
             model.addAttribute("today", today);
-
+            model.addAttribute("newFollowNums", newFollowNums);
             model.addAttribute("uName", uName);
             model.addAttribute("cdFootballFollowOrder", cdFootballFollowOrder);
             List<ErpFootBallDto> finalDetailList = new ArrayList<>();
@@ -387,10 +424,16 @@ public class ErpOrderController extends BaseController {
                 String goal = (String) map.get("goal");
                 String half = (String) map.get("half");
                 String beat = (String) map.get("beat");
+
+                String letBall = (String) map.get("letBall");
                 String let = (String) map.get("let");
+                if (StringUtils.isNotEmpty(let)) {
+                    String[] vsArray = vs.split("vs");
+                    vs = vsArray[0] + "(" + letBall + ")" + "vs" + vsArray[1];
+                }
                 String dan = (String) map.get("dan");
                 String result = (String) map.get("result");
-                String letBall = (String) map.get("letBall");
+
 
                 if ("非".equals(dan)) {
                     dan = "";
@@ -406,7 +449,7 @@ public class ErpOrderController extends BaseController {
                 efbd.setLet(newLet);
                 efbd.setDan(dan);
                 efbd.setResult(result);
-                efbd.setLetBall(letBall);
+                //efbd.setLetBall(letBall);
                 finalDetailList.add(efbd);
             }
             model.addAttribute("detailList", finalDetailList);
@@ -520,6 +563,8 @@ public class ErpOrderController extends BaseController {
             } else {
                 typeStr = "胆拖";
             }
+
+            model.addAttribute("uName", uName);
             model.addAttribute("typeStr", typeStr);
             model.addAttribute("cdLottoOrder", cdLottoOrder);
             return "modules/clottoreward/cdLottoOrderForm";

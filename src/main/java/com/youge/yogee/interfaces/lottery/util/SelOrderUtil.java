@@ -291,24 +291,24 @@ public class SelOrderUtil {
 //    }
 
 
-    private static Map<String, String> getFollowMap2(String s, String[] strArray, String[] letScore) {
-        Map<String, String> map = new HashMap<>();
-        if (!"".equals(strArray[0])) {
-            int i = 0;
-            for (String aStr : strArray) {
-                String[] aStrArray = aStr.split("\\+");
-                if (s.equals(aStrArray[1])) {
-                    map.put("vs", aStrArray[2]);
-                    map.put("result", aStrArray[3]);
-                    if (!"".equals(letScore[0])) {
-                        map.put("letScore", letScore[i]);
-                        i++;
-                    }
-                }
-            }
-        }
-        return map;
-    }
+//    private static Map<String, String> getFollowMap2(String s, String[] strArray, String[] letScore) {
+//        Map<String, String> map = new HashMap<>();
+//        if (!"".equals(strArray[0])) {
+//            int i = 0;
+//            for (String aStr : strArray) {
+//                String[] aStrArray = aStr.split("\\+");
+//                if (s.equals(aStrArray[1])) {
+//                    map.put("vs", aStrArray[2]);
+//                    map.put("result", aStrArray[3]);
+//                    if (!"".equals(letScore[0])) {
+//                        map.put("letScore", letScore[i]);
+//                        i++;
+//                    }
+//                }
+//            }
+//        }
+//        return map;
+//    }
 
 
     public static List getFbFollowList(CdFootballFollowOrder cff) throws ParseException {
@@ -626,6 +626,8 @@ public class SelOrderUtil {
             orderMap.put("beat", "");
             orderMap.put("let", "");
             orderMap.put("size", "");
+            String[] vsArray = vs.split("vs");
+            vs = vsArray[1] + "vs" + vsArray[0];
             orderMap.put("vs", vs);
             //map.put("result", cbs.getResult());//彩果
             detailList.add(orderMap);
@@ -733,6 +735,7 @@ public class SelOrderUtil {
             }
 
             orderMap.put("let", realLet);
+
             orderMap.put("vs", vs);
 
             //大小分
@@ -759,7 +762,9 @@ public class SelOrderUtil {
                     }
                 }
             }
-
+            String[] vsArray = vs.split("vs");
+            vs = vsArray[1] + "vs" + vsArray[0];
+            orderMap.put("vs", vs);
             detailList.add(orderMap);
         }
         return detailList;
@@ -869,6 +874,7 @@ public class SelOrderUtil {
             Map<String, String> scoreMap = getFollowMap(match, scoreArray);
             if (scoreMap.size() > 0) {
                 vs = scoreMap.get("vs");
+
             }
 
             orderMap.put("score", scoreMap.get("result"));
@@ -915,9 +921,12 @@ public class SelOrderUtil {
 
             orderMap.put("beat", realBeat);
             //让球
-            Map<String, String> letMap = getFollowMap2(match, letArray, letBallArray);
+            Map<String, String> letMap = getFollowMap(match, letArray);
+
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
+                orderMap.put("letBall", letBallArray[j]);
+                j++;
             }
             String trueLet = letMap.get("result");
             String realLet = "";
@@ -929,7 +938,7 @@ public class SelOrderUtil {
             }
             orderMap.put("let", realLet);
             orderMap.put("vs", vs);
-            orderMap.put("letBall", letMap.get("letScore"));
+            //orderMap.put("letBall", letMap.get("letScore"));
 
             detailList.add(orderMap);
         }
@@ -1131,9 +1140,11 @@ public class SelOrderUtil {
             orderMap.put("beat", realBeat);
             //orderMap.put("beat", beatMap.get("result"));
             //让球胜负
-            Map<String, String> letMap = getFollowMap2(match, letArray, letScoreArray);
+            Map<String, String> letMap = getFollowMap(match, letArray);
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
+                orderMap.put("letScore", letScoreArray[k]);
+                k++;
             }
             String trueLet = letMap.get("result");
             String realLet = "";
@@ -1142,7 +1153,7 @@ public class SelOrderUtil {
                 String finalLet2 = finalLet1.replaceAll("0/", "让主负/");
                 realLet = finalLet2;
             }
-            orderMap.put("letScore", letMap.get("letScore"));
+            //orderMap.put("letScore", letMap.get("letScore"));
             orderMap.put("let", realLet);
             orderMap.put("vs", vs);
 
