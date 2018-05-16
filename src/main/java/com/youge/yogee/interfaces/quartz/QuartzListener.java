@@ -780,7 +780,7 @@ public class QuartzListener {
                 case "goal":
                     finish = cdFootballAwards.getTotalNum();
                     break;
-                case "half":
+                /*case "half":
                     finish = cdFootballAwards.getWinGrap();
                     break;
                 case "beat":
@@ -788,7 +788,19 @@ public class QuartzListener {
                     break;
                 case "let":
                     finish = cdFootballAwards.getSpread();
+                    break;*/
+                //***************************************** start 2018-05-16   yhw  修改开奖时系统数据（3、1、0），爬虫数据（胜、平、负）对应不上问题******************
+               case "half":
+                    finish = BallGameCals.changeFootballSf(cdFootballAwards.getWinGrap());
                     break;
+                case "beat":
+                    finish = BallGameCals.changeFootballSf(cdFootballAwards.getWinning());
+                    break;
+                case "let":
+                    finish = BallGameCals.changeFootballSf(cdFootballAwards.getSpread());
+                    break;
+                //***************************************** end   ***********************************************************************************************
+
             }
             String[] odds = aMethod.split(finish + "/");
             if (odds.length > 1) {
