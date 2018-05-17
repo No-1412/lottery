@@ -580,20 +580,25 @@ public class ErpOrderController extends BaseController {
         return null;
     }
 
-
+    @RequiresPermissions("erp:erpOrder:edit")
     @RequestMapping(value = "addAward")
-    public String addAward(Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
-        String id = request.getParameter("erpOrderId");
-        String winPrice = request.getParameter("winPrice");
+//    public String addAward(ErpOrder erpOrder,Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
+    public String addAward(ErpOrder erpOrder, Model model, RedirectAttributes redirectAttributes) {
+//        String id = request.getParameter("erpOrderId");
+//        String winPrice = request.getParameter("winPrice");
+
+        String id = erpOrder.getId();
+        String winPrice = erpOrder.getWinPrice();
+
         CdOrder cdOrder = cdOrderService.get(id);
         String ordNum = cdOrder.getNumber();
-        BigDecimal winPriceBig = new BigDecimal(winPrice);
+        BigDecimal winPriceBig = new BigDecimal(winPrice).setScale(2,1);
         //足球单关1
         if (ordNum.startsWith("ZDG")) {
             CdFootballSingleOrder cfso = cdFootballSingleOrderService.findOrderByOrderNum(ordNum);
             //跟单计算佣金
             if ("2".equals(cfso.getType())) {
-                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice);
+                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice).setScale(2,1);
             }
             //保存中奖记录
             WinPriceUtil.saveOrderWinner(ordNum, cfso.getPrice(), winPriceBig.toString(), cfso.getUid(), cfso.getResult(), "1");
@@ -734,6 +739,14 @@ public class ErpOrderController extends BaseController {
         cdOrderService.save(cdOrder);
         addMessage(redirectAttributes, "保存成功");
         return "redirect:" + Global.getAdminPath() + "/erp/erpOrder/?repage";
+    }
+
+
+    @RequiresPermissions("erp:erpOrder:view")
+    @RequestMapping(value = "price")
+    public String price(ErpOrder erpOrder, Model model) {
+        model.addAttribute("erpOrder", erpOrder);
+        return "modules/erp/erpOrderWinPrice";
     }
 
 

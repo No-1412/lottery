@@ -92,6 +92,7 @@
         }
 
 
+
     </script>
 </head>
 <body>
@@ -120,6 +121,7 @@
     <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 </form:form>
 <tags:message content="${message}"/>
+
 <table id="contentTable" class="table table-striped table-bordered table-condensed">
     <thead>
     <tr>
@@ -129,9 +131,11 @@
         <th>所属销售</th>
         <th>购买时间</th>
         <th>备注</th>
+<shiro:hasPermission name="erp:erpOrder:edit">
         <th>中奖金额</th>
         <th>派奖状态</th>
         <th>出票状态</th>
+</shiro:hasPermission>
         <shiro:hasPermission name="erp:erpOrder:edit">
             <th>操作</th>
         </shiro:hasPermission>
@@ -148,6 +152,7 @@
             <td>${erpOrder.userId.saleId.name}</td>
             <td>${erpOrder.createDate}</td>
             <td>${erpOrder.remarks}</td>
+            <shiro:hasPermission name="erp:erpOrder:edit">
             <td><c:choose>
                 <c:when test="${erpOrder.winPrice eq '0'}">
 
@@ -158,12 +163,14 @@
                         <input type="hidden" value="${erpOrder.id}" style="" name="erpOrderId" id="erpOrderId">
                         <c:choose>
                             <c:when test="${erpOrder.winStatus eq '0'}">
-                                <input type="text" value="${erpOrder.winPrice}"
-                                       style="width: 88px; color: red;height: 15px;margin-top: 10px" name="winPrice"
-                                       id="winPrice">
+                                <%--<input type="text" value="${erpOrder.winPrice}"--%>
+                                       <%--style="width: 88px; color: red;height: 15px;margin-top: 10px" name="winPrice"--%>
+                                       <%--id="winPrice">--%>
+                                <font color="red">${erpOrder.winPrice}</font>
                                 <%--<a href="#">点击派奖</a>--%>
-                                <input type="button" style="color: red" value="派奖"
-                                       onclick="tipsOut(${erpOrder.winPrice});">
+                                <%--<input type="button" style="color: red" value="派奖"--%>
+                                <%--onclick="tipsOut(${erpOrder.winPrice});">--%>
+
                             </c:when>
                             <c:otherwise>
                                 <font color="red">${erpOrder.winPrice}</font>
@@ -182,6 +189,7 @@
 
                     </c:when>
                     <c:otherwise>
+
                         <c:if test="${erpOrder.winStatus eq '0'}"> 未派奖</c:if>
                         <c:if test="${erpOrder.winStatus eq '1'}"> <font color="red">已派奖</font> </c:if>
                     </c:otherwise>
@@ -192,10 +200,23 @@
                 <c:if test="${empty erpOrder.outTime}"> 未出票</c:if>
                     <%--<c:if test="${not empty erpOrder.createDate}">  ${erpOrder.remarks}</c:if>--%>
             </td>
+            </shiro:hasPermission>
             <shiro:hasPermission name="erp:erpOrder:edit">
                 <td>
+
+                        <c:choose>
+                        <c:when test="${erpOrder.winPrice eq '0'}">
+                        </c:when>
+                        <c:otherwise>
+                            <c:if test="${erpOrder.winStatus eq '0'}">
+                            <a href="${ctx}/erp/erpOrder/price?id=${erpOrder.id}"><font color="red">派奖</font>
+                            </c:if>
+                        </c:otherwise>
+                    </c:choose>  </a>
+
                     <a href="${ctx}/erp/erpOrder/form?id=${erpOrder.id}">修改备注</a>
                         <%--<a href="${ctx}/erp/erpOrder/delete?id=${erpOrder.id}" onclick="return confirmx('确认要删除该业绩吗？', this.href)">删除</a>--%>
+
                 </td>
             </shiro:hasPermission>
         </tr>

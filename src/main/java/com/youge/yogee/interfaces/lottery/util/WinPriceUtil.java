@@ -69,7 +69,7 @@ public class WinPriceUtil {
         BigDecimal awardBig = new BigDecimal(award);
         String repayPercent = Calculations.getRepayPercent(awardBig.doubleValue(), Double.parseDouble(price));
         cdOrderWinners.setRepayPercent(repayPercent);//回报率
-        //cdOrderWinners.setType("2");
+        cdOrderWinners.setType(type);
         cdOrderWinners.setWallType("1");
         cdOrderWinners.setResult(result);
         cdOrderWinnersService.save(cdOrderWinners);

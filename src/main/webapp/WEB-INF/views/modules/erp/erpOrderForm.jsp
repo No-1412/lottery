@@ -62,12 +62,24 @@
 				<form:input path="createDate" htmlEscape="false" maxlength="200" class="required" disabled="true"/>
 			</div>
 		</div>
+
+
+		<div class="control-group">
+			<label class="control-label">奖金:</label>
+			<div class="controls">
+				<form:input path="winPrice" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+			</div>
+		</div>
+
 		<div class="control-group">
 			<label class="control-label">备注:</label>
 			<div class="controls">
 				<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>
 			</div>
 		</div>
+
+
+
 		<div class="form-actions">
 			<shiro:hasPermission name="erp:erpOrder:edit">
 				<input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;

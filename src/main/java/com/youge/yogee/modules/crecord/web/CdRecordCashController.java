@@ -79,13 +79,13 @@ public class CdRecordCashController extends BaseController {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String today = df.format(day);
         cdRecordCash.setDealTime(today);
-        if ("3".equals(cdRecordCash.getStatus())) {
-            CdLotteryUser clu = cdLotteryUserService.get(cdRecordCash.getUid());
-            BigDecimal balance = clu.getBalance();
-            BigDecimal price = new BigDecimal(cdRecordCash.getPrice());
-            clu.setBalance(balance.subtract(price));
-            cdLotteryUserService.save(clu);
-        }
+//        if ("3".equals(cdRecordCash.getStatus())) {
+//            CdLotteryUser clu = cdLotteryUserService.get(cdRecordCash.getUid());
+//            BigDecimal balance = clu.getBalance();
+//            BigDecimal price = new BigDecimal(cdRecordCash.getPrice());
+//            clu.setBalance(balance.subtract(price));
+//            cdLotteryUserService.save(clu);
+//        }
         cdRecordCashService.save(cdRecordCash);
         addMessage(redirectAttributes, "保存提现记录成功");
         return "redirect:" + Global.getAdminPath() + "/crecord/cdRecordCash/?repage";
