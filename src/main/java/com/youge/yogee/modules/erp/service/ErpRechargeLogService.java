@@ -12,7 +12,6 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.erp.dao.ErpRechargeLogDao;
 import com.youge.yogee.modules.erp.entity.ErpRechargeLog;
-import com.youge.yogee.modules.erp.entity.ErpUser;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -115,10 +114,12 @@ public class ErpRechargeLogService extends BaseService {
         }
 
         String userId = erpRechargeLog.getUserId().getId();
-        ErpUser erpUser = erpUserService.get(userId);
-        BigDecimal money2 = erpRechargeLog.getMoney();//充值钱数
-        BigDecimal money1 = erpUser.getBalance();//余额
+        //********2018-05-17 yhw 修改连续充值错误问题  *******************
+        //ErpUser erpUser = erpUserService.get(userId);
+
         CdLotteryUser clu = cdLotteryUserService.get(userId);
+        BigDecimal money2 = erpRechargeLog.getMoney();//充值钱数
+        BigDecimal money1 = clu.getBalance();//余额
         if (type.equals("0")) {//充值
             //erpUser.setBalance(money1.add(money2));
             //CdLotteryUser clu = cdLotteryUserService.get(userId);
