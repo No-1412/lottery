@@ -41,7 +41,7 @@
 		<div class="control-group">
 			<label class="control-label">用户:</label>
 			<div class="controls">
-				<form:input path="name" htmlEscape="false" maxlength="200" class="required" disabled="true"/>
+				<form:input path="userId.name" htmlEscape="false" maxlength="200" class="required" disabled="true"/>
 			</div>
 		</div>
 		<div class="control-group">

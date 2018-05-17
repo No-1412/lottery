@@ -5,10 +5,12 @@ package com.youge.yogee.modules.erp.web;
 
 import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.push.AppPush;
 import com.youge.yogee.common.utils.CookieUtils;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
+import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballFollowOrder;
@@ -28,6 +30,8 @@ import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderServi
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
+import com.youge.yogee.modules.corder.entity.CdOrder;
+import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
@@ -52,6 +56,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -95,6 +100,9 @@ public class ErpOrderController extends BaseController {
     private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
     @Autowired
     private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
+
+    @Autowired
+    private CdOrderService cdOrderService;
 
     @ModelAttribute
     public ErpOrder get(@RequestParam(required = false) String id) {
@@ -571,6 +579,163 @@ public class ErpOrderController extends BaseController {
         }
         return null;
     }
+
+
+    @RequestMapping(value = "addAward")
+    public String addAward(Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
+        String id = request.getParameter("erpOrderId");
+        String winPrice = request.getParameter("winPrice");
+        CdOrder cdOrder = cdOrderService.get(id);
+        String ordNum = cdOrder.getNumber();
+        BigDecimal winPriceBig = new BigDecimal(winPrice);
+        //足球单关1
+        if (ordNum.startsWith("ZDG")) {
+            CdFootballSingleOrder cfso = cdFootballSingleOrderService.findOrderByOrderNum(ordNum);
+            //跟单计算佣金
+            if ("2".equals(cfso.getType())) {
+                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice);
+            }
+            //保存中奖记录
+            WinPriceUtil.saveOrderWinner(ordNum, cfso.getPrice(), winPriceBig.toString(), cfso.getUid(), cfso.getResult(), "1");
+            //保存用户余额
+            String text = "您购买的竞猜足球获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), cfso.getUid());
+            try {
+                AppPush.push(cfso.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+        //足球串关2
+        if (ordNum.startsWith("ZCG")) {
+            CdFootballFollowOrder cffo = cdFootballFollowOrderService.findOrderByOrderNum(ordNum);
+            //跟单计算佣金
+            if ("2".equals(cffo.getType())) {
+                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cffo.getPrice(), winPrice);
+            }
+            //保存中奖记录
+            WinPriceUtil.saveOrderWinner(ordNum, cffo.getPrice(), winPriceBig.toString(), cffo.getUid(), cffo.getResult(), "2");
+            //保存用户余额
+            String text = "您购买的竞猜足球获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), cffo.getUid());
+            try {
+                AppPush.push(cffo.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+        //篮球单关3
+        if (ordNum.startsWith("LDG")) {
+            CdBasketballSingleOrder cbso = cdBasketballSingleOrderService.findOrderByOrderNum(ordNum);
+            //跟单计算佣金
+            if ("2".equals(cbso.getType())) {
+                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cbso.getPrice(), winPrice);
+            }
+            //保存中奖记录
+            WinPriceUtil.saveOrderWinner(ordNum, cbso.getPrice(), winPriceBig.toString(), cbso.getUid(), cbso.getResult(), "3");
+            //保存用户余额
+            String text = "您购买的竞猜篮球获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), cbso.getUid());
+            try {
+                AppPush.push(cbso.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+        //篮球串关4
+        if (ordNum.startsWith("LCG")) {
+            CdBasketballFollowOrder cbfo = cdBasketballFollowOrderService.findOrderByOrderNum(ordNum);
+            //跟单计算佣金
+            if ("2".equals(cbfo.getType())) {
+                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cbfo.getPrice(), winPrice);
+            }
+            //保存中奖记录
+            WinPriceUtil.saveOrderWinner(ordNum, cbfo.getPrice(), winPriceBig.toString(), cbfo.getUid(), cbfo.getResult(), "4");
+            //保存用户余额
+            String text = "您购买的竞猜篮球获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), cbfo.getUid());
+            try {
+                AppPush.push(cbfo.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+        //任选九5
+        if (ordNum.startsWith("RXJ")) {
+            CdChooseNineOrder ccno = cdChooseNineOrderService.findOrderByOrderNum(ordNum);
+            //保存中奖记录step2
+            WinPriceUtil.saveOrderWinner(ordNum, ccno.getPrice(), winPriceBig.toString(), ccno.getUid(), ccno.getResult(), "5");
+            //保存用户余额
+            String text = "您购买的任选九获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), ccno.getUid());
+            try {
+                AppPush.push(ccno.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+        //胜负彩6
+        if (ordNum.startsWith("SFC")) {
+            CdSuccessFailOrder csfo = cdSuccessFailOrderService.findOrderByOrderNum(ordNum);
+            //保存中奖记录step2
+            WinPriceUtil.saveOrderWinner(ordNum, csfo.getPrice(), winPriceBig.toString(), csfo.getUid(), csfo.getResult(), "6");
+            //保存用户余额
+            String text = "您购买的胜负彩获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), csfo.getUid());
+            try {
+                AppPush.push(csfo.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+        //排列三7
+        if (ordNum.startsWith("PLS")) {
+            CdThreeOrder cto = cdThreeOrderService.findOrderByOrderNum(ordNum);
+            //保存中奖记录step2
+            WinPriceUtil.saveOrderWinner(ordNum, cto.getPrice(), winPriceBig.toString(), cto.getUid(), cto.getResult(), "7");
+            //保存用户余额
+            String text = "您购买的排列三获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), cto.getUid());
+            try {
+                AppPush.push(cto.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+
+        //排列五8
+        if (ordNum.startsWith("PLW")) {
+            CdFiveOrder cfo = cdFiveOrderService.findOrderByOrderNum(ordNum);
+            //保存中奖记录step2
+            WinPriceUtil.saveOrderWinner(ordNum, cfo.getPrice(), winPriceBig.toString(), cfo.getUid(), cfo.getResult(), "8");
+            //保存用户余额
+            String text = "您购买的排列五获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), cfo.getUid());
+            try {
+                AppPush.push(cfo.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+        //大乐透9
+        if (ordNum.startsWith("DLT")) {
+            CdLottoOrder clo = cdLottoOrderService.findOrderByOrderNum(ordNum);
+            //保存中奖记录step2
+            WinPriceUtil.saveOrderWinner(ordNum, clo.getPrice(), winPriceBig.toString(), clo.getUid(), clo.getResult(), "9");
+            //保存用户余额
+            String text = "您购买的大乐透获得中奖金额" + winPriceBig.toString() + "元";
+            WinPriceUtil.addBalanceToUser(winPriceBig.toString(), clo.getUid());
+            try {
+                AppPush.push(clo.getUid(), "凯旋彩票", text);
+            } catch (Exception e) {
+            }
+        }
+
+        cdOrder.setWinPrice(winPriceBig.toString());
+        cdOrder.setWinStatus("1");
+        cdOrderService.save(cdOrder);
+        addMessage(redirectAttributes, "保存成功");
+        return "redirect:" + Global.getAdminPath() + "/erp/erpOrder/?repage";
+    }
+
 
     /***********************************************暂时没用******************************************************/
     public String getWinType(String type) {

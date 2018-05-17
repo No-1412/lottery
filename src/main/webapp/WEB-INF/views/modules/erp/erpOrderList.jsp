@@ -81,6 +81,17 @@
         $("#big").click(function () {
             $("#big").hide()
         });
+
+        function tipsOut(winPrice) {
+            //var winPrice = $("#winPrice").val();
+            var winForm = $("#winForm");
+            var r = confirm("确定派发奖金" + winPrice + "元？");
+            if (r == true) {
+                winForm.submit();
+            }
+        }
+
+
     </script>
 </head>
 <body>
@@ -112,13 +123,15 @@
 <table id="contentTable" class="table table-striped table-bordered table-condensed">
     <thead>
     <tr>
-        <th>客户名称</th>
+        <th>用户昵称</th>
         <th>购买彩种</th>
         <th>购彩金额</th>
         <th>所属销售</th>
         <th>购买时间</th>
-        <th>中奖金额</th>
         <th>备注</th>
+        <th>中奖金额</th>
+        <th>派奖状态</th>
+        <th>出票状态</th>
         <shiro:hasPermission name="erp:erpOrder:edit">
             <th>操作</th>
         </shiro:hasPermission>
@@ -130,19 +143,50 @@
         <tr <c:if test="${erpOrder.bestType=='2'}">style="color: #c66d12;" </c:if>>
             <td><a href="${ctx}/erp/erpOrder/form?id=${erpOrder.id}">${erpOrder.userId.name}</a></td>
                 <%--<td><a href="javaScript:;" onclick="showDis('${erpOrder.number}',0)">${erpOrder.number}查看详情</a></td>--%>
-            <td><a href="${ctx}/erp/erpOrder/orderForm?id=${erpOrder.id}">${erpOrder.number}查看详情</a></td>
+            <td><a href="${ctx}/erp/erpOrder/orderForm?id=${erpOrder.id}">${erpOrder.number} 查看详情</a></td>
             <td>${erpOrder.totalPrice}</td>
             <td>${erpOrder.userId.saleId.name}</td>
             <td>${erpOrder.createDate}</td>
-
-            <td> <c:choose>
+            <td>${erpOrder.remarks}</td>
+            <td><c:choose>
                 <c:when test="${erpOrder.winPrice eq '0'}">
 
                 </c:when>
                 <c:otherwise>
-                    <font color="red">${erpOrder.winPrice}</font>
+                    <%--<font color="red">${erpOrder.winPrice}</font>--%>
+                    <form action="${ctx}/erp/erpOrder/addAward" method="post" style="margin: 0 0 0 0" id="winForm">
+                        <input type="hidden" value="${erpOrder.id}" style="" name="erpOrderId" id="erpOrderId">
+                        <c:choose>
+                            <c:when test="${erpOrder.winStatus eq '0'}">
+                                <input type="text" value="${erpOrder.winPrice}"
+                                       style="width: 88px; color: red;height: 15px;margin-top: 10px" name="winPrice"
+                                       id="winPrice">
+                                <%--<a href="#">点击派奖</a>--%>
+                                <input type="button" style="color: red" value="派奖"
+                                       onclick="tipsOut(${erpOrder.winPrice});">
+                            </c:when>
+                            <c:otherwise>
+                                <font color="red">${erpOrder.winPrice}</font>
+                            </c:otherwise>
+                        </c:choose>
+                    </form>
+
                 </c:otherwise>
             </c:choose>
+            </td>
+
+            <td>
+
+                <c:choose>
+                    <c:when test="${erpOrder.winPrice eq '0'}">
+
+                    </c:when>
+                    <c:otherwise>
+                        <c:if test="${erpOrder.winStatus eq '0'}"> 未派奖</c:if>
+                        <c:if test="${erpOrder.winStatus eq '1'}"> <font color="red">已派奖</font> </c:if>
+                    </c:otherwise>
+                </c:choose>
+                    <%--<c:if test="${not empty erpOrder.createDate}">  ${erpOrder.remarks}</c:if>--%>
             </td>
             <td>
                 <c:if test="${empty erpOrder.outTime}"> 未出票</c:if>

@@ -181,6 +181,12 @@ public class TryCashInterface {
             String catchTimes = clu.getCatchTimes();
             int leftTimes = Integer.parseInt(catchTimes) - 1;
             clu.setCatchTimes(String.valueOf(leftTimes));
+            BigDecimal priceBig = new BigDecimal(price);
+            if (clu.getBalance().compareTo(priceBig) == -1) {
+                return HttpResultUtil.errorJson("余额不足");
+            } else {
+                clu.setBalance(clu.getBalance().subtract(priceBig));
+            }
             cdLotteryUserService.save(clu);
         } else {
             return HttpResultUtil.errorJson("密码不正确");

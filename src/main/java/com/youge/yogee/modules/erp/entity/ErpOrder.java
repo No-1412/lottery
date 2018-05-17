@@ -44,6 +44,7 @@ public class ErpOrder extends BaseEntity<T> implements Serializable {
 	//20180516
 	private String winPrice;//中奖金额
 	private String status; //1待开奖 2已开奖 3中奖
+	private String winStatus;//0未派奖 1已派奖
 
 	public String getBestType() {
 		return bestType;
@@ -180,6 +181,14 @@ public class ErpOrder extends BaseEntity<T> implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public String getWinStatus() {
+		return winStatus;
+	}
+
+	public void setWinStatus(String winStatus) {
+		this.winStatus = winStatus;
 	}
 }
 

@@ -1,6 +1,5 @@
 package com.youge.yogee.interfaces.lottery.index;
 
-import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
@@ -349,12 +348,12 @@ public class MagicOrderInterface {
             Map cMap = new HashMap();
             cMap.put("id", c.getId());
             cMap.put("uName", c.getuName()); //用户名
-            if (c.getuImg().length() > 2) {
-                cMap.put("img", Global.getConfig("domain.url") + c.getuImg());//头像
-            } else {
-                cMap.put("img", c.getuImg());//头像
-            }
-
+//            if (c.getuImg().length() > 2) {
+//                cMap.put("img", Global.getConfig("domain.url") + c.getuImg());//头像
+//            } else {
+//                cMap.put("img", c.getuImg());//头像
+//            }
+            cMap.put("img", c.getuImg());//头像
             cMap.put("price", c.getPrice()); //购买金额
             cMap.put("followCounts", c.getFollowCounts()); //跟买人数
             cMap.put("shutDownTime", c.getShutDownTime()); //截止时间
@@ -396,13 +395,13 @@ public class MagicOrderInterface {
         Map cMap = new HashMap();
         cMap.put("id", cmo.getId());
         cMap.put("uName", cmo.getuName()); //用户名
-        if (cmo.getuImg().length() > 2) {
-            cMap.put("img", Global.getConfig("domain.url") + cmo.getuImg());//头像
-        } else {
-            cMap.put("img", cmo.getuImg());//头像
-        }
+//        if (cmo.getuImg().length() > 2) {
+//            cMap.put("img", Global.getConfig("domain.url") + cmo.getuImg());//头像
+//        } else {
+//            cMap.put("img", cmo.getuImg());//头像
+//        }
 
-
+        cMap.put("img", cmo.getuImg());//头像
         cMap.put("price", cmo.getPrice()); //购买金额
         cMap.put("followCounts", cmo.getFollowCounts()); //跟买人数
         cMap.put("shutDownTime", cmo.getShutDownTime()); //截止时间
@@ -705,6 +704,7 @@ public class MagicOrderInterface {
         co.setNumber(orderNum);//订单号
         co.setTotalPrice(price);//价格
         co.setFollowNum(magicOrderNum);//神单订单号
+        co.setStatus("1");//待开奖
         //本单销售id
 //        CdOrder cdOrder = cdOrderService.getOrderByOrderNum(cmo.getOrderNum());
 //        String saleId = "";

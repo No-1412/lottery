@@ -4,8 +4,7 @@ package com.youge.yogee.interfaces.quartz;
  * Created by liyuan on 2018/3/7.
  */
 
-import com.youge.yogee.common.push.AppPush;
-import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
+import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
@@ -14,7 +13,6 @@ import com.youge.yogee.modules.cchoosenine.service.CdChooseNineService;
 import com.youge.yogee.modules.ccolorreward.entity.CdColorReward;
 import com.youge.yogee.modules.ccolorreward.service.CdColorRewardService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
-import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
@@ -124,27 +122,15 @@ public class ChooseNineQuartz {
                 cdChooseNineOrder.setStatus("4");
                 cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrderService.save(cdChooseNineOrder);
-                //更新用户余额
-                SelOrderUtil.addBalanceToUser(award.toString(), cdChooseNineOrder.getUid());
-                //保存中奖纪录
-                CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                cdOrderWinners.setWinOrderNum(cdChooseNineOrder.getOrderNumber());//中间单号
-                cdOrderWinners.setWinPrice(award.toString());//中奖金额
-                cdOrderWinners.setUid(cdChooseNineOrder.getUid());//中间用户
-                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdChooseNineOrder.getPrice()));
-                cdOrderWinners.setRepayPercent(repayPercent);
-                cdOrderWinners.setType("5");
-                cdOrderWinners.setWallType("1");
-                cdOrderWinners.setResult(cdChooseNineOrder.getResult());
-                cdOrderWinnersService.save(cdOrderWinners);
-                //改变订单总表状态
-                CdOrder co = cdOrderService.getOrderByOrderNum(cdChooseNineOrder.getOrderNumber());
-                if (co != null) {
-                    co.setWinPrice(award.toString());//奖金
-                    co.setStatus("3");//中奖
-                    cdOrderService.save(co);
-                }
-                AppPush.push(cdChooseNineOrder.getUid(), "凯旋彩票", "您购买的任选九获得中奖金额" + award + "元");
+
+                //改变订单总表状态 step1
+                WinPriceUtil.changeTotalOrder(cdChooseNineOrder.getOrderNumber(), award.toString());
+                //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                //保存中奖纪录 step2
+                //更新用户余额 step3
+                //推送         step4
+                //-------------------------------------------------------------------------------
+
             } else {
                 cdChooseNineOrder.setResult(cdChooseNine.getNumber());
                 cdChooseNineOrder.setStatus("5");
@@ -153,7 +139,7 @@ public class ChooseNineQuartz {
                 CdOrder co = cdOrderService.getOrderByOrderNum(cdChooseNineOrder.getOrderNumber());
                 if (co != null) {
                     co.setWinPrice("0");//奖金
-                    co.setStatus("2");//开奖
+                    co.setStatus("2");//已开奖
                     cdOrderService.save(co);
                 }
 
@@ -200,53 +186,26 @@ public class ChooseNineQuartz {
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
-                //更新用户余额
-                SelOrderUtil.addBalanceToUser(award.toString(), cdSuccessFailOrder.getUid());
-                //保存中奖纪录
-                CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                cdOrderWinners.setWinOrderNum(cdSuccessFailOrder.getOrderNumber());//中间单号
-                cdOrderWinners.setWinPrice(award.toString());//中奖金额
-                cdOrderWinners.setUid(cdSuccessFailOrder.getUid());//中间用户
-                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
-                cdOrderWinners.setRepayPercent(repayPercent);
-                cdOrderWinners.setType("6");
-                cdOrderWinners.setWallType("1");
-                cdOrderWinnersService.save(cdOrderWinners);
-                //改变订单总表状态
-                CdOrder co = cdOrderService.getOrderByOrderNum(cdSuccessFailOrder.getOrderNumber());
-                if (co != null) {
-                    co.setWinPrice(award.toString());//奖金
-                    co.setStatus("3");//中奖
-                    cdOrderService.save(co);
-                }
-                AppPush.push(cdSuccessFailOrder.getUid(), "凯旋彩票", "您购买的胜负彩获得中奖金额" + award + "元");
+                //改变订单总表状态 step1
+                WinPriceUtil.changeTotalOrder(cdSuccessFailOrder.getOrderNumber(), award.toString());
+                //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                //保存中奖纪录 step2
+                //更新用户余额 step3
+                //推送         step4
+                //-------------------------------------------------------------------------------
             } else if (sum == 14) {
                 Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
                 cdSuccessFailOrder.setAward(award.toString());
                 cdSuccessFailOrder.setStatus("4");
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrderService.save(cdSuccessFailOrder);
-                //更新用户余额
-                SelOrderUtil.addBalanceToUser(award.toString(), cdSuccessFailOrder.getUid());
-                //保存中奖纪录
-                CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                cdOrderWinners.setWinOrderNum(cdSuccessFailOrder.getOrderNumber());//中间单号
-                cdOrderWinners.setWinPrice(award.toString());//中奖金额
-                cdOrderWinners.setUid(cdSuccessFailOrder.getUid());//中间用户
-                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdSuccessFailOrder.getPrice()));
-                cdOrderWinners.setRepayPercent(repayPercent);
-                cdOrderWinners.setType("6");
-                cdOrderWinners.setWallType("1");
-                cdOrderWinners.setResult(cdSuccessFailOrder.getResult());
-                cdOrderWinnersService.save(cdOrderWinners);
-                //改变订单总表状态
-                CdOrder co = cdOrderService.getOrderByOrderNum(cdSuccessFailOrder.getOrderNumber());
-                if (co != null) {
-                    co.setWinPrice(award.toString());//奖金
-                    co.setStatus("3");//中奖
-                    cdOrderService.save(co);
-                }
-                AppPush.push(cdSuccessFailOrder.getUid(), "凯旋彩票", "您购买的胜负彩获得中奖金额" + award + "元");
+                //改变订单总表状态 step1
+                WinPriceUtil.changeTotalOrder(cdSuccessFailOrder.getOrderNumber(), award.toString());
+                //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                //保存中奖纪录 step2
+                //更新用户余额 step3
+                //推送         step4
+                //-------------------------------------------------------------------------------
             } else {
                 cdSuccessFailOrder.setResult(cdColorReward.getNumber());
                 cdSuccessFailOrder.setStatus("5");
@@ -255,7 +214,7 @@ public class ChooseNineQuartz {
                 CdOrder co = cdOrderService.getOrderByOrderNum(cdSuccessFailOrder.getOrderNumber());
                 if (co != null) {
                     co.setWinPrice("0");//奖金
-                    co.setStatus("2");//开奖
+                    co.setStatus("2");//已开奖
                     cdOrderService.save(co);
                 }
             }

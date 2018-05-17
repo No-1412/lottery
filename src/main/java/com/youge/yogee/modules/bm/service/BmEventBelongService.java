@@ -64,7 +64,7 @@ public class BmEventBelongService extends BaseService {
 
     public BmEventBelong findByEventName(String eventName) {
         DetachedCriteria dc = bmEventBelongDao.createDetachedCriteria();
-        dc.add(Restrictions.like("eventName", eventName));
+        dc.add(Restrictions.like("eventName", "%" + eventName + "%"));
         //dc.add(Restrictions.eq(BmEventBelong.FIELD_DEL_FLAG, BmEventBelong.DEL_FLAG_NORMAL));
         //dc.addOrder(Order.desc("id"));
         List<BmEventBelong> list = bmEventBelongDao.find(dc);

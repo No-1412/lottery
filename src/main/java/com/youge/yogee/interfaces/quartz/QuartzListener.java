@@ -1,7 +1,6 @@
 package com.youge.yogee.interfaces.quartz;
 
-import com.youge.yogee.common.push.AppPush;
-import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
+import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
@@ -14,12 +13,9 @@ import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderServi
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
-import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
-import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicFollowOrderService;
 import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
-import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
@@ -140,7 +136,6 @@ public class QuartzListener {
 
                         String orderFinish = StringUtils.split(aDetail[2], "/")[0];
 
-
                         String finish = "";
                         switch (key) {
                             case "score":
@@ -198,60 +193,22 @@ public class QuartzListener {
                     cdFootballFollowOrder.setAward(award.toString());
                     cdFootballFollowOrder.setStatus("4");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
-
-                    //---------------------------------计算跟单佣金-------------------------
-
-                    if (cdFootballFollowOrder.getType().equals("2")) {
-                        //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
-
-                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballFollowOrder.getOrderNum());
-                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-                        BigDecimal mulResult = new BigDecimal(cdFootballFollowOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
-                        int compare = mulResult.compareTo(award);
-                        if (compare == -1) {
-//                        if (new BigDecimal(cdFootballFollowOrder.getPrice())
-//                                .multiply(cdOrderFollowTimes.getTimes())
-//                                .compareTo(award) == 1) {
-                            //全部佣金
-                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
-                                    .multiply(new BigDecimal(0.01))
-                                    .multiply(award);
-
-                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
-                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
-                            cdLotteryUserService.save(cdLotteryUser);
-                        }
-                    }
-
-                    //保存中奖纪录
-                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                    cdOrderWinners.setWinOrderNum(cdFootballFollowOrder.getOrderNum());//中间单号
-                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
-                    cdOrderWinners.setUid(cdFootballFollowOrder.getUid());//中间用户
-                    String repayPercent = Calculations.getRepayPercent(award.doubleValue(), Double.parseDouble(cdFootballFollowOrder.getPrice()));
-                    cdOrderWinners.setRepayPercent(repayPercent);
-                    cdOrderWinners.setType("2");
-                    cdOrderWinners.setWallType("1");
-                    cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
-                    cdOrderWinnersService.save(cdOrderWinners);
-                    //保存中獎大洲
+                    //保存中奖大洲  step1
                     String continent = cdFootballFollowOrder.getContinent();
                     CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
-                    String newContinent = clu.getContinent() + continent;//大洲
+                    String newContinent = clu.getContinent() + continent + ",";//大洲
+                    newContinent = newContinent.replaceAll("null,", "");
                     clu.setContinent(newContinent);
                     cdLotteryUserService.save(clu);
+                    //改变订单总表状态 step2
+                    WinPriceUtil.changeTotalOrder(cdFootballFollowOrder.getOrderNum(), award.toString());
 
-                    //改变订单总表状态
-                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
-                    if (co != null) {
-                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
-                        co.setWinPrice(finalAward.toString());//奖金
-                        co.setStatus("3");//中奖
-                        cdOrderService.save(co);
-                    }
-                    //更新用户余额
-                    SelOrderUtil.addBalanceToUser(cdFootballFollowOrder.getAward(), cdFootballFollowOrder.getUid());
-                    AppPush.push(cdFootballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
+                    //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                    //计算跟单佣金 step3
+                    //保存中奖纪录 step4
+                    //更新用户余额 step5
+                    //推送         step6
+                    //------------------------------------------------------------------------------------------
                 }
             }
         }
@@ -507,39 +464,7 @@ public class QuartzListener {
                     cdFootballFollowOrder.setStatus("4");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
 
-                    //---------------------------------计算跟单佣金-------------------------
-
-                    if (cdFootballFollowOrder.getType().equals("2")) {
-                        //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
-
-                        CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballFollowOrder.getOrderNum());
-                        CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-                        BigDecimal mulResult = new BigDecimal(cdFootballFollowOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
-                        int compare = mulResult.compareTo(new BigDecimal(award));
-                        if (compare == -1) {
-                            //全部佣金
-                            BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
-                                    .multiply(new BigDecimal(0.01))
-                                    .multiply(new BigDecimal(award));
-
-                            CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
-                            cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
-                            cdLotteryUserService.save(cdLotteryUser);
-                        }
-                    }
-
-                    //保存中奖纪录
-                    CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                    cdOrderWinners.setWinOrderNum(cdFootballFollowOrder.getOrderNum());//中间单号
-                    cdOrderWinners.setWinPrice(award.toString());//中奖金额
-                    cdOrderWinners.setUid(cdFootballFollowOrder.getUid());//中间用户
-                    String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballFollowOrder.getPrice()));
-                    cdOrderWinners.setRepayPercent(repayPercent);
-                    cdOrderWinners.setType("2");
-                    cdOrderWinners.setWallType("1");
-                    cdOrderWinners.setResult(cdFootballFollowOrder.getResult());
-                    cdOrderWinnersService.save(cdOrderWinners);
-                    //保存中獎大洲
+                    //保存中獎大洲 step1
                     String continent = cdFootballFollowOrder.getContinent() + ",";
                     CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
                     String oldContinent = clu.getContinent();
@@ -549,21 +474,22 @@ public class QuartzListener {
                         String newContinent = oldContinent + continent;//大洲
                         clu.setContinent(newContinent);
                     }
+                    //改变订单总表状态step2
+                    WinPriceUtil.changeTotalOrder(cdFootballFollowOrder.getOrderNum(), award.toString());
+//                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+//                    if (co != null) {
+//                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
+//                        co.setWinPrice(finalAward.toString());//奖金 用于反显
+//                        co.setStatus("3");//中奖
+//                        cdOrderService.save(co);
+//                    }
 
-                    cdLotteryUserService.save(clu);
-
-                    //改变订单总表状态
-                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
-                    if (co != null) {
-                        BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
-                        co.setWinPrice(finalAward.toString());//奖金
-                        co.setStatus("3");//中奖
-                        cdOrderService.save(co);
-                    }
-                    //更新用户余额
-                    SelOrderUtil.addBalanceToUser(cdFootballFollowOrder.getAward(), cdFootballFollowOrder.getUid());
-                    AppPush.push(cdFootballFollowOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
-
+                    //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                    //计算跟单佣金 step3
+                    //保存中奖纪录 step4
+                    //更新用户余额 step5
+                    //推送         step6
+                    //-------------------------------------------------------------------------------
                 } else {
                     cdFootballFollowOrder.setStatus("5");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
@@ -662,65 +588,32 @@ public class QuartzListener {
                 cdFootballSingleOrder.setStatus("4");
                 cdFootballSingleOrderService.save(cdFootballSingleOrder);
 
-                //---------------------------------计算跟单佣金-------------------------
-
-                if (cdFootballSingleOrder.getType().equals("2")) {
-                    //CdOrderFollowTimes cdOrderFollowTimes = cdOrderFollowTimesService.get("1");
-
-                    CdMagicFollowOrder cdMagicFollowOrder = cdMagicFollowOrderService.findOrderByNumber(cdFootballSingleOrder.getOrderNum());
-                    CdMagicOrder cdMagicOrder = cdMagicOrderService.get(cdMagicFollowOrder.getMagicOrderId());
-                    BigDecimal mulResult = new BigDecimal(cdFootballSingleOrder.getPrice()).multiply(new BigDecimal(cdMagicOrder.getTimes()));
-                    int compare = mulResult.compareTo(new BigDecimal(award));
-                    if (compare == -1) {
-                        //全部佣金
-                        BigDecimal commission = new BigDecimal(cdMagicOrder.getCharges())
-                                .multiply(new BigDecimal(0.01))
-                                .multiply(new BigDecimal(award));
-
-                        CdLotteryUser cdLotteryUser = cdLotteryUserService.get(cdMagicOrder.getUid());
-                        cdLotteryUser.setBalance(cdLotteryUser.getBalance().add(commission.multiply(new BigDecimal(0.8))));
-                        cdLotteryUserService.save(cdLotteryUser);
-                    }
-                }
-
-                //保存中奖纪录
-                CdOrderWinners cdOrderWinners = new CdOrderWinners();
-                cdOrderWinners.setWinOrderNum(cdFootballSingleOrder.getOrderNum());//中间单号
-                cdOrderWinners.setWinPrice(award.toString());//中奖金额
-                cdOrderWinners.setUid(cdFootballSingleOrder.getUid());//中间用户
-                String repayPercent = Calculations.getRepayPercent(award, Double.parseDouble(cdFootballSingleOrder.getPrice()));
-                cdOrderWinners.setRepayPercent(repayPercent);
-                cdOrderWinners.setType("1");
-                cdOrderWinners.setWallType("1");
-                cdOrderWinners.setResult(cdFootballSingleOrder.getResult());
-                cdOrderWinnersService.save(cdOrderWinners);
-                //保存中獎大洲
+                //保存中奖大洲 step1
                 String continent = cdFootballSingleOrder.getContinent();
                 CdLotteryUser clu = cdLotteryUserService.get(cdFootballSingleOrder.getUid());
                 String newContinent = clu.getContinent() + continent;//大洲
                 clu.setContinent(newContinent);
                 cdLotteryUserService.save(clu);
-                //改变订单总表状态
-                CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
-                if (co != null) {
-                    BigDecimal finalAward = new BigDecimal(award.toString()).setScale(2, 1);
-                    co.setWinPrice(finalAward.toString());//奖金
-                    co.setStatus("3");//中奖
-                    cdOrderService.save(co);
-                }
-                //更新用户余额
-                SelOrderUtil.addBalanceToUser(cdFootballSingleOrder.getAward(), cdFootballSingleOrder.getUid());
-                AppPush.push(cdFootballSingleOrder.getUid(), "凯旋彩票", "您购买的竞猜足球获得中奖金额" + award + "元");
+
+                //改变订单总表状态 step2
+                WinPriceUtil.changeTotalOrder(cdFootballSingleOrder.getOrderNum(), award.toString());
+
+                //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                //计算跟单佣金 step3
+                //保存中奖纪录 step4
+                //更新用户余额 step5
+                //推送         step6
+                //-------------------------------------------------------------------------------
+
 
             } else {
-
                 cdFootballSingleOrder.setStatus("5");
                 cdFootballSingleOrderService.save(cdFootballSingleOrder);
                 //改变订单总表状态
                 CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballSingleOrder.getOrderNum());
                 if (co != null) {
                     co.setWinPrice("0");//奖金
-                    co.setStatus("2");//中奖
+                    co.setStatus("2");//已开奖
                     cdOrderService.save(co);
                 }
             }

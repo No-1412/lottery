@@ -46,8 +46,9 @@ public class CdOrder extends BaseEntity<T> implements Serializable {
     private String saleId; //销售id
     private String followNum;//跟单单号
     private String outTime;//出票时间
-// 20180512 yhw
-private String bestType;//奖金优化的单子：1普通 2优化
+    // 20180512 yhw
+    private String bestType;//奖金优化的单子：1普通 2优化
+    private String winStatus;//0未派奖 1已派奖
 
     public String getBestType() {
         return bestType;
@@ -221,6 +222,14 @@ private String bestType;//奖金优化的单子：1普通 2优化
 
     public void setOutTime(String outTime) {
         this.outTime = outTime;
+    }
+
+    public String getWinStatus() {
+        return winStatus;
+    }
+
+    public void setWinStatus(String winStatus) {
+        this.winStatus = winStatus;
     }
 }
 
