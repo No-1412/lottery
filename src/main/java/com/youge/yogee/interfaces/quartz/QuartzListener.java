@@ -421,7 +421,7 @@ public class QuartzListener {
                             CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
                             if (co != null) {
                                 co.setWinPrice("0");//奖金
-                                co.setStatus("2");//中奖
+                                co.setStatus("2");//未中奖
                                 cdOrderService.save(co);
                             }
                             continue;
@@ -432,13 +432,13 @@ public class QuartzListener {
                             for (String num : followNum.split(",")) {
                                 Integer numInt = Integer.valueOf(num);
                                 if (winList.size() < numInt) {
-                                    cdFootballFollowOrder.setStatus("5");
+                                    cdFootballFollowOrder.setStatus("5");//未中奖
                                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
                                     //改变订单总表状态
                                     CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
                                     if (co != null) {
                                         co.setWinPrice("0");//奖金
-                                        co.setStatus("2");//中奖
+                                        co.setStatus("2");//未中奖
                                         cdOrderService.save(co);
                                         //2018-05-18 yhw   如果3串1,2串1,3串没中，2串中了， 就会有问题
                                         continue out;
