@@ -582,14 +582,14 @@ public class ErpOrderController extends BaseController {
 
     @RequiresPermissions("erp:erpOrder:edit")
     @RequestMapping(value = "addAward")
-//    public String addAward(ErpOrder erpOrder,Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
-    public String addAward(ErpOrder erpOrder, Model model, RedirectAttributes redirectAttributes) {
-//        String id = request.getParameter("erpOrderId");
-//        String winPrice = request.getParameter("winPrice");
+   public String addAward(ErpOrder erpOrder,Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
+   // public String addAward(ErpOrder erpOrder, Model model, RedirectAttributes redirectAttributes) {
+        String id = request.getParameter("erpOrderId");
+       String winPrice = request.getParameter("winPrice");
 
-        String id = erpOrder.getId();
+        /*String id = erpOrder.getId();
         String winPrice = erpOrder.getWinPrice();
-
+*/
         CdOrder cdOrder = cdOrderService.get(id);
         String ordNum = cdOrder.getNumber();
         BigDecimal winPriceBig = new BigDecimal(winPrice).setScale(2,1);
@@ -733,8 +733,8 @@ public class ErpOrderController extends BaseController {
             } catch (Exception e) {
             }
         }
-
-        cdOrder.setWinPrice(winPriceBig.toString());
+        String price = String.format("%.2f", Double.parseDouble(winPriceBig.toString()));
+        cdOrder.setWinPrice(price);
         cdOrder.setWinStatus("1");
         cdOrderService.save(cdOrder);
         addMessage(redirectAttributes, "保存成功");

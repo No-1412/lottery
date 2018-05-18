@@ -67,7 +67,7 @@
 		<div class="control-group">
 			<label class="control-label">奖金:</label>
 			<div class="controls">
-				<form:input path="winPrice" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+				<form:input path="winPrice" htmlEscape="false" maxlength="200" class="required" disabled="true"/>
 			</div>
 		</div>
 
