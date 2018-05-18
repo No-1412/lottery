@@ -49,7 +49,7 @@ public class ErpUserService extends BaseService {
             dc.add(Restrictions.like("name", "%" + user.getName() + "%"));
         }
         dc.add(Restrictions.eq(ErpUser.FIELD_DEL_FLAG, ErpUser.DEL_FLAG_NORMAL));
-        dc.addOrder(Order.desc("id"));
+        dc.addOrder(Order.desc("createDate"));
         return erpUserDao.find(page, dc);
     }
 
