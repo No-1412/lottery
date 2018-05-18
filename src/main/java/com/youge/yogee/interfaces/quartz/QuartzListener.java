@@ -218,7 +218,7 @@ public class QuartzListener {
     //@Scheduled(cron = "0/10 * * * * ?")//每10秒触发
     @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballFollowOrder() {
-//        System.out.println("足球串关开奖");
+        System.out.println("足球串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("1");
 
 
@@ -235,7 +235,7 @@ public class QuartzListener {
                 matchIdList.add(finishMatchId.substring(2, 7));
             }
 
-
+            //System.out.println(cdFootballFollowOrder.getOrderNum());
             //判断订单所有赛事是否都已经比完
             if (awardMatchIdList.containsAll(matchIdList)) {
 
@@ -440,7 +440,8 @@ public class QuartzListener {
                                         co.setWinPrice("0");//奖金
                                         co.setStatus("2");//中奖
                                         cdOrderService.save(co);
-                                        break out;
+                                        //2018-05-18 yhw   如果3串1,2串1,3串没中，2串中了， 就会有问题
+                                        continue out;
                                     }
                                 }
                             }
