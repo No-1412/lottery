@@ -29,6 +29,7 @@
 		$(document).ready(function(){
 			$.get("${ctx}${url}${fn:indexOf(url,'?')==-1?'?':'&'}&extId=${extId}&module=${module}&t="+new Date().getTime(), function(zNodes){
 				// 初始化树结构
+
 				tree = $.fn.zTree.init($("#tree"), setting, zNodes);
 				
 				// 默认展开一级节点
@@ -84,16 +85,19 @@
 			if (value === "") {
 				return;
 			}
-			updateNodes(false);
+			//updateNodes(false);
 			nodeList = tree.getNodesByParamFuzzy(keyType, value);
 			updateNodes(true);
 		}
 		function updateNodes(highlight) {
+			console.log(nodeList);
 			for(var i=0, l=nodeList.length; i<l; i++) {
 				nodeList[i].highlight = highlight;				
 				tree.updateNode(nodeList[i]);
 				tree.expandNode(nodeList[i].getParentNode(), true, false, false);
+
 			}
+			tree = $.fn.zTree.init($("#tree"), setting, nodeList);
 		}
 		function search() {
 			$("#search").slideToggle(200);
