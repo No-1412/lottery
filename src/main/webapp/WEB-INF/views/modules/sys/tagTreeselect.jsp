@@ -8,6 +8,7 @@
 	<%@include file="/WEB-INF/views/include/treeview.jsp" %>
 	<script type="text/javascript">
 		var key, lastValue = "", nodeList = [];
+		var zNodesTree;
 		var tree, setting = {view:{selectedMulti:false},check:{enable:"${checked}",nocheckInherit:true},
 				data:{simpleData:{enable:true}},
 				view:{
@@ -29,7 +30,7 @@
 		$(document).ready(function(){
 			$.get("${ctx}${url}${fn:indexOf(url,'?')==-1?'?':'&'}&extId=${extId}&module=${module}&t="+new Date().getTime(), function(zNodes){
 				// 初始化树结构
-
+				zNodesTree = zNodes;
 				tree = $.fn.zTree.init($("#tree"), setting, zNodes);
 				
 				// 默认展开一级节点
@@ -83,6 +84,7 @@
 			
 			// 如果要查空字串，就退出不查了。
 			if (value === "") {
+				tree = $.fn.zTree.init($("#tree"), setting, zNodesTree);
 				return;
 			}
 			//updateNodes(false);
@@ -90,7 +92,8 @@
 			updateNodes(true);
 		}
 		function updateNodes(highlight) {
-			console.log(nodeList);
+			//console.log(nodeList);
+
 			for(var i=0, l=nodeList.length; i<l; i++) {
 				nodeList[i].highlight = highlight;				
 				tree.updateNode(nodeList[i]);
