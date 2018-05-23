@@ -218,7 +218,7 @@ public class ErpOrderController extends BaseController {
 
                 String vs = (String) map.get("vs");
                 String[] vsArray = vs.split("vs");
-                vs = vsArray[1] + "vs" + vsArray[0];
+                vs = vsArray[0] + "vs" + vsArray[1];
                 String letScore = (String) map.get("letScore");
 
 
@@ -229,7 +229,7 @@ public class ErpOrderController extends BaseController {
 
                 String let = (String) map.get("let");
                 if (StringUtils.isNotEmpty(let)) {
-                    vs = vsArray[1] + "vs" + vsArray[0] + "(" + letScore + ")";
+                    vs = vsArray[0] + "vs" + vsArray[1] + "(" + letScore + ")";
                 }
                 String dan = (String) map.get("dan");
 
