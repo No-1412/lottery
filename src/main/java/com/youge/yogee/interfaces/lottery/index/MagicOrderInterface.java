@@ -711,6 +711,7 @@ public class MagicOrderInterface {
 //        if (cdOrder != null) {
 //            saleId = cdOrder.getSaleId();
 //        }
+        co.setWinStatus("0");//未开奖
         co.setSaleId(clu.getSaleId());
         cdOrderService.save(co);
         logger.info("跟买神单 followMagicOrder---------End---------------------");
