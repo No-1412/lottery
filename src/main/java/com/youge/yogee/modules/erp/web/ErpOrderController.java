@@ -218,7 +218,7 @@ public class ErpOrderController extends BaseController {
 
                 String vs = (String) map.get("vs");
                 String[] vsArray = vs.split("vs");
-                vs = vsArray[0] + "vs" + vsArray[1];
+                vs = vsArray[1] + "vs" + vsArray[0];
                 String letScore = (String) map.get("letScore");
 
 
@@ -229,7 +229,7 @@ public class ErpOrderController extends BaseController {
 
                 String let = (String) map.get("let");
                 if (StringUtils.isNotEmpty(let)) {
-                    vs = vsArray[0] + "vs" + vsArray[1] + "(" + letScore + ")";
+                    vs = vsArray[1] + "vs" + vsArray[0] + "(" + letScore + ")";
                 }
                 String dan = (String) map.get("dan");
 
@@ -237,6 +237,10 @@ public class ErpOrderController extends BaseController {
                     dan = "";
                 }
                 String result = (String) map.get("result");
+                //2018-05-23 yhw  主客场顺序调整
+                if(StringUtils.isNotEmpty(result)){
+                    result = result.split("\\:")[1]+":"+result.split("\\:")[0];
+                }
 ////yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
                     win = "主胜分差" + win;
