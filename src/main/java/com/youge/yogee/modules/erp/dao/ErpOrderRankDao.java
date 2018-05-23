@@ -34,7 +34,7 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
         String sql = " SELECT  t.asaleid as saleid,t.username as salename,c.moneywithoutgendan,d.moneygendan,a.moneytotal,b.num,t.createdate from " +
                 //所有销售员
                 " (SELECT su.id as asaleid,su.name as username,su.create_date as createdate from sys_role sr  LEFT JOIN sys_user_role sur on  sr.id = sur.role_id " +
-                " LEFT JOIN sys_user su on su.id = sur.user_id where sr.name ='销售员' " +
+                " LEFT JOIN sys_user su on su.id = sur.user_id where sr.name ='销售员' and su.del_flag <>1 " +
                 //"or sr.name ='系统管理员' " +
                 ") t LEFT JOIN " +
                 //总业绩
@@ -51,7 +51,7 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
                 " sys_user su on cdorder.sale_id = su.id where cdorder.issue <> '1' " + tiaojian + "  GROUP BY su.id) c on c.csaleid = a.asaleid LEFT JOIN" +
                 //跟单业绩
                 " (SELECT cdorder.sale_id as dsaleid, sum(cdorder.total_price) as moneygendan FROM cd_order cdorder " +
-                " WHERE issue = '1' " + tiaojian + " GROUP BY sale_id) d on d.dsaleid = a.asaleid GROUP BY a.asaleid ORDER BY a.moneytotal DESC";
+                " WHERE issue = '1' " + tiaojian + " GROUP BY sale_id) d on d.dsaleid = a.asaleid  ORDER BY a.moneytotal DESC";
 
       /*  2018-05-17 yhw SQL语句优化，暂时未启用
       SELECT  t.asaleid as saleid,t.username as salename,c.moneywithoutgendan,d.moneygendan,a.moneytotal,b.num,t.createdate
@@ -79,7 +79,7 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
         LEFT JOIN (
                 SELECT cdorder.sale_id as dsaleid, sum(cdorder.total_price) as moneygendan FROM cd_order cdorder  WHERE issue = '1' " + tiaojian + "  GROUP BY sale_id) d
         on d.dsaleid = a.asaleid
-        GROUP BY a.asaleid
+        GROUP BY t.asaleid
         ORDER BY a.moneytotal DESC*/
         return findBySql(page, sql);
     }
