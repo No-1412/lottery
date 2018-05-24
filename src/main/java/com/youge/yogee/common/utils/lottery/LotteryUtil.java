@@ -36,10 +36,10 @@ public class LotteryUtil {
                     int index = arrayList.indexOf(rt[1]);
                     CdFootballAwards oe = resultMap.get(rt[0]);
                     if (index == 0) {
-                        if (Strings.isNullOrEmpty(oe.getSpread())) {
+                        if (Strings.isNullOrEmpty(oe.getWinning())) {
                             bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
-                            if (info[0].equals(oe.getSpread())) {
+                            if (info[0].equals(oe.getWinning())) {
                                 bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                             } else {
                                 bigDecimal = new BigDecimal("0");
@@ -48,10 +48,10 @@ public class LotteryUtil {
 
                     }
                     if (index == 1) {
-                        if (Strings.isNullOrEmpty(oe.getWinning())) {
+                        if (Strings.isNullOrEmpty(oe.getSpread())) {
                             bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
-                            if (info[0].equals(oe.getWinning())) {
+                            if (info[0].equals(oe.getSpread())) {
                                 bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                             } else {
                                 bigDecimal = new BigDecimal("0");
@@ -234,10 +234,10 @@ public class LotteryUtil {
                             String[] info = rt[k].split("_");
                             CdFootballAwards oe = resultMap.get(info[0]);
                             if (info[2].equals("0")) {
-                                if (Strings.isNullOrEmpty(oe.getSpread())) {
+                                if (Strings.isNullOrEmpty(oe.getWinning())) {
                                     bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                                 } else {
-                                    if (info[3].equals(ConvertInt(oe.getSpread()))) {
+                                    if (info[3].equals(ConvertInt(oe.getWinning()))) {
                                         bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
                                     } else {
                                         bigDecimal = new BigDecimal("0");
@@ -246,10 +246,11 @@ public class LotteryUtil {
 
                             }
                             if (info[2].equals("1")) {
-                                if (Strings.isNullOrEmpty(oe.getWinning())) {
+                                System.out.println(oe.getMatchId());
+                                if (Strings.isNullOrEmpty(oe.getSpread())) {
                                     bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                                 } else {
-                                    if (info[3].equals(ConvertInt(oe.getWinning()))) {
+                                    if (info[3].equals(ConvertInt(oe.getSpread()))) {
                                         bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
                                     } else {
                                         bigDecimal = new BigDecimal("0");
@@ -322,7 +323,7 @@ public class LotteryUtil {
                     // 判断如果存储比赛信息不存在则加入比赛信息
                     if (!sJson.containsKey(info_arr[1])) {
                         index.add(info_arr[1]);
-                        System.out.println(info_arr[1]);
+                        //System.out.println(info_arr[1]);
                         sJson.put(info_arr[1], new JSONArray());
                     }
                 }
@@ -346,8 +347,11 @@ public class LotteryUtil {
 
     private static final String MAIN_WIN = "主胜", LET_MAIN_WIN = "让主胜", MAIN_LOSE = "主负", LET_MAIN_LOSE = "让主负", WIN = "胜", LOSE = "负", FLAT = "平";
 
+
     private static String ConvertInt(String s1) {
-        if (s1.equals(MAIN_WIN) || s1.equals(MAIN_WIN)) {
+
+        System.out.println(s1);
+        if (s1.equals(MAIN_WIN) || s1.equals(LET_MAIN_WIN)) {
             return "3";
         }
         if (s1.equals(MAIN_LOSE) || s1.equals(LET_MAIN_LOSE)) {
