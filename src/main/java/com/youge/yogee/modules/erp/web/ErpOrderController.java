@@ -316,7 +316,7 @@ public class ErpOrderController extends BaseController {
             for (int i = 0; i < detailList.size(); i++) {
                 //String detail = "";
                 Map map = (Map) detailList.get(i);
-                ErpFootBallDto efbd = new ErpFootBallDto();
+
                 String matchId = (String) map.get("matchId");
                 String vs = (String) map.get("vs");
                 String score = (String) map.get("score");
@@ -333,20 +333,22 @@ public class ErpOrderController extends BaseController {
                 }
 
                 String result = (String) map.get("result");
-
-
                 String newLet = let.replaceAll("平", "让平");
-                efbd.setMatId(matchId);
-                efbd.setVs(vs);
-                efbd.setBeat(beat);
-                efbd.setScore(score);
-                efbd.setGoal(goal);
-                efbd.setHalf(half);
-                efbd.setLet(newLet);
-                efbd.setResult(result);
-                //efbd.setLetBall(letBall);
 
-                finalDetailList.add(efbd);
+                String longString = score+goal+half+beat+newLet;
+                longString = longString.replaceAll("null","");
+                for(String str:longString.split("\\,")){
+                    ErpFootBallDto efbd = new ErpFootBallDto();
+                    efbd.setMatId(matchId);
+                    efbd.setVs(vs);
+                    efbd.setBeat(str);
+
+                    efbd.setResult(result);
+                    //efbd.setLetBall(letBall);
+
+                    finalDetailList.add(efbd);
+                }
+
             }
             model.addAttribute("detailList", finalDetailList);
             return "modules/erp/erpFootballSingleOrderForm";
@@ -499,17 +501,19 @@ public class ErpOrderController extends BaseController {
         }
         if (orderNum.startsWith("RXJ")) {//任选九
             CdChooseNineOrder cdChooseNineOrder = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
-            List<String> list = new ArrayList<>();
+            List<Map<String,String>> list = new ArrayList<>();
             if (cdChooseNineOrder != null) {
                 String detail = cdChooseNineOrder.getOrderDetail();
                 if (StringUtils.isNotEmpty(detail)) {
                     String detailStr[] = detail.split("\\|");
                     for (String s : detailStr) {
-                        list.add(s);
+                        Map<String ,String > map = new HashMap<>();
+                        map.put("nameStr",s.split("\\+")[1]);
+                        map.put("valueStr",s.split("\\+")[2]);
+                        list.add(map);
                     }
                 }
             }
-
 
             model.addAttribute("uName", uName);
             model.addAttribute("cdChooseNineOrder", cdChooseNineOrder);

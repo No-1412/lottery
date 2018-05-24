@@ -41,83 +41,51 @@
            method="post" class="form-horizontal">
     <form:hidden path="id"/>
     <tags:message content="${message}"/>
-    <div class="control-group">
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">订单号:</label>
         <div class="controls">
             <form:input path="orderNumber" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-    <div class="control-group">
-        <label class="control-label">期数:</label>
-        <div class="controls">
-            <form:input path="weekday" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label">注数:</label>
-        <div class="controls">
-            <form:input path="acount" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
-        </div>
-    </div>
-    <div class="control-group">
-        <label class="control-label">倍数:</label>
-        <div class="controls">
-            <form:input path="times" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
-        </div>
-    </div>
-
-    <div class="control-group">
+    <%-- <div class="control-group" style="display: inline-block;">
+         <label class="control-label">期数:</label>
+         <div class="controls">
+             <form:input path="weekday" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+         </div>
+     </div>
+     <div class="control-group">
+         <label class="control-label">注数:</label>
+         <div class="controls">
+             <form:input path="acount" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+         </div>
+     </div>
+     <div class="control-group">
+         <label class="control-label">倍数:</label>
+         <div class="controls">
+             <form:input path="times" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
+         </div>
+     </div>
+ --%>
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">金额:</label>
         <div class="controls">
             <form:input path="price" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-    <div class="control-group">
+    <%--<div class="control-group">
         <label class="control-label">用户:</label>
         <div class="controls">
-                <%--<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>--%>
+                &lt;%&ndash;<form:input path="uid" htmlEscape="false" maxlength="200" class="required" readonly="true"/>&ndash;%&gt;
             <input type="text" readonly="readonly" value="${uName}">
         </div>
-    </div>
-    <div class="control-group">
+    </div>--%>
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">下单时间:</label>
         <div class="controls">
             <form:input path="createDate" htmlEscape="false" maxlength="200" class="required" readonly="true"/>
         </div>
     </div>
-
-    <div class="control-group">
-        <label class="control-label">订单详情: </label>
-        <div class="controls">
-                <%--<form:textarea path="remarks" htmlEscape="false" rows="4" maxlength="200" class="input-xxlarge"/>--%>
-            <p><font size="3"> <b> 场次+主客队+胜(3)/平(1)/负(0)+胆1(是)/0(否) </b> </font></p>
-                <%-- <c:forEach items="${list}" var="list" >
-                   <p> <b> ${list}; </b> </p>
-                 </c:forEach>--%>
-            <font size="3">
-                <c:forEach items="${list}" var="list">
-                    <p>
-                        <c:forTokens items=" ${list}" delims="+" var="alist" varStatus="j">
-
-                            <c:if test="${j.count==3}">
-                                <font color="red"> <b> ${alist}</b></font>+
-                            </c:if>
-                            <c:if test="${j.count!=3 && j.count!=4}">
-                                ${alist}+
-                            </c:if>
-                            <c:if test="${j.count==4}">
-                                <font color="red"> <b> ${alist}</b></font>
-                            </c:if>
-
-                        </c:forTokens>
-                        <br>
-                    </p>
-                </c:forEach>
-            </font>
-        </div>
-    </div>
-
-    <div class="control-group">
+    <div class="control-group" style="display: inline-block;">
         <label class="control-label">状态:</label>
         <div class="controls">
             <form:select id="status" path="status">
@@ -125,6 +93,41 @@
             </form:select>
         </div>
     </div>
+    <table id="contentTable" class="table table-striped table-bordered table-condensed">
+        <thead>
+        <%--<tr>
+            <td colspan="6">选号方案</td>
+        </tr>
+        <tr>
+            <td colspan="6">选择场次：${fn:length(detailList)}场,&nbsp;过关方案：单关</td>
+        </tr>
+        <tr>
+            <th>场次</th>
+                &lt;%&ndash;<th>主队</th>&ndash;%&gt;
+            <th>对阵</th>
+                &lt;%&ndash;<th>客队</th>&ndash;%&gt;
+            <th>全场比分</th>
+                &lt;%&ndash; <th>半场比分</th>&ndash;%&gt;
+            <th>投注方案</th>
+            <th>胆码</th>
+        </tr>--%>
+        </thead>
+        <tbody>
+        <tr>
+        <c:forEach items="${list}" var="detailList">
+            <td>
+        <table>
+            <tr>
+                <td> ${detailList.nameStr}</td>
+            </tr>
+            <tr><td>${detailList.valueStr}</td></tr>
+            </table>
+            </td>
+        </c:forEach>
+        </tr>
+        </tbody>
+    </table>
+
 
     <div class="form-actions">
         <shiro:hasPermission name="cchoosenine:cdChooseNineOrder:edit">
