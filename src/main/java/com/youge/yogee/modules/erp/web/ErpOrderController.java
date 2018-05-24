@@ -606,7 +606,7 @@ public class ErpOrderController extends BaseController {
             CdFootballSingleOrder cfso = cdFootballSingleOrderService.findOrderByOrderNum(ordNum);
             //跟单计算佣金
             if ("2".equals(cfso.getType())) {
-                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice).setScale(2,1);
+                winPriceBig =winPriceBig.subtract(WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice).setScale(2,1));
             }
             //保存中奖记录
             WinPriceUtil.saveOrderWinner(ordNum, cfso.getPrice(), winPriceBig.toString(), cfso.getUid(), cfso.getResult(), "1");
@@ -623,7 +623,7 @@ public class ErpOrderController extends BaseController {
             CdFootballFollowOrder cffo = cdFootballFollowOrderService.findOrderByOrderNum(ordNum);
             //跟单计算佣金
             if ("2".equals(cffo.getType())) {
-                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cffo.getPrice(), winPrice);
+                winPriceBig = winPriceBig.subtract(WinPriceUtil.reckonCommission(ordNum, cffo.getPrice(), winPrice));
             }
             //保存中奖记录
             WinPriceUtil.saveOrderWinner(ordNum, cffo.getPrice(), winPriceBig.toString(), cffo.getUid(), cffo.getResult(), "2");
@@ -640,7 +640,7 @@ public class ErpOrderController extends BaseController {
             CdBasketballSingleOrder cbso = cdBasketballSingleOrderService.findOrderByOrderNum(ordNum);
             //跟单计算佣金
             if ("2".equals(cbso.getType())) {
-                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cbso.getPrice(), winPrice);
+                winPriceBig = winPriceBig.subtract(WinPriceUtil.reckonCommission(ordNum, cbso.getPrice(), winPrice));
             }
             //保存中奖记录
             WinPriceUtil.saveOrderWinner(ordNum, cbso.getPrice(), winPriceBig.toString(), cbso.getUid(), cbso.getResult(), "3");
@@ -658,7 +658,7 @@ public class ErpOrderController extends BaseController {
             CdBasketballFollowOrder cbfo = cdBasketballFollowOrderService.findOrderByOrderNum(ordNum);
             //跟单计算佣金
             if ("2".equals(cbfo.getType())) {
-                winPriceBig = WinPriceUtil.reckonCommission(ordNum, cbfo.getPrice(), winPrice);
+                winPriceBig = winPriceBig.subtract(WinPriceUtil.reckonCommission(ordNum, cbfo.getPrice(), winPrice));
             }
             //保存中奖记录
             WinPriceUtil.saveOrderWinner(ordNum, cbfo.getPrice(), winPriceBig.toString(), cbfo.getUid(), cbfo.getResult(), "4");

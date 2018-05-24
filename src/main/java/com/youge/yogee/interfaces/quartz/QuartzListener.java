@@ -513,7 +513,7 @@ public class QuartzListener {
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdFootballAwardsService.getAllMatchId();
-        System.out.println(awardMatchIdList);
+        //System.out.println(awardMatchIdList);
 
         for (CdFootballFollowOrder cdFootballFollowOrder : cdFootballFollowOrderList) {
 //            System.out.println("胜负平" + cdFootballFollowOrder.getBeat());
@@ -543,7 +543,7 @@ public class QuartzListener {
                 //判断是否中奖
                 BigDecimal award = LotteryUtil.WinningVerify(cdList, resultMap, cdFootballFollowOrder.getFollowNum(), cdFootballFollowOrder.getTimes(), "1");
                 if (award.compareTo(BigDecimal.ZERO) > 0) {
-                    System.err.println(cdFootballFollowOrder.getOrderNum() + ":" + award);
+                    //System.err.println(cdFootballFollowOrder.getOrderNum() + ":" + award);
                     cdFootballFollowOrder.setAward(award.toString());
                     cdFootballFollowOrder.setStatus("4");
                     cdFootballFollowOrderService.save(cdFootballFollowOrder);
