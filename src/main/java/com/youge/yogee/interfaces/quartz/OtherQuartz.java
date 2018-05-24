@@ -16,6 +16,8 @@ import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballSingleOrderService;
+import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
+import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
@@ -89,6 +91,8 @@ public class OtherQuartz {
     private CdFbNotFinishCollectionService cdFbNotFinishCollectionService;
     @Autowired
     private CdBbNotFinishCollectionService cdBbNotFinishCollectionService;
+    @Autowired
+    private CdLotteryUserService cdLotteryUserService;
 
     @Scheduled(cron = "0 0 12 * * ?")//每天十二点
     public void awardWallUpType() {
@@ -268,6 +272,20 @@ public class OtherQuartz {
                 }
                 c.setAllPerhaps(allPerhaps);
                 cdFiveOrderService.save(c);
+            }
+        }
+    }
+
+
+    /**
+     * 更新用户提现次数
+     */
+    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    public void upUserTryCashTimes() {
+        List<CdLotteryUser> list = cdLotteryUserService.findCatchTimes();
+        if (list.size() > 0) {
+            for (CdLotteryUser c : list) {
+                c.setCatchTimes("3");
             }
         }
     }

@@ -102,6 +102,8 @@
 </div>
 <ul class="nav nav-tabs">
     <li class="active"><a href="${ctx}/erp/erpOrder/">业绩列表</a></li>
+
+    <li><a href="#"><font color="red">今日销售总额：${sum}</font> </a></li>
     <%--<shiro:hasPermission name="erp:erpOrder:edit">--%>
     <%--<li><a href="${ctx}/erp/erpOrder/form">业绩添加</a></li>--%>
     <%--</shiro:hasPermission>--%>
@@ -110,15 +112,22 @@
            class="breadcrumb form-search">
     <input id="pageNo" name="pageNo" type="hidden" value="${page.pageNo}"/>
     <input id="pageSize" name="pageSize" type="hidden" value="${page.pageSize}"/>
-    <label>名称 ：</label><form:input path="name" htmlEscape="false" maxlength="50" class="input-small"/>
+    <label>客户昵称 ：</label><form:input path="name" htmlEscape="false" maxlength="50" class="input-small"/>
     &nbsp;
+    <label>订单号：</label><form:input path="number" htmlEscape="false" maxlength="50" class="input-small"/> &nbsp;
     <label>开奖状态 ：</label><form:select id="status" path="status">
     <form:option value="" label="全部"/>
     <form:option value="1" label="待开奖"/>
     <form:option value="2" label="已开奖"/>
     <form:option value="3" label="中奖"/>
 </form:select> &nbsp;
-    <label>订单号：</label><form:input path="number" htmlEscape="false" maxlength="50" class="input-small"/>
+
+    <label>开始日期：</label><input id="beginDate" name="beginDate" type="text" readonly="readonly" maxlength="20" class="input-small Wdate"
+                               value="${beginDate}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,maxDate:'#F{$dp.$D(\'endDate\')}'});"/>
+    <label>结束日期：</label><input id="endDate" name="endDate" type="text" readonly="readonly" maxlength="20" class="input-small Wdate"
+                               value="${endDate}" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,minDate:'#F{$dp.$D(\'beginDate\')}'});"/>
+
+
     &nbsp;
     <input id="btnSubmit" class="btn btn-primary" type="submit" value="查询"/>
 </form:form>

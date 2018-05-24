@@ -177,7 +177,6 @@ public class TryCashInterface {
             crc.setUname(clu.getName());
             crc.setOrderNum(orderNum);
             crc.setStatus("1");
-            cdRecordCashService.save(crc);
             String catchTimes = clu.getCatchTimes();
             int leftTimes = Integer.parseInt(catchTimes) - 1;
             clu.setCatchTimes(String.valueOf(leftTimes));
@@ -187,6 +186,7 @@ public class TryCashInterface {
             } else {
                 clu.setBalance(clu.getBalance().subtract(priceBig));
             }
+            cdRecordCashService.save(crc);
             cdLotteryUserService.save(clu);
         } else {
             return HttpResultUtil.errorJson("密码不正确");

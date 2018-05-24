@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ErpOrderService extends BaseService {
         return erpOrderDao.get(id);
     }
 
-    public Page<ErpOrder> find(Page<ErpOrder> page, ErpOrder erpOrder) {
+    public Page<ErpOrder> find(Page<ErpOrder> page, ErpOrder erpOrder, String beginDate, String endDate) throws ParseException {
         DetachedCriteria dc = erpOrderDao.createDetachedCriteria();
         String userId = UserUtils.getUser().getId();
         dc.createAlias("userId", "userId");
@@ -58,6 +59,13 @@ public class ErpOrderService extends BaseService {
         if (StringUtils.isNotEmpty(erpOrder.getNumber())) {
             dc.add(Restrictions.eq("number", erpOrder.getNumber()));
         }
+        if (StringUtils.isNotEmpty(beginDate)) {
+            dc.add(Restrictions.ge("createDate", beginDate));
+        }
+        if (StringUtils.isNotEmpty(endDate)) {
+            dc.add(Restrictions.le("createDate", endDate));
+        }
+
 
         dc.add(Restrictions.eq(ErpOrder.FIELD_DEL_FLAG, ErpOrder.DEL_FLAG_NORMAL));
         dc.addOrder(Order.desc("createDate"));
@@ -138,5 +146,13 @@ public class ErpOrderService extends BaseService {
         } else {
             return null;
         }
+    }
+
+    public List<ErpOrder> findByDate(String date) {
+        DetachedCriteria dc = erpOrderDao.createDetachedCriteria();
+        dc.add(Restrictions.like("createDate", date + "%"));
+        dc.add(Restrictions.eq(ErpOrder.FIELD_DEL_FLAG, ErpOrder.DEL_FLAG_NORMAL));
+        dc.addOrder(Order.desc("createDate"));
+        return erpOrderDao.find(dc);
     }
 }

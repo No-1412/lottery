@@ -117,21 +117,22 @@
         </thead>
         <tbody>
         <c:forEach items="${detailList}" var="detailList">
-            <tr>
-                <td> ${detailList.matId}</td>
-                    <%--<td>${detailList.matId}</td>--%>
-                <td>${detailList.vs}</td>
-                    <%--<td>${detailList.matId}</td>--%>
-                <td>${detailList.result}</td>
-                    <%--<td></td>--%>
-                <td style="color:red;">
-                        ${detailList.score}${detailList.goal}${detailList.half}${detailList.beat}${detailList.let}
-                            <%--<c:if test="${detailList.letBall !=null}">--%>
-                                <%--[${detailList.letBall}]--%>
-                            <%--</c:if>--%>
-                </td>
-                <td></td>
-            </tr>
+                <tr>
+                    <td> ${detailList.matId}</td>
+                        <%--<td>${detailList.matId}</td>--%>
+                    <td>${detailList.vs}</td>
+                        <%--<td>${detailList.matId}</td>--%>
+                    <td>${detailList.result}</td>
+                        <%--<td></td>--%>
+                    <td style="color:red;">
+                            ${detailList.beat}
+                                <%--<c:if test="${detailList.letBall !=null}">--%>
+                                    <%--[${detailList.letBall}]--%>
+                                <%--</c:if>--%>
+                    </td>
+                    <td></td>
+                </tr>
+
         </c:forEach>
         </tbody>
     </table>
