@@ -7,6 +7,7 @@ import com.youge.yogee.common.config.Global;
 import com.youge.yogee.common.persistence.Page;
 import com.youge.yogee.common.push.AppPush;
 import com.youge.yogee.common.utils.CookieUtils;
+import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.web.BaseController;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
@@ -115,9 +116,24 @@ public class ErpOrderController extends BaseController {
 
     @RequiresPermissions("erp:erpOrder:view")
     @RequestMapping(value = {"list", ""})
-    public String list(ErpOrder erpOrder, HttpServletRequest request, HttpServletResponse response, Model model) {
-        User user = UserUtils.getUser();
-        Page<ErpOrder> page = erpOrderService.find(new Page<ErpOrder>(request, response), erpOrder);
+    public String list(ErpOrder erpOrder, HttpServletRequest request, HttpServletResponse response, Model model, String beginDate, String endDate) throws ParseException {
+        //User user = UserUtils.getUser();
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        if(StringUtils.isNotEmpty(endDate)){
+            Date endDateDate = df.parse(endDate);
+            endDate = df.format(DateUtils.addDays(endDateDate, 1));
+        }
+        Page<ErpOrder> page = erpOrderService.find(new Page<ErpOrder>(request, response), erpOrder, beginDate, endDate);
+        Date today = new Date();
+        String subDate = df.format(today);
+        List<ErpOrder> list = erpOrderService.findByDate(subDate);
+        BigDecimal sum = new BigDecimal(0);
+        for (ErpOrder eo : list) {
+            sum = sum.add(eo.getTotalPrice());
+        }
+        model.addAttribute("sum", sum.setScale(2, 1).toString());
+        model.addAttribute("beginDate", beginDate);
+        model.addAttribute("endDate", endDate);
         model.addAttribute("page", page);
         return "modules/erp/erpOrderList";
     }
