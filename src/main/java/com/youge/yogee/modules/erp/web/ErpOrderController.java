@@ -33,8 +33,10 @@ import com.youge.yogee.modules.clottoreward.entity.CdLottoOrder;
 import com.youge.yogee.modules.clottoreward.service.CdLottoOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFail;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
+import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailService;
 import com.youge.yogee.modules.cthreeawards.entity.CdThreeOrder;
 import com.youge.yogee.modules.cthreeawards.service.CdThreeOrderService;
 import com.youge.yogee.modules.erp.entity.ErpBasketBallDto;
@@ -91,6 +93,8 @@ public class ErpOrderController extends BaseController {
     private CdChooseNineOrderService cdChooseNineOrderService;
     @Autowired
     private CdSuccessFailOrderService cdSuccessFailOrderService;
+    @Autowired
+    private CdSuccessFailService cdSuccessFailService;
     @Autowired
     private CdFiveOrderService cdFiveOrderService;
     @Autowired
@@ -519,6 +523,7 @@ public class ErpOrderController extends BaseController {
             CdChooseNineOrder cdChooseNineOrder = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
             List<Map<String,String>> list = new ArrayList<>();
             if (cdChooseNineOrder != null) {
+                List<CdSuccessFail> cdSuccessFailList = cdSuccessFailService.getSuccessFailByWeekDay(cdChooseNineOrder.getWeekday());
                 String detail = cdChooseNineOrder.getOrderDetail();
                 if (StringUtils.isNotEmpty(detail)) {
                     String detailStr[] = detail.split("\\|");
