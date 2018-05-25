@@ -19,87 +19,91 @@ public class LotteryUtil {
 
 
     public static BigDecimal bestWinningVerify(List<String> list, Map<String, CdFootballAwards> resultMap, String times) {
-        System.out.println(list);
-        // int index = arrayList.indexOf("element_3");
+        //System.out.println(list);
         BigDecimal countBigDecimal = new BigDecimal("0");
+        BigDecimal singleBigDecimal = new BigDecimal("0");
         for (int i = 0; i < list.size(); i++) {
+
+            BigDecimal bigDecimal = new BigDecimal("1");
             List<String> group = new ArrayList<String>(Arrays.asList(list.get(i).split("\\|")));
+
             for (int j = 0; j < group.size(); j++) {
                 //System.out.println(group.get(j));
-                BigDecimal bigDecimal = new BigDecimal("1");
+
                 String[] rt = group.get(j).split("\\+");
                 // System.out.println("场次：" + resultList.get(j));
-                for (int k = 0; k < rt.length; k++) {
-                    //System.out.println(rt[k]);
-                    // 解析0,1,2
-                    String[] info = rt[2].split("/");
-                    int index = arrayList.indexOf(rt[1]);
-                    CdFootballAwards oe = resultMap.get(rt[0]);
-                    if (index == 0) {
-                        if (Strings.isNullOrEmpty(oe.getWinning())) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                //System.out.println(rt[k]);
+                // 解析0,1,2
+                String[] info = rt[2].split("/");
+                int index = arrayList.indexOf(rt[1]);
+                CdFootballAwards oe = resultMap.get(rt[0]);
+                if (index == 0) {
+                    if (Strings.isNullOrEmpty(oe.getWinning())) {
+                        bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                    } else {
+                        if (info[0].equals(oe.getWinning())) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
-                            if (info[0].equals(oe.getWinning())) {
-                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
-                            } else {
-                                bigDecimal = new BigDecimal("0");
-                            }
+                            bigDecimal = new BigDecimal("0");
                         }
+                    }
 
-                    }
-                    if (index == 1) {
-                        if (Strings.isNullOrEmpty(oe.getSpread())) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
-                        } else {
-                            if (info[0].equals(oe.getSpread())) {
-                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
-                            } else {
-                                bigDecimal = new BigDecimal("0");
-                            }
-                        }
+                   // System.out.println("info" + bigDecimal);
 
-                    }
-                    if (index == 2) {
-                        if (Strings.isNullOrEmpty(oe.getWinGrap())) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                }
+                if (index == 1) {
+                    if (Strings.isNullOrEmpty(oe.getSpread())) {
+                        bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                    } else {
+                        if (info[0].equals(oe.getSpread())) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
-                            if (info[0].equals(oe.getWinGrap())) {
-                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
-                            } else {
-                                bigDecimal = new BigDecimal("0");
-                            }
+                            bigDecimal = new BigDecimal("0");
                         }
                     }
-                    if (index == 3) {
-                        if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
-                        } else {
-                            if (info[0].equals(ConvertCount(oe.getHs(), oe.getVs()))) {
-                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
-                            } else {
-                                bigDecimal = new BigDecimal("0");
-                            }
-                        }
 
-                    }
-                    if (index == 4) {
-                        if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                }
+                if (index == 2) {
+                    if (Strings.isNullOrEmpty(oe.getWinGrap())) {
+                        bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                    } else {
+                        if (info[0].equals(oe.getWinGrap())) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
-                            if (info[0].equals(ConvertCompared(oe.getHs(), oe.getVs()))) {
-                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
-                            } else {
-                                bigDecimal = new BigDecimal("0");
-                            }
+                            bigDecimal = new BigDecimal("0");
                         }
                     }
                 }
-                BigDecimal singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
-                countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(times)).setScale(2, RoundingMode.HALF_DOWN));
-            }
+                if (index == 3) {
+                    if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
+                        bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                    } else {
+                        if (info[0].equals(ConvertCount(oe.getHs(), oe.getVs()))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                        } else {
+                            bigDecimal = new BigDecimal("0");
+                        }
+                    }
 
+                }
+                if (index == 4) {
+                    if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
+                        bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                    } else {
+                        if (info[0].equals(ConvertCompared(oe.getHs(), oe.getVs()))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                        } else {
+                            bigDecimal = new BigDecimal("0");
+                        }
+                    }
+                }
+            }
+            singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
         }
-        // System.out.println("中奖总金额：" + countBigDecimal);
+       // System.out.println("单注：" + singleBigDecimal);
+        //System.out.println("倍数：" + times);
+        countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(times)).setScale(2, RoundingMode.HALF_DOWN));
+       // System.out.println("中奖总金额：" + countBigDecimal);
         return countBigDecimal;
     }
 
