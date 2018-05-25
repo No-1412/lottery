@@ -545,7 +545,7 @@ public class LotteryUtil {
                 String[] info = rt[2].split("/");
                 int index = arrayBasketList.indexOf(rt[1]);
                 CdBasketballAwards oe = resultMap.get(rt[0]);
-                if (info[2].equals("0")) {
+                if (rt[1].equals("0")) {
                     if (Strings.isNullOrEmpty(oe.getWinGrap())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
@@ -556,7 +556,7 @@ public class LotteryUtil {
                         }
                     }
                 }
-                if (info[2].equals("1")) {
+                if (rt[1].equals("1")) {
                     System.out.println(oe.getMatchId());
                     if (Strings.isNullOrEmpty(oe.getWinGrap())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
@@ -569,7 +569,7 @@ public class LotteryUtil {
                     }
 
                 }
-                if (info[2].equals("2")) {
+                if (rt[1].equals("2")) {
                     if (Strings.isNullOrEmpty(oe.getWinning())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
@@ -580,11 +580,11 @@ public class LotteryUtil {
                         }
                     }
                 }
-                if (info[2].equals("3")) {
+                if (rt[1].equals("3")) {
                     if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[0].equals(basketBalLConvertString(oe.getZclose(), info[2]))) {
+                        if (info[0].equals(basketBallBestConvertString(oe.getZclose()))) {
                             bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
@@ -592,7 +592,7 @@ public class LotteryUtil {
                     }
 
                 }
-                if (info[2].equals("4")) {
+                if (rt[1].equals("4")) {
                     if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
@@ -737,12 +737,21 @@ public class LotteryUtil {
     }
 
 
-    private static final String MAIN_WIN = "主胜", CUSTOMER_WIN = "客胜", LET_MAIN_WIN = "让主胜", MAIN_LOSE = "主负", LET_MAIN_LOSE = "让主负", WIN = "胜", LOSE = "负", FLAT = "平";
+    private static final String BIG_FRACTION = "大分", SMALL_FRACTION = "小分", MAIN_WIN = "主胜", CUSTOMER_WIN = "客胜", LET_MAIN_WIN = "让主胜", MAIN_LOSE = "主负", LET_MAIN_LOSE = "让主负", WIN = "胜", LOSE = "负", FLAT = "平";
 
     private static final String INT_ONE = "1", INT_ZERO = "0";
 
     private static String basketBalLConvert(String s1) {
         return s1.replaceAll(MAIN_WIN, "").replaceAll(CUSTOMER_WIN, "");
+    }
+
+
+    private static String basketBallBestConvertString(String s1) {
+        if (s1.indexOf(">") >= 0) {
+            return BIG_FRACTION;
+        } else {
+            return SMALL_FRACTION;
+        }
     }
 
     private static String basketBalLConvertString(String s1, String type) {
