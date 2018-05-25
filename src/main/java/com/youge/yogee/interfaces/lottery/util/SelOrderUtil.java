@@ -1030,10 +1030,16 @@ public class SelOrderUtil {
             String realBeat = "";
             String trueBeat = beatMap.get("result");
             if (StringUtils.isNotEmpty(trueBeat)) {
-                String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
-                String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
-                String finalBeat3 = finalBeat2.replaceAll("0/", "客胜/");
-                realBeat = finalBeat3;
+                String[] beatStrs = trueBeat.split("\\,");
+                //TODO 2018-05-25 yhw  针对单关暂时这么处理，复杂数据肯定有问题
+                if(trueBeat.startsWith("3/")){
+                    realBeat = trueBeat.replaceFirst("3/", "主胜/");
+                }else if(trueBeat.startsWith("1/")){
+                    realBeat = trueBeat.replaceFirst("1/", "平/");
+                }else if(trueBeat.startsWith("0/")){
+                    realBeat = trueBeat.replaceFirst("0/", "客胜/");
+                }
+
             }
 
             orderMap.put("beat", realBeat); //胜负
@@ -1045,10 +1051,18 @@ public class SelOrderUtil {
             String realLet = "";
             String trueLet = letMap.get("result");
             if (StringUtils.isNotEmpty(trueLet)) {
-                String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
-                String finalLet2 = finalLet1.replaceAll("1/", "平/");
-                String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
-                realLet = finalLet3;
+                /*String finalLet1 = trueLet.replaceFirst("3/", "让主胜/");
+                String finalLet2 = finalLet1.replaceFirst("1/", "平/");
+                String finalLet3 = finalLet2.replaceFirst("0/", "让客胜/");
+                realLet = finalLet3;*/
+                if(trueBeat.startsWith("3/")){
+                    realLet = trueLet.replaceFirst("3/", "主胜/");
+                }else if(trueBeat.startsWith("1/")){
+                    realLet = trueLet.replaceFirst("1/", "平/");
+                }else if(trueBeat.startsWith("0/")){
+                    realLet = trueLet.replaceFirst("0/", "客胜/");
+                }
+
             }
             orderMap.put("letBall", letMap.get("letBall"));
             orderMap.put("let", realLet);
