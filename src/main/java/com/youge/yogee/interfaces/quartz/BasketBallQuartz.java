@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.quartz;
 
+import com.google.common.base.Strings;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.utils.lottery.LotteryUtil;
 import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
@@ -341,26 +342,40 @@ public class BasketBallQuartz {
         }
     }
 
-    //    @Scheduled(cron = "*/5 * * * * ?")
-    @Scheduled(cron = "0/10 * * * * ?")//10s
+    //        @Scheduled(cron = "*/5 * * * * ?")
+    @Scheduled(cron = "0/30 * * * * ?")//10s
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballSingleOrder() {
-//        System.out.println("篮球单关开奖");
+        System.out.println("篮球单关开奖");
 
         List<CdBasketballSingleOrder> cdBasketballSingleOrderList = cdBasketballSingleOrderService.findStatus();
 
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
-
+        System.out.println("比赛完的场次:" + awardMatchIdList);
         for (CdBasketballSingleOrder cdBasketballSingleOrder : cdBasketballSingleOrderList) {
 
-            //获取订单中押的全部场次
-            String matchIds = cdBasketballSingleOrder.getMatchIds();
-            Set<String> matchIdList = new HashSet<>(Arrays.asList(matchIds.split(",")));
-            //判断订单所有赛事是否都已经比完
-            if (awardMatchIdList.containsAll(matchIdList)) {
+            List<String> cdList = new ArrayList<String>();
+            List<String> playTypeList = new ArrayList<String>();
+            if (Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostWin())) {
+                cdList.add(cdBasketballSingleOrder.getHostFail());
+                playTypeList.add("1");
+            } else {
+                cdList.add(cdBasketballSingleOrder.getHostWin());
+                playTypeList.add("0");
+            }
+            List<String> index = LotteryUtil.querySingleEvent(cdList);
+            String[] strings = new String[index.size()];
+            String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
+            System.out.println("index:" + index);
+
+            //判断比赛是否全部完成
+            boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
+            System.out.println(containsAll);
+            if (containsAll) {
+                //  **************************后加的-------------获取押注比赛结果并保存****************
                 //  **********************后加的-------------获取押注比赛结果并保存****************************
                 String manyMatchIds = cdBasketballSingleOrder.getMatchIds();
                 String[] danMatchIdArray = manyMatchIds.split(",");
@@ -372,44 +387,23 @@ public class BasketBallQuartz {
                 String result = getResultStr(list);
                 cdBasketballSingleOrder.setResult(result);
                 cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
-                //******************************************************************************************
 
-                //***********************************判断押中场次************************************************
-                //判断主胜
-                double hostWinOdds = 0;
-                String hostWin = cdBasketballSingleOrder.getHostWin();
-                if (StringUtils.isNotEmpty(hostWin)) {
-                    hostWinOdds = judgeBasketballSingle(hostWin, "hostWin");
+
+                Map<String, CdBasketballAwards> resultMap = new HashMap<String, CdBasketballAwards>();
+                for (int i = 0; i < index.size(); i++) {
+                    CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(index.get(i));
+                    resultMap.put(index.get(i), cdBasketballAwards);
                 }
 
-
-                //判断主负
-                double hostFailOdds = 0;
-                String hostFail = cdBasketballSingleOrder.getHostFail();
-                if (StringUtils.isNotEmpty(hostFail)) {
-                    hostFailOdds = judgeBasketballSingle(hostFail, "hostFail");
-                }
+                BigDecimal award = LotteryUtil.basketBallSingleWinningVerify(cdList, resultMap, playTypeList);
 
 
-                //***************************************判断结束*******************************************************
-
-
-                double oddsSum = hostWinOdds + hostFailOdds;
-                if (oddsSum > 0) {
-                    Double award = 2 * oddsSum;
-                    cdBasketballSingleOrder.setAward(new BigDecimal(award).setScale(2, 2).toString());
+                if (award.compareTo(BigDecimal.ZERO) > 0) {
+                    cdBasketballSingleOrder.setAward(award.toString());
                     cdBasketballSingleOrder.setStatus("4");
                     cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
                     //改变订单总表状态 step1
                     WinPriceUtil.changeTotalOrder(cdBasketballSingleOrder.getOrderNum(), award.toString());
-
-                    //------------------------原开奖逻辑----180517弃用-----------------------------------------
-                    //计算跟单佣金 step2
-                    //保存中奖纪录 step3
-                    //更新用户余额 step4
-                    //推送         step5
-                    //-------------------------------------------------------------------------------
-
                 } else {
                     cdBasketballSingleOrder.setStatus("5");
                     cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
@@ -422,6 +416,73 @@ public class BasketBallQuartz {
                     }
                 }
             }
+//            //获取订单中押的全部场次
+//            String matchIds = cdBasketballSingleOrder.getMatchIds();
+//            Set<String> matchIdList = new HashSet<>(Arrays.asList(matchIds.split(",")));
+//            //判断订单所有赛事是否都已经比完
+//            if (awardMatchIdList.containsAll(matchIdList)) {
+//
+//                //  **********************后加的-------------获取押注比赛结果并保存****************************
+//                String manyMatchIds = cdBasketballSingleOrder.getMatchIds();
+//                String[] danMatchIdArray = manyMatchIds.split(",");
+//                List<String> list = new ArrayList<>();
+//                for (String str : danMatchIdArray) {
+//                    //String matchId = str.split("\\+")[1];
+//                    list.add(str);
+//                }
+//                String result = getResultStr(list);
+//                cdBasketballSingleOrder.setResult(result);
+//                cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+//                //******************************************************************************************
+//
+//                //***********************************判断押中场次************************************************
+//                //判断主胜
+//                double hostWinOdds = 0;
+//                String hostWin = cdBasketballSingleOrder.getHostWin();
+//                if (StringUtils.isNotEmpty(hostWin)) {
+//                    hostWinOdds = judgeBasketballSingle(hostWin, "hostWin");
+//                }
+//
+//
+//                //判断主负
+//                double hostFailOdds = 0;
+//                String hostFail = cdBasketballSingleOrder.getHostFail();
+//                if (StringUtils.isNotEmpty(hostFail)) {
+//                    hostFailOdds = judgeBasketballSingle(hostFail, "hostFail");
+//                }
+//
+//
+//                //***************************************判断结束*******************************************************
+//
+//
+//                double oddsSum = hostWinOdds + hostFailOdds;
+//                if (oddsSum > 0) {
+//                    Double award = 2 * oddsSum;
+//                    cdBasketballSingleOrder.setAward(new BigDecimal(award).setScale(2, 2).toString());
+//                    cdBasketballSingleOrder.setStatus("4");
+//                    cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+//                    //改变订单总表状态 step1
+//                    WinPriceUtil.changeTotalOrder(cdBasketballSingleOrder.getOrderNum(), award.toString());
+//
+//                    //------------------------原开奖逻辑----180517弃用-----------------------------------------
+//                    //计算跟单佣金 step2
+//                    //保存中奖纪录 step3
+//                    //更新用户余额 step4
+//                    //推送         step5
+//                    //-------------------------------------------------------------------------------
+//
+//                } else {
+//                    cdBasketballSingleOrder.setStatus("5");
+//                    cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
+//                    //改变订单总表状态
+//                    CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballSingleOrder.getOrderNum());
+//                    if (co != null) {
+//                        co.setWinPrice("0");//奖金
+//                        co.setStatus("2");//已开奖
+//                        cdOrderService.save(co);
+//                    }
+//                }
+//            }
         }
     }
 

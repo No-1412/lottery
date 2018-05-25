@@ -52,7 +52,7 @@ public class LotteryUtil {
                         }
                     }
 
-                   // System.out.println("info" + bigDecimal);
+                    // System.out.println("info" + bigDecimal);
 
                 }
                 if (index == 1) {
@@ -104,10 +104,10 @@ public class LotteryUtil {
             }
             singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
         }
-       // System.out.println("单注：" + singleBigDecimal);
+        // System.out.println("单注：" + singleBigDecimal);
         //System.out.println("倍数：" + times);
         countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(times)).setScale(2, RoundingMode.HALF_DOWN));
-       // System.out.println("中奖总金额：" + countBigDecimal);
+        // System.out.println("中奖总金额：" + countBigDecimal);
         return countBigDecimal;
     }
 
@@ -321,7 +321,6 @@ public class LotteryUtil {
      * @param followNum
      * @param times
      * @return
-     *
      */
     public static BigDecimal basketBallWinningVerify(List<String> list, Map<String, CdBasketballAwards> resultMap, String followNum, String times) {
         List<String> index = new ArrayList<String>();
@@ -550,8 +549,8 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getWinGrap())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[3].equals(basketBalLConvert(oe.getWinGrap()))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                        if (info[0].equals(basketBalLConvert(oe.getWinGrap()))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
                         }
@@ -562,8 +561,8 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getWinGrap())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[3].equals(basketBalLConvert(oe.getWinGrap()))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                        if (info[0].equals(basketBalLConvert(oe.getWinGrap()))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
                         }
@@ -574,8 +573,8 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getWinning())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[3].equals(basketBalLConvertString(oe.getWinning(), info[2]))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                        if (info[0].equals(basketBalLConvertString(oe.getWinning(), info[2]))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
                         }
@@ -585,8 +584,8 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[3].equals(basketBalLConvertString(oe.getZclose(), info[2]))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                        if (info[0].equals(basketBalLConvertString(oe.getZclose(), info[2]))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
                         }
@@ -597,8 +596,8 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[3].equals(basketBalLConvertString(oe.getSpread(), info[2]))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                        if (info[0].equals(basketBalLConvertString(oe.getSpread(), info[2]))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
                         }
@@ -612,6 +611,92 @@ public class LotteryUtil {
         countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(times)).setScale(2, RoundingMode.HALF_DOWN));
         // System.out.println("中奖总金额：" + countBigDecimal);
         return countBigDecimal;
+    }
+
+
+    /**
+     * 篮球单关开奖工具
+     *
+     * @param list
+     * @param resultMap
+     * @return
+     */
+    public static BigDecimal basketBallSingleWinningVerify(List<String> list, Map<String, CdBasketballAwards> resultMap, List<String> playType) {
+        // System.out.println(list);
+        BigDecimal countBigDecimal = new BigDecimal("0");
+
+        for (int i = 0; i < list.size(); i++) {
+            List<String> group = new ArrayList<String>(Arrays.asList(list.get(i).split("\\|")));
+            BigDecimal singleBigDecimal = new BigDecimal("0");
+            for (int j = 0; j < group.size(); j++) {
+                String[] rt = group.get(j).split("\\+");
+                CdBasketballAwards oe = resultMap.get(rt[0]);
+                String[] play = rt[2].split(",");
+                for (int k = 0; k < play.length; k++) {
+                    BigDecimal bigDecimal = new BigDecimal("1");
+                    String[] info = play[k].split("/");
+                    if ("0".equals(playType.get(i))) {
+                        if (Strings.isNullOrEmpty(oe.getWinGrap())) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                        } else {
+                            if (info[0].equals(basketBalLConvert(oe.getWinGrap()))) {
+                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                            } else {
+                                bigDecimal = new BigDecimal("0");
+                            }
+                        }
+
+                    }
+                    if ("1".equals(playType.get(i))) {
+                        System.out.println(oe.getMatchId());
+                        if (Strings.isNullOrEmpty(oe.getWinGrap())) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
+                        } else {
+                            System.out.println(info[0].equals(basketBalLConvert(oe.getWinGrap())));
+                            if (info[0].equals(basketBalLConvert(oe.getWinGrap()))) {
+                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                            } else {
+                                bigDecimal = new BigDecimal("0");
+                            }
+                        }
+                    }
+                    singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
+                    System.out.println("单注：" + singleBigDecimal);
+                    System.out.println("倍数：" + info[2]);
+                    countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(info[2])).setScale(2, RoundingMode.HALF_DOWN));
+                }
+
+            }
+
+        }
+
+        System.out.println("中奖总金额：" + countBigDecimal);
+        return countBigDecimal;
+    }
+
+    public static List<String> querySingleEvent(List<String> event) {
+        List<String> index = new ArrayList<String>();
+        //存储购买比赛信息
+        JSONObject sJson = new JSONObject();
+        for (int i = 0; i < event.size(); i++) {
+            String rString = event.get(i);
+            if (!Strings.isNullOrEmpty(rString)) {
+                //解析玩法分组0-4代表四种玩法
+                String[] obj = rString.split("\\|");
+                for (int j = 0; j < obj.length; j++) {
+                    //解析比赛信息
+                    //noinspection AlibabaLowerCamelCaseVariableNaming
+                    String[] info_arr = obj[j].split("\\+");
+                    // 判断如果存储比赛信息不存在则加入比赛信息
+                    if (!sJson.containsKey(info_arr[0])) {
+                        index.add(info_arr[0]);
+                        //System.out.println(info_arr[1]);
+                        sJson.put(info_arr[0], new JSONArray());
+                    }
+                }
+            }
+        }
+        return index;
     }
 
     public static List<String> queryEvent(List<String> event) {
