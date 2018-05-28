@@ -446,6 +446,8 @@ public class LotteryUtil {
                             String[] info = rt[k].split("_");
                             CdBasketballAwards oe = resultMap.get(info[0]);
 
+                            System.out.println("玩法："+info[2]);
+
                             // * `host_win` mediumtext COMMENT '主胜 胆0/1+场次+主队vs客队+押注结果/赔率|',0主胜
                             // * `host_fail` mediumtext COMMENT '主负 胆0/1+场次+主队vs客队+押注结果/赔率|',1主负
                             // * `beat` mediumtext COMMENT '胜负', 2
@@ -756,10 +758,10 @@ public class LotteryUtil {
 
     private static String basketBalLConvertString(String s1, String type) {
         if ("2".equals(type)) {
-            if (s1.equals(INT_ONE)) {
-                return MAIN_WIN;
+            if (s1.equals(MAIN_WIN)) {
+                return INT_ONE;
             } else {
-                return MAIN_LOSE;
+                return INT_ZERO;
             }
         }
         if ("3".equals(type)) {
@@ -770,10 +772,10 @@ public class LotteryUtil {
             }
         }
         if ("4".equals(type)) {
-            if (s1.equals(INT_ONE)) {
-                return LET_MAIN_WIN;
+            if (s1.equals(LET_MAIN_WIN)) {
+                return INT_ONE;
             } else {
-                return LET_MAIN_LOSE;
+                return INT_ZERO;
             }
         }
         return "";
