@@ -286,6 +286,7 @@ public class OtherQuartz {
         if (list.size() > 0) {
             for (CdLotteryUser c : list) {
                 c.setCatchTimes("3");
+                cdLotteryUserService.save(c);
             }
         }
     }
