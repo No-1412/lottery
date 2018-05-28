@@ -20,7 +20,7 @@ import java.util.List;
  * Created by ab on 2018/4/3.
  */
 public class TT {
-    /*public static void main(String arg[]){
+   /* public static void main(String arg[]){
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
         Date date = new Date();
@@ -31,7 +31,7 @@ public class TT {
         String str = sdf.format(date);
         int yesterday = Integer.valueOf(str);
         System.out.println(yesterday);
-        *//*
+
         //押对的彩票
         List<String> winList = new ArrayList<String>();
         //押对的彩票(用于带胆的彩票)
@@ -71,12 +71,12 @@ public class TT {
                     }
                 }
             }
-        }*//*
+        }
     }*/
 
     public static void main(String ars[]){
         TT tt =new TT();
-        tt.drawImage("E:\\2018\\杂项目\\dayinji\\21~[[X7@RRKGZ3T$O`12UI0.png",1);
+        tt.drawImage("E:\\2018\\杂项目\\dayinji\\辅助票样板图片\\辅助票样板图片2.png",1);
     }
 
 

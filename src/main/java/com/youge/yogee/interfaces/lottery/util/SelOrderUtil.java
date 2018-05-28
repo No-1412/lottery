@@ -584,7 +584,12 @@ public class SelOrderUtil {
             if (StringUtils.isNotEmpty(matchResult)) {
                 String[] mathchResultArray = matchResult.split(",");
                 for (String rs : mathchResultArray) {
-                    resultList.add(rs);
+                    //resultList.add(rs);
+                    //2018.5.28 董宏 修改篮球订单 比分相反bug
+                    //通过 : 分割 比分 前后值
+                    String[] rsArray = rs.split(":");
+                    String newRs = rsArray[1]+":"+rsArray[0];
+                    resultList.add(newRs);
                 }
             }
 
@@ -665,13 +670,22 @@ public class SelOrderUtil {
 
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
-            if (StringUtils.isNotEmpty(matchResult)) {
+            /*if (StringUtils.isNotEmpty(matchResult)) {
                 String[] mathchResultArray = matchResult.split(",");
                 for (String rs : mathchResultArray) {
                     resultList.add(rs);
                 }
+            }*/
+            if (StringUtils.isNotEmpty(matchResult)) {
+                String[] mathchResultArray = matchResult.split(",");
+                for (String rs : mathchResultArray) {
+                    //2018.5.28 董宏 修改篮球订单 比分相反bug
+                    //通过 : 分割 比分 前后值
+                    String[] rsArray = rs.split(":");
+                    String newRs = rsArray[1]+":"+rsArray[0];
+                    resultList.add(newRs);
+                }
             }
-
             //           ------------------------又一次贼他妈精妙-------------------------
             //跟单订单 未开赛直接跳出循环
             if ("2".equals(cbf.getType())) {
