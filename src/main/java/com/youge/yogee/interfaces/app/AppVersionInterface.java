@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-@RequestMapping("${publicPath}")
+@RequestMapping({"${frontPath}", "${publicPath}"})
 public class AppVersionInterface {
 
 
