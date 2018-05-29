@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.lottery.index;
 
+import com.google.common.base.Strings;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
@@ -107,6 +108,10 @@ public class MagicOrderInterface {
             logger.error("charges为空");
             return HttpResultUtil.errorJson("charges为空");
         }
+
+        //佣金百分比
+        String sp = (String) jsonData.get("sp");
+        String remarks = (String) jsonData.get("remarks");
 
         String uName = "";//用户名
         String uImg = "";//头像
@@ -286,7 +291,13 @@ public class MagicOrderInterface {
             }
         }
         //拿到倍率
-        BigDecimal times = cdOrderFollowTimesService.get("1").getTimes();
+        BigDecimal times = null;
+
+        if (Strings.isNullOrEmpty(sp)) {
+            times = cdOrderFollowTimesService.get("1").getTimes();
+        } else {
+            times = new BigDecimal(sp);
+        }
         CdMagicOrder cmo = new CdMagicOrder();
         cmo.setOrderNum(orderNum);//订单号
         cmo.setCharges(charges.replaceAll("%", ""));//佣金百分比
@@ -299,6 +310,11 @@ public class MagicOrderInterface {
         cmo.setShutDownTime(shutDownTime);//截止时间
         cmo.setTimes(times.toString());//倍数
         cmo.setStartPrice(startPrice);//起投
+
+        if (!Strings.isNullOrEmpty(remarks)) {
+            cmo.setRemarks(remarks);
+        }
+
         //更改订单总表
         CdOrder co = cdOrderService.getOrderByOrderNum(orderNum);
         if (co != null) {
