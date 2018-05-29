@@ -107,7 +107,15 @@
             <td colspan="6">选号方案</td>
         </tr>
         <tr>
-            <td colspan="6">选择场次：${fn:length(detailList)}场,&nbsp;过关方案：${newFollowNums}</td>
+            <td colspan="6" style="font-weight: bold;font-size: xx-large">
+                选择场次：${fn:length(detailList)}场,&nbsp;
+                过关方案：
+                <c:choose>
+                    <c:when test="${fn:contains(newFollowNums,',')}"><font color="red">${newFollowNums}</font>
+                    </c:when>
+                    <c:otherwise>${newFollowNums}
+                    </c:otherwise>
+                </c:choose></td>
         </tr>
         <tr>
             <th>场次</th>
