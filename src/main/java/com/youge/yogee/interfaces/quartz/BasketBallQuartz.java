@@ -358,14 +358,19 @@ public class BasketBallQuartz {
 
             List<String> cdList = new ArrayList<String>();
             List<String> playTypeList = new ArrayList<String>();
-            if (Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostWin())) {
-                cdList.add(cdBasketballSingleOrder.getHostFail());
-                playTypeList.add("1");
-            } else {
+
+            if (!Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostWin())) {
                 cdList.add(cdBasketballSingleOrder.getHostWin());
                 playTypeList.add("0");
             }
+            if (!Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostFail())){
+                cdList.add(cdBasketballSingleOrder.getHostFail());
+                playTypeList.add("1");
+
+            }
             List<String> index = LotteryUtil.querySingleEvent(cdList);
+
+            System.out.println(index);
             String[] strings = new String[index.size()];
             String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
