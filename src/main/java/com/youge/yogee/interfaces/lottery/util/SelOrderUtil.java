@@ -885,7 +885,13 @@ public class SelOrderUtil {
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
-            String trueLet = letMap.get("result");
+            //
+            //让球胜负
+            Map<String, String> sizeMap = getFollowMap(match, sizeArray);
+            if (sizeMap.size() > 0) {
+                vs = sizeMap.get("vs");
+            }
+            String trueLet = sizeMap.get("result");
             String realLet = "";
             if (StringUtils.isNotEmpty(trueLet)) {
                 String finalLet1 = trueLet.replaceAll("1/", "让主胜/");
