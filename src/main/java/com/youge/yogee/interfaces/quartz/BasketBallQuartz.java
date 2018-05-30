@@ -83,9 +83,8 @@ public class BasketBallQuartz {
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
-//    @Scheduled(cron = "0 0 * * * ?")//1小时
-
-    @Scheduled(cron = "*/30 * * * * ?")
+    @Scheduled(cron = "0 0/30 * * * ?")//2小时
+   // @Scheduled(cron = "*/30 * * * * ?")
     //@Scheduled(cron = "0/10 * * * * ?")//10s
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void basketBallFollowOrder() {
@@ -157,7 +156,7 @@ public class BasketBallQuartz {
         }
     }
 
-    @Scheduled(cron = "0 0 */1 * * ?")//2小时
+    @Scheduled(cron = "0 0/30 * * * ?")//2小时
     public void basketBallBestFollowOrder() {
         System.out.println("篮球优化串关开奖");
         List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusAndType("2");
@@ -343,7 +342,7 @@ public class BasketBallQuartz {
     }
 
     //        @Scheduled(cron = "*/5 * * * * ?")
-    @Scheduled(cron = "0/30 * * * * ?")//10s
+    @Scheduled(cron = "0 0/10 * * * ?")//2小时
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballSingleOrder() {
         System.out.println("篮球单关开奖");
@@ -358,14 +357,19 @@ public class BasketBallQuartz {
 
             List<String> cdList = new ArrayList<String>();
             List<String> playTypeList = new ArrayList<String>();
-            if (Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostWin())) {
-                cdList.add(cdBasketballSingleOrder.getHostFail());
-                playTypeList.add("1");
-            } else {
+
+            if (!Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostWin())) {
                 cdList.add(cdBasketballSingleOrder.getHostWin());
                 playTypeList.add("0");
             }
+            if (!Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostFail())){
+                cdList.add(cdBasketballSingleOrder.getHostFail());
+                playTypeList.add("1");
+
+            }
             List<String> index = LotteryUtil.querySingleEvent(cdList);
+
+            System.out.println(index);
             String[] strings = new String[index.size()];
             String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
