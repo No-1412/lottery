@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -377,6 +378,7 @@ public class MagicOrderInterface {
             cMap.put("times", c.getTimes()); //保字
             cMap.put("startPrice", c.getStartPrice());//起投
             cMap.put("orderNum", c.getOrderNum());//订单号
+            cMap.put("remarks", c.getRemarks());//订单号
             cList.add(cMap);
         }
         map.put("list", cList);
@@ -425,25 +427,58 @@ public class MagicOrderInterface {
         cMap.put("times", cmo.getTimes()); //保字
         cMap.put("limit", cmo.getPrice()); //限购
         cMap.put("startPrice", cmo.getStartPrice());//起投
-        map.put("cmo", cMap);
+        cMap.put("remarks", cmo.getRemarks());//订单号
+        String orderNum = cmo.getOrderNum();
+        //1足球单关 2足球串关 3篮球单关 4篮球串关
+        String type = cmo.getType();
 
         List<CdMagicFollowOrder> list = cdMagicFollowOrderService.findByMid(cmo.getId());
         List<Map<String, Object>> cList = new ArrayList();
+        BigDecimal totalBigDecimal = new BigDecimal("0");
+        BigDecimal csBigDecimal = new BigDecimal(cmo.getCharges().replaceAll("%", "")).divide(new BigDecimal("100")).setScale(2, RoundingMode.HALF_DOWN);
+        System.out.println(cmo.getCharges().replaceAll("%", "") + "====" + csBigDecimal.toString());
         for (CdMagicFollowOrder cmfo : list) {
             Map<String, Object> aMap = new HashMap<>();
             aMap.put("uName", cmfo.getuName()); //用户名
             aMap.put("uImg", cmfo.getuImg()); //用户头像
             aMap.put("price", cmfo.getPrice()); //跟买金额
             aMap.put("createDate", cmfo.getCreateDate()); //时间
+
+            String oNum = cmfo.getOrderNum();
+
+            String award = "0";
+            if ("1".equals(type)) {
+                CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(oNum);
+                award = cfs.getAward();
+            } else if ("2".equals(type)) {
+                CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(oNum);
+                award = cff.getAward();
+            } else if ("3".equals(type)) {
+                CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(oNum);
+                award = cbs.getAward();
+            } else {
+                CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(oNum);
+                award = cbf.getAward();
+            }
+
+            aMap.put("award", new BigDecimal(award).setScale(2,RoundingMode.HALF_DOWN).toString());
+
+            BigDecimal bigDecimal = new BigDecimal(award);
+            BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN);
+            aMap.put("commission", bl.toString());
+            totalBigDecimal = totalBigDecimal.add(bl);
             cList.add(aMap);
         }
+
+        cMap.put("totalCharges", totalBigDecimal.setScale(2,RoundingMode.HALF_DOWN).toString());
+        map.put("cmo", cMap);
+
         Date day = new Date();
         String shutDownTime = cmo.getShutDownTime();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date shutTime = df.parse(shutDownTime);
-        String orderNum = cmo.getOrderNum();
-        //1足球单关 2足球串关 3篮球单关 4篮球串关
-        String type = cmo.getType();
+
+
         //订单详情
 
         List orderDetail = new ArrayList();
