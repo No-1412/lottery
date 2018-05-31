@@ -98,55 +98,61 @@ public class AwardsWallInterface {
     @ResponseBody
     public String awardsWallDetail(HttpServletRequest request) throws ParseException {
         logger.info("大奖墙详情--------------Start-----");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        Map<String, Object> map = new HashMap();
-        //orderNum
-        String wid = (String) jsonData.get("wid");
-        if (StringUtils.isEmpty(wid)) {
-            logger.error("wid为空！");
-            return HttpResultUtil.errorJson("wid为空!");
-        }
-        //1大奖墙详情  2我的订单详情
-        String type = (String) jsonData.get("type");
-        if (StringUtils.isEmpty(type)) {
-            logger.error("type为空！");
-            return HttpResultUtil.errorJson("type为空!");
-        }
-        String orderNum = "";
-        if ("1".equals(type)) {
-            CdOrderWinners cow = cdOrderWinnersService.get(wid);
-            if (cow == null) {
-                return HttpResultUtil.errorJson("信息错误!");
+        try {
+            Map jsonData = HttpServletRequestUtils.readJsonData(request);
+            Map<String, Object> map = new HashMap();
+            //orderNum
+            String wid = (String) jsonData.get("wid");
+            if (StringUtils.isEmpty(wid)) {
+                logger.error("wid为空！");
+                return HttpResultUtil.errorJson("wid为空!");
             }
-            CdLotteryUser clu = cdLotteryUserService.get(cow.getUid());
-            map.put("name", clu.getName());
-            map.put("img", clu.getImg());
-            BigDecimal winPrice = new BigDecimal(cow.getWinPrice());
-
-            map.put("winPrice", winPrice.setScale(2, 2).toString());
-            map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
-            orderNum = cow.getWinOrderNum();
-        } else {
-            CdOrder co = cdOrderService.getOrderByOrderNum(wid);
-            if (co == null) {
-                return HttpResultUtil.errorJson("信息错误!");
+            //1大奖墙详情  2我的订单详情
+            String type = (String) jsonData.get("type");
+            if (StringUtils.isEmpty(type)) {
+                logger.error("type为空！");
+                return HttpResultUtil.errorJson("type为空!");
             }
-            CdLotteryUser clu = cdLotteryUserService.get(co.getUserId());
-            map.put("name", clu.getName());
-            map.put("img", clu.getImg());
-            map.put("winPrice", co.getWinPrice());
-            map.put("type", co.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
-            map.put("startTime", co.getCreateDate());//发起时间
-            map.put("orderTime", co.getOutTime());//约单时间
-            orderNum = co.getNumber();
-            map.put("orderNum", orderNum);//订单号
-            map.put("price", co.getTotalPrice());//价格
-            map.put("status", co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
+            String orderNum = "";
+            if ("1".equals(type)) {
+                CdOrderWinners cow = cdOrderWinnersService.get(wid);
+                if (cow == null) {
+                    return HttpResultUtil.errorJson("信息错误!");
+                }
+                CdLotteryUser clu = cdLotteryUserService.get(cow.getUid());
+                map.put("name", clu.getName());
+                map.put("img", clu.getImg());
+                BigDecimal winPrice = new BigDecimal(cow.getWinPrice());
+
+                map.put("winPrice", winPrice.setScale(2, 2).toString());
+                map.put("type", cow.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
+                orderNum = cow.getWinOrderNum();
+            } else {
+                CdOrder co = cdOrderService.getOrderByOrderNum(wid);
+                if (co == null) {
+                    return HttpResultUtil.errorJson("信息错误!");
+                }
+                CdLotteryUser clu = cdLotteryUserService.get(co.getUserId());
+                map.put("name", clu.getName());
+                map.put("img", clu.getImg());
+                map.put("winPrice", co.getWinPrice());
+                map.put("type", co.getType());//1足球单关 2足球串关 3篮球单关 4篮球串关 5任选九 6胜负彩 7排列三 8排列五 9大乐透
+                map.put("startTime", co.getCreateDate());//发起时间
+                map.put("orderTime", co.getOutTime());//约单时间
+                orderNum = co.getNumber();
+                map.put("orderNum", orderNum);//订单号
+                map.put("price", co.getTotalPrice());//价格
+                map.put("status", co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
+            }
+
+            map = SelOrderUtil.getOrderDetailMap(orderNum, map);
+            logger.info("大奖墙列表接口--------------End--------");
+            return HttpResultUtil.successJson(map);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            return HttpResultUtil.errorJson("网络不稳定请稍后重试!");
         }
 
-        map = SelOrderUtil.getOrderDetailMap(orderNum, map);
-        logger.info("大奖墙列表接口--------------End--------");
-        return HttpResultUtil.successJson(map);
     }
 
 

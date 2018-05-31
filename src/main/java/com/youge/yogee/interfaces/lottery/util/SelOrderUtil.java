@@ -11,6 +11,8 @@ import com.youge.yogee.modules.cchoosenine.entity.CdChooseNineOrder;
 import com.youge.yogee.modules.cchoosenine.service.CdChooseNineOrderService;
 import com.youge.yogee.modules.cfiveawards.entity.CdFiveOrder;
 import com.youge.yogee.modules.cfiveawards.service.CdFiveOrderService;
+import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
+import com.youge.yogee.modules.cfootballawards.service.CdFootballAwardsService;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballFollowOrder;
 import com.youge.yogee.modules.cfootballorder.entity.CdFootballSingleOrder;
 import com.youge.yogee.modules.cfootballorder.service.CdFootballFollowOrderService;
@@ -29,7 +31,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+
 public class SelOrderUtil {
+
+
 
     private static CdBasketballSingleOrderService cdBasketballSingleOrderService = SpringContextHolder.getBean(CdBasketballSingleOrderService.class);
 
@@ -51,6 +56,7 @@ public class SelOrderUtil {
 
     private static CdLotteryUserService cdLotteryUserService = SpringContextHolder.getBean(CdLotteryUserService.class);
 
+    private static CdFootballAwardsService cdFootballAwardsService= SpringContextHolder.getBean(CdFootballAwardsService.class);
     /**
      * 订单详情
      *
@@ -66,6 +72,7 @@ public class SelOrderUtil {
             map.put("followNums", "0");
             map.put("detail", detailList);
             map.put("price", cfs.getPrice());
+
         } else if (orderNum.startsWith("ZCG")) {
             CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
             List detailList = getFbFollowList(cff);
@@ -337,11 +344,14 @@ public class SelOrderUtil {
         String matchTimes = cff.getAllMatchTimes();//所有比赛时间
         String[] matchTimesArray = matchTimes.split(",");
         int j = 0;
+
+
         for (String s : matchIdsArray) {
             List<String> resultList = new ArrayList<>();
             if (StringUtils.isNotEmpty(matchResult)) {
                 String[] mathchResultArray = matchResult.split(",");
                 for (String rs : mathchResultArray) {
+
                     resultList.add(rs);
                 }
             }
@@ -360,6 +370,15 @@ public class SelOrderUtil {
             String match = s.split("\\+")[1];
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", match);
+
+            //2018.5.28 通过 matchId 获取 AwardsService 信息
+            CdFootballAwards byMatchId = cdFootballAwardsService.findByMatchId(match);
+            //胜负
+            String winning = byMatchId.getWinning();
+            //让胜负
+            String spread = byMatchId.getSpread();
+            //半场
+            String winGrap = byMatchId.getWinGrap();
             //比赛结果
             if (resultList.size() > 0) {
                 orderMap.put("result", resultList.get(i));
@@ -373,16 +392,13 @@ public class SelOrderUtil {
             if (scoreMap.size() > 0) {
                 vs = scoreMap.get("vs");
             }
-
             orderMap.put("score", scoreMap.get("result"));
-
             //进球
             Map<String, String> goalMap = getFollowMap(match, goalArray);
             if (goalMap.size() > 0) {
                 vs = goalMap.get("vs");
             }
             orderMap.put("goal", goalMap.get("result"));
-
 
             //半全场
             String halfName = "";
@@ -392,12 +408,25 @@ public class SelOrderUtil {
                 Map<String, String> nameMap = BallGameCals.getHalfWholeNames();
                 String result = halfMap.get("result");
                 String resultArray[] = result.split(",");
+                String realWinGrap="";
+                String trueArray="";
                 for (String r : resultArray) {
                     String wholeResult = "";
+                    String halfResult  = "";
                     String[] rArray = r.split("/");
                     wholeResult = nameMap.get(rArray[0]) + "/" + rArray[1];
-                    halfName += wholeResult + ",";
+                    if (StringUtils.isNotEmpty(result)){
+                        halfName += wholeResult +",";
+                    }
+                    halfResult = nameMap.get(rArray[0]);
+                    if (halfResult.equals(winGrap)){
+                        realWinGrap = winGrap;
+                        trueArray=rArray[1];
+
+                    }
+
                 }
+                halfName += "+"+realWinGrap+"/"+trueArray+"|";
             }
             orderMap.put("half", halfName); //半全场
 
@@ -410,13 +439,12 @@ public class SelOrderUtil {
             String trueBeat = beatMap.get("result");
             String realBeat = "";
             if (StringUtils.isNotEmpty(trueBeat)) {
+                //********
                 String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
                 String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
-                String finalBeat3 = finalBeat2.replaceAll("0/", "客胜/");
+                String finalBeat3 = finalBeat2.replaceAll("0/", "主负/");
                 realBeat = finalBeat3;
             }
-
-            orderMap.put("beat", realBeat);
             //让球
             Map<String, String> letMap = getFollowMap(match, letArray);
             if (letMap.size() > 0) {
@@ -427,12 +455,40 @@ public class SelOrderUtil {
             if (StringUtils.isNotEmpty(trueLet)) {
                 String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
                 String finalLet2 = finalLet1.replaceAll("1/", "平/");
-                String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
+                String finalLet3 = finalLet2.replaceAll("0/", "让主负/");
                 realLet = finalLet3;
             }
+
+            //判断胜负 是否猜对
+            String[] realBeatSplit = realBeat.split(",");
+            String oddResult ="/";
+            for (int r=0;r<realBeatSplit.length;r++){
+                String[] splitReal = realBeatSplit[r].split("/");
+                if (splitReal[0].equals(winning)){
+                    oddResult += splitReal[1];
+                }
+            }
+            //判断让球 是否猜对
+            String[] realLetSplit = realLet.split(",");
+            String oddLetResult ="/";
+            for (int x=0;x<realLetSplit.length;x++){
+                String[] splitReal = realLetSplit[x].split("/");
+                if (splitReal[0].equals(spread)){
+                    oddLetResult += splitReal[1];
+                }
+            }
+
+            if (StringUtils.isNotEmpty(trueBeat)){
+                realBeat += "+"+winning+oddResult+"|";
+            }
+
+            if (StringUtils.isNotEmpty(trueLet)){
+                realLet  += "+"+spread+oddLetResult+"|";
+            }
+
+            orderMap.put("beat", realBeat);
             orderMap.put("let", realLet);
             orderMap.put("vs", vs);
-
             detailList.add(orderMap);
         }
         return detailList;
@@ -488,6 +544,16 @@ public class SelOrderUtil {
 
             Map<String, Object> orderMap = new HashMap<>();
             orderMap.put("matchId", s); //期次
+
+            //2018.5.28 通过 matchId 获取 AwardsService 信息
+            CdFootballAwards byMatchId = cdFootballAwardsService.findByMatchId(s);
+            //胜负
+            String winning = byMatchId.getWinning();
+            //让胜负
+            String spread = byMatchId.getSpread();
+            //半场
+            String winGrap = byMatchId.getWinGrap();
+
             //比赛结果
             if (resultList.size() > 0) {
                 orderMap.put("result", resultList.get(i));
@@ -516,12 +582,24 @@ public class SelOrderUtil {
                 Map<String, String> nameMap = BallGameCals.getHalfWholeNames();
                 String result = halfMap.get("result");
                 String resultArray[] = result.split(",");
+                String realWinGrap="";
+                String trueArray="";
                 for (String r : resultArray) {
                     String wholeResult = "";
+                    String halfResult  = "";
                     String[] rArray = r.split("/");
                     wholeResult = nameMap.get(rArray[0]) + "/" + rArray[1];
-                    halfName += wholeResult + ",";
+                    if (StringUtils.isNotEmpty(result)){
+                        halfName += wholeResult +",";
+                    }
+                    halfResult = nameMap.get(rArray[0]);
+                    if (halfResult.equals(winGrap)){
+                        realWinGrap = winGrap;
+                        trueArray=rArray[1];
+                    }
+
                 }
+                halfName += "+"+realWinGrap+"/"+trueArray+"|";
             }
             orderMap.put("half", halfName); //半全场
             //胜负平
@@ -529,16 +607,29 @@ public class SelOrderUtil {
             if (beatMap.size() > 0) {
                 vs = beatMap.get("vs");
             }
+
+            //2018.5.29 董宏 修改替换字符串BUG 如 3/1.93/3 -> 主胜/1.9主胜//3
             String realBeat = "";
             String trueBeat = beatMap.get("result");
+            String finalBeat="";
             if (StringUtils.isNotEmpty(trueBeat)) {
-                String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
-                String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
-                String finalBeat3 = finalBeat2.replaceAll("0/", "客胜/");
-                realBeat = finalBeat3;
+
+                String[] split = trueBeat.split("/");
+                if("3".equals(split[0])){
+                    finalBeat = trueBeat.replaceFirst("3", "主胜");
+
+                }else  if("1".equals(split[0])){
+                   finalBeat = trueBeat.replaceFirst("1", "平");
+                }else if("0".equals(split[0])){
+                    finalBeat = trueBeat.replaceFirst("0", "主负");
+                }
+//                String finalBeat1 = trueBeat.replaceAll("3/", "主胜/");
+//                String finalBeat2 = finalBeat1.replaceAll("1/", "平/");
+//                String finalBeat3 = finalBeat2.replaceAll("0/", "主负/");
+                realBeat = finalBeat;
             }
 
-            orderMap.put("beat", realBeat); //胜负
+
             //让球
             Map<String, String> letMap = getSingleMap(s, letArray);
             if (letMap.size() > 0) {
@@ -546,13 +637,63 @@ public class SelOrderUtil {
             }
             String realLet = "";
             String trueLet = letMap.get("result");
+            String finalLet = "";
             if (StringUtils.isNotEmpty(trueLet)) {
-                String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
-                String finalLet2 = finalLet1.replaceAll("1/", "平/");
-                String finalLet3 = finalLet2.replaceAll("0/", "让客胜/");
-                realLet = finalLet3;
+                String[] split2 = trueLet.split("/");
+                if("3".equals(split2[0])){
+                    finalLet = trueBeat.replaceFirst("3", "让主胜");
+
+                }else  if("1".equals(split2[0])){
+                    finalLet = trueBeat.replaceFirst("1", "平");
+                }else if("0".equals(split2[0])){
+                    finalLet = trueBeat.replaceFirst("0", "让主负");
+                }
+//                String finalLet1 = trueLet.replaceAll("3/", "让主胜/");
+//                String finalLet2 = finalLet1.replaceAll("1/", "平/");
+//                String finalLet3 = finalLet2.replaceAll("0/", "让主负/");
+                realLet = finalLet;
             }
-            orderMap.put("let", realLet);
+
+
+            //判断胜负 是否猜对
+            String[] realBeatSplit = realBeat.split(",");
+            String oddResult ="/";
+            for (int r=0;r<realBeatSplit.length;r++){
+                String[] splitReal = realBeatSplit[r].split("/");
+                if (splitReal[0].equals(winning)){
+                    oddResult += splitReal[1]+"/"+splitReal[2];
+                }
+            }
+            //判断让球 是否猜对
+            String[] realLetSplit = realLet.split(",");
+            String oddLetResult ="/";
+            for (int x=0;x<realLetSplit.length;x++){
+                String[] splitReal = realLetSplit[x].split("/");
+                if (splitReal[0].equals(spread)){
+                    oddLetResult += splitReal[1]+"/"+splitReal[2];
+                }
+            }
+
+            if (StringUtils.isNotEmpty(trueBeat)){
+                realBeat += "+"+winning+oddResult+"|";
+            }
+
+            if (StringUtils.isNotEmpty(trueLet)){
+                realLet  += "+"+spread+oddLetResult+"|";
+            }
+
+//            if (StringUtils.isNotEmpty(trueBeat)){
+//                String[] splitRealBeat = realBeat.split("/");
+//
+//                realBeat += "+"+winning+"/"+splitRealBeat[1]+"|";
+//            }
+//
+//            if (StringUtils.isNotEmpty(trueLet)){
+//                String[] splitRealLet = realLet.split("/");
+//                realLet  += "+"+spread+"/"+splitRealLet[1]+"|";
+//            }
+            orderMap.put("beat", realBeat); //胜负
+            orderMap.put("let", realLet);  //让球
             //orderMap.put("let", letMap.get("result")); //让球
             orderMap.put("vs", vs);
             detailList.add(orderMap);
@@ -673,7 +814,11 @@ public class SelOrderUtil {
             /*if (StringUtils.isNotEmpty(matchResult)) {
                 String[] mathchResultArray = matchResult.split(",");
                 for (String rs : mathchResultArray) {
-                    resultList.add(rs);
+                    //2018.5.28 董宏 修改篮球订单 比分相反bug
+                    //通过 : 分割 比分 前后值
+                    String[] rsArray = rs.split(":");
+                    String newRs = rsArray[1]+":"+rsArray[0];
+                    resultList.add(newRs);
                 }
             }*/
             if (StringUtils.isNotEmpty(matchResult)) {
@@ -740,7 +885,13 @@ public class SelOrderUtil {
             if (letMap.size() > 0) {
                 vs = letMap.get("vs");
             }
-            String trueLet = letMap.get("result");
+            //
+            //让球胜负
+            Map<String, String> sizeMap = getFollowMap(match, sizeArray);
+            if (sizeMap.size() > 0) {
+                vs = sizeMap.get("vs");
+            }
+            String trueLet = sizeMap.get("result");
             String realLet = "";
             if (StringUtils.isNotEmpty(trueLet)) {
                 String finalLet1 = trueLet.replaceAll("1/", "让主胜/");

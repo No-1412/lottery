@@ -214,7 +214,7 @@ public class ErpOrderController extends BaseController {
             String newFollowNums = "";
             for (String str : followArray) {
                 if ("1".equals(str)) {
-                    newFollowNums += "单关";
+                    newFollowNums += "单关,";
                 } else {
                     newFollowNums += str + "串1,";
                 }
@@ -226,7 +226,7 @@ public class ErpOrderController extends BaseController {
 
             model.addAttribute("today", today);
             model.addAttribute("uName", uName);
-            model.addAttribute("newFollowNums", newFollowNums);
+            model.addAttribute("newFollowNums", newFollowNums.substring(0,newFollowNums.lastIndexOf(",")));
 
             List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
             List detailList = SelOrderUtil.getBbFollowList2(cdBasketballFollowOrder);
@@ -432,7 +432,7 @@ public class ErpOrderController extends BaseController {
             String newFollowNums = "";
             for (String str : followArray) {
                 if ("1".equals(str)) {
-                    newFollowNums += "单关";
+                    newFollowNums += "单关,";
                 } else {
                     newFollowNums += str + "串1,";
                 }
@@ -443,7 +443,7 @@ public class ErpOrderController extends BaseController {
             String today = df.format(day);
 //
             model.addAttribute("today", today);
-            model.addAttribute("newFollowNums", newFollowNums);
+            model.addAttribute("newFollowNums", newFollowNums.substring(0,newFollowNums.lastIndexOf(",")));
             model.addAttribute("uName", uName);
             model.addAttribute("cdFootballFollowOrder", cdFootballFollowOrder);
             List<ErpFootBallDto> finalDetailList = new ArrayList<>();
