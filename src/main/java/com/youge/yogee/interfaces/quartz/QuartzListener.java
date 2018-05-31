@@ -116,7 +116,7 @@ public class QuartzListener {
 
             //判断比赛是否全部完成
             boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
-            System.out.println(containsAll);
+           // System.out.println(containsAll);
             if (containsAll) {
 
                 String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();
@@ -606,7 +606,7 @@ public class QuartzListener {
 
             //判断比赛是否全部完成
             boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
-            System.out.println(containsAll);
+            //System.out.println(containsAll);
             if (containsAll) {
 
                 String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();

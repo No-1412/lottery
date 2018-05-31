@@ -254,7 +254,7 @@ public class LotteryUtil {
 
                             }
                             if (info[2].equals("1")) {
-                                System.out.println(oe.getMatchId());
+                                //System.out.println(oe.getMatchId());
                                 if (Strings.isNullOrEmpty(oe.getSpread())) {
                                     bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                                 } else {
@@ -446,7 +446,7 @@ public class LotteryUtil {
                             String[] info = rt[k].split("_");
                             CdBasketballAwards oe = resultMap.get(info[0]);
 
-                            System.out.println("玩法："+info[2]);
+                            //System.out.println("玩法："+info[2]);
 
                             // * `host_win` mediumtext COMMENT '主胜 胆0/1+场次+主队vs客队+押注结果/赔率|',0主胜
                             // * `host_fail` mediumtext COMMENT '主负 胆0/1+场次+主队vs客队+押注结果/赔率|',1主负
@@ -466,7 +466,7 @@ public class LotteryUtil {
 
                             }
                             if (info[2].equals("1")) {
-                                System.out.println(oe.getMatchId());
+                                //System.out.println(oe.getMatchId());
                                 if (Strings.isNullOrEmpty(oe.getWinGrap())) {
                                     bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                                 } else {
@@ -650,11 +650,11 @@ public class LotteryUtil {
 
                     }
                     if ("1".equals(playType.get(i))) {
-                        System.out.println(oe.getMatchId());
+                      //  System.out.println(oe.getMatchId());
                         if (Strings.isNullOrEmpty(oe.getWinGrap())) {
                             bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
-                            System.out.println(info[0].equals(basketBalLConvert(oe.getWinGrap())));
+                           // System.out.println(info[0].equals(basketBalLConvert(oe.getWinGrap())));
                             if (info[0].equals(basketBalLConvert(oe.getWinGrap()))) {
                                 bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                             } else {
@@ -663,8 +663,8 @@ public class LotteryUtil {
                         }
                     }
                     singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
-                    System.out.println("单注：" + singleBigDecimal);
-                    System.out.println("倍数：" + info[2]);
+                    //System.out.println("单注：" + singleBigDecimal);
+                    //System.out.println("倍数：" + info[2]);
                     countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(info[2])).setScale(2, RoundingMode.HALF_DOWN));
                 }
 
@@ -672,7 +672,7 @@ public class LotteryUtil {
 
         }
 
-        System.out.println("中奖总金额：" + countBigDecimal);
+        //System.out.println("中奖总金额：" + countBigDecimal);
         return countBigDecimal;
     }
 
@@ -783,7 +783,7 @@ public class LotteryUtil {
 
     private static String ConvertInt(String s1) {
 
-        System.out.println(s1);
+       // System.out.println(s1);
         if (s1.equals(MAIN_WIN) || s1.equals(LET_MAIN_WIN)) {
             return "3";
         }

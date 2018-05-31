@@ -352,7 +352,7 @@ public class BasketBallQuartz {
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
-        System.out.println("比赛完的场次:" + awardMatchIdList);
+       // System.out.println("比赛完的场次:" + awardMatchIdList);
         for (CdBasketballSingleOrder cdBasketballSingleOrder : cdBasketballSingleOrderList) {
 
             List<String> cdList = new ArrayList<String>();
@@ -369,15 +369,15 @@ public class BasketBallQuartz {
             }
             List<String> index = LotteryUtil.querySingleEvent(cdList);
 
-            System.out.println(index);
+           // System.out.println(index);
             String[] strings = new String[index.size()];
             String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
-            System.out.println("index:" + index);
+            //System.out.println("index:" + index);
 
             //判断比赛是否全部完成
             boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
-            System.out.println(containsAll);
+            //System.out.println(containsAll);
             if (containsAll) {
                 //  **************************后加的-------------获取押注比赛结果并保存****************
                 //  **********************后加的-------------获取押注比赛结果并保存****************************

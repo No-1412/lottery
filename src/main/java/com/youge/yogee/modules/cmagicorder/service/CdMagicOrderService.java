@@ -4,11 +4,13 @@
 package com.youge.yogee.modules.cmagicorder.service;
 
 import com.youge.yogee.common.persistence.Page;
+import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
 import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.cmagicorder.dao.CdMagicOrderDao;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicFollowOrder;
 import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -81,6 +84,10 @@ public class CdMagicOrderService extends BaseService {
         cri.setMaxResults(Integer.parseInt(count));
         cri.setFirstResult(Integer.parseInt(total));
         return cdMagicOrderDao.find(dc);
+    }
+
+    public BigDecimal findJoinFoByNumber(String orderNumber) {
+        return cdMagicOrderDao.findJoinFoByNumber(orderNumber);
     }
 
     public CdMagicOrder findOrderByNumber(String orderNumber) {

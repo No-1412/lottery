@@ -6,6 +6,8 @@ import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
+import com.youge.yogee.modules.cmagicorder.entity.CdMagicOrder;
+import com.youge.yogee.modules.cmagicorder.service.CdMagicOrderService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.entity.CdOrderWinners;
 import com.youge.yogee.modules.corder.service.CdOrderService;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +41,8 @@ public class AwardsWallInterface {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdOrderService cdOrderService;
+    @Autowired
+    private CdMagicOrderService cdMagicOrderService;
 
 
     /**
@@ -72,7 +77,7 @@ public class AwardsWallInterface {
                 map.put("id", awards.getId()); //用户名
                 map.put("name", name); //用户名
                 map.put("text1", text1); //前半句
-                BigDecimal newWinPrcie=new BigDecimal(winPrice).setScale(2,2);
+                BigDecimal newWinPrcie = new BigDecimal(winPrice).setScale(2, 2);
                 map.put("winPrice", newWinPrcie.toString()); //奖金
                 map.put("text2", text2); //中间句
                 map.put("repayPercent", repayPercent); //回报率
@@ -113,6 +118,7 @@ public class AwardsWallInterface {
                 logger.error("type为空！");
                 return HttpResultUtil.errorJson("type为空!");
             }
+            String issue = "";
             String orderNum = "";
             if ("1".equals(type)) {
                 CdOrderWinners cow = cdOrderWinnersService.get(wid);
@@ -143,13 +149,28 @@ public class AwardsWallInterface {
                 map.put("orderNum", orderNum);//订单号
                 map.put("price", co.getTotalPrice());//价格
                 map.put("status", co.getStatus());//中奖状态1待开奖 2已开奖 3中奖
+                issue = co.getIssue();
             }
 
             map = SelOrderUtil.getOrderDetailMap(orderNum, map);
+            if ("2".equals(type) && issue.equals("1")) {
+                BigDecimal charges = cdMagicOrderService.findJoinFoByNumber(orderNum);
+                //System.out.println("佣金比例：" + charges);
+                Object oAward = map.get("award");
+                if (oAward != null) {
+                    BigDecimal awardBigDecimal = new BigDecimal((String) oAward);
+                    BigDecimal realBigDecimal = awardBigDecimal.subtract(awardBigDecimal.multiply(charges).setScale(2, RoundingMode.HALF_DOWN)).setScale(2, RoundingMode.HALF_DOWN);
+                    map.put("realAward", realBigDecimal.toString());
+                }
+
+            } else {
+                map.put("realAward", new BigDecimal("0.00").toString());
+            }
             logger.info("大奖墙列表接口--------------End--------");
             return HttpResultUtil.successJson(map);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
+            e.printStackTrace();
             return HttpResultUtil.errorJson("网络不稳定请稍后重试!");
         }
 
