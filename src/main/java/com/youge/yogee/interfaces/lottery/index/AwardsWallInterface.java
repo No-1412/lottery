@@ -155,12 +155,27 @@ public class AwardsWallInterface {
             map = SelOrderUtil.getOrderDetailMap(orderNum, map);
             if ("2".equals(type) && issue.equals("1")) {
                 BigDecimal charges = cdMagicOrderService.findJoinFoByNumber(orderNum);
-                //System.out.println("佣金比例：" + charges);
+
                 Object oAward = map.get("award");
+                System.out.println(oAward.toString());
+
                 if (oAward != null) {
+                    String winPrice = (String) map.get("winPrice");
+                    map.put("realAward", new BigDecimal(winPrice).setScale(2, RoundingMode.HALF_DOWN).toString());
                     BigDecimal awardBigDecimal = new BigDecimal((String) oAward);
-                    BigDecimal realBigDecimal = awardBigDecimal.subtract(awardBigDecimal.multiply(charges).setScale(2, RoundingMode.HALF_DOWN)).setScale(2, RoundingMode.HALF_DOWN);
-                    map.put("realAward", realBigDecimal.toString());
+                    map.put("winPrice", awardBigDecimal.setScale(2, RoundingMode.HALF_DOWN).toString());
+
+//                    BigDecimal cs = charges.divide(new BigDecimal("100").setScale(2, RoundingMode.HALF_DOWN));
+//                    System.out.println("佣金比例：" + cs.toString());
+//
+//                    BigDecimal ab = awardBigDecimal.multiply(cs).setScale(2, RoundingMode.HALF_DOWN);
+//                    System.out.println("佣金：" + ab.toString());
+//                    System.out.println("奖金：" + awardBigDecimal.toString());
+//
+//                    System.out.println(awardBigDecimal.subtract(ab).toString());
+//                    BigDecimal realBigDecimal = awardBigDecimal.subtract(ab).setScale(2, RoundingMode.HALF_DOWN);
+//                    System.out.println(realBigDecimal.toString());
+
                 }
 
             } else {
