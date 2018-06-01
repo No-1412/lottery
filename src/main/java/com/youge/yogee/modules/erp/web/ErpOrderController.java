@@ -395,9 +395,19 @@ public class ErpOrderController extends BaseController {
                 ErpBasketBallDto ebbd = new ErpBasketBallDto();
                 String matchId = (String) map.get("matchId");
                 String vs = (String) map.get("vs");
+                //董宏 修改后台 主客场 比分相反
+                if(StringUtils.isNotEmpty(vs)){
+                    String[] vs1 = vs.split("vs");
+                    vs = vs1[1]+"vs"+vs1[0];
+                }
                 String win = (String) map.get("win");
                 String fail = (String) map.get("fail");
                 String result = (String) map.get("result");
+
+                if (StringUtils.isNotEmpty(result)){
+                    String[] split = result.split(":");
+                    result  =split[1]+":"+split[0];
+                }
 //yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
                     win = "让主胜" + win;
