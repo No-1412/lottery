@@ -30,6 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -95,12 +98,19 @@ public class OtherQuartz {
     private CdLotteryUserService cdLotteryUserService;
 
     @Scheduled(cron = "0 0 12 * * ?")//每天十二点
-    public void awardWallUpType() {
+    public void awardWallUpType() throws ParseException {
 //        System.out.println("大奖墙更新");
         List<CdOrderWinners> list = cdOrderWinnersService.findByWallType("1");
+        Date date = new Date();
+        long nowTime = date.getTime();
         if (list.size() > 0) {
             for (CdOrderWinners c : list) {
-                c.setWallType("2");
+                //董宏  当前时间 与创建时间超过 24小时 将wallType ->2
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date createTime = df.parse(c.getCreateDate());
+                if (nowTime - createTime.getTime() > 86400000) {
+                    c.setWallType("2");
+                }
                 cdOrderWinnersService.save(c);
             }
         }
