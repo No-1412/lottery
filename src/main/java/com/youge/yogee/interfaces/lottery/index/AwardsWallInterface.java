@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.lottery.index;
 
+import com.google.common.base.Strings;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
@@ -118,6 +119,7 @@ public class AwardsWallInterface {
                 logger.error("type为空！");
                 return HttpResultUtil.errorJson("type为空!");
             }
+            String vo = (String) jsonData.get("vo");
             String issue = "";
             String orderNum = "";
             if ("1".equals(type)) {
@@ -153,16 +155,17 @@ public class AwardsWallInterface {
             }
 
             map = SelOrderUtil.getOrderDetailMap(orderNum, map);
-            if ("2".equals(type) && issue.equals("1")) {
-                BigDecimal charges = cdMagicOrderService.findJoinFoByNumber(orderNum);
+            if (!Strings.isNullOrEmpty(vo)){
+                if ("2".equals(type) && issue.equals("1")) {
+                    BigDecimal charges = cdMagicOrderService.findJoinFoByNumber(orderNum);
 
-                Object oAward = map.get("award");
+                    Object oAward = map.get("award");
 
-                if (oAward != null) {
-                    String winPrice = (String) map.get("winPrice");
-                    map.put("realAward", new BigDecimal(winPrice).setScale(2, RoundingMode.HALF_DOWN).toString());
-                    BigDecimal awardBigDecimal = new BigDecimal((String) oAward);
-                    map.put("winPrice", awardBigDecimal.setScale(2, RoundingMode.HALF_DOWN).toString());
+                    if (oAward != null) {
+                        String winPrice = (String) map.get("winPrice");
+                        map.put("realAward", new BigDecimal(winPrice).setScale(2, RoundingMode.HALF_DOWN).toString());
+                        BigDecimal awardBigDecimal = new BigDecimal((String) oAward);
+                        map.put("winPrice", awardBigDecimal.setScale(2, RoundingMode.HALF_DOWN).toString());
 
 //                    BigDecimal cs = charges.divide(new BigDecimal("100").setScale(2, RoundingMode.HALF_DOWN));
 //                    System.out.println("佣金比例：" + cs.toString());
@@ -175,13 +178,15 @@ public class AwardsWallInterface {
 //                    BigDecimal realBigDecimal = awardBigDecimal.subtract(ab).setScale(2, RoundingMode.HALF_DOWN);
 //                    System.out.println(realBigDecimal.toString());
 
-                }else{
+                    }else{
+                        map.put("realAward", new BigDecimal("0.00").toString());
+                    }
+
+                } else {
                     map.put("realAward", new BigDecimal("0.00").toString());
                 }
-
-            } else {
-                map.put("realAward", new BigDecimal("0.00").toString());
             }
+
             logger.info("大奖墙列表接口--------------End--------");
             return HttpResultUtil.successJson(map);
         } catch (Exception e) {
