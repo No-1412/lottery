@@ -59,7 +59,7 @@ public class HttpServletRequestUtils {
      */
     public static Map<?, ?> readJsonData(final HttpServletRequest request) {
         BufferedReader reader;
-        Map<?, ?> result = null;
+        Map<?, ?> result = new HashMap<>();
         try {
             reader = request.getReader();
 
@@ -74,36 +74,38 @@ public class HttpServletRequestUtils {
                 String jsonstring = json.toString();
 //                System.out.println(jsonstring);
 
-                if(jsonstring.contains("{")){
+                if (jsonstring.contains("{")) {
                     result = JsonMapper.nonDefaultMapper().fromJson(jsonstring, HashMap.class);
-                }else{
-                    if(jsonstring.contains("+") || jsonstring.contains("/") || jsonstring.contains("L")
+                } else {
+                    if (jsonstring.contains("+") || jsonstring.contains("/") || jsonstring.contains("L")
                             || jsonstring.contains("U") || jsonstring.contains("Q") || jsonstring.contains("J")
-                            || jsonstring.contains("Y")){
-                        byte [] bb = Encodes.decodeBase64(jsonstring);
-                        String cJsonstring= AES256EncryptionUtils.parseByte2HexStr(bb);
+                            || jsonstring.contains("Y")) {
+                        byte[] bb = Encodes.decodeBase64(jsonstring);
+                        String cJsonstring = AES256EncryptionUtils.parseByte2HexStr(bb);
                         str = AES256EncryptionUtils.decrypt(cJsonstring);
 //                    System.out.println("old=========================="+str);
-                    }else{
+                    } else {
                         str = AES256EncryptionUtils.decrypt(jsonstring);
                         //String  str = URLEncoder.encode(AES256EncryptionUtils.decrypt(jsonstring), "UTF-8");
 //                    System.out.println("new=========================="+str);
                     }
-                    if(null ==str){
-                        return null;
-                    }else{
+                    if (null == str) {
+                        return result;
+                    } else {
                         result = JsonMapper.nonDefaultMapper().fromJson(str, HashMap.class);
                     }
                 }
             }
         } catch (IOException e) {
-            result = null;
+            e.printStackTrace();
             logger.error(e.getMessage());
             throw new RuntimeException("参数获取错误", e);
+        } finally {
+            System.out.println(result);
+            return result;
         }
 
-        System.out.println(result);
-        return result;
+
     }
 
     /**
@@ -129,22 +131,22 @@ public class HttpServletRequestUtils {
                 String jsonstring = json.toString();
 //                System.out.println(jsonstring);
 
-                if(jsonstring.contains("{")){
-                    result = JsonMapper.nonDefaultMapper().fromJson(jsonstring.replace("{","{\"aes\":\"0\","), HashMap.class);
-                }else{
-                    if(jsonstring.contains("+") || jsonstring.contains("/") || jsonstring.contains("L") || jsonstring.contains("U") || jsonstring.contains("Q")){
-                        byte [] bb = Encodes.decodeBase64(jsonstring);
-                        String cJsonstring= AES256EncryptionUtils.parseByte2HexStr(bb);
-                        str = AES256EncryptionUtils.decryptM(cJsonstring).replace("{","{\"aes\":\"0\",");
+                if (jsonstring.contains("{")) {
+                    result = JsonMapper.nonDefaultMapper().fromJson(jsonstring.replace("{", "{\"aes\":\"0\","), HashMap.class);
+                } else {
+                    if (jsonstring.contains("+") || jsonstring.contains("/") || jsonstring.contains("L") || jsonstring.contains("U") || jsonstring.contains("Q")) {
+                        byte[] bb = Encodes.decodeBase64(jsonstring);
+                        String cJsonstring = AES256EncryptionUtils.parseByte2HexStr(bb);
+                        str = AES256EncryptionUtils.decryptM(cJsonstring).replace("{", "{\"aes\":\"0\",");
 //                    System.out.println("old=========================="+str);
-                    }else{
+                    } else {
                         str = AES256EncryptionUtils.decryptM(jsonstring);
                         //String  str = URLEncoder.encode(AES256EncryptionUtils.decrypt(jsonstring), "UTF-8");
 //                    System.out.println("new=========================="+str);
                     }
-                    if(null ==str){
+                    if (null == str) {
                         return null;
-                    }else{
+                    } else {
                         result = JsonMapper.nonDefaultMapper().fromJson(str, HashMap.class);
                     }
                 }
@@ -158,6 +160,7 @@ public class HttpServletRequestUtils {
         System.out.println(result);
         return result;
     }
+
     /**
      * json解析成map对象
      *
@@ -219,7 +222,7 @@ public class HttpServletRequestUtils {
         return url;
     }
 
-   /* *//**
+    /* *//**
      * 得到物理的路径的地址（D:\apache-tomcat-7.0.41\wtpwebapps）    不包括上下文
      *
      * @param request 请求的对象
@@ -249,7 +252,9 @@ public class HttpServletRequestUtils {
         logger.debug("文件的物理路径为:{} , ", realPathSub);
         return realPathSub;
     }
-    *//**
+    */
+
+    /**
      * 取得上下文
      *
      * @return

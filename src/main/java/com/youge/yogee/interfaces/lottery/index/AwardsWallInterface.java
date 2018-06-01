@@ -157,7 +157,6 @@ public class AwardsWallInterface {
                 BigDecimal charges = cdMagicOrderService.findJoinFoByNumber(orderNum);
 
                 Object oAward = map.get("award");
-                System.out.println(oAward.toString());
 
                 if (oAward != null) {
                     String winPrice = (String) map.get("winPrice");
@@ -176,6 +175,8 @@ public class AwardsWallInterface {
 //                    BigDecimal realBigDecimal = awardBigDecimal.subtract(ab).setScale(2, RoundingMode.HALF_DOWN);
 //                    System.out.println(realBigDecimal.toString());
 
+                }else{
+                    map.put("realAward", new BigDecimal("0.00").toString());
                 }
 
             } else {
