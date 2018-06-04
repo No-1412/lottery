@@ -353,6 +353,8 @@ public class MagicOrderInterface {
             logger.error("total为空");
             return HttpResultUtil.errorJson("total为空");
         }
+
+        String vo = (String) jsonData.get("vo");
         String count = (String) jsonData.get("count");
         if (StringUtils.isEmpty(count)) {
             logger.error("count为空");
@@ -378,7 +380,11 @@ public class MagicOrderInterface {
             cMap.put("times", c.getTimes()); //保字
             cMap.put("startPrice", c.getStartPrice());//起投
             cMap.put("orderNum", c.getOrderNum());//订单号
-            cMap.put("remarks", c.getRemarks());//订单号
+
+            if(!Strings.isNullOrEmpty(vo)){
+                cMap.put("remarks", c.getRemarks());//订单号
+            }
+
             cList.add(cMap);
         }
         map.put("list", cList);
@@ -405,6 +411,8 @@ public class MagicOrderInterface {
             return HttpResultUtil.errorJson("followNum为空");
         }
 
+        String vo = (String) jsonData.get("vo");
+
         CdMagicOrder cmo = cdMagicOrderService.findOrderByNumber(followNum);
         if (cmo == null) {
             return HttpResultUtil.errorJson("神单不存在");
@@ -427,7 +435,9 @@ public class MagicOrderInterface {
         cMap.put("times", cmo.getTimes()); //保字
         cMap.put("limit", cmo.getPrice()); //限购
         cMap.put("startPrice", cmo.getStartPrice());//起投
-        cMap.put("remarks", cmo.getRemarks());//订单号
+        if(!Strings.isNullOrEmpty(vo)){
+            cMap.put("remarks",cmo.getRemarks());//订单号
+        }
         String orderNum = cmo.getOrderNum();
         //1足球单关 2足球串关 3篮球单关 4篮球串关
         String type = cmo.getType();
@@ -460,17 +470,21 @@ public class MagicOrderInterface {
                 CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(oNum);
                 award = cbf.getAward();
             }
+            if(!Strings.isNullOrEmpty(vo)){
+                aMap.put("award", new BigDecimal(award).setScale(2,RoundingMode.HALF_DOWN).toString());
 
-            aMap.put("award", new BigDecimal(award).setScale(2,RoundingMode.HALF_DOWN).toString());
-
-            BigDecimal bigDecimal = new BigDecimal(award);
-            BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN);
-            aMap.put("commission", bl.toString());
-            totalBigDecimal = totalBigDecimal.add(bl);
+                BigDecimal bigDecimal = new BigDecimal(award);
+                BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN);
+                aMap.put("commission", bl.toString());
+                totalBigDecimal = totalBigDecimal.add(bl);
+            }
             cList.add(aMap);
         }
 
-        cMap.put("totalCharges", totalBigDecimal.setScale(2,RoundingMode.HALF_DOWN).toString());
+        if(!Strings.isNullOrEmpty(vo)){
+            cMap.put("totalCharges", totalBigDecimal.setScale(2,RoundingMode.HALF_DOWN).toString());
+        }
+
         map.put("cmo", cMap);
 
         Date day = new Date();
