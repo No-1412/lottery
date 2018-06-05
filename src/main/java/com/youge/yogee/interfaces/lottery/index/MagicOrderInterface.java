@@ -518,6 +518,22 @@ public class MagicOrderInterface {
                 map.put("followNums", cbf.getFollowNums());
                 map.put("buyWays", cbf.getBuyWays());
             }
+        }else{
+            if (!Strings.isNullOrEmpty(vo)){
+                if ("1".equals(type)) {
+                    CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
+                    map.put("followNums", "0");
+                } else if ("2".equals(type)) {
+                    CdFootballFollowOrder cff = cdFootballFollowOrderService.findOrderByOrderNum(orderNum);
+                    map.put("followNums", cff.getFollowNum());
+                } else if ("3".equals(type)) {
+                    CdBasketballSingleOrder cbs = cdBasketballSingleOrderService.findOrderByOrderNum(orderNum);
+                    map.put("followNums", "0");
+                } else {
+                    CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(orderNum);
+                    map.put("followNums", cbf.getFollowNums());
+                }
+            }
         }
         map.put("cList", cList);
         map.put("orderDetail", orderDetail);
