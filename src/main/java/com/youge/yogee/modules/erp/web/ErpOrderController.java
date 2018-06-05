@@ -404,7 +404,6 @@ public class ErpOrderController extends BaseController {
                 String fail = (String) map.get("fail");
                 String result = (String) map.get("result");
 
-
                 if (StringUtils.isNotEmpty(result)){
                     String[] split = result.split(":");
                     result  =split[1]+":"+split[0];

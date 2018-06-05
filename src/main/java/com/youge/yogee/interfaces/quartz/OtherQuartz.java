@@ -105,10 +105,9 @@ public class OtherQuartz {
         long nowTime = date.getTime();
         if (list.size() > 0) {
             for (CdOrderWinners c : list) {
-                //董宏  当前时间 与创建时间超过 24小时 将wallType变更为2
-                SimpleDateFormat dft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                Date createTime = dft.parse(c.getCreateDate());
-                //设置时间
+                //董宏  当前时间 与创建时间超过 24小时 将wallType ->2
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date createTime = df.parse(c.getCreateDate());
                 if (nowTime - createTime.getTime() > 86400000) {
                     c.setWallType("2");
                 }

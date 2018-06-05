@@ -532,33 +532,33 @@ public class SelOrderUtil {
 
                 //判断胜负 是否猜对
                 String[] realBeatSplit = realBeat.split(",");
-                String oddResult = "/";
+                String oddResult = "";
                 for (int r = 0; r < realBeatSplit.length; r++) {
                     String[] splitReal = realBeatSplit[r].split("/");
                     if (splitReal[0].equals(winning)) {
-                        oddResult += splitReal[1];
+                        oddResult = splitReal[1];
                     }else {
-                        oddResult += "out";
+                        oddResult = "out";
                     }
                 }
                 //判断让球 是否猜对
                 String[] realLetSplit = realLet.split(",");
-                String oddLetResult = "/";
+                String oddLetResult = "";
                 for (int x = 0; x < realLetSplit.length; x++) {
                     String[] splitReal = realLetSplit[x].split("/");
                     if (splitReal[0].equals(spread)) {
-                        oddLetResult += splitReal[1];
+                        oddLetResult = splitReal[1];
                     }else {
-                        oddLetResult += "out";
+                        oddLetResult = "out";
                     }
                 }
 
                 if (StringUtils.isNotEmpty(matchResult)) {
                     if (StringUtils.isNotEmpty(trueBeat)) {
-                        realBeat += "+" + winning + oddResult;
+                        realBeat += "+" + winning +"/"+ oddResult;
                     }
                     if (StringUtils.isNotEmpty(trueLet)) {
-                        realLet += "+" + spread + oddLetResult;
+                        realLet += "+" + spread +"/"+ oddLetResult;
                     }
                 }
                 orderMap.put("half", halfName); //半全场
@@ -810,29 +810,33 @@ public class SelOrderUtil {
 
                     //判断胜负 是否猜对
                     String[] realBeatSplit = realBeat.split(",");
-                    String oddResult = "/";
+                    String oddResult = "";
                     for (int r = 0; r < realBeatSplit.length; r++) {
                         String[] splitReal = realBeatSplit[r].split("/");
                         if (splitReal[0].equals(winning)) {
-                            oddResult += splitReal[1] + "/" + splitReal[2];
+                            oddResult = splitReal[1] + "/" + splitReal[2];
+                        }else {
+                            oddResult ="out";
                         }
                     }
                     //判断让球 是否猜对
                     String[] realLetSplit = realLet.split(",");
-                    String oddLetResult = "/";
+                    String oddLetResult = "";
                     for (int x = 0; x < realLetSplit.length; x++) {
                         String[] splitReal = realLetSplit[x].split("/");
                         if (splitReal[0].equals(spread)) {
-                            oddLetResult += splitReal[1] + "/" + splitReal[2];
+                            oddLetResult = splitReal[1] + "/" + splitReal[2];
+                        }else {
+                            oddLetResult = "out";
                         }
                     }
 
                     if (StringUtils.isNotEmpty(matchResult)){
                         if (StringUtils.isNotEmpty(trueBeat)) {
-                            realBeat += "+" + winning + oddResult;
+                            realBeat += "+" + winning +"/" +oddResult;
                         }
                         if (StringUtils.isNotEmpty(trueLet)) {
-                        realLet += "+" + spread + oddLetResult;
+                        realLet += "+" + spread +"/" +oddLetResult;
                         }
                     }
                     orderMap.put("beat", realBeat); //胜负
@@ -1057,30 +1061,34 @@ public class SelOrderUtil {
                 String spread = byMatchId.getSpread();
                 //判断胜负 是否猜对
                 String[] realBeatSplit = realBeat.split(",");
-                String oddResult ="/";
+                String oddResult ="";
                 for (int r=0;r<realBeatSplit.length;r++){
                     String[] splitReal = realBeatSplit[r].split("/");
                     if (splitReal[0].equals(winning)){
-                        oddResult += splitReal[1];
+                        oddResult = splitReal[1];
+                    }else {
+                        oddResult = "out";
                     }
                 }
                 //判断让球 是否猜对
                 String[] realLetSplit = realLet.split(",");
-                String oddLetResult ="/";
+                String oddLetResult ="";
                 for (int x=0;x<realLetSplit.length;x++){
                     String[] splitReal = realLetSplit[x].split("/");
                     if (splitReal[0].equals(spread)){
-                        oddLetResult += splitReal[1];
+                        oddLetResult = splitReal[1];
+                    }else {
+                        oddLetResult = "out";
                     }
                 }
 
                 if (StringUtils.isNotEmpty(matchResult)){
                     if (StringUtils.isNotEmpty(trueBeat)){
-                        realBeat += "+"+winning+oddResult;
+                        realBeat += "+"+winning+"/"+oddResult;
                     }
 
                     if (StringUtils.isNotEmpty(trueLet)){
-                        realLet  += "+"+spread+oddLetResult;
+                        realLet  += "+"+spread+"/"+oddLetResult;
                     }
                 }
 
