@@ -220,11 +220,13 @@ public class CdFootballSingleOrderController extends BaseController {
         }
 
         cdFootballSingleOrderService.save(cdFootballSingleOrder);
-        //addMessage(redirectAttributes, "保存成功");
-        //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
-
+        addMessage(redirectAttributes, "保存成功");
+        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+/**
+ * 2018-06-06 yhw 去掉之前的页面打印功能
+ */
         //==================start   2018-04-11   yuhongwei 跳转打印页
-        String buy_ways = cdFootballSingleOrder.getBuyWays();
+       /* String buy_ways = cdFootballSingleOrder.getBuyWays();
         String match_ids = cdFootballSingleOrder.getMatchIds().substring(0, cdFootballSingleOrder.getMatchIds().length() - 1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber", cdFootballSingleOrder.getOrderNum());
@@ -312,6 +314,7 @@ public class CdFootballSingleOrderController extends BaseController {
         }
         addMessage(redirectAttributes, "保存成功,没有模板不能打印");
         return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+        */
         //==================end   2018-04-11   yuhongwei 跳转打印页
     }
 

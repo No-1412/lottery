@@ -382,10 +382,13 @@ public class CdBasketballFollowOrderController extends BaseController {
         }
 
 
-        // addMessage(redirectAttributes, "保存成功");
-        //return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+         addMessage(redirectAttributes, "保存成功");
+        return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+        /**
+         * 2018-06-06 yhw 去掉之前的页面打印功能
+         */
         //==================start   2018-04-11   yuhongwei 跳转打印页
-        String buy_ways = cdBasketballFollowOrder.getBuyWays();
+       /* String buy_ways = cdBasketballFollowOrder.getBuyWays();
         String match_ids = cdBasketballFollowOrder.getDanMatchIds().substring(0, cdBasketballFollowOrder.getDanMatchIds().length() - 1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber", cdBasketballFollowOrder.getOrderNum());
@@ -461,7 +464,7 @@ public class CdBasketballFollowOrderController extends BaseController {
         }
         addMessage(redirectAttributes, "保存成功,没有模板不能打印");
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-
+*/
         //==================end   2018-04-11   yuhongwei 跳转打印页
 
 

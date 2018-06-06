@@ -358,10 +358,14 @@ public class CdFootballFollowOrderController extends BaseController {
         }
 
 
-        //addMessage(redirectAttributes, "保存竞彩足球订单");
-        //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+        addMessage(redirectAttributes, "保存竞彩足球订单");
+        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+
+        /**
+         * 2018-06-06 yhw 去掉之前的页面打印功能
+         */
 //==================start   2018-04-11   yuhongwei 跳转打印页
-        String buy_ways = cdFootballFollowOrder.getBuyWays();
+       /* String buy_ways = cdFootballFollowOrder.getBuyWays();
         String match_ids = cdFootballFollowOrder.getDanMatchIds().substring(0, cdFootballFollowOrder.getDanMatchIds().length() - 1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber", cdFootballFollowOrder.getOrderNum());
@@ -449,7 +453,7 @@ public class CdFootballFollowOrderController extends BaseController {
         }
 
         addMessage(redirectAttributes, "保存成功,没有模板不能打印");
-        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";*/
         //==================end   2018-04-11   yuhongwei 跳转打印页
     }
 

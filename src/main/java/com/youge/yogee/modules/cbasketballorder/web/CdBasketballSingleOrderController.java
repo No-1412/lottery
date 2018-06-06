@@ -152,10 +152,13 @@ public class CdBasketballSingleOrderController extends BaseController {
         }
 
         cdBasketballSingleOrderService.save(cdBasketballSingleOrder);
-        //addMessage(redirectAttributes, "保存竞彩篮球订单成功");
-        //return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballSingleOrder/?repage";
+        addMessage(redirectAttributes, "保存竞彩篮球订单成功");
+        return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballSingleOrder/?repage";
+        /**
+         * 2018-06-06 yhw 去掉之前的页面打印功能
+         */
         //==================start   2018-04-11   yuhongwei 跳转打印页
-        String buy_ways = cdBasketballSingleOrder.getBuyWays();
+        /*String buy_ways = cdBasketballSingleOrder.getBuyWays();
         String match_ids = cdBasketballSingleOrder.getMatchIds().substring(0,cdBasketballSingleOrder.getMatchIds().length()-1);
         String baseUrl = "modules/print/";
         model.addAttribute("orderNumber",cdBasketballSingleOrder.getOrderNum());
@@ -174,7 +177,7 @@ public class CdBasketballSingleOrderController extends BaseController {
 
         addMessage(redirectAttributes, "保存成功,没有模板不能打印");
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballSingleOrder/?repage";
-
+*/
         //==================end   2018-04-11   yuhongwei 跳转打印页
     }
 
