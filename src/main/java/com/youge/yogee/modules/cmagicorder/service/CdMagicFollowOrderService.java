@@ -69,7 +69,7 @@ public class CdMagicFollowOrderService extends BaseService {
         dc.add(Restrictions.eq("magicOrderId", mid));
 
         dc.add(Restrictions.eq(CdMagicFollowOrder.FIELD_DEL_FLAG, CdMagicFollowOrder.DEL_FLAG_NORMAL));
-
+        dc.addOrder(Order.desc("price"));
         return cdMagicFollowOrderDao.find(dc);
     }
 
