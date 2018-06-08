@@ -98,12 +98,18 @@ public class NotBallAwardsInterface {
         String allAward = clr.getPerNoteMoney().replaceAll("--,", "");
         String perNoteMoney = allAward.replaceAll(",--", "");
         String[] perNoteMoneyArrray = perNoteMoney.split(",");
-
+        int count = 0;
         List<Map<String, String>> list = new ArrayList();
         for (int i = 0; i < perNoteMoneyArrray.length; i++) {
             Map<String, String> noteMap = new HashMap();
-            noteMap.put("per", perNoteMoneyArrray[i]); //每注金额
-            noteMap.put("noteNum", noteNumsArrray[i]);//注数
+            if(i%2 == 0){
+                noteMap.put("per", perNoteMoneyArrray[i/2]); //每注金额
+                noteMap.put("noteNum", noteNumsArrray[i/2]);//注数
+            }else {
+                noteMap.put("per",perNoteMoneyArrray[6+count]);
+                noteMap.put("noteNum",noteNumsArrray[6+count]);
+                count++;
+            }
             list.add(noteMap);
         }
 
