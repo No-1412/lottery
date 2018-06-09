@@ -57,7 +57,17 @@ public class CdLotteryUserService extends BaseService {
         }
         cdLotteryUserDao.save(cdLotteryUser);
     }
-
+    //判断昵称是否已被使用
+    public int findByName(String name) {
+        DetachedCriteria dc = cdLotteryUserDao.createDetachedCriteria();
+        dc.add(Restrictions.eq("name", name));
+        dc.add(Restrictions.eq(CdLotteryUser.FIELD_DEL_FLAG, CdLotteryUser.DEL_FLAG_NORMAL));
+        List<CdLotteryUser> list = cdLotteryUserDao.find(dc);
+        if (list.size() > 0) {
+            return list.size();
+        }
+        return 0;
+    }
     //根据手机号获取用户信息
     public CdLotteryUser findByPhone(String phone) {
         DetachedCriteria dc = cdLotteryUserDao.createDetachedCriteria();

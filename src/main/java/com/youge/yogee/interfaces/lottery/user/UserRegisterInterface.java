@@ -402,9 +402,15 @@ public class UserRegisterInterface {
         //新昵称
         String name = (String) jsonData.get("name");
         if (StringUtils.isNotEmpty(name)) {
+            int countName = cdLotteryUserService.findByName(name);
+            if(countName>0){
+                logger.error("昵称已被注册，请换一个吧！");
+              return   HttpResultUtil.errorJson("昵称已被注册，请换一个吧");
+            }
             cdLotteryUser.setName(name);
             cdLotteryUser.setAccount(name);
         }
+
         //头像
         String img = (String) jsonData.get("img");
         if (StringUtils.isNotEmpty(img)) {
