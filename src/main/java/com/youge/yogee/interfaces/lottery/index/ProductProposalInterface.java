@@ -1,6 +1,8 @@
 package com.youge.yogee.interfaces.lottery.index;
 
 import com.youge.yogee.interfaces.util.HttpResultUtil;
+import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
+import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.cproductproposal.service.CdProductProposalService;
 import com.youge.yogee.publicutils.AddUtils;
 import com.youge.yogee.publicutils.ImgUploudUtlis;
@@ -28,6 +30,8 @@ public class ProductProposalInterface {
     @Autowired
     private CdProductProposalService cdProductProposalService;
 
+    @Autowired
+    private CdLotteryUserService cdLotteryUserService;
     /***
      * 产品建议添加
      */
@@ -35,15 +39,24 @@ public class ProductProposalInterface {
     @ResponseBody
     public String productProposal(HttpServletRequest request,MultipartFile file) {
         logger.info("产品建议productProposal---------- Start--------");
+
+        //添加userId字段
+        String userId = request.getParameter("uid");
+
+        CdLotteryUser cdLotteryUser = cdLotteryUserService.get(userId);
+        String name = cdLotteryUser.getName();
+
         String content = request.getParameter("content");//发布标题
         Map mapData = new HashMap();
         Map map = ImgUploudUtlis.getUploud(request, file);
         String img = "";
+
         if(map!=null && map.size()>0){
             //单张图片
             img = (String)map.get("fileNames");
         }
-        AddUtils.productProposal(cdProductProposalService, img, content);
+
+        AddUtils.productProposal(cdProductProposalService, img, content,name);
         logger.info("产品建议productProposal---------- End--------");
         return HttpResultUtil.successJson(mapData);
     }

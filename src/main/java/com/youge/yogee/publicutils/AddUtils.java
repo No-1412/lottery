@@ -107,10 +107,11 @@ public class AddUtils {
     /**
      *产品建议
      */
-    public static void productProposal(CdProductProposalService cdProductProposalService,String img, String content){
+    public static void productProposal(CdProductProposalService cdProductProposalService,String img, String content,String name){
         CdProductProposal pp = new CdProductProposal();
         pp.setImg(img);
         pp.setContent(content);
+        pp.setName(name);
         cdProductProposalService.save(pp);
     }
 

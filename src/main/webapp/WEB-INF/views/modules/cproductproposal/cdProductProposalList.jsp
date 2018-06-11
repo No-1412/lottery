@@ -35,6 +35,9 @@
 			<tr>
 				<th>内容</th>
 				<th>日期</th>
+				<th>用户名称</th>
+				<%--后台图片备用--%>
+				<%--<th>图片</th>--%>
 				<shiro:hasPermission name="cproductproposal:cdProductProposal:edit"><th>操作</th></shiro:hasPermission>
 			</tr>
 		</thead>
@@ -43,6 +46,11 @@
 			<tr>
 				<td><a href="${ctx}/cproductproposal/cdProductProposal/form?id=${cdProductProposal.id}">${cdProductProposal.content}</a></td>
 				<td>${fn:substring(cdProductProposal.createDate,0 ,19 )}</td>
+				<td><a href="${ctx}/cproductproposal/cdProductProposal/form?id=${cdProductProposal.id}">${cdProductProposal.name}</a></td>
+				<%--图片备用--%>
+					<%--<td>--%>
+					<%--<img src="${cdProductProposal.img} style="width: 90px;height:50px;"">--%>
+				<%--</td>--%>
 				<shiro:hasPermission name="cproductproposal:cdProductProposal:edit">
 					<td>
 	    				<a href="${ctx}/cproductproposal/cdProductProposal/form?id=${cdProductProposal.id}">修改</a>
