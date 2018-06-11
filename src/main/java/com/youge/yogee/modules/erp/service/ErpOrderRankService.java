@@ -98,6 +98,7 @@ public class ErpOrderRankService extends BaseService {
 			data.put("moneytotal",objs[4] == null ? "0" : objs[4].toString());
 			data.put("num",objs[5] == null ? "0" : objs[5].toString());
 			data.put("createdate",objs[6] == null ? "0" : objs[6].toString());
+			data.put("role_name",objs[7] == null ? "0" : objs[7].toString());
 			data.put("rowNo",i+1+"");
 			list.add(data);
 		}

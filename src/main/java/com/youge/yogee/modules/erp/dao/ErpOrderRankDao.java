@@ -31,10 +31,10 @@ public class ErpOrderRankDao extends BaseDao<ErpOrderRank> {
 
     public Page findRank(Page<Map<String, String>> page, String beginDate, String endDate) {
         String tiaojian = " and cdorder.create_date BETWEEN '" + beginDate + "' and'" + endDate + "' ";
-        String sql = " SELECT  t.asaleid as saleid,t.username as salename,c.moneywithoutgendan,d.moneygendan,a.moneytotal,b.num,t.createdate from " +
+        String sql = " SELECT  t.asaleid as saleid,t.username as salename,c.moneywithoutgendan,d.moneygendan,a.moneytotal,b.num,t.createdate,t.role_name as role_name from " +
                 //所有销售员
-                " (SELECT su.id as asaleid,su.name as username,su.create_date as createdate from sys_role sr  LEFT JOIN sys_user_role sur on  sr.id = sur.role_id " +
-                " LEFT JOIN sys_user su on su.id = sur.user_id where sr.name ='销售员' and su.del_flag <>1 " +
+                " (SELECT su.id as asaleid,su.name as username,su.create_date as createdate,sr.name role_name from sys_role sr  LEFT JOIN sys_user_role sur on  sr.id = sur.role_id " +
+                " LEFT JOIN sys_user su on su.id = sur.user_id where sr.name not in('普通用户' ,'系统管理员') and su.del_flag <>1 " +
                 //"or sr.name ='系统管理员' " +
                 ") t LEFT JOIN " +
                 //总业绩
