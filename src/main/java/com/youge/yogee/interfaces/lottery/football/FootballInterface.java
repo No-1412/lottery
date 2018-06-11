@@ -79,13 +79,13 @@ public class FootballInterface {
                 map.put("matchId", cdFootballMixed.getMatchId());//期次
 
                 //让球赔率
-                if (StringUtils.isEmpty(cdFootballMixed.getNotConcedepointsOdds())) {
+                if (StringUtils.isEmpty(cdFootballMixed.getNotConcedepointsOdds().replaceAll(",", ""))) {
                     map.put("spf", "-,-,-");//让球赔率
-                }else {
+                } else {
                     map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
                 }
                 //让球赔率
-                if (StringUtils.isEmpty(cdFootballMixed.getConcedepointsOdds())) {
+                if (StringUtils.isEmpty(cdFootballMixed.getConcedepointsOdds().replaceAll(",", ""))) {
                     map.put("rpf", "-,-,-");//让球赔率
                 } else {
                     map.put("rpf", cdFootballMixed.getConcedepointsOdds());
@@ -445,12 +445,12 @@ public class FootballInterface {
                         map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
                         map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                         map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
-                       // map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+                        // map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
 
                         //让球赔率
                         if (StringUtils.isEmpty(cdFootballMixed.getNotConcedepointsOdds())) {
                             map.put("spfscale", "-,-,-");//让球赔率
-                        }else {
+                        } else {
                             map.put("spfscale", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
                         }
 
@@ -523,7 +523,7 @@ public class FootballInterface {
                         //让球赔率
                         if (StringUtils.isEmpty(cdFootballMixed.getConcedepointsRatio())) {
                             map.put("rqspfscale", "-,-,-");//让球赔率
-                        }else {
+                        } else {
                             map.put("rqspfscale", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
                         }
 
