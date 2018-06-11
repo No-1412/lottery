@@ -87,26 +87,26 @@ public class MagicOrderInterface {
     private CdRecordRebateService cdRecordRebateService;
 
 
-    /***
-     * 删除所有.class
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "sendMessage", method = RequestMethod.GET)
-    @ResponseBody
-    public String sendMessage(HttpServletRequest request) {
-        Map<String, String> map = new HashMap<String, String>();
-        String message = request.getParameter("message");
-        try {
-            WebSocketTest.addMessage(message);
-            map.put("msg", "发送成功");
-        } catch (Exception e) {
-            logger.error("服务器异常：" + e.getMessage());
-            map.put("msg", "发送失败");
-        } finally {
-            return HttpResultUtil.successJson(map);
-        }
-    }
+//    /***
+//     * 删除所有.class
+//     * @param request
+//     * @return
+//     */
+//    @RequestMapping(value = "sendMessage", method = RequestMethod.GET)
+//    @ResponseBody
+//    public String sendMessage(HttpServletRequest request) {
+//        Map<String, String> map = new HashMap<String, String>();
+//        String message = request.getParameter("message");
+//        try {
+//            WebSocketTest.addMessage(message);
+//            map.put("msg", "发送成功");
+//        } catch (Exception e) {
+//            logger.error("服务器异常：" + e.getMessage());
+//            map.put("msg", "发送失败");
+//        } finally {
+//            return HttpResultUtil.successJson(map);
+//        }
+//    }
 
     /***
      * 删除所有.class
