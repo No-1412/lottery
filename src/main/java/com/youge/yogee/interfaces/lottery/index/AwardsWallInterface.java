@@ -163,6 +163,7 @@ public class AwardsWallInterface {
                     if (oAward != null) {
                         String winPrice = (String) map.get("winPrice");
                         map.put("realAward", new BigDecimal(winPrice).setScale(2, RoundingMode.HALF_DOWN).toString());
+                        System.out.println(oAward.toString());
                         BigDecimal awardBigDecimal = new BigDecimal((String) oAward);
                         map.put("winPrice", awardBigDecimal.setScale(2, RoundingMode.HALF_DOWN).toString());
 

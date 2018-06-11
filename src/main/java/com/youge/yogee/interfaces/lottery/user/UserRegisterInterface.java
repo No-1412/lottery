@@ -402,10 +402,18 @@ public class UserRegisterInterface {
         //新昵称
         String name = (String) jsonData.get("name");
         if (StringUtils.isNotEmpty(name)) {
+
+            int n = name.length();
+            if (n > 20) {
+                logger.error("昵称不得超过20个字符，请换一个吧！");
+                return HttpResultUtil.errorJson("昵称不得超过20个字符，请换一个吧");
+            }
+
+
             int countName = cdLotteryUserService.findByName(name);
-            if(countName>0){
-                logger.error("昵称已被注册，请换一个吧！");
-              return   HttpResultUtil.errorJson("昵称已被注册，请换一个吧");
+            if (countName > 0) {
+                logger.error("昵称已存在，请换一个吧！");
+                return HttpResultUtil.errorJson("昵称已存在，请换一个吧");
             }
             cdLotteryUser.setName(name);
             cdLotteryUser.setAccount(name);
