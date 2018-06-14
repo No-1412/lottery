@@ -362,7 +362,8 @@ public class CdFootballSingleOrderController extends BaseController {
                 for (String s : scoreAndOddArray) {
                     String[] sArray = s.split("/");
                     String no = scoreMap.get(sArray[0]);
-                    String newOdd = scoreOddsArray[Integer.parseInt(no)];
+                    String newNo = no.replaceAll(" ", "");
+                    String newOdd = scoreOddsArray[Integer.parseInt(newNo)];
                     s = sArray[0] + "/" + newOdd + "/" + sArray[2];
                     newScoreOdd += s + ",";
                 }
@@ -407,6 +408,7 @@ public class CdFootballSingleOrderController extends BaseController {
                 for (String s : scoreAndOddArray) {
                     String[] sArray = s.split("/");
                     int no = Integer.parseInt(sArray[0]);
+
                     String newOdd = goalOddsArray[no];
 //                    s = sArray[0] + "/" + newOdd;
                     s = sArray[0] + "/" + newOdd + "/" + sArray[2];
