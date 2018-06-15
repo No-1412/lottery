@@ -205,7 +205,7 @@ public class BasketballFollowOrderInterface {
                         }
                     }
                     letScore += cbm.getClose() + ",";
-                    letDetail += partDetail + "+" + let + "|";
+                    letDetail += partDetail + "+" + let + "+" + cbm.getClose().replaceAll("\\+", "") + "|";
                 }
 
 
@@ -531,7 +531,7 @@ public class BasketballFollowOrderInterface {
                     if (cbm == null) {
                         return HttpResultUtil.errorJson("比赛不存在！");
                     }
-                    String close = cbm.getClose().replaceAll("\\+","");//让分
+                    String close = cbm.getClose().replaceAll("\\+", "");//让分
                     String zclose = cbm.getZclose();//大小分分数
                     matchIds += matchId + ",";
                     String odds = (String) aBestDeatil.get("odds");//赔率
