@@ -422,6 +422,7 @@ public class FootballInterface {
                 if (StringUtils.isNotEmpty(cdFootballMixed.getIsale())) {
                     int dgs = FundModel.FT_DG_SPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
                     int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+
                     if (dgs > 0) {//单关判断
                         Map map = new HashMap();
                         maps.put("addesc", cdFootball.getMatchsDate());//时间日期
