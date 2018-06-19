@@ -69,6 +69,7 @@ public class FootballFollowOrderInterface {
             logger.error("buyWays为空");
             return HttpResultUtil.errorJson("buyWays为空");
         }
+
         //串关数
         String followNum = (String) jsonData.get("followNum");
         if (StringUtils.isEmpty(followNum)) {
@@ -112,7 +113,27 @@ public class FootballFollowOrderInterface {
         String danMatchIds = "";//胆场次
         String matchTimes="";//所有比赛时间
         if (detail.size() != 0) {
-
+            if("3".equals(buyWays)){
+                String lets = "";
+                boolean isaleFlag = true;
+                for (Map<String, Object> d : detail) {
+                    String let = (String) d.get("let");
+                    lets += let+"|";
+                    String matchId = (String) d.get("matchId");
+                    CdFootballMixed sfm = cdFootballMixedService.findByMatchId(matchId);
+                    if (sfm == null) {
+                        return HttpResultUtil.errorJson("比赛不存在");
+                    }
+                    String isale = sfm.getIsale();
+                    if(!"991".equals(isale)){
+                        isaleFlag =false;
+                    }
+                }
+                String[] letStrs = lets.split("\\|");
+                if(letStrs.length<2&&isaleFlag){
+                    return HttpResultUtil.errorJson("下单失败,存在未开售单关,需至少选择俩场比赛");
+                }
+            }
             for (Map<String, Object> d : detail) {
                 String results = "";
                 int mixCount = 0;//混投胆数

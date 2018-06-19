@@ -94,7 +94,21 @@
             }
         }
 
-
+//
+        var printLottery = function(orderNum,type){
+            alert("精彩即将呈现，请耐心等待");
+           /* $.ajax({
+                type:"post",
+                url: "http://192.168.51.7:8089/f/printLottery",
+                data: JSON.stringify({"orderNum":orderNum,"type":type}),
+                contentType: "application/json;charset=utf-8",
+                success: function (data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.msg);
+                    alert(obj.msg);
+                }
+            });*/
+        }
     </script>
 </head>
 <body>
@@ -213,6 +227,7 @@
                 <td>
                     <a href="${ctx}/erp/erpOrder/form?id=${erpOrder.id}">修改备注</a>
                         <%--<a href="${ctx}/erp/erpOrder/delete?id=${erpOrder.id}" onclick="return confirmx('确认要删除该业绩吗？', this.href)">删除</a>--%>
+                    <input type="button" value="系统出票" onclick="printLottery('${erpOrder.number}','${erpOrder.bestType}')">
                 </td>
             </shiro:hasPermission>
         </tr>

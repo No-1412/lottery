@@ -122,6 +122,8 @@ public class FootballSingleOrderInterface {
                 }
                 //比分所有押注结果
                 String score = (String) d.get("score");
+                //2018-06-14 yhw  处理2:1后有空格问题
+                score = score.replaceAll(" ","");
                 if (StringUtils.isNotEmpty(score)) {
                     String scoreArry[] = score.split(",");
                     for (String s : scoreArry) {

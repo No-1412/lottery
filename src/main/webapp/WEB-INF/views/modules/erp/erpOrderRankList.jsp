@@ -43,6 +43,7 @@
 				<th>总业绩</th>
 				<th>被跟单量</th>
 				<th>入职时间</th>
+				<th>角色名称</th>
 				<%--<shiro:hasPermission name="erp:erpOrderRank:edit"><th>操作</th></shiro:hasPermission>--%>
 			</tr>
 		</thead>
@@ -63,7 +64,7 @@
 				<td>${mapRank.moneytotal}</td>
 				<td>${mapRank.num}</td>
 				<td>${mapRank.createdate}</td>
-
+				<td>${mapRank.role_name}</td>
 			</tr>
 		</c:forEach>
 		</tbody>
