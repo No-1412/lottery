@@ -173,24 +173,23 @@ public class CdFootballFollowOrderController extends BaseController {
             return form(cdFootballFollowOrder, model);
         }
         //更新到出票赔率
-        String newScoreDetail = getNewScore(cdFootballFollowOrder);
-        String newGoalDetail = getNewGoal(cdFootballFollowOrder);
-        String newHalfDetail = getNewHalf(cdFootballFollowOrder);
-        String newBeatDetail = getNewBeat(cdFootballFollowOrder);
-        String newLetDetail = getNewLet(cdFootballFollowOrder);
-
+//        String newScoreDetail = getNewScore(cdFootballFollowOrder);
+//        String newGoalDetail = getNewGoal(cdFootballFollowOrder);
+//        String newHalfDetail = getNewHalf(cdFootballFollowOrder);
+//        String newBeatDetail = getNewBeat(cdFootballFollowOrder);
+//        String newLetDetail = getNewLet(cdFootballFollowOrder);
 //        if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
 //            cdFootballFollowOrder.setStatus("2");
 //            cdFootballFollowOrderService.save(cdFootballFollowOrder);
 //            addMessage(redirectAttributes, "出票失败,比赛可能不存在");
 //            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
 //        }
-        //更新赔率
-        cdFootballFollowOrder.setScore(newScoreDetail);
-        cdFootballFollowOrder.setGoal(newGoalDetail);
-        cdFootballFollowOrder.setHalf(newHalfDetail);
-        cdFootballFollowOrder.setBeat(newBeatDetail);
-        cdFootballFollowOrder.setLet(newLetDetail);
+//        //更新赔率
+//        cdFootballFollowOrder.setScore(newScoreDetail);
+//        cdFootballFollowOrder.setGoal(newGoalDetail);
+//        cdFootballFollowOrder.setHalf(newHalfDetail);
+//        cdFootballFollowOrder.setBeat(newBeatDetail);
+//        cdFootballFollowOrder.setLet(newLetDetail);
 
         //更新让球
         String let = cdFootballFollowOrder.getLet();
