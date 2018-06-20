@@ -434,7 +434,6 @@ public class FootballInterface {
 
     //单关
     //region Description
-
     /**
      * 查询足球单关胜平负
      * wangsong
@@ -446,6 +445,88 @@ public class FootballInterface {
     @ResponseBody
     public String listDgSurpassFlatDefeat(HttpServletRequest request) {
         logger.info("listDgSurpassFlatDefeat  足球单关胜负平---------Start---------");
+        List list = new ArrayList();
+        List dataList = new ArrayList();
+        List ListSize = cdFootballMixedService.getSize();//去重复查询时间
+        if (ListSize.size() == 0) {
+            return HttpResultUtil.errorJson("数据未更新");
+        }
+        for (int i = 0; i < ListSize.size(); i++) {
+            int all = 0;//标记场次
+            Map maps = new HashMap();
+            List cdFootballMixedList = cdFootballMixedService.findByName(ListSize.get(i).toString(), "notConcedepointsRatio", "--,--,--");//按时间进行查询数据
+            CdFootballMixed cdFootball = (CdFootballMixed) cdFootballMixedList.get(0);//获取比赛日期
+            List listbytime = new ArrayList();
+            for (int y = 0; y < cdFootballMixedList.size(); y++) {//当天比赛场次List
+                CdFootballMixed cdFootballMixed = (CdFootballMixed) cdFootballMixedList.get(y);
+                if (StringUtils.isNotEmpty(cdFootballMixed.getIsale())) {
+                    int dgs = FundModel.FT_DG_SPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                    int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                    if (dgs > 0) {//单关判断
+                        Map map = new HashMap();
+                        maps.put("addesc", cdFootball.getMatchsDate());//时间日期
+                        map.put("mt", cdFootballMixed.getMatchId());//赛事场次
+                        map.put("itemid", cdFootballMixed.getMatchDate());//比赛时间
+                        map.put("mname", cdFootballMixed.getEventName());//赛事名称
+                        map.put("et", cdFootballMixed.getTimeEndsale().substring(11, 16));//截止时间2018-01-09 16:35:00
+                        map.put("hn", cdFootballMixed.getWinningName());//主队名称
+                        map.put("gn", cdFootballMixed.getDefeatedName());//客队名称
+                        map.put("matchId", cdFootballMixed.getMatchId());//期次
+
+                        map.put("spf", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                        map.put("rpf", cdFootballMixed.getConcedepointsOdds());//让球赔率
+                        map.put("sod", cdFootballMixed.getScoreOdds());//比分赔率
+                        map.put("aod", cdFootballMixed.getAllOdds());//总进球赔率
+                        map.put("hod", cdFootballMixed.getHalfOdds());//半全场赔率
+                        map.put("close", cdFootballMixed.getClose());//让球
+
+                        map.put("hm", cdFootballMixed.getWinningRank());//主队排名
+                        map.put("gm", cdFootballMixed.getDefeatedRank());//客队排名
+                        map.put("history", cdFootballMixed.getHistoryWinningSurpass());//主队历史交锋
+                        map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
+                        map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
+                        // map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+
+                        //让球赔率
+                        if (StringUtils.isEmpty(cdFootballMixed.getNotConcedepointsOdds())) {
+                            map.put("spfscale", "-,-,-");//让球赔率
+                        }else {
+                            map.put("spfscale", cdFootballMixed.getNotConcedepointsOdds());//非让球赔率
+                        }
+
+
+                        if (rqs > 1) {
+                            map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                        } else {
+                            map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                        }
+                        listbytime.add(map);
+                    }
+                }
+            }
+            if (listbytime.size() > 0) {//小于0说明没有比赛
+                list.add(listbytime);
+                maps.put("allCount", listbytime.size());//比赛总场次
+                dataList.add(maps);
+            }
+        }
+        Map dataMap = new HashMap();
+        dataMap.put("list", list);
+        dataMap.put("dataList", dataList);
+        logger.info("listDgSurpassFlatDefeat  足球单关胜负平---------End---------");
+        return HttpResultUtil.successJson(dataMap);
+    }
+    /**
+     * 查询足球单关胜平负+让球胜负平
+     * wangsong
+     * 2018_1_23
+     *
+     * @return
+     */
+    @RequestMapping(value = "listDgSurpassFlatDefeat_together", method = RequestMethod.POST)
+    @ResponseBody
+    public String listDgSurpassFlatDefeat_together(HttpServletRequest request) {
+        logger.info("listDgSurpassFlatDefeat_together  足球单关胜平负+让球胜负平---------Start---------");
         List list = new ArrayList();
         List dataList = new ArrayList();
         List ListSize = cdFootballMixedService.getSize();//去重复查询时间
@@ -519,7 +600,7 @@ public class FootballInterface {
         Map dataMap = new HashMap();
         dataMap.put("list", list);
         dataMap.put("dataList", dataList);
-        logger.info("listDgSurpassFlatDefeat  足球单关胜负平---------End---------");
+        logger.info("listDgSurpassFlatDefeat_together  足球单关胜平负+让球胜负平---------End---------");
         return HttpResultUtil.successJson(dataMap);
     }
 
