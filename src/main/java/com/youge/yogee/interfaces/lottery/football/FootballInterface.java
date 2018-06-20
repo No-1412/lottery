@@ -102,21 +102,62 @@ public class FootballInterface {
                 map.put("htn", cdFootballMixed.getRecentWinningSurpass());//主队近期战绩
                 map.put("gtn", cdFootballMixed.getRecentDefeatedSurpass());//客队近期战绩
                 map.put("spfscale", cdFootballMixed.getNotConcedepointsRatio());//非让球投注比例
+
                 if ("991".equals(cdFootballMixed.getIsale())) {
                     map.put("isSingle", "1");//是否单关 1是 0不是
                 } else {
                     map.put("isSingle", "0");//是否单关 1是 0不是
+//                    if("511".equals(cdFootballMixed.getIsale())){
+//                        int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+//                        if(rqs>0){
+//                            map.put("isSingle", "1");//是否单关让球 1是 0不是
+//                        }
+//                    }
                 }
-                int dgs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+
+                if ("511".equals(cdFootballMixed.getIsale())){
+                    map.put("isSingleLet", "1");//是否单关 1是 0不是
+                } else {
+                    map.put("isSingleLet", "0");//是否单关 1是 0不是
+//                    if("511".equals(cdFootballMixed.getIsale())){
+//                        int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+//                        if(rqs>0){
+//                            map.put("isSingle", "1");//是否单关让球 1是 0不是
+//                        }
+//                    }
+                }
+//                int dgs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+//                if (dgs > 0) {
+//                    map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+//                } else {
+//                    map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+//                }
+
+
+                /*int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
+                int dgs = FundModel.FT_DG_SPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
                 if (dgs > 0) {
                     map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                    map.put("isSingle", "1");//是否单关 1是 0不是
                 } else {
-                    map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                    if(rqs>0){
+                        map.put("isSingle", "1");//是否单关让球 1是 0不是
+                    }else {
+                        map.put("isSingle", "0");//是否单关让球 1是 0不是
+                    }
                 }
+
+
+                if(rqs>0){
+                    map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                }else {
+                    map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                }*/
                 listbytime.add(map);
             }
             list.add(listbytime);
         }
+
         Map dataMap = new HashMap();
         dataMap.put("list", list);
         dataMap.put("dataList", dataList);
@@ -422,7 +463,7 @@ public class FootballInterface {
                 if (StringUtils.isNotEmpty(cdFootballMixed.getIsale())) {
                     int dgs = FundModel.FT_DG_SPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
                     int rqs = FundModel.FT_DG_RQSPF.getFundNum() & Integer.parseInt(cdFootballMixed.getIsale());
-                    if (dgs > 0) {//单关判断
+                    if (dgs > 0 || rqs > 0) {//单关判断
                         Map map = new HashMap();
                         maps.put("addesc", cdFootball.getMatchsDate());//时间日期
                         map.put("mt", cdFootballMixed.getMatchId());//赛事场次
@@ -455,15 +496,20 @@ public class FootballInterface {
                         }
 
 
-                        if (rqs > 1) {
+                        if (rqs > 0) {
                             map.put("isSingleLet", "1");//是否单关让球 1是 0不是
+                            map.put("isSingle", "0");
                         } else {
                             map.put("isSingleLet", "0");//是否单关让球 1是 0不是
+                            map.put("isSingle", "1");
                         }
+                        //map.put("isSingle","1");
                         listbytime.add(map);
                     }
                 }
             }
+
+
             if (listbytime.size() > 0) {//小于0说明没有比赛
                 list.add(listbytime);
                 maps.put("allCount", listbytime.size());//比赛总场次
