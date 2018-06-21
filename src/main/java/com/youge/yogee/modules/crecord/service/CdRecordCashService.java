@@ -59,6 +59,7 @@ public class CdRecordCashService extends BaseService {
         //2018-06-21 yhw 处理姓名中的特殊字符
         cdRecordCash.setCardName(StringEscapeUtils.unescapeHtml4(cdRecordCash.getCardName()));
         cdRecordCashDao.save(cdRecordCash);
+
     }
 
     @Transactional(readOnly = false)
