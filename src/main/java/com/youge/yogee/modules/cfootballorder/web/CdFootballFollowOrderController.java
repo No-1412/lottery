@@ -178,19 +178,21 @@ public class CdFootballFollowOrderController extends BaseController {
         String newHalfDetail = getNewHalf(cdFootballFollowOrder);
         String newBeatDetail = getNewBeat(cdFootballFollowOrder);
         String newLetDetail = getNewLet(cdFootballFollowOrder);
-
-//        if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
-//            cdFootballFollowOrder.setStatus("2");
-//            cdFootballFollowOrderService.save(cdFootballFollowOrder);
-//            addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-//            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-//        }
+       /* if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
+            cdFootballFollowOrder.setStatus("2");
+            cdFootballFollowOrderService.save(cdFootballFollowOrder);
+            addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+            return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+        }*/
         //更新赔率
-        cdFootballFollowOrder.setScore(newScoreDetail);
-        cdFootballFollowOrder.setGoal(newGoalDetail);
-        cdFootballFollowOrder.setHalf(newHalfDetail);
-        cdFootballFollowOrder.setBeat(newBeatDetail);
-        cdFootballFollowOrder.setLet(newLetDetail);
+//2018-06-20 yhw 解决赔率更新问题，暂时把比赛不存在问题屏蔽
+        if (!"0".equals(newScoreDetail)) {
+            cdFootballFollowOrder.setScore(newScoreDetail);
+        }
+        if (!"0".equals(newGoalDetail)){ cdFootballFollowOrder.setGoal(newGoalDetail);}
+        if (!"0".equals(newHalfDetail)){ cdFootballFollowOrder.setHalf(newHalfDetail);}
+        if (!"0".equals(newBeatDetail)){ cdFootballFollowOrder.setBeat(newBeatDetail);}
+        if (!"0".equals(newLetDetail)){ cdFootballFollowOrder.setLet(newLetDetail);}
 
         //更新让球
         String let = cdFootballFollowOrder.getLet();
@@ -214,11 +216,11 @@ public class CdFootballFollowOrderController extends BaseController {
         }
 
         //保存出票时间
-        Date day=new Date();
+        Date day = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String outTime=df.format(day);
-        CdOrder co=cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
-        if(co!=null){
+        String outTime = df.format(day);
+        CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+        if (co != null) {
             co.setOutTime(outTime);
             cdOrderService.save(co);
         }

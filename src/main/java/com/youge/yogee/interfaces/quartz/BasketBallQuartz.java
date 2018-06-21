@@ -84,8 +84,8 @@ public class BasketBallQuartz {
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
     @Scheduled(cron = "0 0/30 * * * ?")//2小时
-   // @Scheduled(cron = "*/30 * * * * ?")
-    //@Scheduled(cron = "0/10 * * * * ?")//10s
+//    @Scheduled(cron = "*/30 * * * * ?")
+//    @Scheduled(cron = "0/10 * * * * ?")//10s
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void basketBallFollowOrder() {
 
