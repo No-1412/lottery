@@ -10,6 +10,7 @@ import com.youge.yogee.common.utils.IdGen;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.modules.crecord.dao.CdRecordCashDao;
 import com.youge.yogee.modules.crecord.entity.CdRecordCash;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Order;
@@ -55,6 +56,8 @@ public class CdRecordCashService extends BaseService {
             cdRecordCash.setCreateDate(DateUtils.getDateTime());
             cdRecordCash.setDelFlag(CdRecordCash.DEL_FLAG_NORMAL);
         }
+        //2018-06-21 yhw 处理姓名中的特殊字符
+        cdRecordCash.setCardName(StringEscapeUtils.unescapeHtml4(cdRecordCash.getCardName()));
         cdRecordCashDao.save(cdRecordCash);
     }
 
