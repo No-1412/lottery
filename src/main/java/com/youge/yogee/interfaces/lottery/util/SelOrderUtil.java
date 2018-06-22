@@ -1420,11 +1420,11 @@ public class SelOrderUtil {
                 String finalLet2 = finalLet1.replaceFirst("1/", "平/");
                 String finalLet3 = finalLet2.replaceFirst("0/", "让客胜/");
                 realLet = finalLet3;*/
-                if (trueBeat.startsWith("3/")) {
+                if (trueLet.startsWith("3/")) {
                     realLet = trueLet.replaceFirst("3/", "主胜/");
-                } else if (trueBeat.startsWith("1/")) {
+                } else if (trueLet.startsWith("1/")) {
                     realLet = trueLet.replaceFirst("1/", "平/");
-                } else if (trueBeat.startsWith("0/")) {
+                } else if (trueLet.startsWith("0/")) {
                     realLet = trueLet.replaceFirst("0/", "客胜/");
                 }
 
