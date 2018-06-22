@@ -194,7 +194,8 @@ public class CdFootballFollowOrderController extends BaseController {
         if (!"0".equals(newBeatDetail)){ cdFootballFollowOrder.setBeat(newBeatDetail);}
         if (!"0".equals(newLetDetail)){ cdFootballFollowOrder.setLet(newLetDetail);}
 
-        //更新让球
+        //2018-06-22 yhw 让球数在下单时，就已保存，不需要重新保存
+       /* //更新让球
         String let = cdFootballFollowOrder.getLet();
         if (StringUtils.isNotEmpty(let)) {
             String letScore = "";
@@ -213,7 +214,7 @@ public class CdFootballFollowOrderController extends BaseController {
                 }
             }
             cdFootballFollowOrder.setLetBalls(letScore);
-        }
+        }*/
 
         //保存出票时间
         Date day = new Date();
