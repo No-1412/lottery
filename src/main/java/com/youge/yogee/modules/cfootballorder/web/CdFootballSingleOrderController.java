@@ -175,7 +175,7 @@ public class CdFootballSingleOrderController extends BaseController {
         String newBeatDetail = getNewBeat(cdFootballSingleOrder);
         String newLetDetail = getNewLet(cdFootballSingleOrder);
 
-        if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
+        /*if ("0".equals(newScoreDetail) || "0".equals(newGoalDetail) || "0".equals(newHalfDetail) || "0".equals(newBeatDetail) || "0".equals(newLetDetail)) {
             cdFootballSingleOrder.setStatus("2");
             cdFootballSingleOrderService.save(cdFootballSingleOrder);
             addMessage(redirectAttributes, "出票失败,比赛可能不存在");
@@ -186,9 +186,17 @@ public class CdFootballSingleOrderController extends BaseController {
         cdFootballSingleOrder.setGoal(newGoalDetail);
         cdFootballSingleOrder.setHalf(newHalfDetail);
         cdFootballSingleOrder.setBeat(newBeatDetail);
-        cdFootballSingleOrder.setLet(newLetDetail);
-
-        //更新让球
+        cdFootballSingleOrder.setLet(newLetDetail);*/
+//2018-06-20 yhw 解决赔率更新问题，暂时把比赛不存在问题屏蔽
+        if (!"0".equals(newScoreDetail)) {
+            cdFootballSingleOrder.setScore(newScoreDetail);
+        }
+        if (!"0".equals(newGoalDetail)){ cdFootballSingleOrder.setGoal(newGoalDetail);}
+        if (!"0".equals(newHalfDetail)){ cdFootballSingleOrder.setHalf(newHalfDetail);}
+        if (!"0".equals(newBeatDetail)){ cdFootballSingleOrder.setBeat(newBeatDetail);}
+        if (!"0".equals(newLetDetail)){ cdFootballSingleOrder.setLet(newLetDetail);}
+//2018-06-22 yhw 让球数在下单时，就已保存，不需要重新保存
+        /*//更新让球
         String let = cdFootballSingleOrder.getLet();
         if (StringUtils.isNotEmpty(let)) {
             String letScore = "";
@@ -207,7 +215,7 @@ public class CdFootballSingleOrderController extends BaseController {
                 }
             }
             cdFootballSingleOrder.setLetBalls(letScore);
-        }
+        }*/
 
         //保存出票时间
         Date day=new Date();

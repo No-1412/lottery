@@ -720,12 +720,11 @@ public class SelOrderUtil {
                 if (StringUtils.isNotEmpty(trueLet)) {
                     String[] split2 = trueLet.split("/");
                     if ("3".equals(split2[0])) {
-                        finalLet = trueBeat.replaceFirst("3", "让主胜");
-
+                        finalLet = trueLet.replaceFirst("3", "让主胜");
                     } else if ("1".equals(split2[0])) {
-                        finalLet = trueBeat.replaceFirst("1", "平");
+                        finalLet = trueLet.replaceFirst("1", "平");
                     } else if ("0".equals(split2[0])) {
-                        finalLet = trueBeat.replaceFirst("0", "让主负");
+                        finalLet = trueLet.replaceFirst("0", "让主负");
                     }
                     realLet = finalLet;
                 }
