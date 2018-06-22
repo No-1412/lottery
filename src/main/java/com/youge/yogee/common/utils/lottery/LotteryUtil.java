@@ -144,15 +144,22 @@ public class LotteryUtil {
                     for (int k = 0; k < options.length; k++) {
                         // 解析结果和赔率
                         String[] odds = options[k].split("/");
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("type", i);// 玩法分组0-4代表四种玩法
-                        jsonObject.put("result", odds[0]);// 结果
-                        jsonObject.put("odds", odds[1]);// 赔率
-                        jsonObject.put("bile", info_arr[0]);// 赔率
-                        // 保存对战玩法信息
-                        JSONArray array = sJson.getJSONArray(info_arr[1] + "_" + info_arr[2]);
-                        array.add(jsonObject);
-                        sJson.put(info_arr[1] + "_" + info_arr[2], array);
+                        if (odds.length > 1) {
+
+
+                           // System.out.println("odds==========:" + odds.length);
+                           // System.out.println(rString);
+
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("type", i);// 玩法分组0-4代表四种玩法
+                            jsonObject.put("result", odds[0]);// 结果
+                            jsonObject.put("odds", odds[1]);// 赔率
+                            jsonObject.put("bile", info_arr[0]);// 赔率
+                            // 保存对战玩法信息
+                            JSONArray array = sJson.getJSONArray(info_arr[1] + "_" + info_arr[2]);
+                            array.add(jsonObject);
+                            sJson.put(info_arr[1] + "_" + info_arr[2], array);
+                        }
                     }
                 }
             }
@@ -221,7 +228,7 @@ public class LotteryUtil {
                     List<List<String>> circulateResult = new ArrayList<List<String>>();
                     // System.out.println("赛事组合：");
                     circulate(dimValue, circulateResult);
-                    //System.out.println("循环实现笛卡尔乘积: 共 " + circulateResult.size() + " 个结果");
+//                    System.out.println("循环实现笛卡尔乘积: 共 " + circulateResult.size() + " 个结果");
                     List<String> resultList = new ArrayList<String>();
                     for (List<String> list1 : circulateResult) {
                         StringBuffer buffer = new StringBuffer();
@@ -353,6 +360,12 @@ public class LotteryUtil {
                         jsonObject.put("result", odds[0]);// 结果
                         jsonObject.put("odds", odds[1]);// 赔率
                         jsonObject.put("bile", info_arr[0]);// 胆
+                        if (i == 4) {
+                            jsonObject.put("score", info_arr[4]);// 胆
+                        } else {
+                            jsonObject.put("score", "0");// 胆
+                        }
+
                         // 保存对战玩法信息
                         JSONArray array = sJson.getJSONArray(info_arr[1] + "_" + info_arr[2]);
                         array.add(jsonObject);
@@ -415,7 +428,8 @@ public class LotteryUtil {
                             String type = object.getString("type");
                             String odds = object.getString("odds");
                             String rt = object.getString("result");
-                            group_detail.add(g_info + "_" + type + "_" + rt + "_" + odds);
+                            String score = object.getString("score");
+                            group_detail.add(g_info + "_" + type + "_" + rt + "_" + odds + "_" + score);
                             // System.out.println("组合：" + g_info + "_" + type + "_" + rt + "_" + odds);
                         }
                         dimValue.add(group_detail);
@@ -505,7 +519,20 @@ public class LotteryUtil {
                                 if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                                     bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                                 } else {
-                                    if (info[3].equals(basketBalLConvertString(oe.getSpread(), info[2]))) {
+                                    BigDecimal hs = new BigDecimal(Strings.isNullOrEmpty(oe.getHs()) ? "0" : oe.getHs());
+                                    BigDecimal vs = new BigDecimal(Strings.isNullOrEmpty(oe.getVs()) ? "0" : oe.getVs());
+                                    BigDecimal sc = new BigDecimal(info[5]);
+                                    String spread = "";
+                                    if (hs.compareTo(vs.add(sc)) == 0) {
+                                        spread = FLAT;
+                                    }
+                                    if (hs.compareTo(vs.add(sc)) == 1) {
+                                        spread = LET_MAIN_WIN;
+                                    }
+                                    if (hs.compareTo(vs.add(sc)) == -1) {
+                                        spread = LET_MAIN_LOSE;
+                                    }
+                                    if (info[3].equals(basketBalLConvertString(spread, info[2]))) {
                                         bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
                                     } else {
                                         bigDecimal = new BigDecimal("0");
@@ -545,6 +572,8 @@ public class LotteryUtil {
                 // System.out.println(rt[k]);
                 // 解析0,1,2
                 String[] info = rt[2].split("/");
+
+                String[] info_detail = rt[3].split("/");
                 int index = arrayBasketList.indexOf(rt[1]);
                 CdBasketballAwards oe = resultMap.get(rt[0]);
                 if (rt[1].equals("0")) {
@@ -598,7 +627,21 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[0].equals(basketBalLConvertString(oe.getSpread(), info[2]))) {
+
+                        BigDecimal hs = new BigDecimal(Strings.isNullOrEmpty(oe.getHs()) ? "0" : oe.getHs());
+                        BigDecimal vs = new BigDecimal(Strings.isNullOrEmpty(oe.getVs()) ? "0" : oe.getVs());
+                        BigDecimal sc = new BigDecimal(info_detail[1]);
+                        String spread = "";
+                        if (hs.compareTo(vs.add(sc)) == 0) {
+                            spread = FLAT;
+                        }
+                        if (hs.compareTo(vs.add(sc)) == 1) {
+                            spread = LET_MAIN_WIN;
+                        }
+                        if (hs.compareTo(vs.add(sc)) == -1) {
+                            spread = LET_MAIN_LOSE;
+                        }
+                        if (info[0].equals(basketBalLConvertString(spread, info[2]))) {
                             bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
@@ -870,9 +913,22 @@ public class LotteryUtil {
 
     public static void circulate(List<List<String>> dimValue, List<List<String>> result) {
         int total = 1;
+        int idx = 0;
+
+//        for (int i = 0; i < dimValue.size(); i++) {
+//            List<String> list = dimValue.get(i);
+//            if (list.size() > 0) {
+//                total *= list.size();
+//            } else {
+//                dimValue.remove(idx);
+//            }
+//        }
         for (List<String> list : dimValue) {
             total *= list.size();
         }
+
+
+        System.out.println("长度=================：" + dimValue.size());
         String[] myResult = new String[total];
 
         int itemLoopNum = 1;
@@ -880,7 +936,6 @@ public class LotteryUtil {
         int now = 1;
         for (List<String> list : dimValue) {
             now *= list.size();
-
             int index = 0;
             int currentSize = list.size();
 

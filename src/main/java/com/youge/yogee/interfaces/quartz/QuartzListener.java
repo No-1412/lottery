@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.quartz;
 
 import com.youge.yogee.common.utils.lottery.LotteryUtil;
+import com.youge.yogee.interfaces.lottery.order.FootballSingleOrderInterface;
 import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
@@ -20,6 +21,8 @@ import com.youge.yogee.modules.corder.service.CdOrderFollowTimesService;
 import com.youge.yogee.modules.corder.service.CdOrderService;
 import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -33,6 +36,8 @@ import java.util.*;
  */
 @Component("QuartzListener")
 public class QuartzListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(QuartzListener.class);
 
     @Autowired
     private CdFootballFollowOrderService cdFootballFollowOrderService;
@@ -116,7 +121,7 @@ public class QuartzListener {
 
             //判断比赛是否全部完成
             boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
-           // System.out.println(containsAll);
+            // System.out.println(containsAll);
             if (containsAll) {
 
                 String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();
@@ -577,8 +582,8 @@ public class QuartzListener {
      }*/
 
     //    "0/10 * * * * ?"
-//    @Scheduled(cron = "*/30 * * * * ?")//每10秒触发
-    @Scheduled(cron = "0 0/30 * * * ?")//2小时
+//    @Scheduled(cron = "0 */30 * * * ?")//每10秒触发
+    @Scheduled(cron = "0/30 * * * * ?")//2小时
     public void footballFollowOrder() {
         System.out.println("足球串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("1");
@@ -595,68 +600,78 @@ public class QuartzListener {
 //            System.out.println("总进球" + cdFootballFollowOrder.getGoal());
 //            System.out.println("比分" + cdFootballFollowOrder.getScore());
             List<String> cdList = new ArrayList<String>();
-            cdList.add(cdFootballFollowOrder.getBeat());
-            cdList.add(cdFootballFollowOrder.getLet());
-            cdList.add(cdFootballFollowOrder.getHalf());
-            cdList.add(cdFootballFollowOrder.getGoal());
-            cdList.add(cdFootballFollowOrder.getScore());
-            List<String> index = LotteryUtil.queryEvent(cdList);
-            String[] strings = new String[index.size()];
-            String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
-            //判断比赛是否全部完成
-            boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
-            //System.out.println(containsAll);
-            if (containsAll) {
+            try {
+                if (!cdFootballFollowOrder.getBeat().equals("0") && !cdFootballFollowOrder.getLet().equals("0") && !cdFootballFollowOrder.getHalf().equals("0") && !cdFootballFollowOrder.getGoal().equals("0") && !cdFootballFollowOrder.getScore().equals("0")) {
+                    cdList.add(cdFootballFollowOrder.getBeat());
+                    cdList.add(cdFootballFollowOrder.getLet());
+                    cdList.add(cdFootballFollowOrder.getHalf());
+                    cdList.add(cdFootballFollowOrder.getGoal());
+                    cdList.add(cdFootballFollowOrder.getScore());
+                    List<String> index = LotteryUtil.queryEvent(cdList);
+                    String[] strings = new String[index.size()];
+                    String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
-                String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();
-                String[] danMatchIdArray = manyMatchIds.split(",");
-                List<String> list = new ArrayList<>();
-                for (String str : danMatchIdArray) {
-                    String matchId = str.split("\\+")[1];
-                    list.add(matchId);
-                }
-                String result = getResultStr(list);
-                cdFootballFollowOrder.setResult(result);
-                cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                    //判断比赛是否全部完成
+                    boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
+                   // System.out.println(cdFootballFollowOrder.getOrderNum() + ":" + (containsAll == true ? "中奖" : "未中奖"));
+                    if (containsAll) {
+
+                        String manyMatchIds = cdFootballFollowOrder.getDanMatchIds();
+                        String[] danMatchIdArray = manyMatchIds.split(",");
+                        List<String> list = new ArrayList<>();
+                        for (String str : danMatchIdArray) {
+                            String matchId = str.split("\\+")[1];
+                            list.add(matchId);
+                        }
+                        String result = getResultStr(list);
+                        cdFootballFollowOrder.setResult(result);
+                        cdFootballFollowOrderService.save(cdFootballFollowOrder);
 
 
-                Map<String, CdFootballAwards> resultMap = new HashMap<String, CdFootballAwards>();
-                for (int i = 0; i < index.size(); i++) {
-                    CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(index.get(i));
-                    resultMap.put(index.get(i), cdFootballAwards);
-                }
-                //判断是否中奖
-                BigDecimal award = LotteryUtil.WinningVerify(cdList, resultMap, cdFootballFollowOrder.getFollowNum(), cdFootballFollowOrder.getTimes());
-                if (award.compareTo(BigDecimal.ZERO) > 0) {
-                    //System.err.println(cdFootballFollowOrder.getOrderNum() + ":" + award);
-                    cdFootballFollowOrder.setAward(award.toString());
-                    cdFootballFollowOrder.setStatus("4");
-                    cdFootballFollowOrderService.save(cdFootballFollowOrder);
-                    //保存中奖大洲  step1
-                    String continent = cdFootballFollowOrder.getContinent();
-                    CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
-                    String newContinent = clu.getContinent() + continent + ",";//大洲
-                    newContinent = newContinent.replaceAll("null,", "");
-                    clu.setContinent(newContinent);
-                    cdLotteryUserService.save(clu);
-                    //改变订单总表状态 step2
-                    WinPriceUtil.changeTotalOrder(cdFootballFollowOrder.getOrderNum(), award.toString());
-                } else {
-                    cdFootballFollowOrder.setStatus("5");
-                    cdFootballFollowOrderService.save(cdFootballFollowOrder);
-                    //改变订单总表状态
-                    CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
-                    if (co != null) {
-                        co.setWinPrice("0");//奖金
-                        co.setStatus("2");//未中奖
-                        cdOrderService.save(co);
+                        Map<String, CdFootballAwards> resultMap = new HashMap<String, CdFootballAwards>();
+                        for (int i = 0; i < index.size(); i++) {
+                            CdFootballAwards cdFootballAwards = cdFootballAwardsService.findByMatchId(index.get(i));
+                            resultMap.put(index.get(i), cdFootballAwards);
+                        }
+                        //判断是否中奖
+                        BigDecimal award = LotteryUtil.WinningVerify(cdList, resultMap, cdFootballFollowOrder.getFollowNum(), cdFootballFollowOrder.getTimes());
+                        if (award.compareTo(BigDecimal.ZERO) > 0) {
+                            //System.err.println(cdFootballFollowOrder.getOrderNum() + ":" + award);
+                            cdFootballFollowOrder.setAward(award.toString());
+                            cdFootballFollowOrder.setStatus("4");
+                            cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                            //保存中奖大洲  step1
+                            String continent = cdFootballFollowOrder.getContinent();
+                            CdLotteryUser clu = cdLotteryUserService.get(cdFootballFollowOrder.getUid());
+                            String newContinent = clu.getContinent() + continent + ",";//大洲
+                            newContinent = newContinent.replaceAll("null,", "");
+                            clu.setContinent(newContinent);
+                            cdLotteryUserService.save(clu);
+                            //改变订单总表状态 step2
+                            WinPriceUtil.changeTotalOrder(cdFootballFollowOrder.getOrderNum(), award.toString());
+                        } else {
+                            cdFootballFollowOrder.setStatus("5");
+                            cdFootballFollowOrderService.save(cdFootballFollowOrder);
+                            //改变订单总表状态
+                            CdOrder co = cdOrderService.getOrderByOrderNum(cdFootballFollowOrder.getOrderNum());
+                            if (co != null) {
+                                co.setWinPrice("0");//奖金
+                                co.setStatus("2");//未中奖
+                                cdOrderService.save(co);
+                            }
+                        }
+                        //System.out.println("全部场次:" + resultMap);
                     }
                 }
-                //System.out.println("全部场次:" + resultMap);
+            } catch (Exception e) {
+                System.out.println("异常订单："+cdFootballFollowOrder.getOrderNum());
+                logger.error(e.getMessage());
             }
 
+
         }
+        System.out.println("足球串关开奖结束");
     }
 
     @Scheduled(cron = "0 0/30 * * * ?")//2小时
