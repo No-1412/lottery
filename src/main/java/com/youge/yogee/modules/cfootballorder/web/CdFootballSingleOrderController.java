@@ -16,6 +16,8 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.erp.entity.ErpOrder;
+import com.youge.yogee.modules.erp.service.ErpOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -54,6 +56,9 @@ public class CdFootballSingleOrderController extends BaseController {
     @Autowired
     private CdOrderService cdOrderService;
 
+
+    @Autowired
+    private ErpOrderService erpOrderService;
     @ModelAttribute
     public CdFootballSingleOrder get(@RequestParam(required = false) String id) {
         if (StringUtils.isNotBlank(id)) {
@@ -229,7 +234,12 @@ public class CdFootballSingleOrderController extends BaseController {
 
         cdFootballSingleOrderService.save(cdFootballSingleOrder);
         addMessage(redirectAttributes, "保存成功");
-        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+        //2018-06-24 yhw 暂时修改为，保存后留在保存页，后期需要修改
+        //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballSingleOrder/?repage";
+        ErpOrder erpOrder = erpOrderService.findByNumber(cdFootballSingleOrder.getOrderNum());
+        //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+        String ss =  "redirect:" + Global.getAdminPath() + "/erp/erpOrder/orderForm?id="+erpOrder.getId();
+        return ss;
 /**
  * 2018-06-06 yhw 去掉之前的页面打印功能
  */

@@ -18,6 +18,8 @@ import com.youge.yogee.modules.clotteryuser.entity.CdLotteryUser;
 import com.youge.yogee.modules.clotteryuser.service.CdLotteryUserService;
 import com.youge.yogee.modules.corder.entity.CdOrder;
 import com.youge.yogee.modules.corder.service.CdOrderService;
+import com.youge.yogee.modules.erp.entity.ErpOrder;
+import com.youge.yogee.modules.erp.service.ErpOrderService;
 import com.youge.yogee.modules.sys.entity.User;
 import com.youge.yogee.modules.sys.utils.UserUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -58,6 +60,9 @@ public class CdFootballFollowOrderController extends BaseController {
     private CdFootballBestFollowOrderService cdFootballBestFollowOrderService;
     @Autowired
     private CdOrderService cdOrderService;
+
+    @Autowired
+    private ErpOrderService erpOrderService;
 
     @ModelAttribute
     public CdFootballFollowOrder get(@RequestParam(required = false) String id) {
@@ -172,6 +177,7 @@ public class CdFootballFollowOrderController extends BaseController {
         if (!beanValidator(model, cdFootballFollowOrder)) {
             return form(cdFootballFollowOrder, model);
         }
+
         //更新到出票赔率
         String newScoreDetail = getNewScore(cdFootballFollowOrder);
         String newGoalDetail = getNewGoal(cdFootballFollowOrder);
@@ -362,8 +368,11 @@ public class CdFootballFollowOrderController extends BaseController {
 
 
         addMessage(redirectAttributes, "保存竞彩足球订单");
-        return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
-
+        //2018-06-24 yhw 控制保存后留在保存页面，后期需要调整
+        ErpOrder erpOrder = erpOrderService.findByNumber(cdFootballFollowOrder.getOrderNum());
+        //return "redirect:" + Global.getAdminPath() + "/cfootballorder/cdFootballFollowOrder/?repage";
+        String ss =  "redirect:" + Global.getAdminPath() + "/erp/erpOrder/orderForm?id="+erpOrder.getId();
+        return ss;
         /**
          * 2018-06-06 yhw 去掉之前的页面打印功能
          */
