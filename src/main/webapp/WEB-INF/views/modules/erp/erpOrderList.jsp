@@ -96,10 +96,10 @@
 
 //
         var printLottery = function(orderNum,type){
-            alert("精彩即将呈现，请耐心等待");
-           /* $.ajax({
+            //alert("精彩即将呈现，请耐心等待");
+            $.ajax({
                 type:"post",
-                url: "http://192.168.51.7:8089/f/printLottery",
+                url: "http://localhost:8089/f/printLottery",
                 data: JSON.stringify({"orderNum":orderNum,"type":type}),
                 contentType: "application/json;charset=utf-8",
                 success: function (data) {
@@ -107,7 +107,7 @@
                     console.log(obj.msg);
                     alert(obj.msg);
                 }
-            });*/
+            });
         }
     </script>
 </head>

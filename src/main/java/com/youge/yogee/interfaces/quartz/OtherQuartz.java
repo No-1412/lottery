@@ -133,7 +133,7 @@ public class OtherQuartz {
     /**
      * 删除篮球单关没付款的订单2
      */
-    @Scheduled(cron = "0 0 1 * * ?")//每天一点
+    @Scheduled(cron = "0 05 1 * * ?")//每天一点
     public void delSingleBasketBallNotPay() {
         List<CdBasketballSingleOrder> list = cdBasketballSingleOrderService.findNotPay();
         if (list.size() > 0) {

@@ -1,10 +1,8 @@
 package com.youge.yogee.interfaces.quartz;
 
 import com.google.common.base.Strings;
-import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.common.utils.lottery.LotteryUtil;
 import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
-import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cbasketballawards.entity.CdBasketballAwards;
 import com.youge.yogee.modules.cbasketballawards.service.CdBasketballAwardsService;
 import com.youge.yogee.modules.cbasketballorder.entity.CdBasketballBestFollowOrder;
@@ -25,7 +23,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 定时任务
@@ -83,7 +84,7 @@ public class BasketBallQuartz {
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
-    @Scheduled(cron = "0 0/30 * * * ?")//2小时
+    @Scheduled(cron = "0 0/40 * * * ?")//2小时
 //    @Scheduled(cron = "*/30 * * * * ?")
 //    @Scheduled(cron = "0/10 * * * * ?")//10s
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
@@ -156,7 +157,7 @@ public class BasketBallQuartz {
         }
     }
 
-    @Scheduled(cron = "0 0/30 * * * ?")//2小时
+    @Scheduled(cron = "0 0/45 * * * ?")//2小时
     public void basketBallBestFollowOrder() {
         System.out.println("篮球优化串关开奖");
         List<CdBasketballFollowOrder> cdBasketballFollowOrderList = cdBasketballFollowOrderService.findStatusAndType("2");
@@ -342,7 +343,7 @@ public class BasketBallQuartz {
     }
 
     //        @Scheduled(cron = "*/5 * * * * ?")
-    @Scheduled(cron = "0 0/10 * * * ?")//2小时
+    @Scheduled(cron = "0 0/50 * * * ?")//2小时
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballSingleOrder() {
         System.out.println("篮球单关开奖");

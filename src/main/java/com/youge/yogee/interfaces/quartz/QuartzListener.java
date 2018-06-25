@@ -1,7 +1,6 @@
 package com.youge.yogee.interfaces.quartz;
 
 import com.youge.yogee.common.utils.lottery.LotteryUtil;
-import com.youge.yogee.interfaces.lottery.order.FootballSingleOrderInterface;
 import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.modules.cfootballawards.entity.CdFootballAwards;
@@ -88,7 +87,7 @@ public class QuartzListener {
 //    在26分、29分、33分执行一次：0 26,29,33 * * * ?
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
     //定时轮询
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/47 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
     //@Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void footballBestFollowOrder() {
@@ -583,7 +582,7 @@ public class QuartzListener {
 
     //    "0/10 * * * * ?"
 //    @Scheduled(cron = "0 */30 * * * ?")//每10秒触发
-    @Scheduled(cron = "0/30 * * * * ?")//2小时
+    @Scheduled(cron = "0 0/37 * * * ?")//2小时
     public void footballFollowOrder() {
         System.out.println("足球串关开奖");
         List<CdFootballFollowOrder> cdFootballFollowOrderList = cdFootballFollowOrderService.findStatusAndType("1");
@@ -674,7 +673,7 @@ public class QuartzListener {
         System.out.println("足球串关开奖结束");
     }
 
-    @Scheduled(cron = "0 0/30 * * * ?")//2小时
+    @Scheduled(cron = "0 0/42 * * * ?")//2小时
     public void footballSingleOrder() {
 //        System.out.println("足球单关开奖");
 
