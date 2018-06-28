@@ -204,19 +204,21 @@ public class CdBasketballFollowOrderController extends BaseController {
         String newBeatDetail = getNewBeat(cdBasketballFollowOrder);
         String newLetDetail = getNewLet(cdBasketballFollowOrder);
 
-        if ("0".equals(newWinDetail) || "0".equals(newFailDetail)) {
-            cdBasketballFollowOrder.setStatus("2");
-            cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
-            addMessage(redirectAttributes, "出票失败,比赛可能不存在");
-            return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
-        }
-        //更新赔率
-        cdBasketballFollowOrder.setHostWin(newWinDetail);
-        cdBasketballFollowOrder.setHostFail(newFailDetail);
-        cdBasketballFollowOrder.setSize(newSizeDetail);
-        cdBasketballFollowOrder.setBeat(newBeatDetail);
-        cdBasketballFollowOrder.setLet(newLetDetail);
+//        if ("0".equals(newWinDetail) || "0".equals(newFailDetail) ) {
+//            cdBasketballFollowOrder.setStatus("2");
+//            cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+//            addMessage(redirectAttributes, "出票失败,比赛可能不存在");
+//            return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
+//        }
 
+        //更新赔率  6.28 dh 赔率更新问题 同足球
+        if(!"0".equals(newWinDetail)){ cdBasketballFollowOrder.setHostWin(newWinDetail); }
+        if(!"0".equals(newFailDetail)){cdBasketballFollowOrder.setHostFail(newFailDetail);}
+        if(!"0".equals(newSizeDetail)){cdBasketballFollowOrder.setSize(newSizeDetail);}
+        if(!"0".equals(newBeatDetail)){cdBasketballFollowOrder.setBeat(newBeatDetail);}
+        if(!"0".equals(newLetDetail)) {cdBasketballFollowOrder.setLet(newLetDetail);}
+
+        /*
         String size = cdBasketballFollowOrder.getSize();
         if (StringUtils.isNotEmpty(size)) {
             String sizeCount = "";
@@ -255,6 +257,8 @@ public class CdBasketballFollowOrderController extends BaseController {
             }
             cdBasketballFollowOrder.setLetScore(letScore);
         }
+        */
+
         //保存出票时间
         Date day = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
