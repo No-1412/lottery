@@ -88,9 +88,13 @@
         </div>
     </div>
     <div class="form-actions">
-        <shiro:hasPermission name="crecord:cdRecordCash:edit">
-            <input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
-        </shiro:hasPermission>
+        <%-- 判断订单状态 只有 处理中 和提交申请可以保存 --%>
+        <c:if test="${cdRecordCash.status == '1' || cdRecordCash.status == '2'}">
+            <shiro:hasPermission name="crecord:cdRecordCash:edit">
+                <input id="btnSubmit" class="btn btn-primary" type="submit" value="保 存"/>&nbsp;
+            </shiro:hasPermission>
+        </c:if>
+
         <input id="btnCancel" class="btn" type="button" value="返 回" onclick="history.go(-1)"/>
     </div>
 </form:form>
