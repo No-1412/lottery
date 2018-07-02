@@ -79,13 +79,17 @@ public class CdRecordCashController extends BaseController {
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String today = df.format(day);
         cdRecordCash.setDealTime(today);
-//        if ("3".equals(cdRecordCash.getStatus())) {
-//            CdLotteryUser clu = cdLotteryUserService.get(cdRecordCash.getUid());
-//            BigDecimal balance = clu.getBalance();
-//            BigDecimal price = new BigDecimal(cdRecordCash.getPrice());
-//            clu.setBalance(balance.subtract(price));
-//            cdLotteryUserService.save(clu);
-//        }
+
+        //7.2董宏 修改用户提现审核失败 将提现金额返回到用户余额  目前存在如果多次保存 不通过，余额会不断增加的问题
+        if ("4".equals(cdRecordCash.getStatus())) {
+            CdLotteryUser clu = cdLotteryUserService.get(cdRecordCash.getUid());
+            BigDecimal balance = clu.getBalance();
+            BigDecimal price = new BigDecimal(cdRecordCash.getPrice());
+            clu.setBalance(balance.add(price));
+            cdLotteryUserService.save(clu);
+        }
+
+
         cdRecordCashService.save(cdRecordCash);
         addMessage(redirectAttributes, "保存提现记录成功");
         return "redirect:" + Global.getAdminPath() + "/crecord/cdRecordCash/?repage";
