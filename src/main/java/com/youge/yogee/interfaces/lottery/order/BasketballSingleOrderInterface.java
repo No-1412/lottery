@@ -147,6 +147,11 @@ public class BasketballSingleOrderInterface {
 
         //注数
         String acountStr = String.valueOf(acount);
+
+        if (acountStr.compareTo(OrderTimes.minTimes) < 0) {
+            logger.error("最少" + OrderTimes.minTimes + "注");
+            return HttpResultUtil.errorJson("最少" + OrderTimes.minTimes + "注");
+        }
         //生成订单号
         String orderNum = util.genOrderNo("LDG", util.getFourRandom());
         //计算金额

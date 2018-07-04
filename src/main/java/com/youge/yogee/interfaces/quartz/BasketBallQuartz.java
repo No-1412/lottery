@@ -55,6 +55,7 @@ public class BasketBallQuartz {
     private CdLotteryUserService cdLotteryUserService;
     @Autowired
     private CdBasketballBestFollowOrderService cdBasketballBestFollowOrderService;
+
     //    "0/10 * * * * ?" 每10秒触发
 //
 //    "0 0 12 * * ?" 每天中午12点触发
@@ -97,63 +98,71 @@ public class BasketBallQuartz {
         List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
 
         for (CdBasketballFollowOrder cdBasketballFollowOrder : cdBasketballFollowOrderList) {
+            try {
+                if (!cdBasketballFollowOrder.getHostWin().equals("0") && !cdBasketballFollowOrder.getHostFail().equals("0") && !cdBasketballFollowOrder.getBeat().equals("0") && !cdBasketballFollowOrder.getSize().equals("0") && !cdBasketballFollowOrder.getLet().equals("0")) {
+                    List<String> cdList = new ArrayList<String>();
+                    cdList.add(cdBasketballFollowOrder.getHostWin());
+                    cdList.add(cdBasketballFollowOrder.getHostFail());
+                    cdList.add(cdBasketballFollowOrder.getBeat());
+                    cdList.add(cdBasketballFollowOrder.getSize());
+                    cdList.add(cdBasketballFollowOrder.getLet());
+                    List<String> index = LotteryUtil.queryEvent(cdList);
+                    String[] strings = new String[index.size()];
+                    String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 
-            List<String> cdList = new ArrayList<String>();
-            cdList.add(cdBasketballFollowOrder.getHostWin());
-            cdList.add(cdBasketballFollowOrder.getHostFail());
-            cdList.add(cdBasketballFollowOrder.getBeat());
-            cdList.add(cdBasketballFollowOrder.getSize());
-            cdList.add(cdBasketballFollowOrder.getLet());
-            List<String> index = LotteryUtil.queryEvent(cdList);
-            String[] strings = new String[index.size()];
-            String[] awardMatchIdArray = new String[awardMatchIdList.size()];
-
-            //判断比赛是否全部完成
-            boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
-            //System.out.println(containsAll);
-            if (containsAll) {
-                //  **************************后加的-------------获取押注比赛结果并保存****************
-                String manyMatchIds = cdBasketballFollowOrder.getDanMatchIds();
-                String[] danMatchIdArray = manyMatchIds.split(",");
-                List<String> list = new ArrayList<>();
-                for (String str : danMatchIdArray) {
-                    String matchId = str.split("\\+")[1];
-                    list.add(matchId);
-                }
-                String result = getResultStr(list);
-                cdBasketballFollowOrder.setResult(result);
-                cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
-
-
-                Map<String, CdBasketballAwards> resultMap = new HashMap<String, CdBasketballAwards>();
-                for (int i = 0; i < index.size(); i++) {
-                    CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(index.get(i));
-                    resultMap.put(index.get(i), cdBasketballAwards);
-                }
-
-                BigDecimal award = LotteryUtil.basketBallWinningVerify(cdList, resultMap, cdBasketballFollowOrder.getFollowNums(), cdBasketballFollowOrder.getTimes());
+                    //判断比赛是否全部完成
+                    boolean containsAll = LotteryUtil.containsAll(awardMatchIdList.toArray(awardMatchIdArray), index.toArray(strings));
+                    //System.out.println(containsAll);
+                    if (containsAll) {
+                        //  **************************后加的-------------获取押注比赛结果并保存****************
+                        String manyMatchIds = cdBasketballFollowOrder.getDanMatchIds();
+                        String[] danMatchIdArray = manyMatchIds.split(",");
+                        List<String> list = new ArrayList<>();
+                        for (String str : danMatchIdArray) {
+                            String matchId = str.split("\\+")[1];
+                            list.add(matchId);
+                        }
+                        String result = getResultStr(list);
+                        cdBasketballFollowOrder.setResult(result);
+                        cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
 
 
-                if (award.compareTo(BigDecimal.ZERO) > 0) {
-                    System.err.println(cdBasketballFollowOrder.getOrderNum() + ":" + award);
-                    cdBasketballFollowOrder.setAward(award.toString());
-                    cdBasketballFollowOrder.setStatus("4");
-                    cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
-                    //改变订单总表状态 step1
-                    WinPriceUtil.changeTotalOrder(cdBasketballFollowOrder.getOrderNum(), award.toString());
-                } else {
-                    //改变订单总表状态
-                    CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
-                    if (co != null) {
-                        co.setWinPrice("0");//奖金
-                        co.setStatus("2");//已开奖
-                        cdOrderService.save(co);
+                        Map<String, CdBasketballAwards> resultMap = new HashMap<String, CdBasketballAwards>();
+                        for (int i = 0; i < index.size(); i++) {
+                            CdBasketballAwards cdBasketballAwards = cdBasketballAwardsService.findByMatchId(index.get(i));
+                            resultMap.put(index.get(i), cdBasketballAwards);
+                        }
+
+                        BigDecimal award = LotteryUtil.basketBallWinningVerify(cdList, resultMap, cdBasketballFollowOrder.getFollowNums(), cdBasketballFollowOrder.getTimes());
+
+
+                        if (award.compareTo(BigDecimal.ZERO) > 0) {
+                            System.err.println(cdBasketballFollowOrder.getOrderNum() + ":" + award);
+                            cdBasketballFollowOrder.setAward(award.toString());
+                            cdBasketballFollowOrder.setStatus("4");
+                            cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                            //改变订单总表状态 step1
+                            WinPriceUtil.changeTotalOrder(cdBasketballFollowOrder.getOrderNum(), award.toString());
+                        } else {
+                            //改变订单总表状态
+                            CdOrder co = cdOrderService.getOrderByOrderNum(cdBasketballFollowOrder.getOrderNum());
+                            if (co != null) {
+                                co.setWinPrice("0");//奖金
+                                co.setStatus("2");//已开奖
+                                cdOrderService.save(co);
+                            }
+                            cdBasketballFollowOrder.setStatus("5");
+                            cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                        }
+
                     }
-                    cdBasketballFollowOrder.setStatus("5");
-                    cdBasketballFollowOrderService.save(cdBasketballFollowOrder);
+                }else{
+                    System.out.println("异常订单："+cdBasketballFollowOrder.getOrderNum());
                 }
-
+            } catch (Exception e) {
+                System.out.println("异常订单：" + cdBasketballFollowOrder.getOrderNum());
             }
+
         }
     }
 
@@ -353,7 +362,7 @@ public class BasketBallQuartz {
 
         //全部可以比赛完的场次
         List<String> awardMatchIdList = cdBasketballAwardsService.getAllMatchId();
-       // System.out.println("比赛完的场次:" + awardMatchIdList);
+        // System.out.println("比赛完的场次:" + awardMatchIdList);
         for (CdBasketballSingleOrder cdBasketballSingleOrder : cdBasketballSingleOrderList) {
 
             List<String> cdList = new ArrayList<String>();
@@ -363,14 +372,14 @@ public class BasketBallQuartz {
                 cdList.add(cdBasketballSingleOrder.getHostWin());
                 playTypeList.add("0");
             }
-            if (!Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostFail())){
+            if (!Strings.isNullOrEmpty(cdBasketballSingleOrder.getHostFail())) {
                 cdList.add(cdBasketballSingleOrder.getHostFail());
                 playTypeList.add("1");
 
             }
             List<String> index = LotteryUtil.querySingleEvent(cdList);
 
-           // System.out.println(index);
+            // System.out.println(index);
             String[] strings = new String[index.size()];
             String[] awardMatchIdArray = new String[awardMatchIdList.size()];
 

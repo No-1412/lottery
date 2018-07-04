@@ -86,6 +86,12 @@ public class BasketballFollowOrderInterface {
         }
 
 
+        if (times.compareTo(OrderTimes.minTimes) < 0) {
+            logger.error("最少" + OrderTimes.minTimes + "注");
+            return HttpResultUtil.errorJson("最少" + OrderTimes.minTimes + "注");
+        }
+
+
         //订单详情
         Object jsonString = jsonData.get("detail");
         JSONArray jsonArray = JSONArray.fromObject(jsonString);
