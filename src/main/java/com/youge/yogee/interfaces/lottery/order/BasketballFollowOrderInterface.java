@@ -85,11 +85,11 @@ public class BasketballFollowOrderInterface {
             return HttpResultUtil.errorJson("times为空");
         }
 
-
+/*
         if (times.compareTo(OrderTimes.minTimes) < 0) {
             logger.error("最少" + OrderTimes.minTimes + "注");
             return HttpResultUtil.errorJson("最少" + OrderTimes.minTimes + "注");
-        }
+        }*/
 
 
         //订单详情
@@ -597,7 +597,7 @@ public class BasketballFollowOrderInterface {
                     size += head + aMap.get("size") + "|";
                 }
                 if (StringUtils.isNotEmpty(aMap.get("let"))) {
-                    let += head + aMap.get("let") + "|";
+                    let += head + aMap.get("let") + "+" + cbm.getClose().replaceAll("\\+", "") + "|";
                 }
             }
             //保存订单主表
