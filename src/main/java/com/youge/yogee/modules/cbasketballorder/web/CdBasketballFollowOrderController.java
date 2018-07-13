@@ -342,6 +342,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                             String close = cfm.getClose().replaceAll("\\+", "");
                             String letSorce = aDetail[3].split("/")[0] + "/" + close + "/" + cfm.getZclose();
                             newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce+"+"+aDetail[4];
+
                             break;
                         }
                         case "size": {
