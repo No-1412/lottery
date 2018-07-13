@@ -212,8 +212,9 @@ public class BasketballFollowOrderInterface {
                     }
                     letScore += cbm.getClose() + ",";
                     letDetail += partDetail + "+" + let + "+" + cbm.getClose().replaceAll("\\+", "") + "|";
-                }
 
+                }
+                System.out.println("letDetail=========================="+letDetail);
 
                 //比分所有押注结果  4大小分
                 String size = (String) d.get("size");
