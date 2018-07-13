@@ -21,6 +21,46 @@ public class LotteryUtil {
 
     private final static List<String> arrayBasketList = new ArrayList<>(Arrays.asList("host_win", "host_fail", "beat", "size", "let"));
 
+    private static final Map<String, String> winMap;
+    private static final Map<String, String> loseMap;
+    private static final Map<String, String> flatMap;
+    static {
+        winMap = new HashMap<String, String>();
+        loseMap = new HashMap<String, String>();
+        flatMap = new HashMap<String, String>();
+        winMap.put("1:0", "1:0");
+        winMap.put("2:0", "2:0");
+        winMap.put("2:1", "2:1");
+        winMap.put("3:0", "3:0");
+        winMap.put("3:1", "3:1");
+        winMap.put("3:2", "3:2");
+        winMap.put("4:0", "4:0");
+        winMap.put("4:1", "4:1");
+        winMap.put("4:2", "4:2");
+        winMap.put("5:0", "5:0");
+        winMap.put("5:1", "5:1");
+        winMap.put("5:2", "5:2");
+        winMap.put("胜其他", "胜其他");
+        flatMap.put("0:0", "0:0");
+        flatMap.put("1:1", "1:1");
+        flatMap.put("2:2", "2:2");
+        flatMap.put("3:3", "3:3");
+        flatMap.put("平其他", "平其他");
+        loseMap.put("0:1", "0:1");
+        loseMap.put("0:2", "0:2");
+        loseMap.put("1:2", "1:2");
+        loseMap.put("0:3", "0:3");
+        loseMap.put("1:3", "1:3");
+        loseMap.put("2:3", "2:3");
+        loseMap.put("0:4", "0:4");
+        loseMap.put("1:4", "1:4");
+        loseMap.put("2:4", "2:4");
+        loseMap.put("0:5", "0:5");
+        loseMap.put("1:5", "1:5");
+        loseMap.put("2:5", "2:5");
+        loseMap.put("负其他", "负其他");
+    }
+
 
     public static BigDecimal bestWinningVerify(List<String> list, Map<String, CdFootballAwards> resultMap, String times) {
         //System.out.println(list);
@@ -851,6 +891,30 @@ public class LotteryUtil {
     }
 
     public static String ConvertCompared(String s1, String s2) {
+        int aInteger = Integer.valueOf(s1);
+        int bInteger = Integer.valueOf(s2);
+        String score = s1 + ":" + s2;
+        if (aInteger > bInteger) {
+            if (winMap.containsKey(score)) {
+                System.out.println(winMap.get(score));
+            } else {
+                System.out.println(winMap.get("胜其他"));
+            }
+        }
+        if (aInteger == bInteger) {
+            if (flatMap.containsKey(score)) {
+                System.out.println(flatMap.get(score));
+            }else {
+                System.out.println(flatMap.get("平其他"));
+            }
+        }
+        if (aInteger < bInteger) {
+            if (loseMap.containsKey(score)) {
+                System.out.println(loseMap.get(score));
+            }else {
+                System.out.println(loseMap.get("负其他"));
+            }
+        }
         return s1 + ":" + s2;
     }
 
