@@ -50,14 +50,15 @@
 		<tbody>
 		<c:forEach items="${page.list}" var="mapRank" varStatus="index">
 			<tr>
-				<c:choose>
+				<%--<c:choose>
 					<c:when test="${page.pageNo gt 1}">
 						<td>${page.pageSize+index.index+1}</td>
 					</c:when>
 					<c:otherwise>
 						<td>${index.index+1}</td>
 					</c:otherwise>
-				</c:choose>
+				</c:choose>--%>
+                <td>${mapRank.rowNo}</td>
 				<td>${mapRank.salename}</td>
 				<td>${mapRank.moneywithoutgendan}</td>
 				<td>${mapRank.moneygendan}</td>
