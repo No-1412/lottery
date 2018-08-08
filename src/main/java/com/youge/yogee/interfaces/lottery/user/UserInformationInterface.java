@@ -1,5 +1,6 @@
 package com.youge.yogee.interfaces.lottery.user;
 
+import com.google.common.base.Strings;
 import com.youge.yogee.common.utils.StringUtils;
 import com.youge.yogee.interfaces.lottery.util.SelOrderUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
@@ -77,68 +78,110 @@ public class UserInformationInterface {
     public String myHomePage(HttpServletRequest request) {
         logger.info("myHomePage---------- Start-----------");
 
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        Map dataMap = new HashMap();
-        String uid = (String) jsonData.get("uid");
-        if (StringUtils.isEmpty(uid)) {
-            return HttpResultUtil.errorJson("uid为空");
-        }
-        CdLotteryUser clu = cdLotteryUserService.get(uid);
-        if (clu == null) {
-            return HttpResultUtil.errorJson("用户不存在");
-        }
-        String recharge = clu.getTotalRecharge();//充值总金额
-        String percent = SelOrderUtil.getLevelPercent(recharge);
-        dataMap.put("uid", clu.getId());
-        dataMap.put("img", clu.getImg());//头像
-        dataMap.put("level", clu.getMemberLevel());//等级
-        dataMap.put("name", clu.getName());//昵称
-        dataMap.put("balance", clu.getBalance().setScale(2).toString());//余额
-        dataMap.put("rebate", clu.getRebate());//返利金额
-        dataMap.put("percent", percent);//等级百分比
-        dataMap.put("tel", clu.getMobile());//等级电话
-        dataMap.put("isReal", clu.getIsRealNameVerified());//实名认证 1已认证 0未认证
-        dataMap.put("catchTimes", clu.getCatchTimes());//今日提现次数
-        dataMap.put("realName", clu.getReality());//真实姓名
-        dataMap.put("idCard", clu.getIdNumber());//身份证号
-        String continent = clu.getContinent();
-        if (StringUtils.isNotEmpty(continent)) {
-            String[] continentArray = continent.split(",");
-            int asia = 0, europe = 0, america = 0, africa = 0;//亚 欧 美 非
-            for (String str : continentArray) {
-                if (str.equals("亚洲")) {
-                    asia += 1;
-                } else if (str.equals("欧洲")) {
-                    europe += 1;
-                } else if (str.equals("美洲")) {
-                    america += 1;
-                } else if (str.equals("非洲")) {
-                    africa += 1;
+        try {
+            Map jsonData = HttpServletRequestUtils.readJsonData(request);
+            Map dataMap = new HashMap();
+            String uid = (String) jsonData.get("uid");
+            if (StringUtils.isEmpty(uid)) {
+                return HttpResultUtil.errorJson("uid为空");
+            }
+            CdLotteryUser clu = cdLotteryUserService.get(uid);
+            if (clu == null) {
+                return HttpResultUtil.errorJson("用户不存在");
+            }
+            String recharge = clu.getTotalRecharge();//充值总金额
+            String percent = SelOrderUtil.getLevelPercent(recharge);
+            BigDecimal bigDecimal = new BigDecimal("0");
+            if (!Strings.isNullOrEmpty(clu.getTotalPay())) {
+                bigDecimal = new BigDecimal(clu.getTotalPay());
+            }
+            String buyPrice = cdLotteryUserService.buyPrice(clu.getId());
+            String totalPrice = cdLotteryUserService.totalPrice(clu.getId());
+            BigDecimal tPrice = new BigDecimal("0");
+            BigDecimal b1 = clu.getTotalMoney();//充值总金额
+            BigDecimal b2 = b1.multiply(new BigDecimal("0.6"));//充值消费金额
+            BigDecimal b3 = b2.subtract(new BigDecimal(buyPrice));//计算充值消费金额-购彩金额
+            BigDecimal b4 = new BigDecimal(totalPrice);//总金额（包含提现金额）
+            System.out.println("充值金额====：" + b1);
+            System.out.println("消费金额====：" + b2);
+            System.out.println("消费金额-购彩金额====" + b3);
+            System.out.println("总金额（包含提现金额）====：" + b4);
+            System.out.println("购彩金额====：" + buyPrice);
+            if (b3.compareTo(new BigDecimal("0")) > 0) {
+                tPrice = b4.subtract(b3);//可提现金额(包含已提现金额)
+                System.out.println("可提现金额(包含已提现金额)：" + tPrice);
+                if (tPrice.compareTo(new BigDecimal("0")) < 0) {
+                    tPrice = new BigDecimal("0");
+                }else{
+                    String b5 = cdLotteryUserService.withdrawalPrice(clu.getId());
+                    tPrice = tPrice.subtract(new BigDecimal(b5));
                 }
+
+
+            } else {
+                tPrice = new BigDecimal(clu.getBalance().setScale(2).toString());
             }
-            int max = asia;
-            dataMap.put("continent", "亚洲");
-            if (europe > asia) {
-                max = europe;
-                dataMap.put("continent", "欧洲");
+
+            System.out.println("可提现金额：" + tPrice);
+
+            dataMap.put("canWithdraw", tPrice.setScale(2, BigDecimal.ROUND_HALF_DOWN).toString());
+            dataMap.put("totalPay", bigDecimal.setScale(0, BigDecimal.ROUND_HALF_DOWN).toString());
+            dataMap.put("uid", clu.getId());
+            dataMap.put("img", clu.getImg());//头像
+            dataMap.put("level", clu.getMemberLevel());//等级
+            dataMap.put("name", clu.getName());//昵称
+            dataMap.put("balance", clu.getBalance().setScale(2).toString());//余额
+            dataMap.put("rebate", clu.getRebate());//返利金额
+            dataMap.put("percent", percent);//等级百分比
+            dataMap.put("tel", clu.getMobile());//等级电话
+            dataMap.put("isReal", clu.getIsRealNameVerified());//实名认证 1已认证 0未认证
+            dataMap.put("catchTimes", clu.getCatchTimes());//今日提现次数
+            dataMap.put("catchPrice", clu.getCatchTimes());//今日提现次数
+            dataMap.put("realName", clu.getReality());//真实姓名
+            dataMap.put("idCard", clu.getIdNumber());//身份证号
+            String continent = clu.getContinent();
+            if (StringUtils.isNotEmpty(continent)) {
+                String[] continentArray = continent.split(",");
+                int asia = 0, europe = 0, america = 0, africa = 0;//亚 欧 美 非
+                for (String str : continentArray) {
+                    if (str.equals("亚洲")) {
+                        asia += 1;
+                    } else if (str.equals("欧洲")) {
+                        europe += 1;
+                    } else if (str.equals("美洲")) {
+                        america += 1;
+                    } else if (str.equals("非洲")) {
+                        africa += 1;
+                    }
+                }
+                int max = asia;
+                dataMap.put("continent", "亚洲");
+                if (europe > asia) {
+                    max = europe;
+                    dataMap.put("continent", "欧洲");
+                }
+                if (america > max) {
+                    max = america;
+                    dataMap.put("continent", "美洲");
+                }
+                if (africa > max) {
+                    max = america;
+                    dataMap.put("continent", "非洲");
+                }
+                BigDecimal maxBig = new BigDecimal(max);
+                BigDecimal total = new BigDecimal(continentArray.length);
+                BigDecimal per = maxBig.divide(total, 2, 2).multiply(new BigDecimal(100));
+                dataMap.put("per", per.toString() + "%");
+            } else {
+                dataMap.put("continent", ""); //大洲
+                dataMap.put("per", "0.00%"); //百分比
             }
-            if (america > max) {
-                max = america;
-                dataMap.put("continent", "美洲");
-            }
-            if (africa > max) {
-                max = america;
-                dataMap.put("continent", "非洲");
-            }
-            BigDecimal maxBig = new BigDecimal(max);
-            BigDecimal total = new BigDecimal(continentArray.length);
-            BigDecimal per = maxBig.divide(total, 2, 2).multiply(new BigDecimal(100));
-            dataMap.put("per", per.toString() + "%");
-        } else {
-            dataMap.put("continent", ""); //大洲
-            dataMap.put("per", "0.00%"); //百分比
+            return HttpResultUtil.successJson(dataMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getMessage());
+            return HttpResultUtil.errorJson("获取数据失败,请稍后再试!");
         }
-        return HttpResultUtil.successJson(dataMap);
     }
 
     /**

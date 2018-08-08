@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -57,6 +59,7 @@ public class CdLotteryUserService extends BaseService {
         }
         cdLotteryUserDao.save(cdLotteryUser);
     }
+
     //判断昵称是否已被使用
     public int findByName(String name) {
         DetachedCriteria dc = cdLotteryUserDao.createDetachedCriteria();
@@ -68,6 +71,7 @@ public class CdLotteryUserService extends BaseService {
         }
         return 0;
     }
+
     //根据手机号获取用户信息
     public CdLotteryUser findByPhone(String phone) {
         DetachedCriteria dc = cdLotteryUserDao.createDetachedCriteria();
@@ -118,6 +122,37 @@ public class CdLotteryUserService extends BaseService {
         }
 
         return null;
+    }
+
+    //获取购彩总金额
+    public String buyPrice(String user_id) {
+        List<Object> bySql = cdLotteryUserDao.findBySql("SELECT SUM(total_price) FROM cd_order WHERE user_id='" + user_id + "'");
+        if (bySql.get(0) != null) {
+            BigDecimal price = (BigDecimal) bySql.get(0);
+            return price.toString();
+        }
+        return "0";
+    }
+
+
+    //获取总金额
+    public String totalPrice(String user_id) {
+        List<Object> bySql = cdLotteryUserDao.findBySql("SELECT SUM(price)+(SELECT balance FROM cd_lottery_user WHERE id='" + user_id + "') FROM cd_record_cash WHERE uid='" + user_id + "' AND status=3");
+        if (bySql.get(0) != null) {
+            Double price = (Double) bySql.get(0);
+            return price.toString();
+        }
+        return "0";
+    }
+
+    //获取总金额
+    public String withdrawalPrice(String user_id) {
+        List<Object> bySql = cdLotteryUserDao.findBySql("SELECT SUM(price) FROM cd_record_cash WHERE uid='" + user_id + "' AND status=3");
+        if (bySql.get(0) != null) {
+            Double price = (Double) bySql.get(0);
+            return price.toString();
+        }
+        return "0";
     }
 
 

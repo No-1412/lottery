@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.utils.lottery.SalesUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -53,6 +54,11 @@ public class BasketballFollowOrderInterface {
     public String basketballFollowOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface basketballFollowOrderCommit--------Start-------------------");
         logger.debug("interface 请求--basketballFollowOrderCommit-------- Start--------");
+
+        if (SalesUtil.isInDate()) {
+            return HttpResultUtil.errorJson("售彩时间:(每天上午09:30-下午11:45,周末截止到次日00:45)请在指定时段前来购买!");
+        }
+
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -214,7 +220,7 @@ public class BasketballFollowOrderInterface {
                     letDetail += partDetail + "+" + let + "+" + cbm.getClose().replaceAll("\\+", "") + "|";
 
                 }
-                System.out.println("letDetail=========================="+letDetail);
+                System.out.println("letDetail==========================" + letDetail);
 
                 //比分所有押注结果  4大小分
                 String size = (String) d.get("size");
@@ -247,7 +253,7 @@ public class BasketballFollowOrderInterface {
 //                        danTimes = danTimes * scoreArry.length;
                     }
                     sizeCount += cbm.getZclose() + ",";
-                    sizeDetail += partDetail + "+" + size + "|";
+                    sizeDetail += partDetail + "+" + size + "+" + cbm.getZclose() + "|";
                 }
 
                 //主胜所有押注结果 5胜分差
@@ -436,6 +442,11 @@ public class BasketballFollowOrderInterface {
     public String basketballBestFollowOrderCommit(HttpServletRequest request) {
         logger.info("basketballBestFollowOrderCommit--------Start-------------------");
         logger.debug("basketballBestFollowOrderCommit-------- Start--------");
+
+        if (SalesUtil.isInDate()) {
+            return HttpResultUtil.errorJson("售彩时间:(每天上午09:30-下午11:45,周末截止到次日00:45)请在指定时段前来购买!");
+        }
+
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -547,7 +558,15 @@ public class BasketballFollowOrderInterface {
                     String sm = BallGameCals.changeBasketballSf(sf);//主表字段统一
                     String buyWay = (String) aBestDeatil.get("buyWays");//玩法
                     //场次  + 玩法 + 投注内容/赔率  + 队名/让分/大小分
-                    String minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "+" + name + "/" + close + "/" + zclose + "|";
+                    System.out.println("buyWay:============" + buyWay);
+                    System.out.println(zclose);
+                    String minDetail = "";
+                    if ("size".equals(buyWay)) {
+                        minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "/" + zclose + "+" + name + "/" + close + "/" + zclose + "|";
+                    } else {
+                        minDetail = matchId + "+" + buyWay + "+" + sf + "/" + odds + "+" + name + "/" + close + "/" + zclose + "|";
+                    }
+
                     bestDetail += minDetail;//拼出一条优化详情
                     //处理数据给订单总表-----------*-----贼------*------他------*------妈-------*精妙*-------------------
                     String newSf = detailMap.get(matchId).get(buyWay);
@@ -595,7 +614,7 @@ public class BasketballFollowOrderInterface {
                 }
                 if (StringUtils.isNotEmpty(aMap.get("size"))) {
                     sizeCount += cbm.getZclose() + ",";
-                    size += head + aMap.get("size") + "|";
+                    size += head + aMap.get("size") + "+" + cbm.getZclose() + "|";
                 }
                 if (StringUtils.isNotEmpty(aMap.get("let"))) {
                     let += head + aMap.get("let") + "+" + cbm.getClose().replaceAll("\\+", "") + "|";

@@ -130,11 +130,11 @@ public class ErpOrderController extends BaseController {
         Page<ErpOrder> page = erpOrderService.find(new Page<ErpOrder>(request, response), erpOrder, beginDate, endDate);
         Date today = new Date();
         String subDate = df.format(today);
-        List<ErpOrder> list = erpOrderService.findByDate(subDate);
+        //List<ErpOrder> list = erpOrderService.findByDate(subDate);
         BigDecimal sum = new BigDecimal(0);
-        for (ErpOrder eo : list) {
-            sum = sum.add(eo.getTotalPrice());
-        }
+//        for (ErpOrder eo : list) {
+//            sum = sum.add(eo.getTotalPrice());
+//        }
         model.addAttribute("sum", sum.setScale(2, 1).toString());
         model.addAttribute("beginDate", beginDate);
         model.addAttribute("endDate", endDate);

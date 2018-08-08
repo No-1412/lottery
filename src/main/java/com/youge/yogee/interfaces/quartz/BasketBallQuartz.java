@@ -85,7 +85,7 @@ public class BasketBallQuartz {
 //    每天的0点、13点、18点、21点都执行一次：0 0 0,13,18,21 * * ?
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
-    @Scheduled(cron = "0 0/40 * * * ?")//2小时
+    @Scheduled(cron = "0 */1 * * * ?")//2小时
 //    @Scheduled(cron = "*/30 * * * * ?")
 //    @Scheduled(cron = "0/10 * * * * ?")//10s
 //    @Scheduled(cron = "0 0 */1 * * ?")//2小时

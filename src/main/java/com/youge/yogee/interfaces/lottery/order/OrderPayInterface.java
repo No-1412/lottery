@@ -360,7 +360,7 @@ public class OrderPayInterface {
         clu = getLeftMoney(price, balance, clu);
         cdLotteryUserService.save(clu);
         //保存返利
-        saveRebate(price, clu.getId(), type, clu);
+        //saveRebate(price, clu.getId(), type, clu);
         //保存订单总表
         saveOrder(clu, orderNum, price, type, bestType);
 

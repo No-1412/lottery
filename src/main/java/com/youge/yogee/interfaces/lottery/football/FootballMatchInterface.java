@@ -674,8 +674,6 @@ public class FootballMatchInterface {
             dataMap.put("guest", cff.getGn());//客队
             dataMap.put("middle", cff.getTime().substring(0, 16));//开赛时间
         }
-
-
         return HttpResultUtil.successJson(dataMap);
     }
 

@@ -3,6 +3,7 @@
  */
 package com.youge.yogee.modules.cmagicorder.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.youge.yogee.common.persistence.Page;
 import com.youge.yogee.common.persistence.Parameter;
 import com.youge.yogee.common.service.BaseService;
@@ -52,6 +53,10 @@ public class CdMagicOrderService extends BaseService {
         return cdMagicOrderDao.find(page, dc);
     }
 
+    public JSONArray queryRanking() {
+        return cdMagicOrderDao.queryRanking();
+    }
+
     @Transactional(readOnly = false)
     public void save(CdMagicOrder cdMagicOrder) {
 
@@ -71,7 +76,8 @@ public class CdMagicOrderService extends BaseService {
 
     public List<CdMagicOrder> getMagicOrder(String total, String count) {
         Date day = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String today = df.format(day);
 
         DetachedCriteria dc = cdMagicOrderDao.createDetachedCriteria();

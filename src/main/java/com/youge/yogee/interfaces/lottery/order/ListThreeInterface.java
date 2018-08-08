@@ -1,6 +1,7 @@
 package com.youge.yogee.interfaces.lottery.order;
 
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.utils.lottery.SalesUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.ListThreeWays;
@@ -38,6 +39,10 @@ public class ListThreeInterface {
     public String listThreeOrderCommit(HttpServletRequest request) {
         logger.info("排列三订单提交 listThreeOrderCommit--------Start-------------------");
         logger.debug("interface 请求--replacementDelOrder-------- Start--------");
+
+        if (SalesUtil.isInDate()) {
+            return HttpResultUtil.errorJson("售彩时间:(每天上午09:30-下午11:45,周末截止到次日00:45)请在指定时段前来购买!");
+        }
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {

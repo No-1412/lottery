@@ -24,6 +24,7 @@ public class LotteryUtil {
     private static final Map<String, String> winMap;
     private static final Map<String, String> loseMap;
     private static final Map<String, String> flatMap;
+
     static {
         winMap = new HashMap<String, String>();
         loseMap = new HashMap<String, String>();
@@ -187,8 +188,8 @@ public class LotteryUtil {
                         if (odds.length > 1) {
 
 
-                           // System.out.println("odds==========:" + odds.length);
-                           // System.out.println(rString);
+                            // System.out.println("odds==========:" + odds.length);
+                            // System.out.println(rString);
 
                             JSONObject jsonObject = new JSONObject();
                             jsonObject.put("type", i);// 玩法分组0-4代表四种玩法
@@ -406,6 +407,8 @@ public class LotteryUtil {
                             jsonObject.put("score", "0");// 胆
                         }
 
+                        jsonObject.put("size", info_arr[4]);
+
                         // 保存对战玩法信息
                         JSONArray array = sJson.getJSONArray(info_arr[1] + "_" + info_arr[2]);
                         array.add(jsonObject);
@@ -469,7 +472,8 @@ public class LotteryUtil {
                             String odds = object.getString("odds");
                             String rt = object.getString("result");
                             String score = object.getString("score");
-                            group_detail.add(g_info + "_" + type + "_" + rt + "_" + odds + "_" + score);
+                            String size = object.getString("size");
+                            group_detail.add(g_info + "_" + type + "_" + rt + "_" + odds + "_" + score + "_" + size);
                             // System.out.println("组合：" + g_info + "_" + type + "_" + rt + "_" + odds);
                         }
                         dimValue.add(group_detail);
@@ -497,6 +501,7 @@ public class LotteryUtil {
                         String[] rt = resultList.get(j).split("#");
                         // System.out.println("场次：" + resultList.get(j));
                         for (int k = 0; k < rt.length; k++) {
+                            System.out.println("=============="+rt[k]);
                             String[] info = rt[k].split("_");
                             CdBasketballAwards oe = resultMap.get(info[0]);
 
@@ -516,6 +521,7 @@ public class LotteryUtil {
                                     } else {
                                         bigDecimal = new BigDecimal("0");
                                     }
+                                    System.out.println("0====" + bigDecimal);
                                 }
 
                             }
@@ -530,6 +536,7 @@ public class LotteryUtil {
                                         bigDecimal = new BigDecimal("0");
                                     }
                                 }
+                                System.out.println("1====" + bigDecimal);
 
                             }
                             if (info[2].equals("2")) {
@@ -542,16 +549,37 @@ public class LotteryUtil {
                                         bigDecimal = new BigDecimal("0");
                                     }
                                 }
+                                System.out.println("2====" + bigDecimal);
                             }
                             if (info[2].equals("3")) {
                                 if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                                     bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                                 } else {
-                                    if (info[3].equals(basketBalLConvertString(oe.getZclose(), info[2]))) {
-                                        bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                                    BigDecimal b1 = new BigDecimal(oe.getVs()).add(new BigDecimal(oe.getHs()));
+                                    BigDecimal b2 = new BigDecimal(info[6]);
+                                    System.out.println(b2);
+                                    if (info[3].equals("1")) {
+                                        if (b1.compareTo(b2) == 1) {
+                                            System.out.println("1b1====" + b1);
+                                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                                        } else {
+                                            bigDecimal = new BigDecimal("0");
+                                        }
                                     } else {
-                                        bigDecimal = new BigDecimal("0");
+                                        if (b1.compareTo(b2) == -1) {
+                                            System.out.println("2b1====" + b1);
+                                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+                                        } else {
+                                            bigDecimal = new BigDecimal("0");
+                                        }
                                     }
+//                                    if (info[3].equals(basketBalLConvertString(oe.getZclose(), info[2]))) {
+//
+//                                        bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
+//                                    } else {
+//                                        bigDecimal = new BigDecimal("0");
+//                                    }
+                                    System.out.println("3====" + bigDecimal);
                                 }
 
                             }
@@ -563,14 +591,15 @@ public class LotteryUtil {
                                     BigDecimal vs = new BigDecimal(Strings.isNullOrEmpty(oe.getVs()) ? "0" : oe.getVs());
                                     BigDecimal sc = new BigDecimal(info[5]);
                                     String spread = "";
-                                    if (hs.compareTo(vs.add(sc)) == 0) {
-                                        spread = FLAT;
-                                    }
-                                    if (hs.compareTo(vs.add(sc)) == 1) {
-                                        spread = LET_MAIN_WIN;
-                                    }
-                                    if (hs.compareTo(vs.add(sc)) == -1) {
+//                                    if (hs.compareTo(hs.add(sc)) == 0) {
+//                                        spread = FLAT;
+//                                    }
+
+                                    if (vs.compareTo(hs.add(sc)) == 1) {
                                         spread = LET_MAIN_LOSE;
+                                    }
+                                    if (vs.compareTo(hs.add(sc)) == -1) {
+                                        spread = LET_MAIN_WIN;
                                     }
                                     if (info[3].equals(basketBalLConvertString(spread, info[2]))) {
                                         bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
@@ -578,6 +607,7 @@ public class LotteryUtil {
                                         bigDecimal = new BigDecimal("0");
                                     }
                                 }
+                                System.out.println("4====" + bigDecimal);
                             }
                         }
                         BigDecimal singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
@@ -655,11 +685,27 @@ public class LotteryUtil {
                     if (Strings.isNullOrEmpty(oe.getHs()) || Strings.isNullOrEmpty(oe.getVs())) {
                         bigDecimal = bigDecimal.multiply(new BigDecimal(1)).setScale(2, RoundingMode.HALF_DOWN);
                     } else {
-                        if (info[0].equals(basketBallBestConvertString(oe.getZclose()))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+
+                        BigDecimal b1 = new BigDecimal(oe.getVs()).add(new BigDecimal(oe.getHs()));
+                        BigDecimal b2 = new BigDecimal(info[2]);
+                        if (info[0].equals("大分")) {
+                            if (b1.compareTo(b2) == 1) {
+                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                            } else {
+                                bigDecimal = new BigDecimal("0");
+                            }
                         } else {
-                            bigDecimal = new BigDecimal("0");
+                            if (b1.compareTo(b2) == -1) {
+                                bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                            } else {
+                                bigDecimal = new BigDecimal("0");
+                            }
                         }
+//                        if (info[0].equals(basketBallBestConvertString(oe.getZclose()))) {
+//                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+//                        } else {
+//                            bigDecimal = new BigDecimal("0");
+//                        }
                     }
 
                 }
@@ -672,17 +718,15 @@ public class LotteryUtil {
                         BigDecimal vs = new BigDecimal(Strings.isNullOrEmpty(oe.getVs()) ? "0" : oe.getVs());
                         BigDecimal sc = new BigDecimal(info_detail[1]);
                         String spread = "";
-                        if (hs.compareTo(vs.add(sc)) == 0) {
-                            spread = FLAT;
-                        }
-                        if (hs.compareTo(vs.add(sc)) == 1) {
-                            spread = LET_MAIN_WIN;
-                        }
-                        if (hs.compareTo(vs.add(sc)) == -1) {
+
+                        if (vs.compareTo(hs.add(sc)) == 1) {
                             spread = LET_MAIN_LOSE;
                         }
-                        if (info[0].equals(basketBalLConvertString(spread, info[2]))) {
-                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[1])).setScale(2, RoundingMode.HALF_DOWN);
+                        if (vs.compareTo(hs.add(sc)) == -1) {
+                            spread = LET_MAIN_WIN;
+                        }
+                        if (info[3].equals(basketBalLConvertString(spread, info[2]))) {
+                            bigDecimal = bigDecimal.multiply(new BigDecimal(info[4])).setScale(2, RoundingMode.HALF_DOWN);
                         } else {
                             bigDecimal = new BigDecimal("0");
                         }
@@ -706,7 +750,8 @@ public class LotteryUtil {
      * @param resultMap
      * @return
      */
-    public static BigDecimal basketBallSingleWinningVerify(List<String> list, Map<String, CdBasketballAwards> resultMap, List<String> playType) {
+    public static BigDecimal basketBallSingleWinningVerify
+    (List<String> list, Map<String, CdBasketballAwards> resultMap, List<String> playType) {
         // System.out.println(list);
         BigDecimal countBigDecimal = new BigDecimal("0");
 
@@ -746,8 +791,8 @@ public class LotteryUtil {
                         }
                     }
                     singleBigDecimal = bigDecimal.multiply(new BigDecimal("2")).setScale(2, RoundingMode.HALF_DOWN);
-                    //System.out.println("单注：" + singleBigDecimal);
-                    //System.out.println("倍数：" + info[2]);
+                    System.out.println("单注：" + singleBigDecimal);
+                    System.out.println("倍数：" + info[2]);
                     countBigDecimal = countBigDecimal.add(singleBigDecimal.multiply(new BigDecimal(info[2])).setScale(2, RoundingMode.HALF_DOWN));
                 }
 
@@ -904,14 +949,14 @@ public class LotteryUtil {
         if (aInteger == bInteger) {
             if (flatMap.containsKey(score)) {
                 System.out.println(flatMap.get(score));
-            }else {
+            } else {
                 System.out.println(flatMap.get("平其他"));
             }
         }
         if (aInteger < bInteger) {
             if (loseMap.containsKey(score)) {
                 System.out.println(loseMap.get(score));
-            }else {
+            } else {
                 System.out.println(loseMap.get("负其他"));
             }
         }
@@ -992,7 +1037,7 @@ public class LotteryUtil {
         }
 
 
-        System.out.println("长度=================：" + dimValue.size());
+        //System.out.println("长度=================：" + dimValue.size());
         String[] myResult = new String[total];
 
         int itemLoopNum = 1;

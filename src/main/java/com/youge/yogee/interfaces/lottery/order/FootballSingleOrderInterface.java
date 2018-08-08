@@ -1,6 +1,8 @@
 package com.youge.yogee.interfaces.lottery.order;
 
+import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.utils.lottery.SalesUtil;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
 import com.youge.yogee.interfaces.util.util;
@@ -54,6 +56,9 @@ public class FootballSingleOrderInterface {
     public String footballSingleOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface footballSingleOrderCommit--------Start-------------------");
         logger.debug("interface 请求--footballSingleOrderCommit-------- Start--------");
+        if (SalesUtil.isInDate()) {
+            return HttpResultUtil.errorJson("售彩时间:(每天上午09:30-下午11:45,周末截止到次日00:45)请在指定时段前来购买!");
+        }
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -203,6 +208,11 @@ public class FootballSingleOrderInterface {
 
         //注数
         String acountStr = String.valueOf(acount);
+
+//        if (acountStr.compareTo(OrderTimes.minTimes) < 0) {
+//            logger.error("最少" + OrderTimes.minTimes + "注");
+//            return HttpResultUtil.errorJson("最少" + OrderTimes.minTimes + "注");
+//        }
         //生成订单号
         String orderNum = util.genOrderNo("ZDG", util.getFourRandom());
         //计算金额

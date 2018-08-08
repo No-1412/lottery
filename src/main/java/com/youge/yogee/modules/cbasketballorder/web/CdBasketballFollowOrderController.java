@@ -212,11 +212,21 @@ public class CdBasketballFollowOrderController extends BaseController {
 //        }
 
         //更新赔率  6.28 dh 赔率更新问题 同足球
-        if(!"0".equals(newWinDetail)){ cdBasketballFollowOrder.setHostWin(newWinDetail); }
-        if(!"0".equals(newFailDetail)){cdBasketballFollowOrder.setHostFail(newFailDetail);}
-        if(!"0".equals(newSizeDetail)){cdBasketballFollowOrder.setSize(newSizeDetail);}
-        if(!"0".equals(newBeatDetail)){cdBasketballFollowOrder.setBeat(newBeatDetail);}
-        if(!"0".equals(newLetDetail)) {cdBasketballFollowOrder.setLet(newLetDetail);}
+        if (!"0".equals(newWinDetail)) {
+            cdBasketballFollowOrder.setHostWin(newWinDetail);
+        }
+        if (!"0".equals(newFailDetail)) {
+            cdBasketballFollowOrder.setHostFail(newFailDetail);
+        }
+        if (!"0".equals(newSizeDetail)) {
+            cdBasketballFollowOrder.setSize(newSizeDetail);
+        }
+        if (!"0".equals(newBeatDetail)) {
+            cdBasketballFollowOrder.setBeat(newBeatDetail);
+        }
+        if (!"0".equals(newLetDetail)) {
+            cdBasketballFollowOrder.setLet(newLetDetail);
+        }
 
         /*
         String size = cdBasketballFollowOrder.getSize();
@@ -341,7 +351,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                             String newPlay = letAndOddArray[0] + "/" + newLetOdd;
                             String close = cfm.getClose().replaceAll("\\+", "");
                             String letSorce = aDetail[3].split("/")[0] + "/" + close + "/" + cfm.getZclose();
-                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce+"+"+aDetail[4];
+                            newAdetail = aDetail[0] + "+" + aDetail[1] + "+" + newPlay + "+" + letSorce + "+" + aDetail[4];
 
                             break;
                         }
@@ -387,7 +397,7 @@ public class CdBasketballFollowOrderController extends BaseController {
         }
 
 
-         addMessage(redirectAttributes, "保存成功");
+        addMessage(redirectAttributes, "保存成功");
         return "redirect:" + Global.getAdminPath() + "/cbasketballorder/cdBasketballFollowOrder/?repage";
         /**
          * 2018-06-06 yhw 去掉之前的页面打印功能
@@ -619,7 +629,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                     s = sArray[0] + "/" + newOdd;
                     newSizeOdd += s + ",";
                 }
-                aSize = detail[0] + "+" + detail[1] + "+" + detail[2] + "+" + newSizeOdd;
+                aSize = detail[0] + "+" + detail[1] + "+" + detail[2] + "+" + newSizeOdd + "+" + detail[4];
                 newSizeDetail += aSize + "|";
             }
         }
@@ -721,7 +731,7 @@ public class CdBasketballFollowOrderController extends BaseController {
                     s = sArray[0] + "/" + newOdd;
                     newBeatOdd += s + ",";
                 }
-                aLet = detail[0] + "+" + detail[1] + "+" + detail[2] + "+" + newBeatOdd;
+                aLet = detail[0] + "+" + detail[1] + "+" + detail[2] + "+" + newBeatOdd + "+" + detail[4];
                 newLetDetail += aLet + "|";
             }
         }

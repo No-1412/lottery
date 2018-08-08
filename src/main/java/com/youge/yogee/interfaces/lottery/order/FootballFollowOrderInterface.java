@@ -1,6 +1,8 @@
 package com.youge.yogee.interfaces.lottery.order;
 
+import com.youge.yogee.common.utils.DateUtils;
 import com.youge.yogee.common.utils.StringUtils;
+import com.youge.yogee.common.utils.lottery.SalesUtil;
 import com.youge.yogee.interfaces.util.BallGameCals;
 import com.youge.yogee.interfaces.util.HttpResultUtil;
 import com.youge.yogee.interfaces.util.HttpServletRequestUtils;
@@ -57,6 +59,10 @@ public class FootballFollowOrderInterface {
     public String footballFollowOrderCommit(HttpServletRequest request) throws ParseException {
         logger.info(" interface footballFollowOrderCommit--------Start-------------------");
         logger.debug("interface 请求--footballFollowOrderCommit-------- Start--------");
+
+        if (SalesUtil.isInDate()) {
+            return HttpResultUtil.errorJson("售彩时间:(每天上午09:30-下午11:45,周末截止到次日00:45)请在指定时段前来购买!");
+        }
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
         if (jsonData == null) {
@@ -91,6 +97,11 @@ public class FootballFollowOrderInterface {
             return HttpResultUtil.errorJson("times为空");
         }
 
+//        if (times.compareTo(OrderTimes.minTimes) < 0) {
+//            logger.error("最少" + OrderTimes.minTimes + "注");
+//            return HttpResultUtil.errorJson("最少" + OrderTimes.minTimes + "注");
+//        }
+
 
         //订单详情
         Object jsonString = jsonData.get("detail");
@@ -111,26 +122,26 @@ public class FootballFollowOrderInterface {
         int danCount = 0;//胆数
         int danTimes = 1;//胆注数
         String danMatchIds = "";//胆场次
-        String matchTimes="";//所有比赛时间
+        String matchTimes = "";//所有比赛时间
         if (detail.size() != 0) {
-            if("3".equals(buyWays)){
+            if ("3".equals(buyWays)) {
                 String lets = "";
                 boolean isaleFlag = true;
                 for (Map<String, Object> d : detail) {
                     String let = (String) d.get("let");
-                    lets += let+"|";
+                    lets += let + "|";
                     String matchId = (String) d.get("matchId");
                     CdFootballMixed sfm = cdFootballMixedService.findByMatchId(matchId);
                     if (sfm == null) {
                         return HttpResultUtil.errorJson("比赛不存在");
                     }
                     String isale = sfm.getIsale();
-                    if(!"991".equals(isale)){
-                        isaleFlag =false;
+                    if (!"991".equals(isale)) {
+                        isaleFlag = false;
                     }
                 }
                 String[] letStrs = lets.split("\\|");
-                if(letStrs.length<2&&isaleFlag){
+                if (letStrs.length < 2 && isaleFlag) {
                     return HttpResultUtil.errorJson("下单失败,存在未开售单关,需至少选择俩场比赛");
                 }
             }
@@ -142,10 +153,10 @@ public class FootballFollowOrderInterface {
                 if (sfm == null) {
                     return HttpResultUtil.errorJson("比赛不存在");
                 }
-               String shutDownTime=sfm.getTimeEndsale();
-                Date day=new Date();
+                String shutDownTime = sfm.getTimeEndsale();
+                Date day = new Date();
                 SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                if(df.parse(shutDownTime).getTime()<day.getTime()){
+                if (df.parse(shutDownTime).getTime() < day.getTime()) {
                     return HttpResultUtil.errorJson("超过比赛截止时间");
                 }
 
@@ -163,11 +174,11 @@ public class FootballFollowOrderInterface {
                     danMatchIds += "非" + "+" + matchId + ",";
                 }
                 //记录所有比赛时间
-                CdFbNotFinish cfnf=cdFbNotFinishService.findByJn(matchId);
-                if(cfnf!=null){
-                    matchTimes+=cfnf.getTime()+",";
-                }else {
-                    matchTimes+="2000-01-01 00:00:00"+",";
+                CdFbNotFinish cfnf = cdFbNotFinishService.findByJn(matchId);
+                if (cfnf != null) {
+                    matchTimes += cfnf.getTime() + ",";
+                } else {
+                    matchTimes += "2000-01-01 00:00:00" + ",";
                 }
                 //比赛详情
                 String partDetail = isMust + "+" + matchId + "+" + sfm.getWinningName() + "vs" + sfm.getDefeatedName();
@@ -412,8 +423,13 @@ public class FootballFollowOrderInterface {
     public String footballBestFollowOrderCommit(HttpServletRequest request) {
         logger.info("footballBestFollowOrderCommit--------Start-------------------");
         logger.debug("footballBestFollowOrderCommit-------- Start--------");
+        if (!DateUtils.isInDate(new Date(), "09:30:00", "23:45:00")) {
+            return HttpResultUtil.errorJson("售彩时间:(上午09:30-下午11:45)请在指定时段前来购买!");
+        }
+
         Map map = new HashMap();
         Map jsonData = HttpServletRequestUtils.readJsonData(request);
+        System.out.println("参数===============" + jsonData);
         if (jsonData == null) {
             return HttpResultUtil.errorJson("json格式错误");
         }
@@ -466,7 +482,7 @@ public class FootballFollowOrderInterface {
             //保证比赛存在
             String danMatchIds = "";
             String letBalls = "";
-            String matchTimes="";//所有比赛时间
+            String matchTimes = "";//所有比赛时间
             for (String s : matchSet) {
                 CdFootballMixed cbm = cdFootballMixedService.findByMatchId(s);
                 if (cbm == null) {
@@ -475,11 +491,11 @@ public class FootballFollowOrderInterface {
                 danMatchIds += "非+" + s + ",";
                 letBalls += cbm.getClose() + ",";
                 //记录所有比赛时间
-                CdFbNotFinish cfnf=cdFbNotFinishService.findByJn(s);
-                if(cfnf!=null){
-                    matchTimes+=cfnf.getTime()+",";
-                }else {
-                    matchTimes+="2000-01-01 00:00:00"+",";
+                CdFbNotFinish cfnf = cdFbNotFinishService.findByJn(s);
+                if (cfnf != null) {
+                    matchTimes += cfnf.getTime() + ",";
+                } else {
+                    matchTimes += "2000-01-01 00:00:00" + ",";
                 }
 
                 Map<String, String> aDetailMap = new HashMap<>();
@@ -566,7 +582,8 @@ public class FootballFollowOrderInterface {
             //保存到订单主表
             CdFootballFollowOrder cffo = new CdFootballFollowOrder();
             cffo.setOrderNum(orderNum); //订单号
-            cffo.setAcount(String.valueOf(acount));//注数
+            //cffo.setAcount(String.valueOf(acount));//注数
+            cffo.setAcount(String.valueOf(detailList.size()));
             cffo.setAward("0"); //奖金
             BigDecimal countBig = new BigDecimal(acount);
             BigDecimal price = countBig.multiply(new BigDecimal(2)).setScale(2, 1);
@@ -575,7 +592,7 @@ public class FootballFollowOrderInterface {
             cffo.setUid(uid);//用户
             cffo.setBuyWays(buyWays);//玩法 1混投 2胜平负 3让球胜平负 4比分 5总进球 6半全场
             cffo.setFollowNum(followNum);//串关数
-            cffo.setTimes("1"); //倍数
+            cffo.setTimes(String.valueOf(acount)); //倍数
             cffo.setDanMatchIds(danMatchIds);//胆场次
             cffo.setType("0"); //0普通订单 1发起的 2跟单的
             cffo.setBestType("2");//1普通单 2优化的

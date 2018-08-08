@@ -114,41 +114,47 @@ public class ForumInterface {
     @RequestMapping(value = "addReply", method = RequestMethod.POST)
     @ResponseBody
     public String addReply(HttpServletRequest request) {
-        logger.info("论坛回复addReply---------- Start--------");
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        String uid = (String) jsonData.get("uid");//当前登录人id
-        if (StringUtils.isEmpty(uid)) {
-            return HttpResultUtil.errorJson("uid为空!");
-        }
-        String fid = (String) jsonData.get("fid");//主人A的帖子或者评论内容的id
-        if (StringUtils.isEmpty(fid)) {
-            return HttpResultUtil.errorJson("fid为空!");
-        }
-        String content = (String) jsonData.get("content");
-        if (StringUtils.isEmpty(content)) {
-            return HttpResultUtil.errorJson("请填写内容!");
-        }
+        try {
+            logger.info("论坛回复addReply---------- Start--------");
+            Map jsonData = HttpServletRequestUtils.readJsonData(request);
+            String uid = (String) jsonData.get("uid");//当前登录人id
+            if (StringUtils.isEmpty(uid)) {
+                return HttpResultUtil.errorJson("uid为空!");
+            }
+            String fid = (String) jsonData.get("fid");//主人A的帖子或者评论内容的id
+            if (StringUtils.isEmpty(fid)) {
+                return HttpResultUtil.errorJson("fid为空!");
+            }
+            String content = (String) jsonData.get("content");
+            if (StringUtils.isEmpty(content)) {
+                return HttpResultUtil.errorJson("请填写内容!");
+            }
 
-        Map mapData = new HashMap();
-        //获取论坛帖子
-        CdForum cd = cdForumService.get(fid);
-        if (cd == null) {
-            return HttpResultUtil.errorJson("帖子不存在!");
+            Map mapData = new HashMap();
+            //获取论坛帖子
+            CdForum cd = cdForumService.get(fid);
+            if (cd == null) {
+                return HttpResultUtil.errorJson("帖子不存在!");
+            }
+            CdLotteryUser clu = cdLotteryUserService.get(uid);
+            if (clu == null) {
+                return HttpResultUtil.errorJson("用户不存在!");
+            }
+            CdForumReplay cfr = new CdForumReplay();
+            cfr.setText(content);//回复内容
+            cfr.setUid(uid);//用户id
+            cfr.setFid(fid);//帖子id
+            cfr.setUserName(clu.getName());//用户名
+            cfr.setUserImg(clu.getImg());//头像
+            cfr.setSupportCount("0");//点赞数
+            cdForumReplayService.save(cfr);
+            logger.info("论坛回复addReply---------- End--------");
+            return HttpResultUtil.successJson(mapData);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResultUtil.errorJson("");
+
         }
-        CdLotteryUser clu = cdLotteryUserService.get(uid);
-        if (clu == null) {
-            return HttpResultUtil.errorJson("用户不存在!");
-        }
-        CdForumReplay cfr = new CdForumReplay();
-        cfr.setText(content);//回复内容
-        cfr.setUid(uid);//用户id
-        cfr.setFid(fid);//帖子id
-        cfr.setUserName(clu.getName());//用户名
-        cfr.setUserImg(clu.getImg());//头像
-        cfr.setSupportCount("0");//点赞数
-        cdForumReplayService.save(cfr);
-        logger.info("论坛回复addReply---------- End--------");
-        return HttpResultUtil.successJson(mapData);
 //        //把回复内容的id,保存到帖子表的replyId字段
 //        String parentsId = "";
 //        if (cd.getParentsId() != null && !"".equals(cd.getParentsId()) && !" ".equals(cd.getParentsId())) {
@@ -213,7 +219,7 @@ public class ForumInterface {
                 } else {
                     map.put("supFlag", "1"); //点赞
                 }
-            }else {
+            } else {
                 map.put("supFlag", "0"); //没点赞
             }
 
@@ -222,11 +228,11 @@ public class ForumInterface {
             //map.put("name", s.getName());//标题
             map.put("content", s.getContent());//内容
             map.put("userName", s.getUserName());//发布人
-            String sUid=s.getUserId();
+            String sUid = s.getUserId();
             CdLotteryUser clu = cdLotteryUserService.get(sUid);
-            String img="";
-            if(clu!=null){
-                img=clu.getImg();
+            String img = "";
+            if (clu != null) {
+                img = clu.getImg();
             }
             map.put("uImg", img);
             map.put("dianZanCount", s.getDianzanCount());//点赞数量

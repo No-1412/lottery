@@ -271,8 +271,15 @@ public class MagicOrderInterface {
                 if (clu == null) {
                     return HttpResultUtil.errorJson("用户不存在");
                 }
-                double start = Double.parseDouble(cff.getAcount()) * 2;
-                startPrice = String.valueOf(start);
+
+                if ("2".equals(cff.getBestType())) {
+                    startPrice = cff.getPrice();
+                } else {
+                    double start = Double.parseDouble(cff.getAcount()) * 2;
+                    startPrice = String.valueOf(start);
+                }
+
+
                 uId = cff.getUid();
                 uName = clu.getName();//用户名
                 uImg = clu.getImg();//头像
@@ -398,58 +405,64 @@ public class MagicOrderInterface {
     public String getMagicOrderList(HttpServletRequest request) throws ParseException {
         logger.info("获取神单 getMagicOrderList--------Start-------------------");
         logger.debug("interface 请求--getMagicOrderList-------- Start--------");
-        Map map = new HashMap();
-        Map jsonData = HttpServletRequestUtils.readJsonData(request);
-        if (jsonData == null) {
-            return HttpResultUtil.errorJson("json格式错误");
-        }
-        String total = (String) jsonData.get("total");
-        if (StringUtils.isEmpty(total)) {
-            logger.error("total为空");
-            return HttpResultUtil.errorJson("total为空");
-        }
+        try {
+            Map map = new HashMap();
+            Map jsonData = HttpServletRequestUtils.readJsonData(request);
+            if (jsonData == null) {
+                return HttpResultUtil.errorJson("json格式错误");
+            }
+            String total = (String) jsonData.get("total");
+            if (StringUtils.isEmpty(total)) {
+                logger.error("total为空");
+                return HttpResultUtil.errorJson("total为空");
+            }
 
-        String vo = (String) jsonData.get("vo");
-        String count = (String) jsonData.get("count");
-        if (StringUtils.isEmpty(count)) {
-            logger.error("count为空");
-            return HttpResultUtil.errorJson("count为空");
-        }
+            String vo = (String) jsonData.get("vo");
+            String count = (String) jsonData.get("count");
+            if (StringUtils.isEmpty(count)) {
+                logger.error("count为空");
+                return HttpResultUtil.errorJson("count为空");
+            }
 
-        List<CdMagicOrder> list = cdMagicOrderService.getMagicOrder(total, count);
-        List cList = new ArrayList();
-        for (CdMagicOrder c : list) {
-            Map cMap = new HashMap();
-            cMap.put("id", c.getId());
-            cMap.put("uName", c.getuName()); //用户名
+            List<CdMagicOrder> list = cdMagicOrderService.getMagicOrder(total, count);
+            List cList = new ArrayList();
+            for (CdMagicOrder c : list) {
+                Map cMap = new HashMap();
+                cMap.put("id", c.getId());
+                cMap.put("uName", c.getuName()); //用户名
 //            if (c.getuImg().length() > 2) {
 //                cMap.put("img", Global.getConfig("domain.url") + c.getuImg());//头像
 //            } else {
 //                cMap.put("img", c.getuImg());//头像
 //            }
-            cMap.put("img", c.getuImg());//头像
-            cMap.put("price", c.getPrice()); //购买金额
-            cMap.put("followCounts", c.getFollowCounts()); //跟买人数
-            cMap.put("shutDownTime", c.getShutDownTime()); //截止时间
-            cMap.put("charges", c.getCharges() + "%"); //佣金
-            cMap.put("times", c.getTimes()); //保字
-            cMap.put("startPrice", c.getStartPrice());//起投
-            cMap.put("orderNum", c.getOrderNum());//订单号
+                cMap.put("img", c.getuImg());//头像
+                cMap.put("price", c.getPrice()); //购买金额
+                cMap.put("followCounts", c.getFollowCounts()); //跟买人数
+                cMap.put("shutDownTime", c.getShutDownTime()); //截止时间
+                cMap.put("charges", c.getCharges() + "%"); //佣金
+                cMap.put("times", c.getTimes()); //保字
+                cMap.put("startPrice", c.getStartPrice());//起投
+                cMap.put("orderNum", c.getOrderNum());//订单号
 
-            if (!Strings.isNullOrEmpty(vo)) {
-                cMap.put("remarks", c.getRemarks());//订单号
+                if (!Strings.isNullOrEmpty(vo)) {
+                    cMap.put("remarks", c.getRemarks());//订单号
+                }
+
+                cList.add(cMap);
             }
-
-            cList.add(cMap);
+            map.put("list", cList);
+            map.put("top", cdMagicOrderService.queryRanking());
+            logger.info("获取神单 getMagicOrderList---------End---------------------");
+            return HttpResultUtil.successJson(map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return HttpResultUtil.errorJson("获取失败");
         }
-        map.put("list", cList);
-        logger.info("获取神单 getMagicOrderList---------End---------------------");
-        return HttpResultUtil.successJson(map);
+
     }
 
     /**
      * 获得神单详情
-     *
      */
     @RequestMapping(value = "getMagicOrderDetail", method = RequestMethod.POST)
     @ResponseBody
@@ -533,7 +546,7 @@ public class MagicOrderInterface {
                 aMap.put("award", new BigDecimal(award).setScale(2, RoundingMode.HALF_DOWN).toString());
 
                 BigDecimal bigDecimal = new BigDecimal(award);
-                BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("0.8")).setScale(2,RoundingMode.HALF_DOWN);
+                BigDecimal bl = csBigDecimal.multiply(bigDecimal).setScale(2, RoundingMode.HALF_DOWN).multiply(new BigDecimal("0.8")).setScale(2, RoundingMode.HALF_DOWN);
                 aMap.put("commission", bl.toString());
                 totalBigDecimal = totalBigDecimal.add(bl);
             }
@@ -926,7 +939,7 @@ public class MagicOrderInterface {
             BigDecimal newBalance = balance.subtract(new BigDecimal(price));
             clu.setBalance(newBalance);
             cdLotteryUserService.save(clu);
-            saveRebate(price, clu, type);
+            //saveRebate(price, clu, type);
             flag = true;
         }
         return flag;
