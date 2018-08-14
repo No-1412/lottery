@@ -423,8 +423,8 @@ public class FootballFollowOrderInterface {
     public String footballBestFollowOrderCommit(HttpServletRequest request) {
         logger.info("footballBestFollowOrderCommit--------Start-------------------");
         logger.debug("footballBestFollowOrderCommit-------- Start--------");
-        if (!DateUtils.isInDate(new Date(), "09:30:00", "23:45:00")) {
-            return HttpResultUtil.errorJson("售彩时间:(上午09:30-下午11:45)请在指定时段前来购买!");
+        if (SalesUtil.isInDate()) {
+            return HttpResultUtil.errorJson("售彩时间:(每天上午09:30-下午11:45,周末截止到次日00:45)请在指定时段前来购买!");
         }
 
         Map map = new HashMap();

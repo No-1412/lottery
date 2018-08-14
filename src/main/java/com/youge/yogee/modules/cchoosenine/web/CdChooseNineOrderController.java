@@ -91,7 +91,9 @@ public class CdChooseNineOrderController extends BaseController {
     @RequiresPermissions("cchoosenine:cdChooseNineOrder:view")
     @RequestMapping(value = "form")
     public String form(CdChooseNineOrder cdChooseNineOrder, Model model) {
+        System.out.println(cdChooseNineOrder.toString());
         List<String> list = new ArrayList<>();
+        List<String> listMi = new ArrayList<>();
         String uName = "";
         if (cdChooseNineOrder != null) {
             String detail = cdChooseNineOrder.getOrderDetail();
@@ -99,6 +101,14 @@ public class CdChooseNineOrderController extends BaseController {
                 String detailStr[] = detail.split("\\|");
                 for (String s : detailStr) {
                     list.add(s);
+                }
+            }
+            String detailMi = cdChooseNineOrder.getMatchIds();
+            System.out.println("detailMi============="+detailMi);
+            if (StringUtils.isNotEmpty(detailMi)) {
+                String detailMiStr[] = detailMi.split(",");
+                for (String str : detailMiStr) {
+                    listMi.add(str);
                 }
             }
             CdLotteryUser clu = cdLotteryUserService.get(cdChooseNineOrder.getUid());
@@ -109,6 +119,7 @@ public class CdChooseNineOrderController extends BaseController {
         model.addAttribute("uName", uName);
         model.addAttribute("cdChooseNineOrder", cdChooseNineOrder);
         model.addAttribute("list", list);
+        model.addAttribute("listMi", listMi);
         return "modules/cchoosenine/cdChooseNineOrderForm";
     }
 
@@ -119,11 +130,11 @@ public class CdChooseNineOrderController extends BaseController {
             return form(cdChooseNineOrder, model);
         }
         //保存出票时间
-        Date day=new Date();
+        Date day = new Date();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String outTime=df.format(day);
-        CdOrder co=cdOrderService.getOrderByOrderNum(cdChooseNineOrder.getOrderNumber());
-        if(co!=null){
+        String outTime = df.format(day);
+        CdOrder co = cdOrderService.getOrderByOrderNum(cdChooseNineOrder.getOrderNumber());
+        if (co != null) {
             co.setOutTime(outTime);
             cdOrderService.save(co);
         }

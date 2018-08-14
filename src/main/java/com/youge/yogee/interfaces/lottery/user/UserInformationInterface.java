@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,10 +117,8 @@ public class UserInformationInterface {
                     String b5 = cdLotteryUserService.withdrawalPrice(clu.getId());
                     tPrice = tPrice.subtract(new BigDecimal(b5));
                 }
-
-
             } else {
-                tPrice = new BigDecimal(clu.getBalance().setScale(2).toString());
+                tPrice = new BigDecimal(clu.getBalance().setScale(2,BigDecimal.ROUND_HALF_DOWN).toString());
             }
 
             System.out.println("可提现金额：" + tPrice);

@@ -4,6 +4,7 @@ package com.youge.yogee.interfaces.quartz;
  * Created by liyuan on 2018/3/7.
  */
 
+import com.google.common.base.Strings;
 import com.youge.yogee.interfaces.lottery.util.WinPriceUtil;
 import com.youge.yogee.interfaces.util.Calculations;
 import com.youge.yogee.modules.cchoosenine.entity.CdChooseNine;
@@ -18,6 +19,7 @@ import com.youge.yogee.modules.corder.service.CdOrderWinnersService;
 import com.youge.yogee.modules.csuccessfail.entity.CdSuccessFailOrder;
 import com.youge.yogee.modules.csuccessfail.service.CdSuccessFailOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -71,7 +73,7 @@ public class ChooseNineQuartz {
     //定时轮询
 //    @Scheduled(cron = "0/20 1 * * * ?")
 //    @Scheduled(cron = "0 0 * * * ?")//1小时
-  //  @Scheduled(cron = "0 0 */1 * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void chooseNineOrder() {
 //        System.out.println("任选九开奖");
         List<CdChooseNineOrder> cdBasketballFollowOrderList = cdChooseNineOrderService.findStatus();
@@ -147,77 +149,90 @@ public class ChooseNineQuartz {
     }
 
 
-  //  @Scheduled(cron = "0 0 */1 * * ?")//2小时
+    @Scheduled(cron = "0 0 */1 * * ?")//2小时
     public void successFailOrder() {
 //        System.out.println("胜负彩开奖");
         List<CdSuccessFailOrder> cdSuccessFailOrderList = cdSuccessFailOrderService.findStatus();
 
         for (CdSuccessFailOrder cdSuccessFailOrder : cdSuccessFailOrderList) {
-            String orderDetail = cdSuccessFailOrder.getOrderDetail();
+            try {
+                String orderDetail = cdSuccessFailOrder.getOrderDetail();
 
-            String weekday = cdSuccessFailOrder.getWeekday();
-            CdColorReward cdColorReward = cdColorRewardService.findByWeekday(weekday);
+                String weekday = cdSuccessFailOrder.getWeekday();
+                CdColorReward cdColorReward = cdColorRewardService.findByWeekday(weekday);
 
-            //判断是否可以开奖
-            if (cdColorReward == null) {
-                break;
-            }
-
-            //开奖结果
-            String[] numbers = cdColorReward.getNumber().split(",");
-
-            //记录押中场数
-            int sum = 0;
-            //获取订单中押的全部场次
-            String[] detailList = orderDetail.split("\\|");
-            for (String aDetail : detailList) {
-                String[] aDetailArray = aDetail.split("\\+");
-
-                String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
-                if (aDetailArray[2].contains(number) || number.equals("*")) {
-                    sum += 1;
+                //判断是否可以开奖
+                if (cdColorReward == null) {
+                    break;
                 }
-            }
-            String[] awards = cdColorReward.getPerNoteMoney().split(",");
-            if (sum == 13) {
-                Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
-                cdSuccessFailOrder.setAward(award.toString());
-                cdSuccessFailOrder.setResult(cdColorReward.getNumber());
-                cdSuccessFailOrder.setStatus("4");
-                cdSuccessFailOrderService.save(cdSuccessFailOrder);
-                //改变订单总表状态 step1
-                WinPriceUtil.changeTotalOrder(cdSuccessFailOrder.getOrderNumber(), award.toString());
-                //------------------------原开奖逻辑----180517弃用-----------------------------------------
-                //保存中奖纪录 step2
-                //更新用户余额 step3
-                //推送         step4
-                //-------------------------------------------------------------------------------
-            } else if (sum == 14) {
-                Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
-                cdSuccessFailOrder.setAward(award.toString());
-                cdSuccessFailOrder.setStatus("4");
-                cdSuccessFailOrder.setResult(cdColorReward.getNumber());
-                cdSuccessFailOrderService.save(cdSuccessFailOrder);
-                //改变订单总表状态 step1
-                WinPriceUtil.changeTotalOrder(cdSuccessFailOrder.getOrderNumber(), award.toString());
-                //------------------------原开奖逻辑----180517弃用-----------------------------------------
-                //保存中奖纪录 step2
-                //更新用户余额 step3
-                //推送         step4
-                //-------------------------------------------------------------------------------
-            } else {
-                cdSuccessFailOrder.setResult(cdColorReward.getNumber());
-                cdSuccessFailOrder.setStatus("5");
-                cdSuccessFailOrderService.save(cdSuccessFailOrder);
-                //改变订单总表状态
-                CdOrder co = cdOrderService.getOrderByOrderNum(cdSuccessFailOrder.getOrderNumber());
-                if (co != null) {
-                    co.setWinPrice("0");//奖金
-                    co.setStatus("2");//已开奖
-                    cdOrderService.save(co);
-                }
-            }
 
+                //开奖结果
+                String[] numbers = cdColorReward.getNumber().split(",");
+
+                //记录押中场数
+                int sum = 0;
+                //获取订单中押的全部场次
+                String[] detailList = orderDetail.split("\\|");
+                for (String aDetail : detailList) {
+                    String[] aDetailArray = aDetail.split("\\+");
+
+                    String number = numbers[Integer.valueOf(aDetailArray[0]) + -1];
+                    if (aDetailArray[2].contains(number) || number.equals("*")) {
+                        sum += 1;
+                    }
+                }
+                String[] awards = cdColorReward.getPerNoteMoney().split(",");
+                if (sum == 13) {
+                    if (awards == null) {
+                        Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[1]);
+                        cdSuccessFailOrder.setAward(award.toString());
+                        cdSuccessFailOrder.setResult(cdColorReward.getNumber());
+                        cdSuccessFailOrder.setStatus("4");
+                        cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                        //改变订单总表状态 step1
+                        WinPriceUtil.changeTotalOrder(cdSuccessFailOrder.getOrderNumber(), award.toString());
+                        //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                        //保存中奖纪录 step2
+                        //更新用户余额 step3
+                        //推送         step4
+                        //-------------------------------------------------------------------------------
+                    } else {
+                        System.out.println("未完赛");
+                    }
+                } else if (sum == 14) {
+                    if (awards == null) {
+                        Integer award = Integer.valueOf(cdSuccessFailOrder.getTimes()) * Integer.valueOf(awards[0]);
+                        cdSuccessFailOrder.setAward(award.toString());
+                        cdSuccessFailOrder.setStatus("4");
+                        cdSuccessFailOrder.setResult(cdColorReward.getNumber());
+                        cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                        //改变订单总表状态 step1
+                        WinPriceUtil.changeTotalOrder(cdSuccessFailOrder.getOrderNumber(), award.toString());
+                        //------------------------原开奖逻辑----180517弃用-----------------------------------------
+                        //保存中奖纪录 step2
+                        //更新用户余额 step3
+                        //推送         step4
+                        //-------------------------------------------------------------------------------
+                    } else {
+                        System.out.println("未完赛");
+                    }
+
+                } else {
+                    cdSuccessFailOrder.setResult(cdColorReward.getNumber());
+                    cdSuccessFailOrder.setStatus("5");
+                    cdSuccessFailOrderService.save(cdSuccessFailOrder);
+                    //改变订单总表状态
+                    CdOrder co = cdOrderService.getOrderByOrderNum(cdSuccessFailOrder.getOrderNumber());
+                    if (co != null) {
+                        co.setWinPrice("0");//奖金
+                        co.setStatus("2");//已开奖
+                        cdOrderService.save(co);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("异常开奖：" + cdSuccessFailOrder.getOrderNumber());
+            }
         }
     }
 }

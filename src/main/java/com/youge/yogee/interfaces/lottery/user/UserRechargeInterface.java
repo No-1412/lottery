@@ -71,7 +71,7 @@ public class UserRechargeInterface {
         String todayStr = sdf.format(today);
         //回调地址
         //String notifyUrl = Global.getConfig("callback.url");
-        String notifyUrl = "https://www.kaixuancaipiao.com/f/callBack";
+        String notifyUrl = "http://www.kaixuancaipiao.com/f/callBack";
         //充值描述
         String goodsParamExt = "{\"goodsName\":\"" + "用户充值" + "\",\"goodsDesc\":\"" + "用户充值" + "\"}";
         //经营主体信息

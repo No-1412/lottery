@@ -407,7 +407,13 @@ public class LotteryUtil {
                             jsonObject.put("score", "0");// 胆
                         }
 
-                        jsonObject.put("size", info_arr[4]);
+                        if (i == 3) {
+                            jsonObject.put("size", info_arr[4]);
+                        }else{
+                            jsonObject.put("size", "0");
+                        }
+
+
 
                         // 保存对战玩法信息
                         JSONArray array = sJson.getJSONArray(info_arr[1] + "_" + info_arr[2]);

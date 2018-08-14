@@ -123,7 +123,7 @@ public class ErpOrderController extends BaseController {
     public String list(ErpOrder erpOrder, HttpServletRequest request, HttpServletResponse response, Model model, String beginDate, String endDate) throws ParseException {
         //User user = UserUtils.getUser();
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        if(StringUtils.isNotEmpty(endDate)){
+        if (StringUtils.isNotEmpty(endDate)) {
             Date endDateDate = df.parse(endDate);
             endDate = df.format(DateUtils.addDays(endDateDate, 1));
         }
@@ -226,7 +226,7 @@ public class ErpOrderController extends BaseController {
 
             model.addAttribute("today", today);
             model.addAttribute("uName", uName);
-            model.addAttribute("newFollowNums", newFollowNums.substring(0,newFollowNums.lastIndexOf(",")));
+            model.addAttribute("newFollowNums", newFollowNums.substring(0, newFollowNums.lastIndexOf(",")));
 
             List<ErpBasketBallDto> finalDetailList = new ArrayList<>();
             List detailList = SelOrderUtil.getBbFollowList2(cdBasketballFollowOrder);
@@ -258,8 +258,8 @@ public class ErpOrderController extends BaseController {
                 }
                 String result = (String) map.get("result");
                 //2018-05-23 yhw  主客场顺序调整
-                if(StringUtils.isNotEmpty(result)){
-                    result = result.split("\\:")[1]+":"+result.split("\\:")[0];
+                if (StringUtils.isNotEmpty(result)) {
+                    result = result.split("\\:")[1] + ":" + result.split("\\:")[0];
                 }
 ////yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
@@ -355,9 +355,9 @@ public class ErpOrderController extends BaseController {
                 String result = (String) map.get("result");
                 String newLet = let.replaceAll("平", "让平");
 
-                String longString = score+goal+half+beat+newLet;
-                longString = longString.replaceAll("null","");
-                for(String str:longString.split("\\,")){
+                String longString = score + goal + half + beat + newLet;
+                longString = longString.replaceAll("null", "");
+                for (String str : longString.split("\\,")) {
                     ErpFootBallDto efbd = new ErpFootBallDto();
                     efbd.setMatId(matchId);
                     efbd.setVs(vs);
@@ -396,17 +396,17 @@ public class ErpOrderController extends BaseController {
                 String matchId = (String) map.get("matchId");
                 String vs = (String) map.get("vs");
                 //董宏 修改后台 主客场 比分相反
-                if(StringUtils.isNotEmpty(vs)){
+                if (StringUtils.isNotEmpty(vs)) {
                     String[] vs1 = vs.split("vs");
-                    vs = vs1[1]+"vs"+vs1[0];
+                    vs = vs1[1] + "vs" + vs1[0];
                 }
                 String win = (String) map.get("win");
                 String fail = (String) map.get("fail");
                 String result = (String) map.get("result");
 
-                if (StringUtils.isNotEmpty(result)){
+                if (StringUtils.isNotEmpty(result)) {
                     String[] split = result.split(":");
-                    result  =split[1]+":"+split[0];
+                    result = split[1] + ":" + split[0];
                 }
 //yhw  修改让问题
                 if (StringUtils.isNotEmpty(win)) {
@@ -453,7 +453,7 @@ public class ErpOrderController extends BaseController {
             String today = df.format(day);
 //
             model.addAttribute("today", today);
-            model.addAttribute("newFollowNums", newFollowNums.substring(0,newFollowNums.lastIndexOf(",")));
+            model.addAttribute("newFollowNums", newFollowNums.substring(0, newFollowNums.lastIndexOf(",")));
             model.addAttribute("uName", uName);
             model.addAttribute("cdFootballFollowOrder", cdFootballFollowOrder);
             List<ErpFootBallDto> finalDetailList = new ArrayList<>();
@@ -531,17 +531,33 @@ public class ErpOrderController extends BaseController {
         }
         if (orderNum.startsWith("RXJ")) {//任选九
             CdChooseNineOrder cdChooseNineOrder = cdChooseNineOrderService.findOrderByOrderNum(orderNum);
-            List<Map<String,String>> list = new ArrayList<>();
+            List<Map<String, String>> list = new ArrayList<>();
+            List<String> listMi = new ArrayList<>();
             if (cdChooseNineOrder != null) {
                 List<CdSuccessFail> cdSuccessFailList = cdSuccessFailService.getSuccessFailByWeekDay(cdChooseNineOrder.getWeekday());
                 String detail = cdChooseNineOrder.getOrderDetail();
                 if (StringUtils.isNotEmpty(detail)) {
                     String detailStr[] = detail.split("\\|");
                     for (String s : detailStr) {
-                        Map<String ,String > map = new HashMap<>();
-                        map.put("nameStr",s.split("\\+")[1]);
-                        map.put("valueStr",s.split("\\+")[2]);
+                        Map<String, String> map = new HashMap<>();
+                        map.put("indexStr", s.split("\\+")[0]);
+                        map.put("nameStr", s.split("\\+")[1]);
+                        map.put("valueStr", s.split("\\+")[2]);
                         list.add(map);
+                    }
+                }
+                String detailMi = cdChooseNineOrder.getMatchIds();
+                System.out.println("detailMi=============" + detailMi);
+                if (StringUtils.isNotEmpty(detailMi)) {
+                    String detailMiStr[] = detailMi.split(",");
+                    for (String str : detailMiStr) {
+                        String[] dms = str.split("\\+");
+                        if ("胆".equals(dms[0])) {
+                            listMi.add(dms[1]+" + 胆");
+                        } else {
+                            listMi.add(dms[1]);
+                        }
+
                     }
                 }
             }
@@ -549,6 +565,7 @@ public class ErpOrderController extends BaseController {
             model.addAttribute("uName", uName);
             model.addAttribute("cdChooseNineOrder", cdChooseNineOrder);
             model.addAttribute("list", list);
+            model.addAttribute("listMi", listMi);
 
             return "modules/cchoosenine/cdChooseNineOrderForm";
         }
@@ -621,23 +638,23 @@ public class ErpOrderController extends BaseController {
 
     @RequiresPermissions("erp:erpOrder:edit")
     @RequestMapping(value = "addAward")
-   public String addAward(ErpOrder erpOrder,Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
-   // public String addAward(ErpOrder erpOrder, Model model, RedirectAttributes redirectAttributes) {
+    public String addAward(ErpOrder erpOrder, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws ParseException {
+        // public String addAward(ErpOrder erpOrder, Model model, RedirectAttributes redirectAttributes) {
         String id = request.getParameter("erpOrderId");
-       String winPrice = request.getParameter("winPrice");
+        String winPrice = request.getParameter("winPrice");
 
         /*String id = erpOrder.getId();
         String winPrice = erpOrder.getWinPrice();
 */
         CdOrder cdOrder = cdOrderService.get(id);
         String ordNum = cdOrder.getNumber();
-        BigDecimal winPriceBig = new BigDecimal(winPrice).setScale(2,1);
+        BigDecimal winPriceBig = new BigDecimal(winPrice).setScale(2, 1);
         //足球单关1
         if (ordNum.startsWith("ZDG")) {
             CdFootballSingleOrder cfso = cdFootballSingleOrderService.findOrderByOrderNum(ordNum);
             //跟单计算佣金
             if ("2".equals(cfso.getType())) {
-                winPriceBig =winPriceBig.subtract(WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice).setScale(2,1));
+                winPriceBig = winPriceBig.subtract(WinPriceUtil.reckonCommission(ordNum, cfso.getPrice(), winPrice).setScale(2, 1));
             }
             //保存中奖记录
             WinPriceUtil.saveOrderWinner(ordNum, cfso.getPrice(), winPriceBig.toString(), cfso.getUid(), cfso.getResult(), "1");
