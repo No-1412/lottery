@@ -7,6 +7,7 @@ import java.util.Date;
 public class SalesUtil {
     public static boolean isInDate() {
         return false;
+
     }
 
     public static void main(String[] args) {

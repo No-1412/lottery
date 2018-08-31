@@ -4,10 +4,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.youge.yogee</groupId>
-	<artifactId>template</artifactId>
+	<artifactId>lottery</artifactId>
 	<version>1.0.0</version>
 	<packaging>war</packaging>
-	<name>template</name>
+	<name>lottery</name>
 	<url>http://template.cn</url>
     
 	<!-- 项目属性 -->
@@ -740,6 +740,21 @@
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>${jsoup.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/concurrent/concurrent -->
+		<dependency>
+			<groupId>concurrent</groupId>
+			<artifactId>concurrent</artifactId>
+			<version>1.3.4</version>
 		</dependency>
 
 		<!-- TEST end -->
